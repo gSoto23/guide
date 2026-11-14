@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Patch, Put, Req } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Patch, Put, Req } from "@nestjs/common";
 import type { FastifyRequest } from "fastify";
 import {
+  currentWorkspaceSchema,
   onboardingBodySchema,
+  type CurrentWorkspaceBody,
   updateMeSchema,
   type MeResponse,
   type OnboardingBody,
@@ -38,6 +40,15 @@ export class MeController {
     @Body(new ZodValidationPipe(updateMeSchema)) body: UpdateMeBody,
   ): Promise<MeResponse> {
     return this.me.updateMe(toWebHeaders(request.headers), authOf(request).user, body);
+  }
+
+  @Put("current-workspace")
+  @HttpCode(204)
+  async setCurrentWorkspace(
+    @Req() request: FastifyRequest,
+    @Body(new ZodValidationPipe(currentWorkspaceSchema)) body: CurrentWorkspaceBody,
+  ): Promise<void> {
+    await this.me.setCurrentWorkspace(authOf(request).user, body.workspaceId);
   }
 
   @Get("onboarding")

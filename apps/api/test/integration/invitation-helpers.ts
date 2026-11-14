@@ -6,7 +6,7 @@ type Ctx = Awaited<ReturnType<typeof createTestApp>>;
 
 export function api(
   ctx: Ctx,
-  method: "GET" | "POST" | "DELETE",
+  method: "GET" | "POST" | "DELETE" | "PATCH" | "PUT",
   url: string,
   cookie?: string,
   payload?: object,

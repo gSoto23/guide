@@ -214,5 +214,27 @@
       "admin": "an admin",
       "agent": "an agent"
     }
+  },
+  "workspace": {
+    "current": "Current workspace",
+    "switchLabel": "Switch workspace",
+    "listTitle": "Your workspaces",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "agent": "Agent"
+    },
+    "pendingDeletion": "pending deletion",
+    "create": "Create workspace",
+    "nameLabel": "Name of the new workspace",
+    "creating": "Creating…",
+    "createSubmit": "Create",
+    "switchFailed": "We couldn't switch workspaces. Try again.",
+    "nav": {
+      "team": "Team",
+      "security": "Security",
+      "home": "Home"
+    },
+    "loading": "Loading…"
   }
 }

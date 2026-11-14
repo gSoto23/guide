@@ -5,8 +5,10 @@ import {
   type ExceptionFilter,
   HttpException,
   Logger,
+  Optional,
 } from "@nestjs/common";
-import type { FastifyReply } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
+import { SecurityLogService } from "../security-log/security-log.service.js";
 import { ApiProblem, type ProblemBody, type ProblemCode } from "./problem.js";
 
 const TITLES: Record<ProblemCode, string> = {
@@ -38,7 +40,25 @@ const CODE_BY_STATUS: Record<number, ProblemCode> = {
   429: "rate_limited",
 };
 
+/**
+ * True for a database refusal caused by row-level security or missing grants (SQLSTATE 42501),
+ * for example an insert into another workspace. Such a row is "not there" for the caller.
+ */
+export function isRlsDenial(exception: unknown): boolean {
+  const e = exception as { code?: unknown; cause?: { code?: unknown } } | null;
+  return e?.code === "42501" || e?.cause?.code === "42501";
+}
+
 export function toProblem(exception: unknown): ProblemBody {
+  if (isRlsDenial(exception)) {
+    // Never confirm that another workspace's row exists (AC-SEC-004, T084).
+    return {
+      type: "https://guidesk.app/problems/not_found",
+      title: TITLES.not_found,
+      status: 404,
+      code: "not_found",
+    };
+  }
   if (exception instanceof ApiProblem) {
     const status = exception.getStatus();
     return {
@@ -69,15 +89,35 @@ export function toProblem(exception: unknown): ProblemBody {
 export class ProblemFilter implements ExceptionFilter {
   private readonly logger = new Logger("ProblemFilter");
 
+  constructor(@Optional() private readonly securityLog?: SecurityLogService) {}
+
   catch(exception: unknown, host: ArgumentsHost): void {
     const problem = toProblem(exception);
     if (problem.status >= 500) {
       this.logger.error(describeError(exception));
+    }
+    if (isRlsDenial(exception)) {
+      void this.recordDenial(host.switchToHttp().getRequest<FastifyRequest>());
     }
     const reply = host.switchToHttp().getResponse<FastifyReply>();
     void reply
       .status(problem.status)
       .header("content-type", "application/problem+json")
       .send(problem);
+  }
+
+  /** The database refused a row in the request's context: log it as a cross-workspace attempt. */
+  private async recordDenial(request: FastifyRequest): Promise<void> {
+    const params = (request.params ?? {}) as Record<string, string | undefined>;
+    await this.securityLog?.record({
+      type: "access.cross_workspace_denied",
+      outcome: "denied",
+      actorUserId: request.auth?.user.id ?? null,
+      workspaceId: params.workspaceId ?? null,
+      metadata: {
+        route: `${request.method} ${request.routeOptions.url ?? ""}`,
+        source: "database",
+      },
+    });
   }
 }

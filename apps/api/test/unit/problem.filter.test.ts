@@ -22,6 +22,13 @@ describe("toProblem (T021)", () => {
     expect(toProblem(new NotFoundException())).toMatchObject({ status: 404, code: "not_found" });
   });
 
+  it("answers 404 when row-level security refuses a row (T084)", () => {
+    const denied = Object.assign(new Error("Failed query"), {
+      cause: { code: "42501", message: "new row violates row-level security policy" },
+    });
+    expect(toProblem(denied)).toMatchObject({ status: 404, code: "not_found" });
+  });
+
   it("never leaks internal error details", () => {
     const problem = toProblem(new Error('relation "secret_table" does not exist'));
     expect(problem).toEqual({

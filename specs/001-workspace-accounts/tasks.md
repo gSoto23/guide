@@ -432,17 +432,38 @@ mixing.
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T080 [P] [US4] Cross-tenant integration suite in `apps/api/test/integration/cross-tenant.test.ts`: every workspace endpoint returns `404` for another workspace's IDs and logs `access.cross_workspace_denied` (AC-SEC-004)
-- [ ] T081 [P] [US4] End-to-end test of switching in under 2 s, with data isolation (V13), in `e2e/us4-switching.spec.ts`
+- [X] T080 [P] [US4] Cross-tenant integration suite in `apps/api/test/integration/cross-tenant.test.ts`: every workspace endpoint returns `404` for another workspace's IDs and logs `access.cross_workspace_denied` (AC-SEC-004)
+- [X] T081 [P] [US4] End-to-end test of switching in under 2 s, with data isolation (V13), in `e2e/us4-switching.spec.ts`
 
 ### Implementation for User Story 4
 
-- [ ] T082 [US4] Implement `POST /workspaces` and `GET /workspaces/{workspaceId}` in `apps/api/src/tenancy/workspaces.controller.ts`
-- [ ] T083 [US4] Implement `PUT /me/current-workspace` and the sign-in redirect to `last_workspace_id` in `apps/api/src/account/me.controller.ts`
-- [ ] T084 [US4] Map RLS-hidden rows to `404 not_found` and log the denial event, in `apps/api/src/common/problem.filter.ts` and `apps/api/src/common/rls.interceptor.ts`
-- [ ] T085 [P] [US4] Build the portal workspace switcher (at most two taps; the current workspace always visible) in `apps/portal/components/workspace-switcher.tsx`
+- [X] T082 [US4] Implement `POST /workspaces` and `GET /workspaces/{workspaceId}` in `apps/api/src/tenancy/workspaces.controller.ts`
+- [X] T083 [US4] Implement `PUT /me/current-workspace` and the sign-in redirect to `last_workspace_id` in `apps/api/src/account/me.controller.ts`
+- [X] T084 [US4] Map RLS-hidden rows to `404 not_found` and log the denial event, in `apps/api/src/common/problem.filter.ts` and `apps/api/src/common/rls.interceptor.ts`
+- [X] T085 [P] [US4] Build the portal workspace switcher (at most two taps; the current workspace always visible) in `apps/portal/components/workspace-switcher.tsx`
 
 **Checkpoint**: Co-hosts use one account across workspaces.
+
+**US4 notes (2026-11-14):**
+
+- **API:**
+  - `POST /workspaces` (5 per user per day), `GET /workspaces/{workspaceId}` (any member, with the
+    caller's role), and `PATCH /workspaces/{workspaceId}` (rename; owner and admin). `PATCH` was not
+    assigned to a task; it came with T082.
+  - `PUT /me/current-workspace` checks the membership under RLS; anything else is a logged `404`.
+  - **T084:** a database refusal (SQLSTATE `42501`, from RLS or grants) becomes `404 not_found`
+    and is logged. Resources named by ID go through `CrossTenantService`: the answer is the same
+    `404` whether the ID is missing or belongs to another workspace, and the second case is logged.
+- **Portal:**
+  - A shared `MeProvider` in the `(app)` layout loads `/me` once; the header shows the workspace
+    switcher (always visible, two taps) and links to Home, Team, and Security.
+  - Every sign-in lands on `/{locale}/start`: first-time users go to onboarding; returning users go
+    straight to work in the last-used workspace (FR-024).
+- **Tests:** the T081 end-to-end test lives in `e2e/specs/us4-switching.spec.ts` and checks the
+  2-second switch, agent-only actions in the other workspace, no data mixing, and reopening the
+  last workspace at the next sign-in.
+- **Verified:** unit tests 81; integration tests 86 (DB 20, API 66, including the cross-tenant
+  suite); end to end 9; lint, typecheck, build, format, and `lint:rls`.
 
 ---
 

@@ -4,13 +4,19 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { MeResponse } from "@guidesk/contracts";
 import { ApiError, apiFetch } from "./api";
+import { useMeContext } from "./me-context";
 
-/** Loads /api/v1/me and sends signed-out visitors to the sign-in page. */
+/**
+ * The signed-in user. Inside the app layout it reads the shared MeProvider; elsewhere it loads
+ * /api/v1/me itself and sends signed-out visitors to the sign-in page.
+ */
 export function useMe(locale: string) {
+  const shared = useMeContext();
   const router = useRouter();
   const [me, setMe] = useState<MeResponse | null>(null);
 
   useEffect(() => {
+    if (shared) return;
     let cancelled = false;
     apiFetch<MeResponse>("/api/v1/me")
       .then((data) => {
@@ -24,7 +30,7 @@ export function useMe(locale: string) {
     return () => {
       cancelled = true;
     };
-  }, [locale, router]);
+  }, [locale, router, shared]);
 
-  return me;
+  return shared ? shared.me : me;
 }

@@ -19,6 +19,7 @@ import { RateLimitService } from "../common/rate-limit.service.js";
 import { API_CONFIG, type ApiConfig } from "../config/config.js";
 import { RequestDb } from "../database/request-db.js";
 import { EMAIL_ADAPTER } from "../email/email.module.js";
+import { CrossTenantService } from "./cross-tenant.js";
 import { InvitationEvents } from "./invitations.events.js";
 import { newInvitationToken } from "./invitation-token.js";
 import { SEAT_LIMIT } from "./seat-limit.js";
@@ -51,6 +52,7 @@ export class InvitationsService {
     private readonly requestDb: RequestDb,
     private readonly rateLimit: RateLimitService,
     private readonly events: InvitationEvents,
+    private readonly crossTenant: CrossTenantService,
     @Inject(EMAIL_ADAPTER) private readonly email: EmailAdapter,
     @Inject(API_CONFIG) private readonly config: ApiConfig,
     @Inject(SEAT_LIMIT) private readonly seats: SeatLimitProvider,
@@ -171,7 +173,7 @@ export class InvitationsService {
   async resend(inviter: AuthUser, workspaceId: string, invitationId: string): Promise<void> {
     const tx = this.requestDb.current();
     const now = new Date();
-    const row = await this.find(tx, workspaceId, invitationId);
+    const row = await this.find(tx, inviter.id, workspaceId, invitationId);
     const resends = await this.rateLimit.consume(
       `invite-resend:${invitationId}`,
       RESENDS_PER_INVITATION_PER_DAY,
@@ -201,7 +203,7 @@ export class InvitationsService {
 
   async revoke(actor: AuthUser, workspaceId: string, invitationId: string): Promise<void> {
     const tx = this.requestDb.current();
-    const row = await this.find(tx, workspaceId, invitationId);
+    const row = await this.find(tx, actor.id, workspaceId, invitationId);
     if (effectiveStatus(row) !== "pending") {
       throw new ApiProblem(410, "gone", "This invitation is no longer open.");
     }
@@ -213,7 +215,7 @@ export class InvitationsService {
     });
   }
 
-  private async find(tx: Transaction, workspaceId: string, invitationId: string) {
+  private async find(tx: Transaction, actorId: string, workspaceId: string, invitationId: string) {
     const [row] = /^[0-9a-f-]{36}$/i.test(invitationId)
       ? await tx
           .select()
@@ -221,7 +223,8 @@ export class InvitationsService {
           .where(and(eq(invitation.id, invitationId), eq(invitation.workspaceId, workspaceId)))
           .limit(1)
       : [];
-    if (!row) throw new ApiProblem(404, "not_found");
+    if (!row)
+      throw await this.crossTenant.notFound(actorId, workspaceId, "invitation", invitationId);
     return row;
   }
 

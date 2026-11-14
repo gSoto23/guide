@@ -14,9 +14,9 @@ export function SignInForm({ locale }: { locale: string }) {
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const onboarding = `/${locale}/onboarding`;
-  // After an invitation link, come back to it to accept (FR-020).
-  const next = () => readReturnTo() ?? onboarding;
+  // After an invitation link, come back to it to accept (FR-020); otherwise /start decides
+  // between onboarding and the last-used workspace (FR-024).
+  const next = () => readReturnTo() ?? `/${locale}/start`;
 
   async function sendCode(event: FormEvent) {
     event.preventDefault();

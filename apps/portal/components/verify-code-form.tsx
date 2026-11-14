@@ -50,7 +50,7 @@ export function VerifyCodeForm({ locale }: { locale: string }) {
     forgetSignInEmail();
     const returnTo = readReturnTo();
     forgetReturnTo();
-    router.push(returnTo ?? `/${locale}/onboarding`);
+    router.push(returnTo ?? `/${locale}/start`);
   }
 
   async function resend() {

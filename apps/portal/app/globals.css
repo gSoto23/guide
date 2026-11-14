@@ -194,3 +194,110 @@ legend {
   font-weight: 600;
   margin-bottom: 6px;
 }
+
+/* Signed-in header and workspace switcher (US4, FR-022): always visible, two taps to switch. */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 8px var(--space);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-header nav {
+  display: flex;
+  gap: var(--space);
+  margin-top: 6px;
+  font-size: 0.9rem;
+}
+
+.app-header nav a {
+  color: var(--color-primary);
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.switcher {
+  position: relative;
+}
+
+.switcher-current {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.switcher-name {
+  flex: 1;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.switcher-role {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.switcher-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.15);
+  background: var(--color-bg);
+}
+
+.switcher-title {
+  font-size: 1rem;
+  margin: 0 0 8px;
+}
+
+.switcher-menu ul {
+  list-style: none;
+  margin: 0 0 var(--space);
+  padding: 0;
+}
+
+.switcher-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.switcher-option[aria-current="true"] {
+  background: var(--color-surface);
+  font-weight: 600;
+}
+
+.switcher-option:focus-visible,
+.switcher-current:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}

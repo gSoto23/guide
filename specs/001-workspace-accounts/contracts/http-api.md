@@ -94,9 +94,9 @@ Guidesk hooks on these endpoints:
 
 | Method and path | O | A | Ag | Guards | Purpose and body | Responses |
 |---|---|---|---|---|---|---|
-| `POST /workspaces` | any user | | | — | `{ name }`; the caller becomes owner (FR-023) | 201 |
-| `GET /workspaces/{workspaceId}` | ✓ | ✓ | ✓ | member | Workspace details | 200, 404 |
-| `PATCH /workspaces/{workspaceId}` | ✓ | ✓ | — | — | `{ name }` | 200, 403, 404 |
+| `POST /workspaces` | any user | | | rate limit | `{ name }` (1–80 characters); the caller becomes owner and switches to it (FR-023). 5 per user per day | 201, 422, 429 |
+| `GET /workspaces/{workspaceId}` | ✓ | ✓ | ✓ | member | `{ id, name, status, role, createdAt }`, where `role` is the caller's | 200, 404 |
+| `PATCH /workspaces/{workspaceId}` | ✓ | ✓ | — | — | `{ name }`; returns the workspace | 200, 403, 404 |
 | `DELETE /workspaces/{workspaceId}` | ✓ | — | — | SU, MFA | `{ confirmName }`; sets `pending_deletion`; notifies members (FR-027) | 202, 403, 422 |
 | `POST /workspaces/{workspaceId}/restore` | ✓ | — | — | SU | Within 30 days | 200, 404, 410 |
 | `POST /workspaces/{workspaceId}/ownership-transfer` | ✓ | — | — | SU, MFA | `{ membershipId }`; the target must be an admin and satisfy MFA if required | 200, 409 |
@@ -147,7 +147,9 @@ Implementation notes (US3):
 ## Cross-cutting guarantees
 
 - **Isolation:** every workspace-scoped query runs under RLS. A guessed ID from another
-  workspace returns `404 not_found` and writes `access.cross_workspace_denied` (AC-SEC-004).
+  workspace returns `404 not_found` and writes `access.cross_workspace_denied` (AC-SEC-004). The
+  body is identical for a missing ID and a foreign one. A database refusal from RLS or grants
+  (SQLSTATE `42501`) is also answered with `404` and logged.
 - **CSRF:** cookie-authenticated state changes require same-origin requests: the library's
   origin checks, `SameSite=Lax`, and, on the API's own routes, a refused request (`403`) when
   `Origin` or `Sec-Fetch-Site` shows another origin. Form-encoded bodies are rejected (`415`).
