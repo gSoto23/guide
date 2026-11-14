@@ -86,10 +86,11 @@ criteria.
 
 ### F01 — Workspaces, accounts and roles
 
-- **FR-01.1** A host MUST be able to sign up with email (passwordless or password) or Google,
-  verify their email, and get a workspace in which they are the `owner`.
+- **FR-01.1** A host MUST be able to sign up with Google, a passkey, or a passwordless email
+  one-time code (no passwords; decided in spec 001), and get a workspace in which they are the
+  `owner`.
 - **FR-01.2** A workspace MUST support members with the roles `owner`, `admin`, and `agent`
-  (support staff). Plan limits apply.
+  (support staff). Plan limits apply. Agents never see restricted values such as door codes.
 - **FR-01.3** All workspace data MUST be isolated per tenant (constitution, Principle VI).
 - **FR-01.4** Sign-up MUST ask at most three onboarding questions:
   - how many properties the host manages (1–2, 3–10, 10+);
