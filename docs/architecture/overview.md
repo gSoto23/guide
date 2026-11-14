@@ -1,0 +1,333 @@
+# Architecture Overview
+
+> **Status:** Draft v0.1 · **Owner:** Founder · **Last updated:** 2026-11-13 ·
+> **Related:** [ADRs](adr/README.md) · [PRD](../product/prd.md) · [Constitution](../../.specify/memory/constitution.md)
+
+This document describes the target architecture for Guidesk at the level needed to write
+feature specs and plans. It follows the [C4 model](https://c4model.com/): context, then
+containers, then components. Decisions are recorded in [ADRs](adr/README.md). Each feature's
+`plan.md` refines the relevant part of this document.
+
+## 1. Architectural drivers
+
+| Driver | Source | Architectural response |
+|---|---|---|
+| Integrate only through official channels; the integration landscape will change | Constitution II and IV; [ADR-0003](adr/0003-phased-channel-integration-strategy.md) | Channel-agnostic core with ports and adapters for PMS, OTA, and white-label providers |
+| Accurate and safe AI behavior with human oversight | Constitution III and V | Deterministic policy engine around the LLM ("the LLM proposes, code decides"), per-topic autonomy, and an eval gate |
+| One developer working with AI agents | Constitution I and VII | TypeScript monorepo, managed services, and few moving parts ([ADR-0004](adr/0004-typescript-monorepo-stack.md)) |
+| Multi-tenant SaaS holding sensitive property data | Constitution VI | `workspace_id` on every tenant row, Postgres row-level security, field-level encryption of restricted data, gated sensitive fields ([security](security.md)) |
+| Guest guide on mobile across the Americas | NFR-01 and NFR-07 | Static-first PWA on a CDN with performance budgets; the guide works even when the agent is down ([performance](performance.md)) |
+| AI inference is the main variable cost | [Business model](../product/business-model.md) | Prompt caching of property context, per-route effort tuning, a cost trace on every message, and a hybrid knowledge strategy (pgvector in the same Postgres) when switch triggers fire ([ADR-0005](adr/0005-llm-provider-and-agent-design.md)) |
+
+## 2. System context (C4 level 1)
+
+```mermaid
+flowchart LR
+    host["Host / Manager<br/>(P1, P2)"]
+    guest["Guest<br/>(P3)"]
+    guidesk(["Guidesk"])
+    pms["PMS / channel managers<br/>Hospitable, Hostaway, Guesty, Smoobu<br/>(Phase 2)"]
+    ota["OTAs<br/>Airbnb, Booking.com, Vrbo"]
+    wl["White-label connectivity<br/>Channex (Phase 3)"]
+    llm["Anthropic Claude API"]
+    tours["Tour affiliates<br/>Viator, Civitatis, GetYourGuide"]
+    pay["Payment provider<br/>(Tilopay, MVP month 4)"]
+    ins["Insurance partner<br/>(Phase 3)"]
+    mail["Email / push provider"]
+
+    host -- "builds guide, configures agent,<br/>reviews inbox" --> guidesk
+    guest -- "opens guide, chats" --> guidesk
+    guest -- "chats on platform" --> ota
+    ota <-- "messages, reservations" --> pms
+    pms <-- "partner API: properties,<br/>reservations, messages" --> guidesk
+    ota <-. "certified connection" .-> wl
+    wl <-. "API" .-> guidesk
+    guidesk -- "agent inference" --> llm
+    guidesk -- "catalog, affiliate links" --> tours
+    guidesk -. "checkout, payouts" .-> pay
+    guidesk -. "embedded policies" .-> ins
+    guidesk -- "host notifications" --> mail
+    host -- "iCal export URL,<br/>scheduled messages with guide link" --> ota
+```
+
+In the MVP, Guidesk has no API connection to any OTA. The host sends the guide link through the
+OTA's native scheduled messages and shares the OTA iCal export URL for stay windows. Guest chat
+happens inside the guide. From Phase 2, PMS adapters bring in OTA messages.
+
+## 3. Containers (C4 level 2)
+
+```mermaid
+flowchart TB
+    subgraph clients["Clients"]
+        portal["Host Portal<br/>Next.js (apps/portal)"]
+        guide["Guest Guide PWA<br/>Next.js (apps/guide)"]
+    end
+
+    subgraph backend["Guidesk backend"]
+        api["API<br/>NestJS on Node.js (apps/api)<br/>REST + webhooks"]
+        worker["Worker<br/>Node.js (apps/worker)<br/>jobs: ingestion, sync,<br/>agent runs, notifications"]
+        db[("PostgreSQL<br/>tenant data, RLS,<br/>job queue (pg-boss),<br/>pgvector (later)")]
+        obj[("Object storage<br/>uploads, media")]
+    end
+
+    ext["External systems<br/>PMS, LLM, affiliates,<br/>payments, email"]
+
+    portal -- "HTTPS / JSON" --> api
+    guide -- "HTTPS / JSON, SSE for chat" --> api
+    api --> db
+    api --> obj
+    api -- "enqueue" --> db
+    worker -- "dequeue" --> db
+    worker --> obj
+    api --> ext
+    worker --> ext
+    ext -- "webhooks" --> api
+```
+
+| Container | Responsibility | Tech (see ADR-0004) |
+|---|---|---|
+| Host Portal | Onboarding, guide builder, inbox and copilot, agent settings, catalog, analytics, integrations wizard, billing | Next.js (App Router), React, Tailwind, shadcn/ui. Mobile-first, installable PWA with web push ([ADR-0006](adr/0006-web-first-pwa-no-native-apps.md)) |
+| Guest Guide PWA | Public, localized guide; gated sensitive section; chat; offers with disclosure | Next.js (SSR/ISR on CDN), PWA service worker |
+| API | Auth, tenancy, CRUD, guest chat endpoint (streaming), PMS webhooks, affiliate redirects, policy engine | NestJS (Fastify adapter), Zod contracts, OpenAPI |
+| Worker | Document extraction, translations, iCal sync, PMS sync, inbound message processing, agent runs for platform chats, notifications | Node.js and pg-boss, sharing the domain packages |
+| PostgreSQL | System of record, job queue, and vector search when needed | Managed Postgres 16+, Drizzle ORM, RLS |
+| Object storage | Uploaded documents, images, videos | S3-compatible storage |
+
+## 4. Components and bounded contexts
+
+The domain is split into modules with explicit boundaries. Modules communicate through
+application services and domain events, never through each other's tables.
+
+| Context | Owns | Key ports |
+|---|---|---|
+| **Identity and Tenancy** | Users, workspaces, members (a user can join several workspaces), roles, invitations, plans and limits | `AuthProviderPort` |
+| **Properties** | Properties, stay windows (reservations), property facts, imports and duplication | `PropertySourcePort` (iCal, CSV, PMS) |
+| **Knowledge and Guide** | Guide sections, shared workspace sections and their inheritance, knowledge items, sensitive fields, translations, completeness | `DocumentExtractionPort`, `TranslationPort` |
+| **Conversations** | Channel-agnostic conversations and messages, inbox, escalations | `ChannelPort` (guide chat, PMS, white-label) |
+| **Agent** | Classification, policy engine, reply generation, tools, traces, evals | `LlmPort` |
+| **Commerce** | Service catalog, add-on requests and orders, affiliate offers, disclosures, commissions | `AffiliateCatalogPort`, `PaymentPort` (Tilopay, MVP month 4), `InsurancePort` (Phase 3) |
+| **Integrations** | Connections, credentials, sync state, adapter registry | Implements the ports above per provider |
+| **Notifications** | Host email and push | `NotificationPort` |
+| **Analytics** | Metrics, events, dashboards | — |
+
+### Ports and adapters
+
+```mermaid
+flowchart LR
+    subgraph core["Domain core (packages/domain)"]
+        conv["Conversations"]
+        agent["Agent"]
+        props["Properties"]
+    end
+    cp{{"ChannelPort"}}
+    pp{{"PropertySourcePort"}}
+    lp{{"LlmPort"}}
+    conv --- cp
+    props --- pp
+    agent --- lp
+    cp --- gc["GuideChatAdapter (MVP)"]
+    cp --- hosp["HospitableAdapter (P2)"]
+    cp --- hw["HostawayAdapter (P2)"]
+    cp --- chx["ChannexAdapter (P3)"]
+    pp --- ical["ICalAdapter (MVP)"]
+    pp --- csv["CsvImportAdapter (MVP)"]
+    pp --- b24["Beds24Adapter (MVP, read-only)"]
+    pp --- hx["HostexAdapter (MVP, read-only)"]
+    pp --- hosp
+    pp --- hw
+    lp --- anth["AnthropicAdapter"]
+```
+
+In the MVP, PMS adapters implement only `PropertySourcePort`, for read-only import. Hostaway
+joins them if its terms allow a customer's API key before partner approval (OQ-26). The PMS
+`ChannelPort` side (messaging) starts in Phase 2.
+
+**`ChannelPort` (sketch; final contract in spec 012):**
+
+- `receive(event) → InboundMessage`: normalizes webhooks or polled messages.
+- `send(conversationRef, OutboundMessage) → DeliveryResult`
+- `capabilities() → { attachments, maxLength, sendWindow, ... }`: for example, Booking.com allows
+  messages from reservation until 7 days after checkout.
+
+## 5. Key flows
+
+### 5.1 Guest asks a question in the guide chat (MVP)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant G as Guest (Guide PWA)
+    participant A as API
+    participant AG as Agent module
+    participant PE as Policy engine
+    participant L as Claude API
+    participant H as Host (Portal/notifications)
+
+    G->>A: POST /guide/:slug/chat (message)
+    A->>AG: handle(message, conversation, property)
+    AG->>L: classify (structured output: topic, intent, language, sentiment, risk)
+    L-->>AG: classification
+    AG->>PE: decide(classification, autonomy settings)
+    alt mandatory escalation or autonomy = draft
+        PE-->>AG: escalate / draft
+        AG-->>A: holding reply + escalation
+        A-->>G: "Your host will follow up shortly" (+ emergency info if needed)
+        A->>H: notify (email/push, deep link)
+    else auto allowed
+        AG->>L: generate reply (cached property context + tools)
+        L-->>AG: reply draft (+ tool calls)
+        AG->>PE: output checks (links, disclosure, sensitive data, promises)
+        PE-->>AG: pass / block
+        AG-->>A: reply + trace
+        A-->>G: stream reply (SSE)
+    end
+```
+
+### 5.2 Guest writes in the Airbnb chat (Phase 2, through a PMS)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant OTA as Airbnb
+    participant P as PMS (e.g. Hostaway)
+    participant A as API (webhook)
+    participant W as Worker
+    participant AG as Agent + Policy
+    participant H as Host inbox
+
+    OTA->>P: guest message
+    P->>A: webhook (new message)
+    A->>W: enqueue inbound-message job (idempotency key)
+    W->>AG: process (same pipeline as 5.1)
+    alt auto reply allowed
+        AG->>W: approved reply
+        W->>P: POST message (ChannelPort.send)
+        P->>OTA: deliver to guest thread
+    else draft / escalation
+        AG->>H: draft or escalation for approval
+        H->>W: host approves/edits
+        W->>P: POST message
+    end
+```
+
+### 5.3 Revealing sensitive information
+
+1. The guest opens the guide through the link the host sent with OTA scheduled messages.
+2. A sensitive section (for example, the door code) asks for verification. The method is defined
+   in spec 004: a reservation-scoped link, a confirmation code, or a host PIN.
+3. The API checks the verification and the stay window (from iCal or PMS), then returns the
+   values. Every reveal is logged.
+4. The agent never reads sensitive values into the prompt. When a guest asks for one, the agent
+   points to the verified section. The rule is enforced in code.
+
+### 5.4 Guide drafts from a PMS import (MVP, read-only)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant H as Host (Portal)
+    participant A as API
+    participant W as Worker
+    participant P as PMS API (e.g. Beds24)
+    participant AG as Agent (drafting)
+
+    H->>A: connect PMS (customer token or API key)
+    A->>A: encrypt and store the credential (INTEGRATION)
+    A->>W: enqueue import job (idempotency key)
+    W->>P: list properties, listing content, upcoming reservations
+    P-->>W: provider data
+    W->>W: map to the canonical model, encrypt sensitive fields, create PROPERTY and STAY rows
+    W->>AG: draft guide sections per property (template + shared sections, no sensitive values)
+    AG-->>W: drafts and completeness gaps
+    W->>H: notify "N guide drafts ready for review"
+    H->>A: review, fill gaps with the AI interview, publish
+```
+
+Sensitive values go straight from the provider to encrypted fields and never reach the LLM. The
+same pipeline serves CSV imports, pasted text, and screenshots. Only the source step differs.
+
+## 6. Data model (conceptual)
+
+```mermaid
+erDiagram
+    USER ||--o{ MEMBER : "joins as"
+    WORKSPACE ||--o{ MEMBER : has
+    WORKSPACE ||--o{ PROPERTY : owns
+    WORKSPACE ||--o{ INTEGRATION : connects
+    WORKSPACE ||--o{ SHARED_SECTION : defines
+    WORKSPACE ||--o{ PROPERTY_GROUP : "organizes (Phase 2)"
+    PROPERTY_GROUP }o--o{ PROPERTY : groups
+    INTEGRATION ||--o{ PROPERTY : "imported (optional)"
+    SHARED_SECTION ||--o{ GUIDE_SECTION : "inherited by"
+    PROPERTY ||--o{ GUIDE_SECTION : has
+    PROPERTY ||--o{ KNOWLEDGE_ITEM : has
+    PROPERTY ||--o{ STAY : has
+    PROPERTY ||--o{ SERVICE_OFFER : offers
+    STAY ||--o{ CONVERSATION : has
+    CONVERSATION ||--o{ MESSAGE : contains
+    MESSAGE ||--o| AGENT_RUN : produced_by
+    CONVERSATION ||--o{ ESCALATION : raises
+    STAY ||--o{ SERVICE_REQUEST : places
+    SERVICE_OFFER ||--o{ SERVICE_REQUEST : fulfills
+    SERVICE_REQUEST ||--o| COMMISSION : earns
+```
+
+Notes:
+
+- Every tenant-owned table has a `workspace_id`, and RLS policies enforce it.
+- `USER` is a global identity linked to the auth provider and is not tenant-owned. `MEMBER`
+  links a user to a workspace with a role. A user can be a member of several workspaces, and all
+  access to tenant data goes through a membership.
+- `SHARED_SECTION` holds workspace-level guide content. A `GUIDE_SECTION` does one of three
+  things: inherits a shared section, overrides it locally, or exists only for its property.
+  - The guide renderer and the agent's `ContextAssembler` resolve the inheritance.
+  - Editing a shared section changes the prompt prefix of every property that inherits it, so
+    those prompt caches are rebuilt. This is expected.
+- `PROPERTY.source` is `manual`, `csv`, `duplicate`, or a PMS adapter. Imported properties keep
+  the provider's `external_id` for re-import and, in Phase 2, continuous sync.
+- `PROPERTY_GROUP` and per-property member permissions arrive in Phase 2 (F21).
+- `STAY` is the canonical reservation. It is sourced from iCal (dates only), a PMS (full data),
+  or manual entry. Guest personal data is minimal and has a retention policy.
+- `CONVERSATION.channel` is `guide_chat`, `airbnb`, `booking`, `vrbo`, or `direct`, with the
+  `source_adapter` that carried it.
+- `AGENT_RUN` stores the classification, the policy decision, tool calls, model, token usage,
+  cost, and latency.
+
+## 7. Cross-cutting concerns
+
+| Concern | Approach |
+|---|---|
+| Security | Data classes, threat model, and controls SEC-01 to SEC-21 in the [security architecture](security.md). |
+| Performance | Targets, budgets, and degraded modes in the [performance architecture](performance.md). |
+| Authentication | Host auth for the portal (provider chosen in spec 001; see ADR-0004) with passkeys, MFA, and step-up re-authentication (SEC-05). Guests are anonymous, with a guide-scoped session plus verification for sensitive data (SEC-01 to SEC-03). |
+| Authorization | Role-based access per workspace (`owner`, `admin`, `agent`). RLS as defense in depth. |
+| Secrets | PMS tokens and API keys are encrypted at the application level (envelope encryption) and never logged. |
+| Idempotency | Every inbound webhook and every outbound message has an idempotency key, so retries never double-send. |
+| Internationalization | Spanish and English message catalogs; per-property time zone; money stored as integer minor units plus an ISO currency code. |
+| Observability | OpenTelemetry traces across API, worker, and LLM calls; structured logs; error tracking; an agent trace viewer in the back-office. |
+| Testing | Unit tests (domain), contract tests (adapters, with recorded fixtures), integration tests (API and DB), E2E tests (Playwright), and agent evals (golden conversations) gated in CI. |
+| Environments | `local` (Docker Compose for Postgres), `preview` (per pull request), `staging`, `production`. |
+
+## 8. Repository layout (target)
+
+```text
+guidesk/
+├── .specify/                 # Spec Kit (constitution, templates, scripts)
+├── specs/                    # One folder per feature: spec.md, plan.md, tasks.md, contracts/
+├── docs/                     # Product, research, architecture, ADRs
+├── apps/
+│   ├── portal/               # Host portal (Next.js)
+│   ├── guide/                # Guest guide PWA (Next.js)
+│   ├── api/                  # NestJS API + webhooks
+│   └── worker/               # Background jobs
+├── packages/
+│   ├── domain/               # Pure domain model + application services (no framework)
+│   ├── contracts/            # Zod schemas, OpenAPI, shared types
+│   ├── db/                   # Drizzle schema, migrations, RLS policies
+│   ├── agent/                # Prompts, tools, policy engine, eval harness
+│   ├── integrations/         # Adapters: ical, hospitable, hostaway, guesty, smoobu, channex
+│   ├── ui/                   # Shared React components
+│   ├── i18n/                 # Message catalogs
+│   └── config/               # tsconfig, eslint, prettier presets
+└── evals/                    # Golden conversations and graders
+```
