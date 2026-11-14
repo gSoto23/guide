@@ -51,32 +51,40 @@ Every feature follows the Spec Kit workflow. The rules are in the
 [constitution](.specify/memory/constitution.md).
 
 ```text
-/speckit.specify   → specs/NNN-feature/spec.md     (what & why)
-/speckit.clarify   → resolve [NEEDS CLARIFICATION]
-/speckit.plan      → plan.md, data-model.md, contracts/   (how; passes the Constitution Check)
-/speckit.tasks     → tasks.md                      (tests first)
-/speckit.analyze   → cross-artifact consistency check
-/speckit.implement → code, tests, evals → pull request
+/speckit-specify   → specs/NNN-feature/spec.md     (what & why)
+/speckit-clarify   → resolve [NEEDS CLARIFICATION]
+/speckit-plan      → plan.md, data-model.md, contracts/   (how; passes the Constitution Check)
+/speckit-tasks     → tasks.md                      (tests first)
+/speckit-analyze   → cross-artifact consistency check
+/speckit-implement → code, tests, evals → pull request
 ```
 
-### Setting up Spec Kit
+`/speckit-checklist` (requirement-quality checklists) is optional, after the plan.
 
-Spec Kit's CLI isn't installed in this repository yet. To install it with
-[uv](https://docs.astral.sh/uv/):
+### Spec Kit setup
+
+Spec Kit 1.4.1.dev0 is installed for Claude Code (installed 2026-11-14):
+
+- **Skills:** `.claude/skills/speckit-*`, used as `/speckit-specify`, `/speckit-plan`, and so on.
+- **Scripts and core templates:** `.specify/scripts/` and `.specify/templates/`.
+- **Guidesk template overrides:** `.specify/templates/overrides/`. They add the Security
+  considerations section to specs, and the Constitution Check table and performance budget to
+  plans. Spec Kit uses overrides before its core templates, and upgrades don't touch them.
+
+To upgrade Spec Kit with [uv](https://docs.astral.sh/uv/) (the existing constitution is
+preserved):
 
 ```bash
-cp .specify/memory/constitution.md /tmp/guidesk-constitution.md
-uvx --from git+https://github.com/github/spec-kit.git specify init --here --ai claude
-cp /tmp/guidesk-constitution.md .specify/memory/constitution.md
+uvx --from git+https://github.com/github/spec-kit.git specify init --here --force --non-interactive --integration claude --ignore-agent-tools
 ```
-
-The first and last commands keep the Guidesk constitution in case `init` overwrites it with
-the default template.
 
 ## Repository layout
 
 ```text
+.claude/skills/                   # Spec Kit skills for Claude Code (/speckit-*)
 .specify/memory/constitution.md   # Project principles (Spec Kit)
+.specify/templates/overrides/     # Guidesk versions of the spec and plan templates
+.specify/scripts/, templates/     # Spec Kit scripts and core templates
 docs/                             # Product, research, architecture, ADRs
 specs/                            # Feature specs (created per feature)
 ```

@@ -77,7 +77,7 @@ MoSCoW per phase. **The founder confirmed this prioritization on 2026-11-14 (OQ-
 | F20 | Public API and webhooks (Business plan) | Phase 3 | — | P2 | `020-public-api` |
 | F21 | Portfolio management: property groups, per-property permissions, owner read-only access | Phase 2 | — | P2 | `021-portfolio-management` |
 
-Spec numbers are indicative. Spec Kit assigns the final number when `/speckit.specify` runs.
+Spec numbers are indicative. Spec Kit assigns the final number when `/speckit-specify` runs.
 
 ## 5. Functional requirements (high level)
 

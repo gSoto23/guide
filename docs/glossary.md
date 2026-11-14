@@ -42,7 +42,7 @@
 | **SEC-xx** | A security control defined in the security architecture and referenced by specs. |
 | **Sensitive field** | Property data such as door codes, Wi-Fi password, or alarm codes. Shown only to verified guests during their stay window. |
 | **Shared section** | Guide content defined once per workspace (e.g. policies, emergency contacts, checkout steps) that properties inherit and can override. |
-| **Spec Kit** | GitHub's open-source toolkit for Spec-Driven Development (the `specify` CLI and `/speckit.*` commands). |
+| **Spec Kit** | GitHub's open-source toolkit for Spec-Driven Development (the `specify` CLI and the `/speckit-*` skills for Claude Code). |
 | **SSRF** | Server-side request forgery: tricking a server into fetching an internal or unintended URL. |
 | **Stay** | Guidesk's canonical reservation: a property, dates, and minimal guest data. Sourced from iCal, a PMS, or manual entry. |
 | **Stay window** | The period, around check-in through checkout, when sensitive information is available to a verified guest. |

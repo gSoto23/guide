@@ -1,6 +1,12 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 → 1.1.0 (MINOR: material expansion of a principle and two sections)
+- Version change: 1.1.0 → 1.1.1 (PATCH: wording and template sync)
+- Changes: Spec Kit 1.4.1.dev0 installed for Claude Code. Commands are now skills named
+  `/speckit-<step>` (hyphen). Guidesk template overrides added in
+  .specify/templates/overrides/ (spec: Security Considerations and Platform Policies; plan:
+  Constitution Check table and Performance Budget). The 1.1.0 template TODO is resolved.
+
+Previous: 1.0.0 → 1.1.0 (MINOR: material expansion of a principle and two sections)
 - Modified principles:
   - VI. Security and Privacy by Default: adds required Security considerations in specs,
     field-level encryption for restricted data, and account-takeover protection.
@@ -12,8 +18,7 @@ Sync Impact Report
     performance budgets.
 - Added references: docs/architecture/security.md (SEC-xx controls),
   docs/architecture/performance.md.
-- Templates requiring updates: after `specify init`, add "Security considerations" to the spec
-  template and "Performance budget" to the plan template (pending: Spec Kit not installed yet).
+- Templates requiring updates: done in 1.1.1 (see above).
 - Follow-up TODOs: revisit Principle VI once the legal entity and payment provider are chosen.
 
 Previous: (none) → 1.0.0, ratified 2026-11-13 during Phase 0 (Discovery & Planning).
@@ -31,8 +36,8 @@ how Guidesk is specified, built, and operated. It supersedes any conflicting pra
 ### I. Spec-First Development
 
 - Every feature MUST start as a specification in `specs/NNN-<feature>/spec.md` created with
-  the Spec Kit workflow (`/speckit.specify` → `/speckit.clarify` → `/speckit.plan` →
-  `/speckit.tasks` → `/speckit.analyze` → `/speckit.implement`).
+  the Spec Kit workflow (`/speckit-specify` → `/speckit-clarify` → `/speckit-plan` →
+  `/speckit-tasks` → `/speckit-analyze` → `/speckit-implement`).
 - Specs describe **what** and **why** (user value, acceptance criteria, edge cases). Plans
   describe **how**. No implementation detail belongs in a spec.
 - Code without a merged spec, plan, and task list MUST NOT be merged, except for chores
@@ -186,4 +191,4 @@ whether a change made it better or worse.
   - **PATCH:** clarifications and wording fixes.
 - Compliance is reviewed at the end of each roadmap phase.
 
-**Version**: 1.1.0 | **Ratified**: 2026-11-13 | **Last Amended**: 2026-11-14
+**Version**: 1.1.1 | **Ratified**: 2026-11-13 | **Last Amended**: 2026-11-14

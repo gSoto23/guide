@@ -41,16 +41,16 @@ enforces project-wide principles at plan time.
 - Specs reference PRD feature IDs (`Fxx`) and policy constraints (PC-xx).
 - Acceptance criteria use Given/When/Then scenarios. Functional requirements use
   `FR-###: System MUST …`.
-- Product-level documents (PRD, roadmap, research) live in `docs/` and feed `/speckit.specify`.
+- Product-level documents (PRD, roadmap, research) live in `docs/` and feed `/speckit-specify`.
 
 **Workflow per feature:**
 
-1. `/speckit.specify`: write the spec from the PRD feature.
-2. `/speckit.clarify`: resolve ambiguities.
-3. `/speckit.plan`: write the plan against the constitution and the ADRs.
-4. `/speckit.tasks`: break the plan into tasks.
-5. `/speckit.analyze`: check consistency across spec, plan, and tasks.
-6. `/speckit.implement`: build it.
+1. `/speckit-specify`: write the spec from the PRD feature.
+2. `/speckit-clarify`: resolve ambiguities.
+3. `/speckit-plan`: write the plan against the constitution and the ADRs.
+4. `/speckit-tasks`: break the plan into tasks.
+5. `/speckit-analyze`: check consistency across spec, plan, and tasks.
+6. `/speckit-implement`: build it.
 7. Open a pull request.
 
 ### Consequences

@@ -1,6 +1,6 @@
 # Feature Specifications
 
-Each feature gets its own folder, created with Spec Kit (`/speckit.specify`):
+Each feature gets its own folder, created with Spec Kit (`/speckit-specify`):
 
 ```text
 specs/NNN-feature-name/

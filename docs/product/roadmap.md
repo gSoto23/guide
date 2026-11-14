@@ -33,11 +33,12 @@ approach, ready for spec-driven development.
 | Discovery decisions (customer, market, revenue, channels, autonomy) | Done |
 | Research: integrations, competitors, monetization partners, platform policies | Done |
 | Vision, business model, personas, PRD, roadmap | Draft |
-| Constitution (Spec Kit) | Draft v1.1.0 |
+| Constitution (Spec Kit) | Draft v1.1.1 |
 | Architecture overview and ADR-0001 to ADR-0007 | Draft. ADR-0001 to ADR-0007 accepted. |
 | Security and performance architecture | Draft v0.1 |
 | Open-questions log | Active |
-| Spec Kit installed (`specify init`) and first spec drafted | Next |
+| Spec Kit installed (`specify init`) | Done 2026-11-14 (v1.4.1.dev0, Claude Code skills) |
+| First spec drafted (`/speckit-specify`) | Next |
 
 **Exit criteria:** the founder approves the PRD prioritization (done 2026-11-14) and the ADRs
 (done), and the critical open questions are answered (MVP date, design partners). The legal
