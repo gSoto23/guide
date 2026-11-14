@@ -106,6 +106,7 @@ check `pnpm lint:rls` fails on any table `guidesk_app` can reach without forced 
 | `created_by` | uuid, FK → user | — |
 | `status` | enum `active`, `pending_deletion` | — |
 | `deleted_at`, `purge_after` | timestamptz, nullable | Set on deletion; `purge_after` = +30 days (FR-027) |
+| `seat_limit` | int, nullable, > 0 | Pilot seat limit set by Guidesk; null uses the default of 10 (FR-021, until feature 011) |
 | `created_at`, `updated_at` | timestamptz | — |
 
 **RLS:** visible when a `membership` row exists for `(id, app.user_id)`. Updates are limited to
@@ -138,7 +139,7 @@ only to the owner (for restore).
 | `workspace_id` | uuid, FK → workspace | — |
 | `email` | text, normalized | Unique among `pending` invitations per workspace |
 | `role` | enum `admin`, `agent` | Never `owner` |
-| `token_hash` | text | Hash of a 256-bit random token; the token appears only in the email link |
+| `token_hash` | text, unique | SHA-256 of a 256-bit random token; the token appears only in the email link. A resend replaces it |
 | `status` | enum `pending`, `accepted`, `revoked`, `expired` | See the state machine |
 | `invited_by` | uuid, FK → user | — |
 | `expires_at` | timestamptz | Created + 7 days (FR-018) |
@@ -146,10 +147,26 @@ only to the owner (for restore).
 | `accepted_by`, `accepted_at` | uuid, timestamptz, nullable | — |
 | `created_at` | timestamptz | — |
 
-**RLS:** owners and admins of the workspace can read and write. Acceptance goes only through the
-`accept_invitation(token_hash, user_id)` `SECURITY DEFINER` function (R4). The public lookup
+**RLS:** owners and admins of the current workspace can read, create, resend, and revoke
+(`guidesk_app` may update only `status`, `token_hash`, `send_count`, and `last_sent_at`, and can
+never set `accepted`). Acceptance goes only through the
+`accept_invitation(token_hash, user_id)` `SECURITY DEFINER` function (R4, migration
+`0011_invitations_rls`):
+
+- the user must be the signed-in user (`app.user_id`);
+- an unknown, used, revoked, or expired token, or a workspace that is not active, raises `GD410`;
+- a verified email that differs from the invited one raises `GD403` and leaves the invitation
+  open;
+- it inserts the membership, marks the invitation accepted, sets the user's last workspace, and
+  writes `invitation.accepted`, all in one transaction. Accepting again as a member returns
+  `already_member`. The public lookup
 returns only the workspace name, the inviter's display name, the role, and the status
 (AC-SEC-002).
+
+### `idempotency_key` (added in implementation)
+
+System-only table for retried POSTs (`Idempotency-Key`): the user, the key, the route, and the
+stored status and body. Keys expire after a day; the worker prunes them daily.
 
 ## 4. Security log (append-only)
 

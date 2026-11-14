@@ -32,13 +32,13 @@
 | ID | Status | Evidence | Notes |
 |---|---|---|---|
 | AC-SEC-001 | ✅ | `lockout.test.ts`, `step-up.test.ts`, `security-review.test.ts` | Email sign-in codes, email step-up codes, authenticator codes, and recovery codes all count toward the lock (5 failures in 15 minutes lock for 15 minutes). The counter is atomic. The owner gets a notice email, at most one per hour |
-| AC-SEC-002 | ⏳ | — | Invitations (US3). The placeholder `x-guidesk-invitation` header only skips workspace creation; it grants nothing |
+| AC-SEC-002 | ✅ | `invitations.test.ts`, `us3-invitations.spec.ts` | Added with US3: another email gets `403 email_mismatch`, the invitation stays open for its owner, the attempt is logged as `invitation.accept_denied`, and the page shows only the workspace name. The public lookup returns only the workspace name, the inviter's display name, and the role |
 | AC-SEC-003 | ⚠️ | `tenancy.test.ts` | Request handlers cannot write memberships at all. The owner invariant (deferred trigger, now `SECURITY DEFINER`) and the one-owner index hold. Role and ownership endpoints come with US4 |
 | AC-SEC-004 | ⚠️ | `tenancy.test.ts`, `mfa-threshold.test.ts` | RLS hides other workspaces even with a guessed ID. The MFA guard answers `404` and logs `access.cross_workspace_denied`. Workspace routes come with US4 |
 | AC-SEC-005 | ⚠️ | `mfa-threshold.test.ts` | The MFA guard works, and enrolling a factor no longer counts as an MFA check. Door codes arrive in specs 002–003. No product route uses the guard yet |
 | AC-SEC-006 | ⚠️ | `sessions.test.ts` | Sessions are read from the database on every request (no cookie cache), and the caller's role is re-derived in every transaction. The removal flow is US4 |
 | AC-SEC-007 | ✅ | `otp.test.ts`, `lockout.test.ts`, `security-review.test.ts` | Same answer for known and unknown emails. Library endpoints that leaked timing (password reset, verify-email) are disabled. The per-email limit counts unknown emails too |
-| AC-SEC-008 | ✅ codes, ⏳ invitations | `lockout.test.ts`, `rate-limit.test.ts` | Sign-in codes: 5 per hour per email and 20 per hour per IP. Step-up codes: 5 per hour per user. Invitation resends come with US3 |
+| AC-SEC-008 | ✅ | `lockout.test.ts`, `rate-limit.test.ts`, `invitations.test.ts` | Sign-in codes: 5 per hour per email and 20 per hour per IP. Step-up codes: 5 per hour per user. Invitations (US3): 20 emails per workspace per hour and 3 resends per invitation per day |
 | AC-SEC-009 | ⏳ | — | No restricted values exist yet (spec 002 onward) |
 
 ## 2. ASVS 5.0 Level 2: V6 Authentication
@@ -143,6 +143,6 @@
 | 4 | Record `ip_hash` on security events; scrub client addresses from traces before turning on OpenTelemetry export | Before the pilot |
 | 5 | Decide how a user who loses every second factor and the recovery codes regains access (support-assisted, feature 015) | Founder decision, before the pilot |
 | 6 | Attach `@RequireStepUp` / `@RequireMfa` to product routes as they land, and re-run this review after US3–US5 (AC-SEC-002, 003, 004, 006, 008, 009) | US3–US5, spec 002 |
-| 7 | An invited person who signs up with Google still gets a workspace, because the header cannot ride the OAuth callback. Fix it with real invitation-token validation | US3 |
+| 7 | ~~An invited person who signs up with Google still gets a workspace.~~ Fixed in US3: the invitation token travels in an `HttpOnly` cookie and is checked against a pending invitation for the same email | Done (US3) |
 | 8 | Validate every infrastructure change on staging | T105 |
 | 9 | External penetration test | Before the public launch (SEC-19) |

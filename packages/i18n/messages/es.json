@@ -24,7 +24,12 @@
     "validation_failed": "Revisa los campos marcados.",
     "rate_limited": "Demasiados intentos. Espera un momento y vuelve a intentarlo.",
     "internal_error": "Algo salió mal. Inténtalo de nuevo.",
-    "network": "Sin conexión. Revisa tu internet e inténtalo de nuevo."
+    "network": "Sin conexión. Revisa tu internet e inténtalo de nuevo.",
+    "seat_limit_reached": "Ya usaste todos los asientos de este workspace. Quita a alguien o revoca una invitación primero.",
+    "already_member": "Esa persona ya forma parte del workspace.",
+    "already_invited": "Ese email ya tiene una invitación abierta.",
+    "email_mismatch": "Esta invitación es para otra dirección de email.",
+    "idempotency_conflict": "Esta solicitud ya se está procesando."
   },
   "auth": {
     "signInCta": "Entrar o crear cuenta",
@@ -151,6 +156,63 @@
       "passkey": "Usar mi passkey",
       "totp": "Usar mi app de autenticación",
       "email_otp": "Enviarme un código por email"
+    }
+  },
+  "team": {
+    "title": "Equipo",
+    "loading": "Cargando…",
+    "notAllowed": "Solo el dueño y los administradores pueden ver y gestionar el equipo.",
+    "membersTitle": "Miembros",
+    "you": "tú",
+    "roles": {
+      "owner": "Dueño",
+      "admin": "Administrador",
+      "agent": "Agente"
+    },
+    "roleHelp": {
+      "admin": "Gestiona propiedades, guías y el equipo.",
+      "agent": "Atiende las conversaciones con huéspedes. No ve códigos de acceso."
+    },
+    "inviteTitle": "Invitar a alguien",
+    "emailLabel": "Email",
+    "roleLabel": "Rol",
+    "send": "Enviar invitación",
+    "sending": "Enviando…",
+    "sent": "Invitación enviada a {email}. El enlace vence en 7 días.",
+    "seats": "{used} de {limit} asientos en uso",
+    "invitationsTitle": "Invitaciones",
+    "noInvitations": "Todavía no hay invitaciones.",
+    "status": {
+      "pending": "Pendiente",
+      "accepted": "Aceptada",
+      "revoked": "Revocada",
+      "expired": "Vencida"
+    },
+    "expires": "Vence el {date}",
+    "resend": "Reenviar",
+    "resent": "Reenviamos la invitación con un enlace nuevo.",
+    "revoke": "Revocar",
+    "revoked": "Invitación revocada; el enlace dejó de funcionar.",
+    "securityLink": "Seguridad de tu cuenta"
+  },
+  "invite": {
+    "loading": "Cargando invitación…",
+    "title": "Te invitaron a {workspace}",
+    "body": "{inviter} te invitó a unirte con el rol de {role}.",
+    "bodyNoInviter": "Te invitaron a unirte con el rol de {role}.",
+    "signInToAccept": "Inicia sesión o crea tu cuenta con el email al que llegó la invitación.",
+    "continue": "Continuar",
+    "accept": "Aceptar invitación",
+    "accepting": "Aceptando…",
+    "accepted": "¡Listo! Ya formas parte de {workspace}.",
+    "goToTeam": "Ir al equipo",
+    "goHome": "Ir al inicio",
+    "mismatch": "Esta invitación a {workspace} es para otra dirección de email. Cierra sesión y entra con el email al que llegó la invitación.",
+    "signOut": "Cerrar sesión",
+    "gone": "Esta invitación ya no es válida. Puede que haya vencido, que la hayan revocado o que ya se haya usado. Pide una nueva a quien te invitó.",
+    "roles": {
+      "admin": "administrador",
+      "agent": "agente"
     }
   }
 }

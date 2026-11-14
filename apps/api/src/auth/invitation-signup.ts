@@ -1,11 +1,19 @@
-/** Header the portal sends while a person signs up from an invitation link (FR-020). */
-export const INVITATION_HEADER = "x-guidesk-invitation";
+import { INVITATION_COOKIE, isWellFormedToken } from "../tenancy/invitation-token.js";
 
 /**
- * A sign-up that comes from an invitation joins the inviting workspace (US3) and must not get a
- * workspace of its own. Skipping creation is harmless if the header is misused: the person can
- * still create a workspace later (FR-023).
+ * The invitation token from the `guidesk.invite` cookie, which the public invitation lookup sets
+ * (FR-020). It rides every sign-up path to /api/auth, including the Google callback. The sign-up
+ * hook trusts it only after checking it against a pending invitation for the same email.
  */
-export function isInvitationSignUp(headers: Headers | undefined): boolean {
-  return Boolean(headers?.get(INVITATION_HEADER));
+export function invitationTokenFrom(headers: Headers | undefined): string | null {
+  const raw = headers?.get("cookie");
+  if (!raw) return null;
+  for (const part of raw.split(";")) {
+    const [key, ...rest] = part.trim().split("=");
+    if (key === INVITATION_COOKIE) {
+      const value = rest.join("=");
+      return isWellFormedToken(value) ? value : null;
+    }
+  }
+  return null;
 }

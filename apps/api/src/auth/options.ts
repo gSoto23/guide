@@ -27,6 +27,7 @@ export interface OtpEmail {
 
 export interface CreatedUser {
   id: string;
+  email: string;
   name: string | null;
   preferredLanguage: string | null;
 }
@@ -152,12 +153,14 @@ export function buildAuthOptions({ db, config, sendOtp, events }: AuthDependenci
           after: async (created, ctx) => {
             const record = created as {
               id: string;
+              email: string;
               name?: string | null;
               preferredLanguage?: string | null;
             };
             await events.onUserCreated(
               {
                 id: record.id,
+                email: record.email,
                 name: record.name ?? null,
                 preferredLanguage: record.preferredLanguage ?? null,
               },

@@ -20,6 +20,11 @@ const TITLES: Record<ProblemCode, string> = {
   validation_failed: "Validation failed",
   rate_limited: "Too many requests",
   internal_error: "Internal error",
+  seat_limit_reached: "Seat limit reached",
+  already_member: "Already a member",
+  already_invited: "Already invited",
+  email_mismatch: "Email does not match the invitation",
+  idempotency_conflict: "Idempotency key conflict",
 };
 
 const CODE_BY_STATUS: Record<number, ProblemCode> = {

@@ -10,7 +10,7 @@ export type FactorGate = "ok" | "step_up_required" | "second_factor_required";
 /** What auth hooks report to Guidesk services (wired in AuthModule). */
 export interface AuthEventHandlers {
   onUserCreated(
-    user: { id: string; name: string | null; preferredLanguage: string | null },
+    user: { id: string; email: string; name: string | null; preferredLanguage: string | null },
     headers: Headers | undefined,
   ): Promise<void>;
   /** Assurance of a session that is about to be replaced by a rotation (copied to the new one). */

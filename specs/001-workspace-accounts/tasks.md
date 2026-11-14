@@ -363,16 +363,16 @@ needs the matching verified email and never creates a workspace.
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T065 [P] [US3] Unit tests for the permission matrix (FR-016): admins never target the owner; agents cannot reveal restricted values. In `packages/domain/test/permissions.test.ts`
-- [ ] T066 [P] [US3] Unit tests for the invitation state machine (`pending` to `accepted`, `revoked`, or `expired`; resend keeps the expiry) in `packages/domain/test/invitation.test.ts`
-- [ ] T067 [P] [US3] Integration test: `accept_invitation` enforces the email match, single use, and expiry, and creates no workspace (AC-SEC-002, FR-019, FR-020). In `apps/api/test/integration/invitations.test.ts`
-- [ ] T068 [P] [US3] Integration test: the seat limit blocks invitations (FR-021) in `apps/api/test/integration/seat-limit.test.ts`
-- [ ] T069 [P] [US3] Contract tests for the invitation endpoints in `apps/api/test/contract/invitations.contract.test.ts`
-- [ ] T070 [P] [US3] End-to-end test: invite an agent, accept, and confirm the agent cannot invite (V10–V12). In `e2e/us3-invitations.spec.ts`
+- [X] T065 [P] [US3] Unit tests for the permission matrix (FR-016): admins never target the owner; agents cannot reveal restricted values. In `packages/domain/test/permissions.test.ts`
+- [X] T066 [P] [US3] Unit tests for the invitation state machine (`pending` to `accepted`, `revoked`, or `expired`; resend keeps the expiry) in `packages/domain/test/invitation.test.ts`
+- [X] T067 [P] [US3] Integration test: `accept_invitation` enforces the email match, single use, and expiry, and creates no workspace (AC-SEC-002, FR-019, FR-020). In `apps/api/test/integration/invitations.test.ts`
+- [X] T068 [P] [US3] Integration test: the seat limit blocks invitations (FR-021) in `apps/api/test/integration/seat-limit.test.ts`
+- [X] T069 [P] [US3] Contract tests for the invitation endpoints in `apps/api/test/contract/invitations.contract.test.ts`
+- [X] T070 [P] [US3] End-to-end test: invite an agent, accept, and confirm the agent cannot invite (V10–V12). In `e2e/us3-invitations.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T071 [P] [US3] Create the `invitation` schema in `packages/db/src/schema/tenancy.ts` and a migration:
+- [X] T071 [P] [US3] Create the `invitation` schema in `packages/db/src/schema/tenancy.ts` and a migration:
   - email normalized;
   - `role` enum `admin|agent`;
   - `token_hash`;
@@ -381,16 +381,45 @@ needs the matching verified email and never creates a workspace.
   - unique pending invitation per workspace and email.
 
   Add the `accept_invitation(token_hash, user_id)` `SECURITY DEFINER` function and the RLS policies
-- [ ] T072 [US3] Implement the permission map and invitation rules in `packages/domain/src/permissions.ts` and `packages/domain/src/invitation.ts`
-- [ ] T073 [US3] Implement the seat-limit provider in `packages/domain/src/limits.ts` (configurable per workspace for the pilot; feature 011 later)
-- [ ] T074 [US3] Implement the invitation endpoints (create, list, resend, revoke) with step-up, MFA, rate limits, and an `Idempotency-Key` in `apps/api/src/tenancy/invitations.controller.ts`
-- [ ] T075 [US3] Implement the public invitation lookup and the acceptance endpoint in `apps/api/src/tenancy/invitation-accept.controller.ts`
-- [ ] T076 [US3] Add worker jobs for invitation emails, daily expiry, and the accepted notice in `apps/worker/src/jobs/invitations.ts`, with the templates `team.invitation` and `team.invitation_accepted` in `packages/emails/src/team/`
-- [ ] T077 [P] [US3] Build the portal members and invitations screen in `apps/portal/app/[locale]/(app)/settings/members/page.tsx`
-- [ ] T078 [P] [US3] Build the portal invitation acceptance page in `apps/portal/app/[locale]/(auth)/invite/[token]/page.tsx`
-- [ ] T079 [US3] Write security events for invitations (`invitation.sent`, `invitation.resent`, `invitation.accepted`, `invitation.revoked`, `invitation.accept_denied`) in `apps/api/src/tenancy/invitations.events.ts`
+- [X] T072 [US3] Implement the permission map and invitation rules in `packages/domain/src/permissions.ts` and `packages/domain/src/invitation.ts`
+- [X] T073 [US3] Implement the seat-limit provider in `packages/domain/src/limits.ts` (configurable per workspace for the pilot; feature 011 later)
+- [X] T074 [US3] Implement the invitation endpoints (create, list, resend, revoke) with step-up, MFA, rate limits, and an `Idempotency-Key` in `apps/api/src/tenancy/invitations.controller.ts`
+- [X] T075 [US3] Implement the public invitation lookup and the acceptance endpoint in `apps/api/src/tenancy/invitation-accept.controller.ts`
+- [X] T076 [US3] Add worker jobs for invitation emails, daily expiry, and the accepted notice in `apps/worker/src/jobs/invitations.ts`, with the templates `team.invitation` and `team.invitation_accepted` in `packages/emails/src/team/`
+- [X] T077 [P] [US3] Build the portal members and invitations screen in `apps/portal/app/[locale]/(app)/settings/members/page.tsx`
+- [X] T078 [P] [US3] Build the portal invitation acceptance page in `apps/portal/app/[locale]/(auth)/invite/[token]/page.tsx`
+- [X] T079 [US3] Write security events for invitations (`invitation.sent`, `invitation.resent`, `invitation.accepted`, `invitation.revoked`, `invitation.accept_denied`) in `apps/api/src/tenancy/invitations.events.ts`
 
 **Checkpoint**: Managers can build their team.
+
+**US3 notes (2026-11-14):**
+
+- **Migrations:** `0010_invitations` (generated: `invitation`, `workspace.seat_limit`),
+  `0011_invitations_rls` (RLS, grants, `accept_invitation()`), and `0012_idempotency`
+  (`idempotency_key`, system-only).
+- **Where things landed:**
+  - T070 lives in `e2e/specs/us3-invitations.spec.ts`, next to the other specs.
+  - Guards: `@WorkspaceAction({ capability, stepUp, mfa })` in
+    `apps/api/src/tenancy/workspace-access.guard.ts` checks membership (404 and a logged denial
+    for non-members), then the role (403), then step-up and MFA, in that order.
+  - `GET /workspaces/{workspaceId}/members` (read-only) was added for the team screen; role
+    changes and removal stay in T092.
+- **Decisions:**
+  - `team.invitation` is sent inline by the API, like sign-in codes, so the link's token never
+    sits in the job queue. If sending fails, the invitation is rolled back. `team.invitation_accepted`
+    goes through the outbox and the worker.
+  - A resend creates a new link and the old one stops working; the expiry stays the same.
+  - The `x-guidesk-invitation` placeholder is gone. The public lookup sets an `HttpOnly`
+    `guidesk.invite` cookie on `/api/auth`, and the sign-up hook skips creating a workspace only
+    when that token belongs to a pending invitation for the same email. This also covers Google
+    sign-ups, which the header could not (security review open item 7).
+  - The invitation email names the inviter, or their email when they have no name. The public
+    link preview shows the name only.
+  - After signing in from a link, the portal returns to it (`sessionStorage`, limited to
+    `/{locale}/invite/{token}` paths, so it can't become an open redirect).
+  - Pilot seat limit: 10 per workspace unless Guidesk sets `workspace.seat_limit`.
+- **Verified:** unit tests 80; integration tests 79 (DB 20, API 59, including the contract
+  suite); end to end 8 (V10, V11, V12 added); lint, typecheck, build, format, and `lint:rls`.
 
 ---
 

@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { authClient } from "@/lib/auth-client";
-import { rememberSignInEmail } from "@/lib/sign-in-email";
+import { readReturnTo, rememberSignInEmail } from "@/lib/sign-in-email";
 
 /** Sign-in and sign-up in one screen: Google, passkey, or an email code (spec 001 FR-001, T043). */
 export function SignInForm({ locale }: { locale: string }) {
@@ -14,7 +14,9 @@ export function SignInForm({ locale }: { locale: string }) {
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const next = `/${locale}/onboarding`;
+  const onboarding = `/${locale}/onboarding`;
+  // After an invitation link, come back to it to accept (FR-020).
+  const next = () => readReturnTo() ?? onboarding;
 
   async function sendCode(event: FormEvent) {
     event.preventDefault();
@@ -35,7 +37,7 @@ export function SignInForm({ locale }: { locale: string }) {
 
   async function google() {
     setError(null);
-    await authClient.signIn.social({ provider: "google", callbackURL: next });
+    await authClient.signIn.social({ provider: "google", callbackURL: next() });
   }
 
   async function passkey() {
@@ -45,7 +47,7 @@ export function SignInForm({ locale }: { locale: string }) {
       setError(t("passkeyFailed"));
       return;
     }
-    router.push(next);
+    router.push(next());
   }
 
   return (

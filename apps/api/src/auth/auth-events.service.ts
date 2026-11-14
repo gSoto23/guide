@@ -1,7 +1,7 @@
 import { createHmac } from "node:crypto";
 import { Inject, Injectable } from "@nestjs/common";
 import { and, eq, gt, lte, ne } from "drizzle-orm";
-import { session, usedTotpCode, user, verification, type DbHandle } from "@guidesk/db";
+import { invitation, session, usedTotpCode, user, verification, type DbHandle } from "@guidesk/db";
 import { renderFactorChanged, toEmailLocale } from "@guidesk/emails";
 import { isStepUpFresh, type SecurityEventType } from "@guidesk/domain";
 import { RateLimitService } from "../common/rate-limit.service.js";
@@ -18,7 +18,8 @@ import type {
   SecondFactorMethod,
 } from "./auth-events.js";
 import { DeviceService } from "./device.service.js";
-import { isInvitationSignUp } from "./invitation-signup.js";
+import { hashInvitationToken } from "../tenancy/invitation-token.js";
+import { invitationTokenFrom } from "./invitation-signup.js";
 import { LockoutNoticeService } from "./lockout-notice.service.js";
 import { emailKey, LockoutService, userKey } from "./lockout.service.js";
 
@@ -70,12 +71,32 @@ export class AuthEventsService implements AuthEventHandlers {
   }
 
   async onUserCreated(
-    created: { id: string; name: string | null; preferredLanguage: string | null },
+    created: { id: string; email: string; name: string | null; preferredLanguage: string | null },
     headers: Headers | undefined,
   ) {
-    if (!isInvitationSignUp(headers)) {
+    // A sign-up from a valid invitation for this very email joins that workspace instead of
+    // getting one of its own (FR-020). Anything else, including a forged cookie, gets one.
+    if (!(await this.isInvitedSignUp(created.email, headers))) {
       await this.tenancy.createWorkspaceForNewUser(created);
     }
+  }
+
+  private async isInvitedSignUp(email: string, headers: Headers | undefined): Promise<boolean> {
+    const token = invitationTokenFrom(headers);
+    if (!token) return false;
+    const [row] = await this.handle.db
+      .select({ id: invitation.id })
+      .from(invitation)
+      .where(
+        and(
+          eq(invitation.tokenHash, hashInvitationToken(token)),
+          eq(invitation.status, "pending"),
+          gt(invitation.expiresAt, new Date()),
+          eq(invitation.email, email.trim().toLowerCase()),
+        ),
+      )
+      .limit(1);
+    return Boolean(row);
   }
 
   assuranceOf(sessionId: string): Promise<Assurance> {

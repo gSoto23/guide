@@ -71,6 +71,27 @@
       "when": 1794694348314,
       "tag": "0009_totp_replay",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794698152370,
+      "tag": "0010_invitations",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794698177414,
+      "tag": "0011_invitations_rls",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1794698221431,
+      "tag": "0012_idempotency",
+      "breakpoints": true
     }
   ]
 }

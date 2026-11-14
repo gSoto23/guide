@@ -4,7 +4,12 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { authClient } from "@/lib/auth-client";
-import { forgetSignInEmail, readSignInEmail } from "@/lib/sign-in-email";
+import {
+  forgetReturnTo,
+  forgetSignInEmail,
+  readReturnTo,
+  readSignInEmail,
+} from "@/lib/sign-in-email";
 
 const RESEND_SECONDS = 30;
 
@@ -43,7 +48,9 @@ export function VerifyCodeForm({ locale }: { locale: string }) {
       return;
     }
     forgetSignInEmail();
-    router.push(`/${locale}/onboarding`);
+    const returnTo = readReturnTo();
+    forgetReturnTo();
+    router.push(returnTo ?? `/${locale}/onboarding`);
   }
 
   async function resend() {

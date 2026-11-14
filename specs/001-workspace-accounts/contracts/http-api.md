@@ -114,12 +114,29 @@ Guidesk hooks on these endpoints:
 
 | Method and path | O | A | Ag | Guards | Purpose and body | Responses |
 |---|---|---|---|---|---|---|
-| `GET /workspaces/{workspaceId}/invitations` | ✓ | ✓ | — | — | Pending and recent invitations | 200 |
-| `POST /workspaces/{workspaceId}/invitations` | ✓ | ✓ | — | SU, MFA, seat limit, rate limit | `{ email, role }`; 7-day expiry (FR-018, FR-021) | 201, 409 (already a member or pending), 422, 429 |
-| `POST /workspaces/{workspaceId}/invitations/{invitationId}/resend` | ✓ | ✓ | — | rate limit | Expiry unchanged | 202, 410, 429 |
+| `GET /workspaces/{workspaceId}/members` | ✓ | ✓ | — | — | Members with name, email, role, and join date (read-only in US3) | 200, 403, 404 |
+| `GET /workspaces/{workspaceId}/invitations` | ✓ | ✓ | — | — | Open invitations and those from the last 30 days, plus `seats: { used, limit }` | 200 |
+| `POST /workspaces/{workspaceId}/invitations` | ✓ | ✓ | — | SU, MFA, seat limit, rate limit | `{ email, role }`; 7-day expiry (FR-018, FR-021) | 201, 409 (`already_member`, `already_invited`, `seat_limit_reached`), 422, 429 |
+| `POST /workspaces/{workspaceId}/invitations/{invitationId}/resend` | ✓ | ✓ | — | rate limit | Sends a new link (the old one stops working); expiry unchanged | 202, 410, 429 |
 | `DELETE /workspaces/{workspaceId}/invitations/{invitationId}` | ✓ | ✓ | — | — | Revoke | 204, 410 |
-| `GET /invitations/{token}` | **public** | | | rate limit | Workspace name, inviter display name, role, status only (AC-SEC-002) | 200, 410 |
-| `POST /invitations/{token}/accept` | any signed-in user | | | email must match | Adds the membership; never creates a workspace (FR-019, FR-020) | 200, 403 (`email_mismatch`), 410 |
+| `GET /invitations/{token}` | **public** | | | rate limit | `{ workspaceName, inviterName, role, status: "pending" }` only (AC-SEC-002). Sets the `guidesk.invite` cookie (see below) | 200, 410 |
+| `POST /invitations/{token}/accept` | any signed-in user | | | email must match | Adds the membership; never creates a workspace (FR-019, FR-020). Returns `{ workspaceId, role, result: "joined" or "already_member" }` | 200, 403 (`email_mismatch`), 410 |
+
+Implementation notes (US3):
+
+- Agents get `403 forbidden` on every row above except the two public-link rows; non-members get
+  `404` and the attempt is logged (AC-SEC-004).
+- Rate limits (research R8): 20 invitation emails per workspace per hour; 3 resends per
+  invitation per day; 30 link lookups per IP per 10 minutes.
+- Unknown, used, revoked, and expired links all answer `410 gone`, so a link reveals nothing
+  about its state.
+- **Sign-up from a link:** the lookup sets an `HttpOnly` cookie `guidesk.invite` (path
+  `/api/auth`, 1 hour). A sign-up by email code or Google that carries it gets no workspace of
+  its own, but only when the token belongs to a pending invitation for that same email; a forged
+  cookie changes nothing. Acceptance clears the cookie.
+- Both POST rows accept `Idempotency-Key` (8 to 100 characters). A repeated key returns the first
+  response; a key still in progress answers `409 idempotency_conflict`; a key reused for another
+  route answers `422 idempotency_conflict`.
 
 ## Workspace security log
 

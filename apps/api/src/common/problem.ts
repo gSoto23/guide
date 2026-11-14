@@ -11,7 +11,12 @@ export type ProblemCode =
   | "gone"
   | "validation_failed"
   | "rate_limited"
-  | "internal_error";
+  | "internal_error"
+  | "seat_limit_reached"
+  | "already_member"
+  | "already_invited"
+  | "email_mismatch"
+  | "idempotency_conflict";
 
 export interface ProblemBody {
   type: string;

@@ -84,7 +84,7 @@ removal propagation, and the append-only log.
 pnpm test:e2e
 ```
 
-Runs Playwright for V1, V5, V10, V11, V13, and V15. It uses Chromium's virtual WebAuthn
+Runs Playwright for V1, V5, V10, V11, V13, and V15. Local runs share one IP, so repeated runs can hit the 20-codes-per-hour IP limit; clear the counters with `docker compose exec postgres psql -U guidesk -d guidesk -c "TRUNCATE rate_limit, rate_limit_bucket;"`. Build the portal with `API_PROXY_URL` set: Next.js fixes rewrites at build time. It uses Chromium's virtual WebAuthn
 authenticator and Mailpit.
 
 ```bash

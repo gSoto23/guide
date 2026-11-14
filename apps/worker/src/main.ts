@@ -4,6 +4,11 @@ import { SesEmailAdapter, SmtpEmailAdapter, type EmailAdapter } from "@guidesk/i
 import { describeError, shutdownObservability } from "@guidesk/observability";
 import { loadConfig, type WorkerConfig } from "./config.js";
 import { createEmailHandler, EMAIL_QUEUE } from "./jobs/email.js";
+import {
+  createExpireInvitationsHandler,
+  EXPIRE_INVITATIONS_CRON,
+  EXPIRE_INVITATIONS_QUEUE,
+} from "./jobs/invitations.js";
 
 function emailAdapter(config: WorkerConfig): EmailAdapter {
   return config.email.transport === "ses"
@@ -19,8 +24,8 @@ function emailAdapter(config: WorkerConfig): EmailAdapter {
 }
 
 /**
- * Background worker (spec 001 plan): transactional emails now; purges and invitation expiry in
- * later tasks (T076, T094, T095).
+ * Background worker (spec 001 plan): transactional emails and daily invitation expiry (T076);
+ * purges arrive in later tasks (T094, T095).
  */
 async function main(): Promise<void> {
   const config = loadConfig();
@@ -33,6 +38,9 @@ async function main(): Promise<void> {
   await boss.start();
   await boss.createQueue(EMAIL_QUEUE);
   await boss.work(EMAIL_QUEUE, createEmailHandler(emailAdapter(config)));
+  await boss.createQueue(EXPIRE_INVITATIONS_QUEUE);
+  await boss.work(EXPIRE_INVITATIONS_QUEUE, createExpireInvitationsHandler(boss.getDb()));
+  await boss.schedule(EXPIRE_INVITATIONS_QUEUE, EXPIRE_INVITATIONS_CRON, null, { tz: "UTC" });
   console.warn("Guidesk worker started");
 
   const shutdown = async (signal: string): Promise<void> => {

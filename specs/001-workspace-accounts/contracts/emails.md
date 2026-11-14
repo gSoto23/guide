@@ -25,7 +25,7 @@ Rules for every email:
 | `account.email_changed` | Email change confirmed (FR-029) | Old address | That the email changed, and how to get help if it wasn't them | Worker |
 | `account.deletion_scheduled` | Account deletion requested (FR-028) | Account user | Deletion date (30 days) and how to cancel | Worker |
 | `account.deleted` | Account purged | Account user (last address) | Confirmation | Worker |
-| `team.invitation` | Invitation sent or resent (FR-018) | Invited email | Workspace name, inviter name, role, accept link, 7-day expiry | Worker |
+| `team.invitation` | Invitation sent or resent (FR-018) | Invited email | Workspace name, inviter name (or email), role, accept link, 7-day expiry | API (inline: the link holds a one-time token that must not sit in the queue) |
 | `team.invitation_accepted` | Invitation accepted | Inviter | Who joined and with which role | Worker |
 | `team.member_removed` | Member removed (FR-025) | Removed member | Workspace name; access ended | Worker |
 | `team.role_changed` | Role changed | Affected member | Old and new role | Worker |

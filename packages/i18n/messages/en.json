@@ -24,7 +24,12 @@
     "validation_failed": "Check the highlighted fields.",
     "rate_limited": "Too many attempts. Wait a moment and try again.",
     "internal_error": "Something went wrong. Please try again.",
-    "network": "You're offline. Check your connection and try again."
+    "network": "You're offline. Check your connection and try again.",
+    "seat_limit_reached": "All seats in this workspace are taken. Remove someone or revoke an invitation first.",
+    "already_member": "That person is already in the workspace.",
+    "already_invited": "That email already has an open invitation.",
+    "email_mismatch": "This invitation is for another email address.",
+    "idempotency_conflict": "This request is already being processed."
   },
   "auth": {
     "signInCta": "Sign in or create an account",
@@ -151,6 +156,63 @@
       "passkey": "Use my passkey",
       "totp": "Use my authenticator app",
       "email_otp": "Email me a code"
+    }
+  },
+  "team": {
+    "title": "Team",
+    "loading": "Loading…",
+    "notAllowed": "Only the owner and admins can see and manage the team.",
+    "membersTitle": "Members",
+    "you": "you",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "agent": "Agent"
+    },
+    "roleHelp": {
+      "admin": "Manages properties, guides, and the team.",
+      "agent": "Handles guest conversations. Never sees access codes."
+    },
+    "inviteTitle": "Invite someone",
+    "emailLabel": "Email",
+    "roleLabel": "Role",
+    "send": "Send invitation",
+    "sending": "Sending…",
+    "sent": "Invitation sent to {email}. The link expires in 7 days.",
+    "seats": "{used} of {limit} seats in use",
+    "invitationsTitle": "Invitations",
+    "noInvitations": "No invitations yet.",
+    "status": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "revoked": "Revoked",
+      "expired": "Expired"
+    },
+    "expires": "Expires {date}",
+    "resend": "Resend",
+    "resent": "We resent the invitation with a new link.",
+    "revoke": "Revoke",
+    "revoked": "Invitation revoked; the link no longer works.",
+    "securityLink": "Account security"
+  },
+  "invite": {
+    "loading": "Loading invitation…",
+    "title": "You're invited to {workspace}",
+    "body": "{inviter} invited you to join as {role}.",
+    "bodyNoInviter": "You're invited to join as {role}.",
+    "signInToAccept": "Sign in or create your account with the email the invitation was sent to.",
+    "continue": "Continue",
+    "accept": "Accept invitation",
+    "accepting": "Accepting…",
+    "accepted": "Done! You're now part of {workspace}.",
+    "goToTeam": "Go to the team",
+    "goHome": "Go home",
+    "mismatch": "This invitation to {workspace} is for another email address. Sign out and sign in with the address the invitation was sent to.",
+    "signOut": "Sign out",
+    "gone": "This invitation is no longer valid. It may have expired, been revoked, or already been used. Ask the person who invited you for a new one.",
+    "roles": {
+      "admin": "an admin",
+      "agent": "an agent"
     }
   }
 }

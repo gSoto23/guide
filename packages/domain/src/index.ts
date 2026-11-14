@@ -7,3 +7,6 @@ export * from "./onboarding.js";
 export * from "./tenancy.js";
 export * from "./security-policy.js";
 export * from "./property-count.js";
+export * from "./permissions.js";
+export * from "./invitation.js";
+export * from "./limits.js";

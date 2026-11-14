@@ -54,10 +54,10 @@ describe("sign-up creates a workspace (T031, FR-004)", () => {
     expect(rows).toHaveLength(1);
   });
 
-  it("does not create a workspace for a sign-up that comes from an invitation (FR-020)", async () => {
-    const email = uniqueEmail("invitee");
-    await signIn(ctx, email, { "x-guidesk-invitation": "pending" });
+  it("still creates a workspace when the invitation cookie is forged (FR-020)", async () => {
+    const email = uniqueEmail("forged-invite");
+    await signIn(ctx, email, { cookie: `guidesk.invite=${"x".repeat(43)}` });
     const { rows } = await workspacesOf(email);
-    expect(rows).toHaveLength(0);
+    expect(rows).toHaveLength(1);
   });
 });
