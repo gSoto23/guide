@@ -15,6 +15,14 @@
 | | [ADRs](architecture/adr/README.md) | Recorded decisions |
 | | [Security](architecture/security.md) | Data classes, threat model (STRIDE), controls SEC-01 to SEC-21 |
 | | [Performance](architecture/performance.md) | Targets and budgets, guide delivery, agent latency, load testing |
+| **Design** | [UX index](ux/README.md) | Status of the UX docs, what is provisional, gaps found while designing |
+| | [Principles and IA](ux/principles-and-ia.md) | Design principles, sitemaps, mobile navigation, what each role sees |
+| | [User flows](ux/user-flows.md) | Nine end-to-end flows with key states |
+| | [Screen inventory](ux/screens.md) | Every screen by surface, persona, and phase |
+| | [Design system](ux/design-system.md) | Provisional tokens, typography, components, accessibility, i18n |
+| | [Wireframes](ux/wireframes.html) | Low-fidelity mobile wireframes of 12 key screens |
+| **Presentation** | [Project overview](presentation/project-overview.md) | Guidesk in plain language for investors, partners, and pilot hosts |
+| | [Budget](presentation/budget.md) | Development and operating costs per scenario, with sources |
 | **Process** | [Constitution](../.specify/memory/constitution.md) | Non-negotiable engineering principles (Spec Kit) |
 | | [Open questions](open-questions.md) | Pending decisions, partner applications, assumptions |
 | | [Glossary](glossary.md) | Shared vocabulary |

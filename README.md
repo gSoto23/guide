@@ -31,6 +31,8 @@ Start with the [documentation index](docs/README.md).
 | Product | [Vision](docs/product/vision.md) · [Business model](docs/product/business-model.md) · [Personas](docs/product/personas.md) · [PRD](docs/product/prd.md) · [Roadmap](docs/product/roadmap.md) |
 | Research | [Integrations](docs/research/integrations.md) · [Competitors](docs/research/competitive-landscape.md) · [Monetization partners](docs/research/monetization-partners.md) · [Platform policies](docs/research/platform-policies.md) |
 | Architecture | [Overview](docs/architecture/overview.md) · [ADRs](docs/architecture/adr/README.md) · [Security](docs/architecture/security.md) · [Performance](docs/architecture/performance.md) |
+| Design | [UX index](docs/ux/README.md) · [Principles and IA](docs/ux/principles-and-ia.md) · [User flows](docs/ux/user-flows.md) · [Screens](docs/ux/screens.md) · [Design system](docs/ux/design-system.md) · [Wireframes](docs/ux/wireframes.html) |
+| Presentation | [Project overview](docs/presentation/project-overview.md) · [Budget](docs/presentation/budget.md) |
 | Process | [Constitution](.specify/memory/constitution.md) · [Open questions](docs/open-questions.md) · [Glossary](docs/glossary.md) |
 
 ## Key decisions

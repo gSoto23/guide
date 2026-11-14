@@ -57,7 +57,7 @@ safely without any platform API, and that guests pay for add-ons.
 
 | Scope (PRD IDs) | Notes |
 |---|---|
-| F01 Workspaces and accounts | Email and Google sign-in; roles; invitations; users in several workspaces |
+| F01 Workspaces and accounts | Passwordless sign-in (Google, passkeys, email code); roles; invitations; users in several workspaces |
 | F02 Property onboarding | Manual entry; pasted text or screenshots; CSV import; read-only PMS import (Beds24, Hostex; Hostaway if allowed); duplication; iCal stay windows |
 | F03 Guide builder | Templates, editor, AI interview, document upload, ES/EN translation, shared workspace content, drafts from imports |
 | F04 Guest guide | Mobile PWA, link and QR, gated sensitive information, disclosures |

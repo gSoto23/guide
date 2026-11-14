@@ -82,7 +82,7 @@ sensitivities, not to forecast.
 |---|---|
 | AI inference cost | ~$1.80–6.60 (midpoint ~$3.60) |
 | Tour commissions | ~$3.84 |
-| Add-on platform fees (Phase 2) | ~$2.80 |
+| Add-on platform fees (from MVP month 4) | ~$2.80 |
 | **Commission revenue (no subscription)** | **~$6.64** |
 | Pro subscription | ~$9–12 |
 
