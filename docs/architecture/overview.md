@@ -299,14 +299,14 @@ Notes:
 |---|---|
 | Security | Data classes, threat model, and controls SEC-01 to SEC-21 in the [security architecture](security.md). |
 | Performance | Targets, budgets, and degraded modes in the [performance architecture](performance.md). |
-| Authentication | Host auth for the portal (provider chosen in spec 001; see ADR-0004) with passkeys, MFA, and step-up re-authentication (SEC-05). Guests are anonymous, with a guide-scoped session plus verification for sensitive data (SEC-01 to SEC-03). |
+| Authentication | Host auth for the portal with Better Auth, self-hosted ([ADR-0008](adr/0008-authentication-better-auth.md)): passwordless sign-in, passkeys, MFA, and step-up re-authentication (SEC-05). Guests are anonymous, with a guide-scoped session plus verification for sensitive data (SEC-01 to SEC-03). |
 | Authorization | Role-based access per workspace (`owner`, `admin`, `agent`). RLS as defense in depth. |
 | Secrets | PMS tokens and API keys are encrypted at the application level (envelope encryption) and never logged. |
 | Idempotency | Every inbound webhook and every outbound message has an idempotency key, so retries never double-send. |
 | Internationalization | Spanish and English message catalogs; per-property time zone; money stored as integer minor units plus an ISO currency code. |
 | Observability | OpenTelemetry traces across API, worker, and LLM calls; structured logs; error tracking; an agent trace viewer in the back-office. |
 | Testing | Unit tests (domain), contract tests (adapters, with recorded fixtures), integration tests (API and DB), E2E tests (Playwright), and agent evals (golden conversations) gated in CI. |
-| Environments | `local` (Docker Compose for Postgres), `preview` (per pull request), `staging`, `production`. |
+| Environments | `local` (Docker Compose for Postgres and Mailpit), `preview` (portal per pull request, sharing the staging database), `staging`, `production`, on AWS `us-east-1` with SST ([ADR-0009](adr/0009-mvp-hosting-and-transactional-email.md)). |
 
 ## 8. Repository layout (target)
 

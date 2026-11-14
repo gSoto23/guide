@@ -33,15 +33,15 @@ relevant spec as `[NEEDS CLARIFICATION]` items.
 | ID | Question | Priority | Decided in | Status |
 |---|---|---|---|---|
 | OQ-20 | How are guests verified before sensitive information is revealed: reservation-scoped link, confirmation code, or host PIN? | P1 | Spec 004 | Open |
-| OQ-21 | Host authentication provider: Better Auth or Clerk? It must support passkeys, TOTP, step-up re-authentication, and session revocation (SEC-05). | P1 | Spec 001 plan | Open (see [ADR-0004](architecture/adr/0004-typescript-monorepo-stack.md)) |
-| OQ-22 | Final hosting vendors (web, API and worker, Postgres) and the KMS for field-level encryption (SEC-06) | P1 | Foundations spec | Proposed in ADR-0004 |
+| OQ-21 | Host authentication provider: Better Auth or Clerk? It must support passkeys, TOTP, step-up re-authentication, and session revocation (SEC-05). | P1 | Spec 001 plan | Answered 2026-11-14: Better Auth, self-hosted ([ADR-0008](architecture/adr/0008-authentication-better-auth.md), accepted). |
+| OQ-22 | Final hosting vendors (web, API and worker, Postgres) and the KMS for field-level encryption (SEC-06) | P1 | Foundations spec | Answered 2026-11-14: AWS in `us-east-1`. CloudFront and WAF, OpenNext on Lambda, ECS Fargate, RDS PostgreSQL, AWS KMS, Secrets Manager, with SST ([ADR-0009](architecture/adr/0009-mvp-hosting-and-transactional-email.md), accepted). |
 | OQ-23 | Introduce cheaper models on specific routes? This needs eval evidence and founder approval. | P2 | Post-pilot | Open (see [ADR-0005](architecture/adr/0005-llm-provider-and-agent-design.md)) |
 | OQ-24 | Approve ADR-0004 (TypeScript stack) and ADR-0005 (LLM and agent design) | P0 | Founder review | Answered 2026-11-13: both accepted. ADR-0005 amended 2026-11-14 with the staged hybrid knowledge strategy. |
 | OQ-25 | Which multilingual embedding provider for the hybrid knowledge strategy? It becomes a new subprocessor, so it needs a review of its data-processing terms. | P2 | Spec that introduces the hybrid strategy | Open. Only needed when an ADR-0005 switch trigger fires. |
 | OQ-26 | May Guidesk use a customer's own API token or key to import data read-only from Beds24, Hostex, and Hostaway before any partner agreement? Check each provider's API terms. | P1 | Spec 002 | Open. Decides the MVP importers (FR-02.5). |
 | OQ-27 | Does Airbnb's personal-data download include a host's listing content (description, rules, amenities)? In what format, and how long does it take? If it does, accept the file as another import source. | P2 | Spec 002 | Open (unverified idea) |
 | OQ-28 | May a guest save the arrival steps, which include restricted values, for offline use until checkout? Guests often lose signal at the door, but offline storage puts the code on the device ([SEC-04](architecture/security.md#4-controls)). | P1 | Spec 004 | Open |
-| OQ-29 | Transactional email provider for host notifications and escalation alerts (for example Resend, Postmark, or Amazon SES) | P1 | Spec 001 plan | Open |
+| OQ-29 | Transactional email provider for host notifications and escalation alerts (for example Resend, Postmark, or Amazon SES) | P1 | Spec 001 plan | Answered 2026-11-14: Amazon SES, with Postmark as fallback ([ADR-0009](architecture/adr/0009-mvp-hosting-and-transactional-email.md), accepted). |
 
 ## Partnerships and legal
 

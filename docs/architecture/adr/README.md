@@ -13,6 +13,8 @@ We record significant architecture and product-technical decisions as ADRs, usin
 | [0005](0005-llm-provider-and-agent-design.md) | LLM provider and agent design | Accepted | 2026-11-13 |
 | [0006](0006-web-first-pwa-no-native-apps.md) | Web-first delivery: PWAs instead of native apps | Accepted | 2026-11-13 |
 | [0007](0007-tilopay-initial-payment-provider.md) | Tilopay as the initial payment provider | Accepted | 2026-11-14 |
+| [0008](0008-authentication-better-auth.md) | Authentication with Better Auth, tenancy in the domain | Accepted | 2026-11-14 |
+| [0009](0009-mvp-hosting-and-transactional-email.md) | AWS hosting and transactional email for the MVP | Accepted | 2026-11-14 |
 
 **Statuses:**
 

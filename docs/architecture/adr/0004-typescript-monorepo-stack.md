@@ -56,12 +56,12 @@ retries, and queues are a poor fit for serverless route-handler time limits.
 | ORM and migrations | Drizzle ORM + drizzle-kit | SQL-first, typed, RLS-friendly |
 | Validation and contracts | Zod + OpenAPI generation | Shared in `packages/contracts` |
 | Object storage | S3-compatible (e.g. Cloudflare R2 or AWS S3) | Uploads and media |
-| Host authentication | Decided in spec 001's plan. Candidates: Better Auth (self-hosted, organizations) or Clerk (managed) | Must support workspaces, roles, Google sign-in |
-| Email | Transactional provider (e.g. Resend or Postmark) | Host notifications only |
+| Host authentication | Decided in spec 001's plan. Candidates: Better Auth (self-hosted, organizations) or Clerk (managed) | Must support workspaces, roles, Google sign-in. Decided: Better Auth ([ADR-0008](0008-authentication-better-auth.md)) |
+| Email | Transactional provider (e.g. Resend or Postmark) | Host notifications only. Decided: Amazon SES ([ADR-0009](0009-mvp-hosting-and-transactional-email.md)) |
 | Testing | Vitest (unit, integration), Playwright (E2E), contract tests with recorded fixtures, agent eval harness | — |
 | Quality gates | ESLint, Prettier, `tsc --noEmit`, dependency audit, Conventional Commits | Enforced in CI (GitHub Actions) |
 | Observability | OpenTelemetry + an error tracker (e.g. Sentry) + structured JSON logs | — |
-| Hosting (initial) | Web apps on Vercel; API and worker on a container PaaS (e.g. Railway or Fly.io); managed Postgres (e.g. Neon) | Chosen for speed and low cost. Revisit (e.g. AWS) when scale, compliance, or cost justifies it. Final pick in the foundations spec. |
+| Hosting (initial) | Web apps on Vercel; API and worker on a container PaaS (e.g. Railway or Fly.io); managed Postgres (e.g. Neon) | Chosen for speed and low cost. Revisit (e.g. AWS) when scale, compliance, or cost justifies it. Final pick in the foundations spec. **Update 2026-11-14:** the founder chose AWS; this row is replaced by [ADR-0009](0009-mvp-hosting-and-transactional-email.md). |
 
 ### Consequences
 

@@ -34,7 +34,7 @@ approach, ready for spec-driven development.
 | Research: integrations, competitors, monetization partners, platform policies | Done |
 | Vision, business model, personas, PRD, roadmap | Draft |
 | Constitution (Spec Kit) | Draft v1.1.1 |
-| Architecture overview and ADR-0001 to ADR-0007 | Draft. ADR-0001 to ADR-0007 accepted. |
+| Architecture overview and ADR-0001 to ADR-0009 | Draft. ADR-0001 to ADR-0009 accepted. |
 | Security and performance architecture | Draft v0.1 |
 | Open-questions log | Active |
 | Spec Kit installed (`specify init`) | Done 2026-11-14 (v1.4.1.dev0, Claude Code skills) |
