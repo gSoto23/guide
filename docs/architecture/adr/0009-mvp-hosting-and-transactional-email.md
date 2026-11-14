@@ -33,7 +33,7 @@ email (OQ-29), encryption keys (SEC-06), and secrets. It must stay simple enough
 - **API and worker:** ECS Fargate, Lambda, AWS App Runner.
 - **Database:** RDS for PostgreSQL, Aurora PostgreSQL Serverless v2.
 - **Email:** Amazon SES, Postmark, Resend.
-- **Infrastructure as code:** SST v3, AWS CDK, Terraform.
+- **Infrastructure as code:** SST, AWS CDK, Terraform.
 
 ## Decision outcome
 
@@ -49,7 +49,7 @@ Region: **`us-east-1` (N. Virginia)** for everything, with CloudFront at the edg
 | Keys and secrets | **AWS KMS** (customer-managed keys) and **Secrets Manager** | KMS wraps the per-workspace data keys for restricted values (SEC-06) when a feature first needs them. Secrets Manager stores the auth secret, Google OAuth credentials, the database credentials, and the internal proxy secret |
 | Files (later) | **Amazon S3** | Uploads and media, served through a separate user-content domain (SEC-10) |
 | Observability | **CloudWatch** logs and metrics, OpenTelemetry, and **Sentry** for errors | Personal-data scrubbing per SEC-06 |
-| Infrastructure as code | **SST v3** (TypeScript) | Components for Next.js, ECS Cluster and Service, Postgres (RDS), Email (SES), VPC, Router, and Secrets. One stage per environment (`dev`, `staging`, `production`); preview stages for the portal. AWS CDK is the fallback if SST stops fitting |
+| Infrastructure as code | **SST** (TypeScript; 4.17 at setup) | Components for Next.js, ECS Cluster and Service, Postgres (RDS), Email (SES), VPC, Router, and Secrets. One stage per environment (`dev`, `staging`, `production`); preview stages for the portal. AWS CDK is the fallback if SST stops fitting |
 | Networking | One VPC with public and private subnets | Prefer VPC endpoints (S3, Secrets Manager, CloudWatch) to reduce NAT gateway traffic and cost; keep one NAT gateway for outbound calls (Claude API, Tilopay, PMS APIs) |
 
 Accounts: separate AWS accounts for `production` and for `dev`/`staging` under AWS Organizations,

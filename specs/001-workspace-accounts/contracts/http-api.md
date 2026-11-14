@@ -46,6 +46,27 @@ fix them in CI.
 | Enroll or verify an authenticator app; generate backup codes | Two-factor plugin (FR-009, FR-010) |
 | List and revoke sessions; sign out | FR-013 |
 
+Adding or removing a sign-in factor (`/two-factor/enable`, `/two-factor/disable`,
+`/two-factor/generate-backup-codes`, `/passkey/generate-register-options`,
+`/passkey/verify-registration`, `/passkey/delete-passkey`) needs step-up within 10 minutes
+(FR-010, FR-011, security review T103):
+
+- otherwise these endpoints return `403` with `STEP_UP_REQUIRED`;
+- once the user has a passkey or the authenticator app, the step-up must use one of them, or the
+  endpoints return `403` with `SECOND_FACTOR_REQUIRED`;
+- removing a factor revokes every other session.
+
+Other library rules (T103):
+
+- Only `type: "sign-in"` codes can be sent; they are limited to 5 per hour per email, with the
+  same `429` for unknown emails.
+- Guesses count toward the lockout only while a code is pending. Authenticator and recovery-code
+  failures count toward the user lockout; a locked user gets `429`.
+- Each authenticator code works once.
+- Disabled (`404`): `/two-factor/get-totp-uri`, `/two-factor/send-otp`, `/two-factor/verify-otp`,
+  the email-code password-reset, verify-email, and change-email flows, `/update-user` (use
+  `PATCH /me`), `/link-social`, and `/unlink-account`.
+
 Guidesk hooks on these endpoints:
 
 - create the workspace and default onboarding profile on first sign-up (FR-004);
@@ -61,8 +82,8 @@ Guidesk hooks on these endpoints:
 | `GET /me/onboarding` | any | — | Current answers | 200 |
 | `PUT /me/onboarding` | any | — | `{ propertiesBucket?, pms?, pmsOther?, country?, skipped? }`; returns `path` (FR-005, FR-006) | 200, 422 |
 | `PUT /me/current-workspace` | any | must be a member | `{ workspaceId }`; records the last used workspace (FR-024) | 204, 404 |
-| `POST /me/step-up/challenge` | any | rate limit | `{ method }`; starts a passkey or email-code challenge | 200, 429 |
-| `POST /me/step-up/verify` | any | rate limit | `{ method, response }`; returns `strongAuthAt` | 200, 403, 429 |
+| `POST /me/step-up/challenge` | any | rate limit | `{ method: "email_otp" }`; emails a step-up code (passkey and TOTP step-up use `/api/auth/passkey/*` and `/api/auth/two-factor/verify-totp`) | 202, 429 |
+| `POST /me/step-up/verify` | any | rate limit, lockout | `{ method: "email_otp", code }`; returns `strongAuthAt` | 200, 403, 429 |
 | `POST /me/email-change` | any | SU | `{ newEmail }`; sends a code to the new address | 202, 409, 422 |
 | `POST /me/email-change/confirm` | any | — | `{ code }`; notifies the old address; revokes other sessions (FR-029) | 200, 410 |
 | `GET /me/export` | any | SU | JSON download of personal account data (FR-028) | 200 |
@@ -110,8 +131,11 @@ Guidesk hooks on these endpoints:
 
 - **Isolation:** every workspace-scoped query runs under RLS. A guessed ID from another
   workspace returns `404 not_found` and writes `access.cross_workspace_denied` (AC-SEC-004).
-- **CSRF:** cookie-authenticated state changes require same-origin requests (the library's
-  origin checks plus `SameSite=Lax`).
+- **CSRF:** cookie-authenticated state changes require same-origin requests: the library's
+  origin checks, `SameSite=Lax`, and, on the API's own routes, a refused request (`403`) when
+  `Origin` or `Sec-Fetch-Site` shows another origin. Form-encoded bodies are rejected (`415`).
+- **Headers:** every API response carries `Cache-Control: no-store`, `nosniff`, and
+  `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'`.
 - **Idempotency:** `POST` invitation and acceptance endpoints accept an `Idempotency-Key`
   header, so retries never double-send.
 - **Agents and restricted values:** later features that reveal restricted values must reject

@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.next/
+coverage/
+.sst/
+.turbo/
+pnpm-lock.yaml
+docs/
+specs/
+.specify/
+.claude/
+*.md
+*.html

@@ -1,0 +1,34 @@
+{
+  "name": "guidesk",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:integration": "turbo run test:integration",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "sst": "sst",
+    "typecheck:infra": "sst install && tsc -p tsconfig.infra.json",
+    "test:e2e": "pnpm --filter @guidesk/e2e test:e2e",
+    "db:migrate": "turbo run build --filter=@guidesk/db && pnpm --filter @guidesk/db migrate",
+    "lint:rls": "turbo run build --filter=@guidesk/db && pnpm --filter @guidesk/db lint:rls"
+  },
+  "devDependencies": {
+    "@guidesk/config": "workspace:*",
+    "@types/node": "^26.6.6",
+    "eslint": "^10.14.0",
+    "prettier": "^3.10.0",
+    "sst": "^4.17.2",
+    "turbo": "^2.11.10",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.0"
+  }
+}

@@ -1,0 +1,45 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: "Stage to deploy"
+        required: true
+        type: choice
+        options: [staging, production]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.event.inputs.stage || 'staging' }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # Production needs a manual run and the "production" environment approval.
+    environment: ${{ github.event.inputs.stage || 'staging' }}
+    permissions:
+      contents: read
+      id-token: write # GitHub OIDC to assume the AWS deploy role; no long-lived keys (ADR-0009)
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: us-east-1
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm sst deploy --stage ${{ github.event.inputs.stage || 'staging' }}

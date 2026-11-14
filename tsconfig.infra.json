@@ -1,0 +1,13 @@
+{
+  "extends": "@guidesk/config/tsconfig/base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "declaration": false,
+    "types": ["node"],
+    "noUncheckedIndexedAccess": false,
+    "noImplicitOverride": false
+  },
+  "include": ["sst.config.ts", "infra/**/*.ts", ".sst/platform/config.d.ts"]
+}

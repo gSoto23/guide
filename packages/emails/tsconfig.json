@@ -1,0 +1,10 @@
+{
+  "extends": "@guidesk/config/tsconfig/node.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "lib": ["ES2023", "DOM"]
+  },
+  "include": ["src"]
+}

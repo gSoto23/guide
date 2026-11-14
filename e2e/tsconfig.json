@@ -1,0 +1,11 @@
+{
+  "extends": "@guidesk/config/tsconfig/node.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "lib": ["ES2023", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler"
+  },
+  "include": ["**/*.ts"]
+}

@@ -1,0 +1,156 @@
+{
+  "app": {
+    "name": "Guidesk",
+    "tagline": "Your property guide and AI concierge"
+  },
+  "common": {
+    "continue": "Continue",
+    "cancel": "Cancel",
+    "save": "Save",
+    "back": "Back",
+    "skip": "Skip",
+    "retry": "Retry",
+    "loading": "Loading…",
+    "signOut": "Sign out"
+  },
+  "errors": {
+    "unauthenticated": "Sign in to continue.",
+    "forbidden": "You don't have permission to do this.",
+    "step_up_required": "For your security, confirm it's you again.",
+    "mfa_enrollment_required": "Add a second factor to continue.",
+    "not_found": "We couldn't find what you're looking for.",
+    "conflict": "This action conflicts with the current state.",
+    "gone": "This link is no longer valid.",
+    "validation_failed": "Check the highlighted fields.",
+    "rate_limited": "Too many attempts. Wait a moment and try again.",
+    "internal_error": "Something went wrong. Please try again.",
+    "network": "You're offline. Check your connection and try again."
+  },
+  "auth": {
+    "signInCta": "Sign in or create an account",
+    "title": "Sign in to Guidesk",
+    "subtitle": "Use your Google account, a passkey, or an email code.",
+    "google": "Continue with Google",
+    "passkey": "Sign in with a passkey",
+    "passkeyFailed": "We couldn't use your passkey. Try Google or an email code.",
+    "or": "or",
+    "emailLabel": "Your email",
+    "sendCode": "Email me a code",
+    "sending": "Sending…",
+    "noPasswords": "Guidesk doesn't use passwords.",
+    "verifyTitle": "Check your email",
+    "verifySubtitle": "We sent a 6-digit code to {email}. It expires in 10 minutes.",
+    "codeLabel": "Code",
+    "verify": "Sign in",
+    "verifying": "Verifying…",
+    "invalidCode": "The code is invalid or expired. Ask for a new one.",
+    "resend": "Resend code",
+    "resendIn": "Resend code in {seconds} s",
+    "codeResent": "We sent you a new code."
+  },
+  "onboarding": {
+    "loading": "Loading…",
+    "title": "Tell us a little",
+    "subtitle": "Three optional questions. They help us show you what you need first.",
+    "propertiesQuestion": "How many properties do you manage?",
+    "buckets": {
+      "1_2": "1 or 2",
+      "3_10": "3 to 10",
+      "10_plus": "More than 10"
+    },
+    "pmsQuestion": "Do you use a property management system (PMS)?",
+    "pmsOtherLabel": "Which one?",
+    "pms": {
+      "hostaway": "Hostaway",
+      "guesty": "Guesty",
+      "hospitable": "Hospitable",
+      "smoobu": "Smoobu",
+      "ownerrez": "OwnerRez",
+      "hostfully": "Hostfully",
+      "beds24": "Beds24",
+      "hostex": "Hostex",
+      "lodgify": "Lodgify",
+      "uplisting": "Uplisting",
+      "stays_net": "Stays.net",
+      "other": "Other",
+      "none": "I don't use one"
+    },
+    "countryQuestion": "Which country are your properties in?",
+    "countries": {
+      "CR": "Costa Rica",
+      "MX": "Mexico",
+      "CO": "Colombia",
+      "PA": "Panama",
+      "GT": "Guatemala",
+      "DO": "Dominican Republic",
+      "PE": "Peru",
+      "AR": "Argentina",
+      "CL": "Chile",
+      "BR": "Brazil",
+      "US": "United States"
+    },
+    "choose": "Choose an option",
+    "continue": "Continue",
+    "skip": "Skip for now"
+  },
+  "properties": {
+    "loading": "Loading…",
+    "firstTitle": "Create your first property",
+    "managerSubtitle": "Bring all your properties at once.",
+    "individualSubtitle": "Start from what you already wrote in your listing.",
+    "options": {
+      "pms": {
+        "title": "Import from your PMS",
+        "body": "Beds24, Hostex, and more: we bring your properties and draft each guide."
+      },
+      "csv": {
+        "title": "Import a CSV file",
+        "body": "Create many properties at once from a template."
+      },
+      "paste": {
+        "title": "Paste your listing",
+        "body": "Paste the text or upload screenshots of your listing, and AI drafts the guide."
+      },
+      "manual": {
+        "title": "Start from scratch",
+        "body": "Enter the basics and complete the guide step by step."
+      }
+    },
+    "comingSoon": "Property creation arrives with the next feature (002)."
+  },
+  "security": {
+    "loading": "Loading…",
+    "title": "Account security",
+    "mfaRequired": "Your workspace needs a second factor. Add a passkey or an authenticator app.",
+    "passkeysTitle": "Passkeys",
+    "passkeysBody": "Sign in with your fingerprint, face, or phone lock. It's the safest option.",
+    "passkeyDefaultName": "Passkey",
+    "addPasskey": "Add a passkey",
+    "passkeyAdded": "Passkey added.",
+    "passkeyAddFailed": "We couldn't add the passkey.",
+    "remove": "Remove",
+    "totpTitle": "Authenticator app",
+    "enableTotp": "Turn on an authenticator app",
+    "totpSecret": "Add this key to your authenticator app:",
+    "backupCodes": "Recovery codes (keep them somewhere safe):",
+    "totpEnabled": "Authenticator app turned on.",
+    "totpFailed": "We couldn't turn on the authenticator app.",
+    "codeLabel": "6-digit code",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "sessionsTitle": "Signed-in devices",
+    "unknownDevice": "Unknown device",
+    "thisDevice": "this device",
+    "signOutDevice": "Sign out",
+    "signOutOthers": "Sign out of all other devices",
+    "signOut": "Sign out",
+    "stepUpTitle": "Confirm it's you",
+    "stepUpBody": "For your security, confirm your identity to continue.",
+    "stepUpFailed": "We couldn't confirm your identity.",
+    "methods": {
+      "passkey": "Use my passkey",
+      "totp": "Use my authenticator app",
+      "email_otp": "Email me a code"
+    }
+  }
+}

@@ -35,7 +35,7 @@ ADR-0004 ([research R16](research.md#r16-foundations-delivered-with-this-feature
 
 ## Technical Context
 
-**Language/Version**: TypeScript 5.x (strict) on Node.js 24 LTS
+**Language/Version**: TypeScript 6.0 (strict) on Node.js 24 LTS. TypeScript 7 (native compiler) waits until typescript-eslint supports it
 
 **Primary Dependencies**:
 
@@ -45,7 +45,7 @@ ADR-0004 ([research R16](research.md#r16-foundations-delivered-with-this-feature
 - **Data:** Drizzle ORM and drizzle-kit, Zod (contracts)
 - **Worker:** pg-boss
 - **Email:** React Email and the AWS SDK v3 SES client
-- **Infrastructure:** SST v3 (AWS)
+- **Infrastructure:** SST 4.x (AWS)
 - **Observability:** OpenTelemetry and Sentry
 
 **Storage**: Amazon RDS for PostgreSQL 16 (`us-east-1`) with row-level security. Better Auth tables

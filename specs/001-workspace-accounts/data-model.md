@@ -61,6 +61,18 @@ The data class is Internal. Reporting to Guidesk is aggregate only (SEC-20).
 | `method` | enum `passkey`, `totp`, `email_otp` | Method used for the latest step-up |
 | `mfa_satisfied` | bool | True after a passkey sign-in or a second-factor check (R6) |
 
+### `step_up_challenge`, `auth_lockout`, and `used_totp_code` (added in implementation)
+
+- `step_up_challenge`: email step-up codes per session.
+  - Fields: an HMAC of the code, the expiry (10 minutes), attempts, and when it was consumed.
+  - Only the newest code of a session works.
+- `auth_lockout`: failure counters and temporary locks (AC-SEC-001).
+  - The key is a hashed email or a user ID, so no raw emails are stored.
+  - 5 failures in 15 minutes lock it for 15 minutes.
+- `used_totp_code` (added in the security review, T103): a hash of each accepted authenticator
+  code per user, kept for 2 minutes, so a code works only once.
+- All three are system-only: `guidesk_app` has no access.
+
 ### `account_deletion_request`
 
 | Field | Type | Rules |
@@ -68,6 +80,20 @@ The data class is Internal. Reporting to Guidesk is aggregate only (SEC-20).
 | `user_id` | uuid, PK | — |
 | `requested_at`, `purge_after` | timestamptz | `purge_after` = requested + 30 days (FR-028) |
 | `status` | enum `scheduled`, `completed`, `cancelled` | — |
+
+### Privileges of `guidesk_app` (security review T103)
+
+Request handlers run as `guidesk_app`. Since migration `0008_least_privilege` it can only:
+
+- read workspaces it belongs to, and rename one (owner and admin);
+- read memberships;
+- read and write its own onboarding answers;
+- read security events through the parent table, where RLS applies (never partitions);
+- read `user` display fields: its own row and, for owners and admins, the current workspace's
+  members (RLS on `user`).
+
+New tables get no default grants. Each migration grants what request handlers need, and the CI
+check `pnpm lint:rls` fails on any table `guidesk_app` can reach without forced RLS.
 
 ## 3. Tenancy tables (tenant-owned, RLS forced)
 

@@ -93,6 +93,14 @@ R10, and R15 reflect that decision.
 - **Alternatives considered:**
   - **Application checks only:** one bug leaks data.
   - **A schema per tenant:** heavy to operate for one developer.
+- **Implementation refinement (2026-11-14):**
+  - `withRlsContext` runs `SET LOCAL ROLE guidesk_app`. On workspace routes it also sets
+    `app.workspace_role` from the caller's own membership row, so policies never read a role
+    supplied by the application and never query `membership` recursively.
+  - Tenant tables keep `FORCE ROW LEVEL SECURITY`, with explicit "system" policies for the owner
+    connection: auth hooks, `SECURITY DEFINER` functions, and worker jobs.
+  - Request handlers have no INSERT policy on `workspace` or `membership`. Those rows are
+    created only in the system context.
 
 ## R5. Step-up re-authentication
 
@@ -184,7 +192,7 @@ R10, and R15 reflect that decision.
   - The API and worker as two ECS Fargate services behind an Application Load Balancer.
   - Amazon RDS for PostgreSQL 16: single-AZ for the pilot, Multi-AZ before the public launch,
     with point-in-time recovery (SEC-17).
-  - Infrastructure as code with SST v3 (TypeScript), with stages for `dev`, `staging`, and
+  - Infrastructure as code with SST (TypeScript), with stages for `dev`, `staging`, and
     `production`.
 - **Rationale:** the founder chose AWS. This design keeps one region (performance doc §4), the
   static-first guide on the CDN (performance doc §2), one browser origin (SEC-11), and native

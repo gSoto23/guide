@@ -1,0 +1,156 @@
+{
+  "app": {
+    "name": "Guidesk",
+    "tagline": "La guía de tu propiedad y un concierge con IA"
+  },
+  "common": {
+    "continue": "Continuar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "back": "Atrás",
+    "skip": "Omitir",
+    "retry": "Reintentar",
+    "loading": "Cargando…",
+    "signOut": "Cerrar sesión"
+  },
+  "errors": {
+    "unauthenticated": "Inicia sesión para continuar.",
+    "forbidden": "No tienes permiso para hacer esto.",
+    "step_up_required": "Por seguridad, confirma tu identidad otra vez.",
+    "mfa_enrollment_required": "Agrega un segundo factor para continuar.",
+    "not_found": "No encontramos lo que buscas.",
+    "conflict": "Esta acción entra en conflicto con el estado actual.",
+    "gone": "Este enlace ya no es válido.",
+    "validation_failed": "Revisa los campos marcados.",
+    "rate_limited": "Demasiados intentos. Espera un momento y vuelve a intentarlo.",
+    "internal_error": "Algo salió mal. Inténtalo de nuevo.",
+    "network": "Sin conexión. Revisa tu internet e inténtalo de nuevo."
+  },
+  "auth": {
+    "signInCta": "Entrar o crear cuenta",
+    "title": "Entra a Guidesk",
+    "subtitle": "Usa tu cuenta de Google, una passkey o un código por email.",
+    "google": "Continuar con Google",
+    "passkey": "Entrar con passkey",
+    "passkeyFailed": "No pudimos usar tu passkey. Intenta con Google o con un código por email.",
+    "or": "o",
+    "emailLabel": "Tu email",
+    "sendCode": "Enviarme un código",
+    "sending": "Enviando…",
+    "noPasswords": "Guidesk no usa contraseñas.",
+    "verifyTitle": "Revisa tu email",
+    "verifySubtitle": "Enviamos un código de 6 dígitos a {email}. Vence en 10 minutos.",
+    "codeLabel": "Código",
+    "verify": "Entrar",
+    "verifying": "Verificando…",
+    "invalidCode": "El código no es válido o ya venció. Pide uno nuevo.",
+    "resend": "Reenviar código",
+    "resendIn": "Reenviar código en {seconds} s",
+    "codeResent": "Te enviamos un código nuevo."
+  },
+  "onboarding": {
+    "loading": "Cargando…",
+    "title": "Cuéntanos un poco",
+    "subtitle": "Son 3 preguntas opcionales. Nos ayudan a mostrarte primero lo que necesitas.",
+    "propertiesQuestion": "¿Cuántas propiedades administras?",
+    "buckets": {
+      "1_2": "1 o 2",
+      "3_10": "De 3 a 10",
+      "10_plus": "Más de 10"
+    },
+    "pmsQuestion": "¿Usas un sistema de gestión (PMS)?",
+    "pmsOtherLabel": "¿Cuál?",
+    "pms": {
+      "hostaway": "Hostaway",
+      "guesty": "Guesty",
+      "hospitable": "Hospitable",
+      "smoobu": "Smoobu",
+      "ownerrez": "OwnerRez",
+      "hostfully": "Hostfully",
+      "beds24": "Beds24",
+      "hostex": "Hostex",
+      "lodgify": "Lodgify",
+      "uplisting": "Uplisting",
+      "stays_net": "Stays.net",
+      "other": "Otro",
+      "none": "No uso ninguno"
+    },
+    "countryQuestion": "¿En qué país están tus propiedades?",
+    "countries": {
+      "CR": "Costa Rica",
+      "MX": "México",
+      "CO": "Colombia",
+      "PA": "Panamá",
+      "GT": "Guatemala",
+      "DO": "República Dominicana",
+      "PE": "Perú",
+      "AR": "Argentina",
+      "CL": "Chile",
+      "BR": "Brasil",
+      "US": "Estados Unidos"
+    },
+    "choose": "Elige una opción",
+    "continue": "Continuar",
+    "skip": "Omitir por ahora"
+  },
+  "properties": {
+    "loading": "Cargando…",
+    "firstTitle": "Crea tu primera propiedad",
+    "managerSubtitle": "Trae todas tus propiedades de una vez.",
+    "individualSubtitle": "Empieza con lo que ya escribiste en tu anuncio.",
+    "options": {
+      "pms": {
+        "title": "Importar desde tu PMS",
+        "body": "Beds24, Hostex y más: traemos tus propiedades y armamos un borrador de cada guía."
+      },
+      "csv": {
+        "title": "Importar un archivo CSV",
+        "body": "Crea muchas propiedades a la vez con una plantilla."
+      },
+      "paste": {
+        "title": "Pegar tu anuncio",
+        "body": "Pega el texto o sube capturas de tu anuncio y la IA arma el borrador."
+      },
+      "manual": {
+        "title": "Empezar desde cero",
+        "body": "Escribe los datos básicos y completa la guía paso a paso."
+      }
+    },
+    "comingSoon": "La creación de propiedades llega con la próxima función (002)."
+  },
+  "security": {
+    "loading": "Cargando…",
+    "title": "Seguridad de tu cuenta",
+    "mfaRequired": "Tu workspace necesita un segundo factor. Agrega una passkey o una app de autenticación.",
+    "passkeysTitle": "Passkeys",
+    "passkeysBody": "Entra con tu huella, rostro o el bloqueo de tu teléfono. Es la opción más segura.",
+    "passkeyDefaultName": "Passkey",
+    "addPasskey": "Agregar passkey",
+    "passkeyAdded": "Passkey agregada.",
+    "passkeyAddFailed": "No pudimos agregar la passkey.",
+    "remove": "Quitar",
+    "totpTitle": "App de autenticación",
+    "enableTotp": "Activar app de autenticación",
+    "totpSecret": "Agrega esta clave en tu app de autenticación:",
+    "backupCodes": "Códigos de recuperación (guárdalos en un lugar seguro):",
+    "totpEnabled": "App de autenticación activada.",
+    "totpFailed": "No pudimos activar la app de autenticación.",
+    "codeLabel": "Código de 6 dígitos",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "sessionsTitle": "Dispositivos con sesión abierta",
+    "unknownDevice": "Dispositivo desconocido",
+    "thisDevice": "este dispositivo",
+    "signOutDevice": "Cerrar sesión",
+    "signOutOthers": "Cerrar sesión en los demás dispositivos",
+    "signOut": "Cerrar sesión",
+    "stepUpTitle": "Confirma que eres tú",
+    "stepUpBody": "Por seguridad, confirma tu identidad para continuar.",
+    "stepUpFailed": "No pudimos confirmar tu identidad.",
+    "methods": {
+      "passkey": "Usar mi passkey",
+      "totp": "Usar mi app de autenticación",
+      "email_otp": "Enviarme un código por email"
+    }
+  }
+}

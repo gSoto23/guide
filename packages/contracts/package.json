@@ -1,0 +1,28 @@
+{
+  "name": "@guidesk/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Zod schemas and OpenAPI contracts for the HTTP API.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@guidesk/config": "workspace:*"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}

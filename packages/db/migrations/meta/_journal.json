@@ -1,0 +1,76 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1794681275590,
+      "tag": "0000_roles",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794681291021,
+      "tag": "0001_auth_and_rate_limit",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794681291665,
+      "tag": "0002_security_event",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794681331489,
+      "tag": "0003_auth_grants",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794684876754,
+      "tag": "0004_tenancy_and_onboarding",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794684877370,
+      "tag": "0005_tenancy_rls",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794687043284,
+      "tag": "0006_account_protection",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794687043807,
+      "tag": "0007_account_protection_grants",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794694200559,
+      "tag": "0008_least_privilege",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794694348314,
+      "tag": "0009_totp_replay",
+      "breakpoints": true
+    }
+  ]
+}
