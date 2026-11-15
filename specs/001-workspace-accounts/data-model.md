@@ -77,7 +77,7 @@ The data class is Internal. Reporting to Guidesk is aggregate only (SEC-20).
 
 | Field | Type | Rules |
 |---|---|---|
-| `user_id` | text, PK, no foreign key | Outlives the purged account as the record of completion |
+| `user_id` | text, PK, no foreign key | The user's ID until the purge, then the account's random `deleted:` pseudonym, so the completion record can't be linked back (security review T103) |
 | `requested_at`, `purge_after` | timestamptz | `purge_after` = requested + 30 days (FR-028) |
 | `status` | enum `scheduled`, `completed`, `cancelled` | Signing in again cancels; the worker completes it with `purge_account()` |
 
@@ -208,7 +208,7 @@ account-level events (`workspace_id` is null and `actor_user_id` is the user).
 | Invitations | `invitation.sent`, `invitation.resent`, `invitation.accepted`, `invitation.revoked`, `invitation.accept_denied` |
 | Membership | `member.role_changed`, `member.removed`, `member.left`, `ownership.transferred` |
 | Workspace | `workspace.created`, `workspace.deletion_scheduled`, `workspace.restored`, `workspace.purged` |
-| Access | `access.cross_workspace_denied`, `restricted_value.reveal_denied` (agent role, AC-SEC-009) |
+| Access | `access.cross_workspace_denied` (logged in the workspace that owns the ID), `access.role_denied` (a role lacks the capability, AC-SEC-003), `restricted_value.reveal_denied` (agent role, AC-SEC-009) |
 
 ## 5. State machines
 
@@ -225,6 +225,11 @@ stateDiagram-v2
     revoked --> [*]
     expired --> [*]
 ```
+
+The database enforces the request-side transitions (migration 0015): `guidesk_app` can only
+change open invitations, to `revoked` or `expired`, or resend one with a new token and one more
+send. Acceptance needs the inviter to still be an owner or admin; removing a member, a member
+leaving, or a demotion to agent revokes the open invitations they sent.
 
 ### Workspace
 

@@ -166,7 +166,7 @@ docker-compose.yml           # local PostgreSQL and Mailpit
 ```
 
 **Structure Decision**: This is the target layout from the
-[architecture overview](../../docs/architecture/overview.md#8-repository-layout-target), limited
+[architecture overview](../../docs/architecture/overview.md#8-repository-layout), limited
 to what feature 001 needs. `apps/guide` and the `evals/` folder arrive with features 004 and
 005. A separate `packages/emails` keeps templates renderable by both the API (one-time codes)
 and the worker.

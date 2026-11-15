@@ -1,7 +1,7 @@
 "use client";
 
 import { apiFetch } from "./api";
-import { authClient } from "./auth-client";
+import { loadAuthClient } from "./auth-client";
 
 export type StepUpMethod = "passkey" | "totp" | "email_otp";
 
@@ -11,13 +11,30 @@ export type StepUpMethod = "passkey" | "totp" | "email_otp";
  * - totp: verifies the authenticator code for the current session;
  * - email_otp: verifies an emailed code for the current session.
  */
-export async function passkeyStepUp(): Promise<boolean> {
-  const result = await authClient.signIn.passkey();
-  return !result?.error;
+export async function passkeyStepUp(expectedUserId?: string): Promise<boolean> {
+  const auth = await loadAuthClient();
+  const result = await auth.signIn.passkey();
+  if (result?.error) return false;
+  // A passkey sign-in starts a new session for whoever owns the passkey. If that's someone else,
+  // drop it rather than continue as them (T103).
+  if (expectedUserId) {
+    const after = await auth.getSession();
+    if (after.data?.user.id !== expectedUserId) {
+      await auth.signOut();
+      return false;
+    }
+  }
+  return true;
+}
+
+/** The signed-in user's ID, for passkeyStepUp. */
+export async function currentUserId(): Promise<string | undefined> {
+  const session = await (await loadAuthClient()).getSession();
+  return session.data?.user.id;
 }
 
 export async function totpStepUp(code: string): Promise<boolean> {
-  const result = await authClient.twoFactor.verifyTotp({ code });
+  const result = await (await loadAuthClient()).twoFactor.verifyTotp({ code });
   return !result.error;
 }
 

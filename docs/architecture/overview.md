@@ -308,26 +308,38 @@ Notes:
 | Testing | Unit tests (domain), contract tests (adapters, with recorded fixtures), integration tests (API and DB), E2E tests (Playwright), and agent evals (golden conversations) gated in CI. |
 | Environments | `local` (Docker Compose for Postgres and Mailpit), `preview` (portal per pull request, sharing the staging database), `staging`, `production`, on AWS `us-east-1` with SST ([ADR-0009](adr/0009-mvp-hosting-and-transactional-email.md)). |
 
-## 8. Repository layout (target)
+## 8. Repository layout
+
+Spec 001 built the portal, API, and worker, and the packages marked ✓. The rest arrive with
+later features.
 
 ```text
 guidesk/
 ├── .specify/                 # Spec Kit (constitution, templates, scripts)
 ├── specs/                    # One folder per feature: spec.md, plan.md, tasks.md, contracts/
 ├── docs/                     # Product, research, architecture, ADRs
+├── infra/                    # ✓ SST: network, database, services, router, email, secrets
 ├── apps/
-│   ├── portal/               # Host portal (Next.js)
+│   ├── portal/               # ✓ Host portal (Next.js)
 │   ├── guide/                # Guest guide PWA (Next.js)
-│   ├── api/                  # NestJS API + webhooks
-│   └── worker/               # Background jobs
+│   ├── api/                  # ✓ NestJS API + webhooks
+│   └── worker/               # ✓ Background jobs (pg-boss)
 ├── packages/
-│   ├── domain/               # Pure domain model + application services (no framework)
-│   ├── contracts/            # Zod schemas, OpenAPI, shared types
-│   ├── db/                   # Drizzle schema, migrations, RLS policies
+│   ├── domain/               # ✓ Pure domain model + application services (no framework)
+│   ├── contracts/            # ✓ Zod schemas, OpenAPI, shared types
+│   ├── db/                   # ✓ Drizzle schema, migrations, RLS policies
+│   ├── emails/               # ✓ Transactional email templates (React Email), Spanish and English
+│   ├── observability/        # ✓ Sentry and OpenTelemetry setup, with scrubbing
+│   ├── testing/              # ✓ Shared test helpers (disposable PostgreSQL with migrations)
 │   ├── agent/                # Prompts, tools, policy engine, eval harness
-│   ├── integrations/         # Adapters: ical, hospitable, hostaway, guesty, smoobu, channex
-│   ├── ui/                   # Shared React components
-│   ├── i18n/                 # Message catalogs
-│   └── config/               # tsconfig, eslint, prettier presets
+│   ├── integrations/         # ✓ Ports and adapters (auth and email so far); later: ical, hospitable, hostaway, guesty, smoobu, channex
+│   ├── ui/                   # Shared React components (scaffolded, empty so far)
+│   ├── i18n/                 # ✓ Message catalogs
+│   └── config/               # ✓ tsconfig, eslint, prettier presets
+├── e2e/                      # ✓ Playwright end-to-end and accessibility tests
+├── perf/                     # ✓ k6 load tests
 └── evals/                    # Golden conversations and graders
 ```
+
+Performance budgets are enforced in CI by the bundle-size check and Lighthouse CI on a local
+production build of the portal, until preview deployments exist ([performance](performance.md)).

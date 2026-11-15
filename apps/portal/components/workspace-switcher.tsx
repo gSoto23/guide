@@ -67,9 +67,10 @@ export function WorkspaceSwitcher({
         className="switcher-current"
         aria-expanded={open}
         aria-controls="workspace-list"
-        aria-label={`${t("switchLabel")}: ${current?.workspaceName ?? ""}`}
         onClick={() => setOpen((value) => !value)}
       >
+        {/* The accessible name starts with the action and includes the visible text (WCAG 2.5.3). */}
+        <span className="visually-hidden">{t("switchLabel")}: </span>
         <span className="switcher-name" data-testid="current-workspace">
           {current?.workspaceName ?? t("none")}
         </span>

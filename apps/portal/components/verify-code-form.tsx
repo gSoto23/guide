@@ -3,7 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { authClient } from "@/lib/auth-client";
+import { loadAuthClient, usePreloadAuthClient } from "@/lib/auth-client";
 import {
   forgetReturnTo,
   forgetSignInEmail,
@@ -24,6 +24,7 @@ export function VerifyCodeForm({ locale }: { locale: string }) {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [cooldown, setCooldown] = useState(RESEND_SECONDS);
+  usePreloadAuthClient();
 
   useEffect(() => {
     const remembered = readSignInEmail();
@@ -41,6 +42,7 @@ export function VerifyCodeForm({ locale }: { locale: string }) {
     event.preventDefault();
     setBusy(true);
     setError(null);
+    const authClient = await loadAuthClient();
     const { error: failure } = await authClient.signIn.emailOtp({ email, otp: code });
     setBusy(false);
     if (failure) {
@@ -55,6 +57,7 @@ export function VerifyCodeForm({ locale }: { locale: string }) {
 
   async function resend() {
     setError(null);
+    const authClient = await loadAuthClient();
     const { error: failure } = await authClient.emailOtp.sendVerificationOtp({
       email,
       type: "sign-in",

@@ -1,0 +1,19 @@
+{
+  "$comment": "Initial JavaScript per route, gzip (spec 001 plan, Performance Budget; T101). Checked by scripts/check-bundle-budget.ts against a production build.",
+  "budgetKb": 150,
+  "routes": [
+    "/es/sign-in",
+    "/en/sign-in",
+    "/es/verify",
+    "/es/invite/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "/es/onboarding",
+    "/es/start",
+    "/es/properties/new",
+    "/es/settings",
+    "/es/settings/members",
+    "/es/settings/workspace",
+    "/es/settings/account",
+    "/es/settings/security",
+    "/es/settings/security-log"
+  ]
+}

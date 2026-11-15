@@ -6,10 +6,17 @@ import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 /** Keys that may leave the process in error reports; everything else is dropped (SEC-06). */
 const ALLOWED_REQUEST_KEYS = new Set(["method", "url"]);
 
-/** Removes the query string, which can carry OAuth codes or other one-time values (T103). */
+/** Invitation links carry their token in the path (`/invite/<token>`, `/invitations/<token>`). */
+const INVITATION_TOKEN_IN_PATH = /\/(invite|invitations)\/[A-Za-z0-9_-]{43}(?=\/|$)/g;
+
+/**
+ * Removes the query string, which can carry OAuth codes or other one-time values, and the token
+ * of invitation links (T103).
+ */
 export function stripQuery(url: string): string {
   const cut = url.search(/[?#]/);
-  return cut === -1 ? url : url.slice(0, cut);
+  const path = cut === -1 ? url : url.slice(0, cut);
+  return path.replace(INVITATION_TOKEN_IN_PATH, "/$1/[token]");
 }
 
 /**
@@ -105,10 +112,12 @@ export function initObservability(serviceName: string): void {
       instrumentations: [
         getNodeAutoInstrumentations({
           "@opentelemetry/instrumentation-fs": { enabled: false },
-          // OAuth callbacks carry one-time codes in the query string: never trace them (T103).
+          // OAuth callbacks carry one-time codes in the query string, and public invitation
+          // routes carry the token in the path: never trace them (T103).
           "@opentelemetry/instrumentation-http": {
             ignoreIncomingRequestHook: (request) =>
-              request.url?.startsWith("/api/auth/callback") ?? false,
+              (request.url?.startsWith("/api/auth/callback") ?? false) ||
+              (request.url?.startsWith("/api/v1/invitations/") ?? false),
           },
         }),
       ],

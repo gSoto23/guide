@@ -44,7 +44,12 @@ export class WorkspaceAccessGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<FastifyRequest>();
     const auth = request.auth;
     if (!auth) throw new ApiProblem(401, "unauthenticated");
-    const workspaceId = (request.params as Record<string, string | undefined>).workspaceId ?? "";
+    const params = request.params as Record<string, string | undefined>;
+    // One spelling per ID, so rate-limit keys, locks, and logs never see case variants (T103).
+    for (const [name, value] of Object.entries(params)) {
+      if (value && UUID.test(value)) params[name] = value.toLowerCase();
+    }
+    const workspaceId = params.workspaceId ?? "";
     const [row] = UUID.test(workspaceId)
       ? await this.handle.db
           .select({ role: membership.role, status: workspace.status })
@@ -80,6 +85,16 @@ export class WorkspaceAccessGuard implements CanActivate {
     }
     const capability = this.reflector.get<Capability | undefined>(CAPABILITY, context.getHandler());
     if (capability && !can(row.role, capability)) {
+      // Logged for every role, including attempts at owner-only actions (AC-SEC-003, T103).
+      await this.securityLog.record({
+        type: "access.role_denied",
+        outcome: "denied",
+        actorUserId: auth.user.id,
+        workspaceId,
+        targetType: "workspace",
+        targetId: workspaceId,
+        metadata: { capability, role: row.role },
+      });
       throw new ApiProblem(403, "forbidden", "Your role does not allow this action.");
     }
     return true;

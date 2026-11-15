@@ -79,7 +79,7 @@ retries, and queues are a poor fit for serverless route-handler time limits.
 
 ### Confirmation
 
-- The foundations spec scaffolds this layout (see [overview](../overview.md#8-repository-layout-target)).
+- The foundations spec scaffolds this layout (see [overview](../overview.md#8-repository-layout)).
 - CI runs lint, type-check, tests, and evals.
 - Any new runtime or datastore needs a new ADR.
 

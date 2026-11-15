@@ -39,6 +39,15 @@ export class AccountDeletionService {
       );
     }
     const purgeAfter = new Date(Date.now() + GRACE_MS);
+    // Workspaces the user owns go with the account. An invitation accepted meanwhile would block
+    // the purge, so open ones stop working now (T103).
+    await this.handle.db.execute(sql`
+      UPDATE invitation SET status = 'revoked'
+      WHERE status = 'pending'
+        AND workspace_id IN (
+          SELECT workspace_id FROM membership WHERE user_id = ${userId} AND role = 'owner'
+        )
+    `);
     await this.handle.db
       .insert(accountDeletionRequest)
       .values({ userId, purgeAfter, status: "scheduled" })

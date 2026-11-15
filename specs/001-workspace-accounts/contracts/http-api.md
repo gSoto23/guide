@@ -15,6 +15,8 @@ API; research R2). Request and response bodies are JSON, validated with Zod sche
   `app.user_id` and `app.workspace_id` for RLS (research R4).
 - **Roles:** columns use **O** (owner), **A** (admin), and **Ag** (agent).
 - **Step-up:** **SU** means the session must have re-authenticated within 10 minutes (FR-011).
+  **SU2** is the same, but a user who has a passkey or an authenticator app must re-authenticate
+  with one of them; an email code alone doesn't count (ASVS 5.0 V7.5.1, security review T103).
   **MFA** means the caller must satisfy `requiresMfa` where it applies (FR-009).
 - **Rate limits:** `429` responses carry `Retry-After` (research R8).
 
@@ -84,10 +86,10 @@ Guidesk hooks on these endpoints:
 | `PUT /me/current-workspace` | any | must be a member | `{ workspaceId }`; records the last used workspace (FR-024) | 204, 404 |
 | `POST /me/step-up/challenge` | any | rate limit | `{ method: "email_otp" }`; emails a step-up code (passkey and TOTP step-up use `/api/auth/passkey/*` and `/api/auth/two-factor/verify-totp`) | 202, 429 |
 | `POST /me/step-up/verify` | any | rate limit, lockout | `{ method: "email_otp", code }`; returns `strongAuthAt` | 200, 403, 429 |
-| `POST /me/email-change` | any | SU | `{ newEmail }`; sends a code to the new address (5 per hour) | 202, 422, 429 |
+| `POST /me/email-change` | any | SU2 | `{ newEmail }`; sends a code to the new address (5 per hour per user, 3 per hour per target address) | 202, 403, 422, 429 |
 | `POST /me/email-change/confirm` | any | lockout | `{ code }`; notifies the old address; revokes other sessions (FR-029). An address another account uses answers `409 email_in_use` only here, after its code | 200, 403, 409, 410 |
 | `GET /me/export` | any | SU | JSON download of personal account data (FR-028): profile, onboarding, memberships, passkey names, sessions, devices, and own security events; never secrets | 200 |
-| `DELETE /me` | any | SU | Schedules deletion in 30 days and signs out everywhere; signing in again cancels it. Returns `{ purgeAfter }` | 202, 409 (`owns_shared_workspace`) |
+| `DELETE /me` | any | SU2 | Schedules deletion in 30 days, revokes open invitations in the user's own workspaces, and signs out everywhere; signing in again cancels it. Returns `{ purgeAfter }` | 202, 403, 409 (`owns_shared_workspace`) |
 | `GET /me/security-events` | any | — | Own account events; `?limit` (≤ 100), `cursor` | 200 |
 
 ## Workspaces (`/api/v1/workspaces`)
@@ -129,8 +131,12 @@ Implementation notes (US3):
 
 - Agents get `403 forbidden` on every row above except the two public-link rows; non-members get
   `404` and the attempt is logged (AC-SEC-004).
-- Rate limits (research R8): 20 invitation emails per workspace per hour; 3 resends per
-  invitation per day; 30 link lookups per IP per 10 minutes.
+- Rate limits (research R8): 20 invitation emails per workspace per hour, new and resent; 3
+  resends per invitation per day; 5 invitation emails per address per day across all workspaces,
+  so revoking and inviting again doesn't reset it; 30 link lookups per IP per 10 minutes.
+- An invitation works only while the person who sent it is still an owner or admin of the
+  workspace. Removing a member, a member leaving, or a demotion to agent revokes the open
+  invitations they sent.
 - Unknown, used, revoked, and expired links all answer `410 gone`, so a link reveals nothing
   about its state.
 - **Sign-up from a link:** the lookup sets an `HttpOnly` cookie `guidesk.invite` (path
@@ -139,7 +145,7 @@ Implementation notes (US3):
   cookie changes nothing. Acceptance clears the cookie.
 - Both POST rows accept `Idempotency-Key` (8 to 100 characters). A repeated key returns the first
   response; a key still in progress answers `409 idempotency_conflict`; a key reused for another
-  route answers `422 idempotency_conflict`.
+  path or body answers `422 idempotency_conflict`.
 
 ## Workspace security log
 
@@ -150,15 +156,18 @@ Implementation notes (US3):
 ## Cross-cutting guarantees
 
 - **Isolation:** every workspace-scoped query runs under RLS. A guessed ID from another
-  workspace returns `404 not_found` and writes `access.cross_workspace_denied` (AC-SEC-004). The
-  body is identical for a missing ID and a foreign one. A database refusal from RLS or grants
-  (SQLSTATE `42501`) is also answered with `404` and logged.
+  workspace returns `404 not_found` and writes `access.cross_workspace_denied` in the log of the
+  workspace that owns the ID, never the caller's (AC-SEC-004). The body is byte-identical for a
+  missing ID and a foreign one. A database refusal from RLS or grants (SQLSTATE `42501`) is also
+  answered with `404` and logged. Path IDs are case-insensitive and treated as one ID.
+- **Role refusals:** a member whose role lacks the capability gets `403 forbidden`, and the
+  attempt is logged as `access.role_denied` (AC-SEC-003).
 - **CSRF:** cookie-authenticated state changes require same-origin requests: the library's
   origin checks, `SameSite=Lax`, and, on the API's own routes, a refused request (`403`) when
   `Origin` or `Sec-Fetch-Site` shows another origin. Form-encoded bodies are rejected (`415`).
 - **Headers:** every API response carries `Cache-Control: no-store`, `nosniff`, and
   `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'`.
 - **Idempotency:** `POST` invitation and acceptance endpoints accept an `Idempotency-Key`
-  header, so retries never double-send.
+  header, so retries never double-send. A key is bound to the user, the exact path, and the body.
 - **Agents and restricted values:** later features that reveal restricted values must reject
   the `agent` role and log `restricted_value.reveal_denied` (AC-SEC-009).

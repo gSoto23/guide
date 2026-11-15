@@ -8,6 +8,7 @@ import { ApiProblem } from "../common/problem.js";
 import { RequestDb } from "../database/request-db.js";
 import { SecurityLogService } from "../security-log/security-log.service.js";
 import { CrossTenantService } from "./cross-tenant.js";
+import { revokeInvitationsSentBy } from "./invitation-cleanup.js";
 import { MemberNotices } from "./member-notices.js";
 import { TenancyService } from "./tenancy.service.js";
 
@@ -64,12 +65,13 @@ export class MembersService {
     const target = await this.find(tx, actor.id, workspaceId, membershipId);
     await this.authorize(actor, workspaceId, target, "member.role_changed");
     if (target.role !== role) {
-      await tx
+      if (role === "agent") await revokeInvitationsSentBy(tx, workspaceId, target.userId);
+      const changed = await tx
         .update(membership)
         .set({ role })
-        .where(
-          and(eq(membership.id, target.membershipId), eq(membership.workspaceId, workspaceId)),
-        );
+        .where(and(eq(membership.id, target.membershipId), eq(membership.workspaceId, workspaceId)))
+        .returning({ id: membership.id });
+      if (changed.length === 0) throw new ApiProblem(404, "not_found");
       await this.securityLog.record({
         type: "member.role_changed",
         outcome: "success",
@@ -92,10 +94,14 @@ export class MembersService {
     const target = await this.find(tx, actor.id, workspaceId, membershipId);
     await this.authorize(actor, workspaceId, target, "member.removed");
     const name = await this.workspaceName(tx, workspaceId);
+    await revokeInvitationsSentBy(tx, workspaceId, target.userId);
     // Access ends at once: every request derives the role from this row (FR-025, SC-006).
-    await tx
+    const removed = await tx
       .delete(membership)
-      .where(and(eq(membership.id, target.membershipId), eq(membership.workspaceId, workspaceId)));
+      .where(and(eq(membership.id, target.membershipId), eq(membership.workspaceId, workspaceId)))
+      .returning({ id: membership.id });
+    // Logged as a success only if the row really went (T103).
+    if (removed.length === 0) throw new ApiProblem(404, "not_found");
     await this.securityLog.record({
       type: "member.removed",
       outcome: "success",

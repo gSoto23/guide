@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Query, Req } from "@nestjs/common";
 import type { FastifyRequest } from "fastify";
-import { and, desc, eq, gte, isNull, lt, lte, or, type SQL } from "drizzle-orm";
+import { and, desc, eq, gte, isNull, lte, sql, type SQL } from "drizzle-orm";
 import { securityEvent, user } from "@guidesk/db";
 import {
   securityEventQuerySchema,
@@ -12,18 +12,21 @@ import { ZodValidationPipe } from "../common/zod.pipe.js";
 import { RequestDb } from "../database/request-db.js";
 import { WorkspaceAction } from "../tenancy/workspace-access.guard.js";
 
-function encodeCursor(occurredAt: Date, id: string): string {
-  return Buffer.from(`${occurredAt.toISOString()}|${id}`).toString("base64url");
+// The cursor keeps the database's microseconds: with a JavaScript Date (milliseconds), events in
+// the same millisecond as a page's last row would be skipped (T103).
+const CURSOR_AT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z$/;
+
+function encodeCursor(occurredAt: string, id: string): string {
+  return Buffer.from(`${occurredAt}|${id}`).toString("base64url");
 }
 
-function decodeCursor(cursor: string | undefined): { at: Date; id: string } | null {
+function decodeCursor(cursor: string | undefined): { at: string; id: string } | null {
   if (!cursor) return null;
   const [at = "", id = ""] = Buffer.from(cursor, "base64url").toString().split("|");
-  const date = new Date(at);
-  if (Number.isNaN(date.getTime()) || !/^[0-9a-f-]{36}$/i.test(id)) {
+  if (!CURSOR_AT.test(at) || !/^[0-9a-f-]{36}$/i.test(id)) {
     throw new ApiProblem(422, "validation_failed", "Invalid cursor.");
   }
-  return { at: date, id };
+  return { at, id };
 }
 
 /**
@@ -68,10 +71,7 @@ export class SecurityLogController {
       query.from ? gte(securityEvent.occurredAt, new Date(query.from)) : undefined,
       query.to ? lte(securityEvent.occurredAt, new Date(query.to)) : undefined,
       cursor
-        ? or(
-            lt(securityEvent.occurredAt, cursor.at),
-            and(eq(securityEvent.occurredAt, cursor.at), lt(securityEvent.id, cursor.id)),
-          )
+        ? sql`(${securityEvent.occurredAt}, ${securityEvent.id}) < (${cursor.at}::timestamptz, ${cursor.id}::uuid)`
         : undefined,
     ];
     const rows = await this.requestDb
@@ -87,6 +87,7 @@ export class SecurityLogController {
         approxLocation: securityEvent.approxLocation,
         userAgentFamily: securityEvent.userAgentFamily,
         metadata: securityEvent.metadata,
+        cursorAt: sql<string>`to_char(${securityEvent.occurredAt} AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')`,
       })
       .from(securityEvent)
       .leftJoin(user, eq(user.id, securityEvent.actorUserId))
@@ -110,7 +111,7 @@ export class SecurityLogController {
         userAgentFamily: row.userAgentFamily,
         metadata: (row.metadata ?? {}) as Record<string, unknown>,
       })),
-      nextCursor: rows.length > query.limit && last ? encodeCursor(last.occurredAt, last.id) : null,
+      nextCursor: rows.length > query.limit && last ? encodeCursor(last.cursorAt, last.id) : null,
     };
   }
 }

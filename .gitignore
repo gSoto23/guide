@@ -26,3 +26,6 @@ next-env.d.ts
 # Playwright
 test-results/
 playwright-report/
+
+# Lighthouse CI reports (T100)
+.lighthouseci/

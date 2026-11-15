@@ -12,7 +12,7 @@ export const idempotencyKey = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
     key: text("key").notNull(),
-    /** Method and route pattern, so one key can't replay another endpoint's response. */
+    /** Method, path, and a hash of the body, so one key can't replay another request's response. */
     route: text("route").notNull(),
     /** Null while the first request is still running. */
     status: integer("status"),

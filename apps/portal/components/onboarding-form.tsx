@@ -3,7 +3,8 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { PMS_VALUES, PROPERTIES_BUCKET_VALUES, type OnboardingResponse } from "@guidesk/contracts";
+import type { OnboardingResponse } from "@guidesk/contracts";
+import { PMS_VALUES, PROPERTIES_BUCKET_VALUES } from "@guidesk/contracts/values";
 import { ApiError, apiFetch } from "@/lib/api";
 import { useMe } from "@/lib/use-me";
 

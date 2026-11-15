@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { AcceptInvitationResponse, InvitationPreview, MeResponse } from "@guidesk/contracts";
 import { ApiError, apiFetch } from "@/lib/api";
-import { authClient } from "@/lib/auth-client";
+import { loadAuthClient } from "@/lib/auth-client";
 import { rememberReturnTo } from "@/lib/sign-in-email";
 
 type View =
@@ -15,6 +15,9 @@ type View =
   | { kind: "ready"; preview: InvitationPreview }
   | { kind: "mismatch"; preview: InvitationPreview }
   | { kind: "accepted"; preview: InvitationPreview; role: AcceptInvitationResponse["role"] };
+
+/** Invitation tokens are 32 random bytes in base64url (invitation-token.ts in the API). */
+const TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
 
 /** Opens an invitation link: sign in with the invited email, then accept (FR-019, T078). */
 export function InvitationAccept({ locale, token }: { locale: string; token: string }) {
@@ -28,9 +31,16 @@ export function InvitationAccept({ locale, token }: { locale: string; token: str
   useEffect(() => {
     let cancelled = false;
     async function load() {
+      // Anything else in the link never reaches the API as a path (T103).
+      if (!TOKEN_PATTERN.test(token)) {
+        setView({ kind: "gone" });
+        return;
+      }
       let preview: InvitationPreview;
       try {
-        preview = await apiFetch<InvitationPreview>(`/api/v1/invitations/${token}`);
+        preview = await apiFetch<InvitationPreview>(
+          `/api/v1/invitations/${encodeURIComponent(token)}`,
+        );
       } catch {
         if (!cancelled) setView({ kind: "gone" });
         return;
@@ -57,7 +67,7 @@ export function InvitationAccept({ locale, token }: { locale: string; token: str
     setError(null);
     try {
       const result = await apiFetch<AcceptInvitationResponse>(
-        `/api/v1/invitations/${token}/accept`,
+        `/api/v1/invitations/${encodeURIComponent(token)}/accept`,
         { method: "POST", headers: { "idempotency-key": crypto.randomUUID() } },
       );
       setView({ kind: "accepted", preview, role: result.role });
@@ -72,7 +82,7 @@ export function InvitationAccept({ locale, token }: { locale: string; token: str
   }
 
   async function signOut(preview: InvitationPreview) {
-    await authClient.signOut();
+    await (await loadAuthClient()).signOut();
     setView({ kind: "signed-out", preview });
   }
 

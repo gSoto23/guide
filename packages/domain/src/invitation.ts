@@ -7,6 +7,8 @@ export type InvitationStatus = (typeof INVITATION_STATUSES)[number];
 /** Invitation emails per workspace per hour, and resends per invitation per day (R8). */
 export const INVITES_PER_WORKSPACE_PER_HOUR = 20;
 export const RESENDS_PER_INVITATION_PER_DAY = 3;
+/** Invitation emails to one address per day, across all workspaces (AC-SEC-008, T103). */
+export const INVITES_PER_RECIPIENT_PER_DAY = 5;
 
 export interface InvitationState {
   status: InvitationStatus;

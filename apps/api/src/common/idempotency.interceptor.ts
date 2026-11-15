@@ -7,6 +7,7 @@ import {
   SetMetadata,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
+import { createHash } from "node:crypto";
 import type { FastifyRequest } from "fastify";
 import { and, eq, lt } from "drizzle-orm";
 import { catchError, from, mergeMap, type Observable, of, throwError } from "rxjs";
@@ -26,7 +27,8 @@ export const Idempotent = () => SetMetadata(IDEMPOTENT, true);
 /**
  * Replays the stored response for a repeated `Idempotency-Key`, so retries never double-send.
  * Registered before RlsInterceptor, so a response is stored only after its transaction commits.
- * Keys are per user and route; a key still in flight answers 409, and a failed request frees it.
+ * Keys are per user, path, and body; a key still in flight answers 409, and a failed request
+ * frees it.
  */
 @Injectable()
 export class IdempotencyInterceptor implements NestInterceptor {
@@ -47,7 +49,13 @@ export class IdempotencyInterceptor implements NestInterceptor {
       });
     }
     const userId = request.auth.user.id;
-    const route = `${request.method} ${request.routeOptions.url ?? request.url}`;
+    // The exact path and body, not the route pattern: reusing a key for another workspace,
+    // member, or body answers 422 instead of replaying the first response (T103).
+    const path = request.url.split("?")[0] ?? request.url;
+    const body = createHash("sha256")
+      .update(JSON.stringify(request.body ?? null))
+      .digest("base64url");
+    const route = `${request.method} ${path} ${body}`;
     const status =
       this.reflector.get<number | undefined>(HTTP_CODE_METADATA, context.getHandler()) ??
       (request.method === "POST" ? 201 : 200);

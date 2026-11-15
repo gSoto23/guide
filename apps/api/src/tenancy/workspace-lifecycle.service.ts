@@ -13,6 +13,7 @@ import { ApiProblem } from "../common/problem.js";
 import { RequestDb } from "../database/request-db.js";
 import { SecurityLogService } from "../security-log/security-log.service.js";
 import { CrossTenantService } from "./cross-tenant.js";
+import { revokeInvitationsSentBy } from "./invitation-cleanup.js";
 import { MemberNotices } from "./member-notices.js";
 import { PROPERTY_COUNT } from "./property-count.js";
 import { TenancyService } from "./tenancy.service.js";
@@ -48,10 +49,13 @@ export class WorkspaceLifecycleService {
         "Transfer ownership to an admin before leaving.",
       );
     }
-    await this.requestDb
-      .current()
+    const tx = this.requestDb.current();
+    await revokeInvitationsSentBy(tx, workspaceId, userId);
+    const left = await tx
       .delete(membership)
-      .where(and(eq(membership.workspaceId, workspaceId), eq(membership.userId, userId)));
+      .where(and(eq(membership.workspaceId, workspaceId), eq(membership.userId, userId)))
+      .returning({ id: membership.id });
+    if (left.length === 0) throw new ApiProblem(404, "not_found");
     await this.securityLog.record({
       type: "member.left",
       outcome: "success",

@@ -540,13 +540,59 @@ email change, data export, account deletion, and the security log views.
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T100 [P] Configure Lighthouse CI budgets (LCP ≤ 2.5 s, CLS ≤ 0.1, with total blocking time as the lab proxy for INP) in `lighthouserc.json`, and add the CI job
-- [ ] T101 [P] Add the bundle-size check (≤ 150 KB gzip per auth and onboarding route) in `apps/portal/bundle-budget.json`, and add the CI job
-- [ ] T102 [P] Write the k6 script for auth and membership endpoints (p95 ≤ 300 ms) in `perf/k6/auth.js`
-- [ ] T103 Review the implementation against AC-SEC-001 to AC-SEC-009 and the OWASP ASVS Level 2 authentication and session items, and record the result in `specs/001-workspace-accounts/checklists/security.md` (P1 pass done 2026-11-14; re-run after US3–US5)
-- [ ] T104 [P] Add accessibility checks (axe in Playwright) for the auth, onboarding, and settings screens in `e2e/a11y.spec.ts`
+- [X] T100 [P] Configure Lighthouse CI budgets (LCP ≤ 2.5 s, CLS ≤ 0.1, with total blocking time as the lab proxy for INP) in `lighthouserc.json`, and add the CI job
+- [X] T101 [P] Add the bundle-size check (≤ 150 KB gzip per auth and onboarding route) in `apps/portal/bundle-budget.json`, and add the CI job
+- [X] T102 [P] Write the k6 script for auth and membership endpoints (p95 ≤ 300 ms) in `perf/k6/auth.js`
+- [X] T103 Review the implementation against AC-SEC-001 to AC-SEC-009 and the OWASP ASVS Level 2 authentication and session items, and record the result in `specs/001-workspace-accounts/checklists/security.md` (P1 pass 2026-11-14; US3–US5 pass 2026-11-15)
+- [X] T104 [P] Add accessibility checks (axe in Playwright) for the auth, onboarding, and settings screens in `e2e/specs/a11y.spec.ts`
 - [ ] T105 Run the quickstart validation V1–V19 on staging and record the results in `specs/001-workspace-accounts/quickstart.md`
-- [ ] T106 [P] Update the development setup in `README.md`, and update `docs/architecture/overview.md` if the implementation diverged from it
+- [X] T106 [P] Update the development setup in `README.md`, and update `docs/architecture/overview.md` if the implementation diverged from it
+
+**Polish notes (2026-11-15):**
+
+- **T101, bundle size.** `apps/portal/scripts/check-bundle-budget.ts` starts the production
+  build, loads every route in `apps/portal/bundle-budget.json`, and adds up the gzip size of the
+  scripts in the HTML (the old-browser `nomodule` polyfills don't count). Every portal route was
+  about 200 KB at first. Three changes brought them to 137–143 KB:
+  - the Better Auth client loads after the screen renders (`loadAuthClient()`), and screens that
+    need it start loading it on mount so a passkey prompt still starts on the tap;
+  - next-intl precompiles the ICU messages at build time (`experimental.messages.precompile`),
+    so the message parser isn't shipped;
+  - the onboarding options come from `@guidesk/contracts/values`, which has no zod.
+  The framework alone (React and Next.js) is about 133 KB, so new client code needs care.
+- **T100, Lighthouse CI.** `lighthouserc.json` runs against a local production build (no preview
+  deployments yet) on `/es/sign-in`, `/en/sign-in`, and `/es/onboarding`, 3 runs each, with
+  mobile emulation and Lighthouse's simulated 4G. Budgets: LCP ≤ 2.5 s, CLS ≤ 0.1, total
+  blocking time ≤ 200 ms, accessibility ≥ 0.95. Without the API, the onboarding run measures the
+  signed-in shell. `/es/verify` is left out because it redirects to sign-in without a remembered
+  email. Local results: LCP about 0.77 s, TBT ≤ 41 ms, CLS 0, accessibility 1.0. The new CI job
+  `performance` runs both checks and keeps the reports for 14 days.
+- **T102, k6.** `perf/k6/auth.js` signs in test accounts with codes from Mailpit (or takes
+  `SESSION_COOKIES` on staging), then loads the session, the profile, the workspace, members,
+  invitations, and the security log, and switches workspace. `/get-session` allows 600 requests
+  per minute per IP, so one machine runs at most 8 virtual users. Local result: p95 45–75 ms, no
+  errors. The staging run belongs to T105.
+- **T104, accessibility.** `e2e/specs/a11y.spec.ts` checks WCAG 2.2 A and AA rules with axe on
+  sign-in (Spanish and English), verify, onboarding, the six settings pages, and the invitation
+  page. It found one problem, which is fixed: the workspace switcher's accessible name didn't
+  include its visible text (WCAG 2.5.3).
+- **T103, second pass.** 19 findings in US3–US5 (1 high, 7 medium, 11 low); see
+  [checklists/security.md](checklists/security.md) §8, F-27 to F-45. Changes that affect later
+  work:
+  - Migration 0015: invitation state machine in the database; acceptance needs an inviter who is
+    still an owner or admin; `app_membership_role()` gives non-owners no request role while the
+    workspace is pending deletion; purge uses a random pseudonym and removes leftover personal
+    data.
+  - Workspace routes lowercase UUID path parameters, and role refusals are logged as
+    `access.role_denied`.
+  - `RequireStepUp({ secondFactor: true })` (contracts: SU2) for email change and account
+    deletion.
+  - Invitation emails: 5 per address per day; resends count toward the workspace limit.
+  - Idempotency keys are bound to the exact path and body.
+- **Build.** `turbo.json` passes `API_PROXY_URL` to builds. Turborepo's strict environment mode
+  had dropped it, so a portal built through Turborepo had no `/api` rewrite.
+- **T105 is open.** It needs a staging deployment in AWS (`sst deploy --stage staging`), which
+  hasn't happened. V1–V19 pass locally (see the quickstart).
 
 ---
 

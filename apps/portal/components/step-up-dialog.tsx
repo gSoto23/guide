@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
+import { usePreloadAuthClient } from "@/lib/auth-client";
 import {
+  currentUserId,
   emailStepUp,
   passkeyStepUp,
   requestEmailStepUp,
@@ -21,6 +23,14 @@ export function StepUpDialog({
   onCancel: () => void;
 }) {
   const t = useTranslations("security");
+  usePreloadAuthClient();
+  // Read before the passkey prompt, which must start right on the tap.
+  const userId = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    void currentUserId().then((id) => {
+      userId.current = id;
+    });
+  }, []);
   const [method, setMethod] = useState<StepUpMethod | null>(
     methods.length === 1 ? (methods[0] ?? null) : null,
   );
@@ -32,7 +42,7 @@ export function StepUpDialog({
     setError(null);
     setMethod(next);
     if (next === "passkey") {
-      if (await passkeyStepUp()) onDone();
+      if (await passkeyStepUp(userId.current)) onDone();
       else setError(t("stepUpFailed"));
     }
     if (next === "email_otp" && !sent) {

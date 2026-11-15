@@ -33,6 +33,7 @@ export const SECURITY_EVENT_TYPES = [
   "workspace.restored",
   "workspace.purged",
   "access.cross_workspace_denied",
+  "access.role_denied",
   "restricted_value.reveal_denied",
 ] as const;
 

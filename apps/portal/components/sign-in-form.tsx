@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { authClient } from "@/lib/auth-client";
+import { loadAuthClient, usePreloadAuthClient } from "@/lib/auth-client";
 import { readReturnTo, rememberSignInEmail } from "@/lib/sign-in-email";
 
 /** Sign-in and sign-up in one screen: Google, passkey, or an email code (spec 001 FR-001, T043). */
@@ -14,6 +14,7 @@ export function SignInForm({ locale }: { locale: string }) {
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  usePreloadAuthClient();
   // After an invitation link, come back to it to accept (FR-020); otherwise /start decides
   // between onboarding and the last-used workspace (FR-024).
   const next = () => readReturnTo() ?? `/${locale}/start`;
@@ -22,6 +23,7 @@ export function SignInForm({ locale }: { locale: string }) {
     event.preventDefault();
     setBusy(true);
     setError(null);
+    const authClient = await loadAuthClient();
     const { error: failure } = await authClient.emailOtp.sendVerificationOtp({
       email,
       type: "sign-in",
@@ -37,12 +39,12 @@ export function SignInForm({ locale }: { locale: string }) {
 
   async function google() {
     setError(null);
-    await authClient.signIn.social({ provider: "google", callbackURL: next() });
+    await (await loadAuthClient()).signIn.social({ provider: "google", callbackURL: next() });
   }
 
   async function passkey() {
     setError(null);
-    const result = await authClient.signIn.passkey();
+    const result = await (await loadAuthClient()).signIn.passkey();
     if (result?.error) {
       setError(t("passkeyFailed"));
       return;

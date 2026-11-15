@@ -48,10 +48,11 @@ export async function withRlsContext<T>(
       sql`SELECT set_config('app.user_id', ${context.userId}, true), set_config('app.workspace_id', ${context.workspaceId ?? ""}, true)`,
     );
     if (context.workspaceId !== undefined) {
-      // The role comes from the caller's own membership row (visible through membership_read),
-      // so policies never trust a role supplied by the application.
+      // The role comes from the caller's own membership row, so policies never trust a role
+      // supplied by the application. Non-owners get none while the workspace is pending deletion
+      // (migration 0015, T103).
       await tx.execute(
-        sql`SELECT set_config('app.workspace_role', COALESCE((SELECT role FROM membership WHERE workspace_id = ${context.workspaceId}::uuid AND user_id = ${context.userId}), ''), true)`,
+        sql`SELECT set_config('app.workspace_role', COALESCE(app_membership_role(${context.workspaceId}::uuid, ${context.userId}), ''), true)`,
       );
     }
     return fn(tx);

@@ -47,6 +47,30 @@ export class StepUpGuard implements CanActivate {
 }
 
 /**
+ * Re-authentication with the strongest factor the user has (ASVS 5.0 V7.5.1, T103). Once they
+ * have a passkey or an authenticator app, an email code alone doesn't count, as for factor
+ * changes: someone with a stolen session and the inbox can't change the sign-in email.
+ */
+@Injectable()
+export class SecondFactorStepUpGuard implements CanActivate {
+  constructor(private readonly assurance: AssuranceService) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const { auth } = authOf(context);
+    const { strongAuthAt, method } = await this.assurance.get(auth.session.id);
+    const factors = await this.assurance.factors(auth.user.id);
+    const needSecondFactor = factors.hasPasskey || factors.totpEnabled;
+    const strongEnough = !needSecondFactor || method === "passkey" || method === "totp";
+    if (isStepUpFresh(strongAuthAt) && strongEnough) {
+      return true;
+    }
+    throw new ApiProblem(403, "step_up_required", "Confirm it's you to continue.", {
+      methods: stepUpMethods({ ...factors, needSecondFactor }),
+    });
+  }
+}
+
+/**
  * Requires multi-factor sign-in for staff, and for owners and admins of workspaces above the
  * property threshold (FR-009, T057). Workspace routes the caller does not belong to return 404.
  */
@@ -108,8 +132,12 @@ export class MfaGuard implements CanActivate {
   }
 }
 
-/** Route needs re-authentication within 10 minutes (contracts: SU). */
-export const RequireStepUp = () => applyDecorators(UseGuards(StepUpGuard));
+/**
+ * Route needs re-authentication within 10 minutes (contracts: SU). With `secondFactor`, users
+ * who have a passkey or an authenticator app must use one (contracts: SU2).
+ */
+export const RequireStepUp = (options: { secondFactor?: boolean } = {}) =>
+  applyDecorators(UseGuards(options.secondFactor ? SecondFactorStepUpGuard : StepUpGuard));
 
 /** Route needs multi-factor sign-in where it applies (contracts: MFA). */
 export const RequireMfa = () => applyDecorators(UseGuards(MfaGuard));

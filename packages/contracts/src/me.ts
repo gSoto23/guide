@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PMS_VALUES, PROPERTIES_BUCKET_VALUES } from "./values.js";
 
 /** Contracts for /api/v1/me and /api/v1/me/onboarding (contracts/http-api.md, T041, T042). */
 export const languageSchema = z.enum(["es", "en"]);
@@ -36,22 +37,7 @@ export const updateMeSchema = z
   });
 export type UpdateMeBody = z.infer<typeof updateMeSchema>;
 
-export const PROPERTIES_BUCKET_VALUES = ["1_2", "3_10", "10_plus"] as const;
-export const PMS_VALUES = [
-  "hostaway",
-  "guesty",
-  "hospitable",
-  "smoobu",
-  "ownerrez",
-  "hostfully",
-  "beds24",
-  "hostex",
-  "lodgify",
-  "uplisting",
-  "stays_net",
-  "other",
-  "none",
-] as const;
+export { PMS_VALUES, PROPERTIES_BUCKET_VALUES };
 
 export const onboardingBodySchema = z
   .object({

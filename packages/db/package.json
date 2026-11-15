@@ -19,8 +19,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint src",
     "test": "vitest run",
-    "migrate": "node dist/cli/migrate.js",
-    "lint:rls": "node dist/cli/lint-rls.js",
+    "migrate": "node --env-file-if-exists=../../.env dist/cli/migrate.js",
+    "lint:rls": "node --env-file-if-exists=../../.env dist/cli/lint-rls.js",
     "generate": "drizzle-kit generate",
     "test:integration": "vitest run -c vitest.integration.config.ts"
   },

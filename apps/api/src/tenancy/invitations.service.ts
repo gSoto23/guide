@@ -1,10 +1,12 @@
+import { createHash } from "node:crypto";
 import { Inject, Injectable } from "@nestjs/common";
-import { and, count, desc, eq, gt, lte, or, sql } from "drizzle-orm";
+import { and, desc, eq, gt, lte, or, sql } from "drizzle-orm";
 import {
   effectiveStatus,
   hasFreeSeat,
   INVITATION_TTL_MS,
   invitationExpiry,
+  INVITES_PER_RECIPIENT_PER_DAY,
   INVITES_PER_WORKSPACE_PER_HOUR,
   resendDecision,
   RESENDS_PER_INVITATION_PER_DAY,
@@ -89,15 +91,10 @@ export class InvitationsService {
     const tx = this.requestDb.current();
     const now = new Date();
     // One invitation at a time per workspace, so concurrent requests can't exceed the seat limit.
-    await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtextextended(${workspaceId}, 0))`);
-    const sends = await this.rateLimit.consume(
-      `invite:workspace:${workspaceId}`,
-      INVITES_PER_WORKSPACE_PER_HOUR,
-      3600,
+    await tx.execute(
+      sql`SELECT pg_advisory_xact_lock(hashtextextended(${workspaceId}::uuid::text, 0))`,
     );
-    if (!sends.allowed) {
-      throw new ApiProblem(429, "rate_limited", "Too many invitations. Try again later.");
-    }
+    await this.consumeWorkspaceSend(workspaceId);
     // Expired invitations no longer hold the address or a seat.
     await tx
       .update(invitation)
@@ -144,6 +141,7 @@ export class InvitationsService {
       );
     }
 
+    await this.consumeRecipientSend(body.email);
     const { token, tokenHash } = newInvitationToken();
     const [row] = await tx
       .insert(invitation)
@@ -174,8 +172,9 @@ export class InvitationsService {
     const tx = this.requestDb.current();
     const now = new Date();
     const row = await this.find(tx, inviter.id, workspaceId, invitationId);
+    // Keyed on the stored row, so another spelling of the ID can't start a new count (T103).
     const resends = await this.rateLimit.consume(
-      `invite-resend:${invitationId}`,
+      `invite-resend:${row.id}`,
       RESENDS_PER_INVITATION_PER_DAY,
       DAY_SECONDS,
     );
@@ -185,6 +184,9 @@ export class InvitationsService {
     if (decision === "rate_limited") {
       throw new ApiProblem(429, "rate_limited", "This invitation was resent too often today.");
     }
+    // Resends count toward the workspace's hourly emails and the address's daily limit.
+    await this.consumeWorkspaceSend(row.workspaceId);
+    await this.consumeRecipientSend(row.email);
     // A new link replaces the old one; the expiry stays the same (data model §5).
     const { token, tokenHash } = newInvitationToken();
     const [updated] = await tx
@@ -228,23 +230,51 @@ export class InvitationsService {
     return row;
   }
 
-  /** Members plus open invitations (FR-021). */
+  /**
+   * Members plus open invitations (FR-021), in one statement: one snapshot, so an acceptance in
+   * between can't be missed by both counts (T103).
+   */
   private async seatsUsed(tx: Transaction, workspaceId: string, now: Date): Promise<number> {
-    const [members] = await tx
-      .select({ n: count() })
-      .from(membership)
-      .where(eq(membership.workspaceId, workspaceId));
-    const [pending] = await tx
-      .select({ n: count() })
-      .from(invitation)
-      .where(
-        and(
-          eq(invitation.workspaceId, workspaceId),
-          eq(invitation.status, "pending"),
-          gt(invitation.expiresAt, now),
-        ),
+    const result = await tx.execute<{ used: number }>(sql`
+      SELECT
+        (SELECT count(*) FROM membership WHERE workspace_id = ${workspaceId}::uuid)
+        + (SELECT count(*) FROM invitation
+           WHERE workspace_id = ${workspaceId}::uuid AND status = 'pending' AND expires_at > ${now})
+        AS used
+    `);
+    return Number(result.rows[0]?.used ?? 0);
+  }
+
+  /** Invitation emails per workspace per hour, new and resent (AC-SEC-008). */
+  private async consumeWorkspaceSend(workspaceId: string): Promise<void> {
+    const sends = await this.rateLimit.consume(
+      `invite:workspace:${workspaceId}`,
+      INVITES_PER_WORKSPACE_PER_HOUR,
+      3600,
+    );
+    if (!sends.allowed) {
+      throw new ApiProblem(429, "rate_limited", "Too many invitations. Try again later.");
+    }
+  }
+
+  /**
+   * Invitation emails to one address per day, across every workspace: revoking and inviting
+   * again, or opening more workspaces, can't flood someone's inbox (AC-SEC-008, T103).
+   */
+  private async consumeRecipientSend(email: string): Promise<void> {
+    const recipient = createHash("sha256").update(email.trim().toLowerCase()).digest("hex");
+    const sends = await this.rateLimit.consume(
+      `invite:recipient:${recipient}`,
+      INVITES_PER_RECIPIENT_PER_DAY,
+      DAY_SECONDS,
+    );
+    if (!sends.allowed) {
+      throw new ApiProblem(
+        429,
+        "rate_limited",
+        "This address received too many invitations today. Try again tomorrow.",
       );
-    return Number(members?.n ?? 0) + Number(pending?.n ?? 0);
+    }
   }
 
   private async send(

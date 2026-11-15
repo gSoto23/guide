@@ -29,7 +29,13 @@ export function createPurgeAccountsHandler(db: RowsRunner, email: EmailAdapter) 
         await db.executeSql("SELECT purge_account($1)", [userId]);
       } catch (error) {
         const code = (error as { code?: unknown }).code;
-        if (code === "GD409" || code === "GD410") continue;
+        if (code === "GD410") continue;
+        if (code === "GD409") {
+          // Still owns a workspace with other members: retried daily; support follows up (T103).
+          // The user ID is an opaque identifier, not personal data.
+          console.warn(`account purge skipped for ${userId}: owns a shared workspace`);
+          continue;
+        }
         throw error;
       }
       const rendered = await renderAccountDeleted(toEmailLocale(row.preferred_language as string));

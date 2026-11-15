@@ -72,7 +72,8 @@ export function toProblem(exception: unknown): ProblemBody {
       title: TITLES[exception.code],
       status,
       code: exception.code,
-      detail: exception.message,
+      // No detail when none was given, so every 404 has the same body (AC-SEC-004, T103).
+      ...(exception.message !== exception.code ? { detail: exception.message } : {}),
       ...exception.extra,
     };
   }

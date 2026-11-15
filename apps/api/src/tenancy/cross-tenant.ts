@@ -14,7 +14,9 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /**
  * A resource the request's RLS context could not see (AC-SEC-004, T084). The answer is always
  * `404 not_found`, whether the ID does not exist or belongs to another workspace, so nothing is
- * confirmed. When it does belong to another workspace, the attempt is logged.
+ * confirmed. When it does belong to another workspace, the attempt is logged in that workspace's
+ * log, never the caller's: otherwise the caller could read their own log to learn that a guessed
+ * ID exists (T103).
  */
 @Injectable()
 export class CrossTenantService {
@@ -41,7 +43,7 @@ export class CrossTenantService {
           type: "access.cross_workspace_denied",
           outcome: "denied",
           actorUserId,
-          workspaceId: routeWorkspaceId,
+          workspaceId: elsewhere.workspaceId,
           targetType: resource,
           targetId: id,
         });

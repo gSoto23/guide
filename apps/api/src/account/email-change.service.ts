@@ -1,4 +1,4 @@
-import { createHmac, randomInt, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, randomInt, timingSafeEqual } from "node:crypto";
 import { Inject, Injectable } from "@nestjs/common";
 import { and, eq, ne, sql } from "drizzle-orm";
 import { emailChangeRequest, session, user, type DbHandle } from "@guidesk/db";
@@ -52,7 +52,12 @@ export class EmailChangeService {
       });
     }
     const limit = await this.rateLimit.consume(`email-change:${auth.user.id}`, 5, 3600);
-    if (!limit.allowed) {
+    // Also per target address, so no account can flood someone else's inbox (AC-SEC-008, T103).
+    const target = createHash("sha256").update(newEmail).digest("hex");
+    const perAddress = limit.allowed
+      ? await this.rateLimit.consume(`email-change:recipient:${target}`, 3, 3600)
+      : limit;
+    if (!limit.allowed || !perAddress.allowed) {
       throw new ApiProblem(429, "rate_limited", "Too many codes requested. Try again later.");
     }
     const code = randomInt(0, 1_000_000).toString().padStart(6, "0");

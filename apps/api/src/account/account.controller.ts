@@ -39,14 +39,14 @@ export class AccountController {
 
   @Delete()
   @HttpCode(202)
-  @RequireStepUp()
+  @RequireStepUp({ secondFactor: true })
   remove(@Req() request: FastifyRequest): Promise<AccountDeletionResponse> {
     return this.deletion.schedule(authOf(request).user.id);
   }
 
   @Post("email-change")
   @HttpCode(202)
-  @RequireStepUp()
+  @RequireStepUp({ secondFactor: true })
   requestEmailChange(
     @Req() request: FastifyRequest,
     @Body(new ZodValidationPipe(emailChangeSchema)) body: EmailChangeBody,

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { authClient } from "@/lib/auth-client";
+import { loadAuthClient, usePreloadAuthClient } from "@/lib/auth-client";
 import type { StepUpMethod } from "@/lib/step-up";
 import { useMe } from "@/lib/use-me";
 import { StepUpDialog } from "./step-up-dialog";
@@ -27,6 +27,7 @@ export function SecuritySettings({ locale }: { locale: string }) {
   const t = useTranslations("security");
   const router = useRouter();
   const me = useMe(locale);
+  usePreloadAuthClient();
   const [passkeys, setPasskeys] = useState<PasskeyItem[]>([]);
   const [sessions, setSessions] = useState<SessionItem[]>([]);
   const [currentToken, setCurrentToken] = useState<string | null>(null);
@@ -42,6 +43,7 @@ export function SecuritySettings({ locale }: { locale: string }) {
   const [message, setMessage] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
+    const authClient = await loadAuthClient();
     const [keys, list, current] = await Promise.all([
       authClient.passkey.listUserPasskeys(),
       authClient.listSessions(),
@@ -95,14 +97,14 @@ export function SecuritySettings({ locale }: { locale: string }) {
 
   async function addPasskey() {
     await withStepUp(
-      () => authClient.passkey.addPasskey({ name: t("passkeyDefaultName") }),
+      async () => (await loadAuthClient()).passkey.addPasskey({ name: t("passkeyDefaultName") }),
       (result) => setMessage(result?.error ? t("passkeyAddFailed") : t("passkeyAdded")),
     );
   }
 
   async function startTotp() {
     await withStepUp(
-      () => authClient.twoFactor.enable({}),
+      async () => (await loadAuthClient()).twoFactor.enable({}),
       (result) => {
         if (result.error || !result.data || !("totpURI" in result.data)) {
           setMessage(t("totpFailed"));
@@ -115,7 +117,7 @@ export function SecuritySettings({ locale }: { locale: string }) {
   }
 
   async function confirmTotp() {
-    const result = await authClient.twoFactor.verifyTotp({ code: totpCodeInput });
+    const result = await (await loadAuthClient()).twoFactor.verifyTotp({ code: totpCodeInput });
     if (result.error) {
       setMessage(t("totpFailed"));
       return;
@@ -126,7 +128,7 @@ export function SecuritySettings({ locale }: { locale: string }) {
   }
 
   async function signOut() {
-    await authClient.signOut();
+    await (await loadAuthClient()).signOut();
     router.replace(`/${locale}/sign-in`);
   }
 
@@ -154,7 +156,9 @@ export function SecuritySettings({ locale }: { locale: string }) {
                 type="button"
                 className="button button-link"
                 onClick={() =>
-                  void withStepUp(() => authClient.passkey.deletePasskey({ id: key.id }))
+                  void withStepUp(async () =>
+                    (await loadAuthClient()).passkey.deletePasskey({ id: key.id }),
+                  )
                 }
               >
                 {t("remove")}
@@ -222,7 +226,9 @@ export function SecuritySettings({ locale }: { locale: string }) {
                   type="button"
                   className="button button-link"
                   onClick={() =>
-                    void withStepUp(() => authClient.revokeSession({ token: s.token }))
+                    void withStepUp(async () =>
+                      (await loadAuthClient()).revokeSession({ token: s.token }),
+                    )
                   }
                 >
                   {t("signOutDevice")}
@@ -234,7 +240,9 @@ export function SecuritySettings({ locale }: { locale: string }) {
         <button
           type="button"
           className="button button-secondary"
-          onClick={() => void withStepUp(() => authClient.revokeOtherSessions())}
+          onClick={() =>
+            void withStepUp(async () => (await loadAuthClient()).revokeOtherSessions())
+          }
         >
           {t("signOutOthers")}
         </button>
