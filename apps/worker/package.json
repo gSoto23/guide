@@ -1,0 +1,23 @@
+{
+  "name": "@guidesk/worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "node --env-file-if-exists=../../.env --watch --enable-source-maps dist/main.js",
+    "start": "node --enable-source-maps dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@guidesk/emails": "workspace:*",
+    "@guidesk/integrations": "workspace:*",
+    "@guidesk/observability": "workspace:*",
+    "pg-boss": "^12.38.2"
+  },
+  "devDependencies": {
+    "@guidesk/config": "workspace:*"
+  }
+}

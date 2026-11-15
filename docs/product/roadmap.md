@@ -33,11 +33,12 @@ approach, ready for spec-driven development.
 | Discovery decisions (customer, market, revenue, channels, autonomy) | Done |
 | Research: integrations, competitors, monetization partners, platform policies | Done |
 | Vision, business model, personas, PRD, roadmap | Draft |
-| Constitution (Spec Kit) | Draft v1.1.0 |
-| Architecture overview and ADR-0001 to ADR-0007 | Draft. ADR-0001 to ADR-0007 accepted. |
+| Constitution (Spec Kit) | Draft v1.1.1 |
+| Architecture overview and ADR-0001 to ADR-0009 | Draft. ADR-0001 to ADR-0009 accepted. |
 | Security and performance architecture | Draft v0.1 |
 | Open-questions log | Active |
-| Spec Kit installed (`specify init`) and first spec drafted | Next |
+| Spec Kit installed (`specify init`) | Done 2026-11-14 (v1.4.1.dev0, Claude Code skills) |
+| First spec drafted (`/speckit-specify`) | Next |
 
 **Exit criteria:** the founder approves the PRD prioritization (done 2026-11-14) and the ADRs
 (done), and the critical open questions are answered (MVP date, design partners). The legal
@@ -56,7 +57,7 @@ safely without any platform API, and that guests pay for add-ons.
 
 | Scope (PRD IDs) | Notes |
 |---|---|
-| F01 Workspaces and accounts | Email and Google sign-in; roles; invitations; users in several workspaces |
+| F01 Workspaces and accounts | Passwordless sign-in (Google, passkeys, email code); roles; invitations; users in several workspaces |
 | F02 Property onboarding | Manual entry; pasted text or screenshots; CSV import; read-only PMS import (Beds24, Hostex; Hostaway if allowed); duplication; iCal stay windows |
 | F03 Guide builder | Templates, editor, AI interview, document upload, ES/EN translation, shared workspace content, drafts from imports |
 | F04 Guest guide | Mobile PWA, link and QR, gated sensitive information, disclosures |

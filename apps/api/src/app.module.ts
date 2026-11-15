@@ -1,0 +1,35 @@
+import { Module } from "@nestjs/common";
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
+import { AccountModule } from "./account/account.module.js";
+import { AuthModule } from "./auth/auth.module.js";
+import { SessionGuard } from "./auth/session.guard.js";
+import { IdempotencyInterceptor } from "./common/idempotency.interceptor.js";
+import { ProblemFilter } from "./common/problem.filter.js";
+import { RlsInterceptor } from "./common/rls.interceptor.js";
+import { ConfigModule } from "./config/config.module.js";
+import { DatabaseModule } from "./database/database.module.js";
+import { EmailModule } from "./email/email.module.js";
+import { HealthController } from "./health/health.controller.js";
+import { SecurityModule } from "./security/security.module.js";
+import { TenancyModule } from "./tenancy/tenancy.module.js";
+
+@Module({
+  imports: [
+    ConfigModule,
+    DatabaseModule,
+    EmailModule,
+    SecurityModule,
+    AuthModule,
+    AccountModule,
+    TenancyModule,
+  ],
+  controllers: [HealthController],
+  providers: [
+    { provide: APP_GUARD, useClass: SessionGuard },
+    // Order matters: idempotency wraps the RLS transaction, so it stores only committed results.
+    { provide: APP_INTERCEPTOR, useClass: IdempotencyInterceptor },
+    { provide: APP_INTERCEPTOR, useClass: RlsInterceptor },
+    { provide: APP_FILTER, useClass: ProblemFilter },
+  ],
+})
+export class AppModule {}

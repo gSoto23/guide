@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guidesk Wireframes</title>
+<meta name="description" content="Low-fidelity mobile wireframes of 12 key Guidesk screens (Draft v0.1, provisional).">
+<style>
+  :root {
+    --ink: #1B1F24;
+    --muted: #505A64;
+    --line: #D5DBE0;
+    --line-strong: #7A8691;
+    --box: #E3E7EA;
+    --box-2: #F0F2F4;
+    --bg: #F4F6F7;
+    --paper: #FFFFFF;
+    --accent: #0B6466;
+    --accent-bg: #E6F2F2;
+    --danger: #B3261E;
+    --danger-bg: #FDECEA;
+    --info: #1F5AA6;
+    --info-bg: #E8F0FB;
+    --success: #1B6E3A;
+    --success-bg: #E7F5EC;
+    --disc: #3A444E;
+    --disc-bg: #EEF1F4;
+    --focus: #1E5BD6;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.45;
+  }
+  a { color: var(--accent); }
+  a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .page { max-width: 1200px; margin: 0 auto; padding: 24px 16px 8px; }
+  .page h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  .page .status { color: var(--muted); margin: 0 0 16px; }
+  .intro { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+  .panel { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .panel h2 { font-size: 1rem; margin: 0 0 8px; }
+  .panel p, .panel li { font-size: 0.9rem; margin: 0 0 6px; }
+  .panel ul, .panel ol { margin: 0; padding-left: 18px; }
+  .toc { columns: 2; column-gap: 24px; }
+  @media (max-width: 420px) { .toc { columns: 1; } }
+
+  .grid {
+    max-width: 1200px; margin: 0 auto; padding: 24px 16px 48px;
+    display: grid; gap: 40px 24px;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  }
+  figure.wf { margin: 0; display: flex; flex-direction: column; align-items: center; scroll-margin-top: 16px; }
+
+  /* Phone frame */
+  .phone {
+    position: relative; width: 100%; max-width: 360px; height: 780px;
+    background: var(--paper); border: 2px solid #5B6570; border-radius: 32px;
+    display: flex; flex-direction: column; overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  .sb { display: flex; justify-content: space-between; padding: 8px 22px 2px; font-size: 11px; color: var(--muted); }
+  .ab { display: flex; align-items: center; gap: 8px; padding: 8px 12px; min-height: 50px; border-bottom: 1px solid var(--line); }
+  .ab .t { flex: 1; font-weight: 700; font-size: 15px; min-width: 0; }
+  .ab .t small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; }
+  .bd { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; font-size: 13.5px; }
+  .tb { display: flex; border-top: 1px solid var(--line); background: var(--paper); }
+  .tb span { flex: 1; text-align: center; padding: 7px 0 12px; font-size: 11px; color: var(--muted); }
+  .tb span::before { content: ""; display: block; width: 20px; height: 20px; margin: 0 auto 3px; border-radius: 6px; background: #CDD3D8; }
+  .tb .on { color: var(--accent); font-weight: 700; }
+  .tb .on::before { background: var(--accent); }
+  .tb .badge::after { content: attr(data-n); display: inline-block; margin-left: 3px; background: var(--danger); color: #fff; border-radius: 999px; padding: 0 5px; font-size: 10px; }
+
+  /* Building blocks */
+  .box { background: var(--box); border-radius: 10px; padding: 10px; }
+  .card { border: 1px solid #CDD3D8; border-radius: 12px; padding: 10px; background: var(--paper); display: flex; flex-direction: column; gap: 6px; }
+  .soft { background: var(--box-2); }
+  .img {
+    border-radius: 10px; background-color: var(--box);
+    background-image:
+      linear-gradient(to top right, transparent calc(50% - 1px), #B8C0C7 calc(50% - 1px), #B8C0C7 calc(50% + 1px), transparent calc(50% + 1px)),
+      linear-gradient(to top left, transparent calc(50% - 1px), #B8C0C7 calc(50% - 1px), #B8C0C7 calc(50% + 1px), transparent calc(50% + 1px));
+  }
+  .row { display: flex; align-items: center; gap: 8px; }
+  .row > .grow { flex: 1; min-width: 0; }
+  .between { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tile { background: var(--box-2); border: 1px solid #CDD3D8; border-radius: 10px; padding: 9px 10px; min-height: 52px; font-weight: 600; font-size: 13px; display: flex; flex-direction: column; justify-content: space-between; }
+  .tile small { font-weight: 400; color: var(--muted); font-size: 11px; }
+  .btn { display: block; text-align: center; padding: 11px 12px; border-radius: 10px; font-weight: 700; background: var(--ink); color: #fff; font-size: 14px; }
+  .btn.sec { background: var(--paper); color: var(--ink); border: 1.5px solid var(--ink); }
+  .btn.sm { display: inline-block; padding: 7px 10px; font-size: 12.5px; }
+  .btn.ghost { background: transparent; color: var(--accent); border: 0; text-decoration: underline; padding: 6px; }
+  .btn.sos { background: var(--paper); color: var(--danger); border: 1.5px solid var(--danger); padding: 6px 8px; font-size: 12px; }
+  .chip { display: inline-block; font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 3px 8px; background: var(--box); }
+  .chip.red { background: var(--danger-bg); color: var(--danger); }
+  .chip.teal { background: var(--accent-bg); color: var(--accent); }
+  .chip.ok { background: var(--success-bg); color: var(--success); }
+  .chip.info { background: var(--info-bg); color: var(--info); }
+  .pill { display: inline-block; font-size: 11.5px; color: var(--disc); background: var(--disc-bg); border: 1px dashed var(--line-strong); border-radius: 999px; padding: 3px 9px; }
+  .muted { color: var(--muted); }
+  .small { font-size: 11.5px; }
+  .h { font-weight: 700; font-size: 15px; margin: 0; }
+  .sec-title { font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 4px 0 0; }
+  .line { height: 8px; background: #D9DEE2; border-radius: 4px; }
+  .field { border: 1.5px solid var(--line-strong); border-radius: 10px; padding: 10px; background: var(--paper); min-height: 40px; }
+  .field.lg { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 18px; letter-spacing: .3em; }
+  .label { font-size: 12px; font-weight: 700; margin-bottom: -4px; }
+  .lockbox { border: 1.5px dashed var(--line-strong); border-radius: 12px; padding: 12px; background: var(--box-2); display: flex; gap: 10px; align-items: flex-start; }
+  .code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 38px; font-weight: 700; letter-spacing: .25em; text-align: center; padding: 6px 0; }
+  .ic { width: 16px; height: 16px; flex: none; vertical-align: -3px; }
+  .ic.lg { width: 22px; height: 22px; }
+  .msg { max-width: 86%; padding: 8px 10px; border-radius: 14px; font-size: 13px; }
+  .msg .who { display: block; font-size: 10.5px; font-weight: 700; color: var(--muted); margin-bottom: 2px; }
+  .msg.g { align-self: flex-end; background: var(--ink); color: #fff; border-bottom-right-radius: 4px; }
+  .msg.g .who { color: #C9D1D8; }
+  .msg.a { align-self: flex-start; background: var(--box-2); border-bottom-left-radius: 4px; }
+  .msg.s { align-self: stretch; max-width: 100%; background: var(--info-bg); color: #163F74; border-radius: 12px; }
+  .msg.s .who { color: var(--info); }
+  .composer { display: flex; gap: 8px; padding: 10px 12px 14px; border-top: 1px solid var(--line); }
+  .composer .field { flex: 1; color: var(--muted); padding: 9px 10px; min-height: 0; }
+  .steps { display: flex; gap: 4px; }
+  .steps span { flex: 1; text-align: center; font-size: 11px; padding: 5px 2px; border-radius: 6px; background: var(--box); font-weight: 600; }
+  .steps .done { background: var(--success-bg); color: var(--success); }
+  .steps .now { background: var(--ink); color: #fff; }
+  .sum { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .sum td { padding: 5px 0; border-bottom: 1px solid var(--line); }
+  .sum td:last-child { text-align: right; }
+  .sum tr:last-child td { font-weight: 700; border-bottom: 0; }
+  .opt { border: 1.5px solid var(--line-strong); border-radius: 10px; padding: 9px 10px; text-align: center; font-weight: 600; font-size: 13px; }
+  .opt.sel { border-color: var(--ink); background: var(--ink); color: #fff; }
+  .opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chips .opt { padding: 6px 10px; font-size: 12.5px; }
+  .meter { height: 10px; border-radius: 999px; background: var(--box); overflow: hidden; }
+  .meter i { display: block; height: 100%; width: 64%; background: var(--accent); }
+  .list { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .list > div { padding: 9px 10px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .list > div:last-child { border-bottom: 0; }
+  .list b { font-size: 13px; }
+  .tabs { display: flex; gap: 14px; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .tabs span { padding: 6px 0 8px; color: var(--muted); }
+  .tabs .on { color: var(--ink); font-weight: 700; border-bottom: 2.5px solid var(--ink); }
+  .qr { width: 76px; height: 76px; flex: none; border-radius: 6px; background:
+      repeating-linear-gradient(90deg, #5B6570 0 6px, transparent 6px 12px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,.75) 0 6px, transparent 6px 12px), #5B6570; }
+  .ws { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--line-strong); border-radius: 999px; padding: 5px 10px; font-size: 12.5px; font-weight: 700; }
+  .ws::after { content: ""; width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--ink); }
+  .scrim { position: absolute; inset: 0; background: rgba(27,31,36,.45); }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--paper); border-radius: 18px 18px 0 0; padding: 10px 14px 22px; display: flex; flex-direction: column; gap: 8px; }
+  .grab { width: 40px; height: 4px; border-radius: 4px; background: #B8C0C7; margin: 0 auto 4px; }
+  .wsrow { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; }
+  .wsrow.cur { border: 2px solid var(--ink); }
+  .av { width: 32px; height: 32px; border-radius: 8px; background: var(--box); flex: none; }
+  .mk {
+    display: inline-flex; align-items: center; justify-content: center; flex: none;
+    width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: #fff;
+    font-size: 10.5px; font-weight: 700; margin-left: 4px; vertical-align: middle; line-height: 1;
+  }
+
+  figcaption { width: 100%; max-width: 360px; margin-top: 12px; }
+  figcaption h2 { font-size: 1rem; margin: 0 0 2px; }
+  figcaption .meta { font-size: 0.8rem; color: var(--muted); margin: 0 0 6px; }
+  figcaption ol { margin: 0; padding-left: 20px; font-size: 0.85rem; }
+  figcaption li { margin-bottom: 3px; }
+  footer { max-width: 1200px; margin: 0 auto; padding: 0 16px 40px; color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-lock" viewBox="0 0 24 24"><path d="M7.5 10V7.5a4.5 4.5 0 0 1 9 0V10" fill="none" stroke="currentColor" stroke-width="2"/><rect x="5" y="10" width="14" height="10" rx="2" fill="currentColor"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="page">
+  <h1>Guidesk wireframes</h1>
+  <p class="status">Draft v0.1 · low fidelity · provisional · last updated 2026-11-14</p>
+  <div class="intro">
+    <section class="panel" aria-labelledby="about">
+      <h2 id="about">What this is</h2>
+      <p>Twelve key mobile screens, drawn as grey boxes to agree on structure, content, and behavior before any visual design. The visual brand is not decided (OQ-11), so colors, names, and the logo are placeholders.</p>
+      <p>The sample property is fictional: <strong>Casa Colibrí</strong>, Playa Sámara, Guanacaste, Costa Rica. Host: Ana. Guest: Emily. All names are fictional.</p>
+      <p>Details: <a href="user-flows.md">user flows</a> · <a href="screens.md">screen inventory</a> · <a href="design-system.md">design system</a> · <a href="principles-and-ia.md">principles and IA</a>.</p>
+    </section>
+    <section class="panel" aria-labelledby="legend">
+      <h2 id="legend">How to read it</h2>
+      <ul>
+        <li>Crossed grey boxes are photos or images.</li>
+        <li>Numbered circles <span class="mk" aria-hidden="true">1</span> match the notes under each screen.</li>
+        <li>Dashed pills are commission disclosures (PC-07).</li>
+        <li>Dashed boxes with a lock are restricted fields (SEC-01 to SEC-04).</li>
+        <li>Screen IDs (for example G-01) refer to the screen inventory.</li>
+      </ul>
+    </section>
+    <nav class="panel" aria-labelledby="toc">
+      <h2 id="toc">Screens</h2>
+      <ol class="toc">
+        <li><a href="#wf-1">Guide home</a></li>
+        <li><a href="#wf-2">Verify for access</a></li>
+        <li><a href="#wf-3">Access code shown</a></li>
+        <li><a href="#wf-4">Guest chat</a></li>
+        <li><a href="#wf-5">Explore and experiences</a></li>
+        <li><a href="#wf-6">Extra: checkout start</a></li>
+        <li><a href="#wf-7">Host onboarding questions</a></li>
+        <li><a href="#wf-8">Guide draft review</a></li>
+        <li><a href="#wf-9">Share the guide</a></li>
+        <li><a href="#wf-10">Inbox with a draft</a></li>
+        <li><a href="#wf-11">Copilot</a></li>
+        <li><a href="#wf-12">Workspace switcher</a></li>
+      </ol>
+    </nav>
+  </div>
+</header>
+
+<main class="grid">
+
+<!-- 1. Guest guide home -->
+<figure class="wf" id="wf-1" aria-labelledby="wf-1-t">
+  <div class="phone" role="img" aria-label="Wireframe: guest guide home for Casa Colibrí">
+    <div class="sb" aria-hidden="true"><span>9:41 pm</span><span>4G</span></div>
+    <div class="ab"><div class="t">Casa Colibrí<small>Playa Sámara, Guanacaste</small></div><span class="chip">ES · EN</span><span class="btn sos">Emergency</span><span class="mk">1</span></div>
+    <div class="bd">
+      <div class="card soft">
+        <div class="between"><span class="h">Your stay</span><span class="mk">2</span></div>
+        <div>Fri 12 Dec – Fri 19 Dec</div>
+        <div class="muted small">Check-in from 3:00 pm · Checkout by 11:00 am (Sámara time)</div>
+      </div>
+      <div class="img" style="height:88px" aria-hidden="true"></div>
+      <div class="between"><p class="sec-title">Start here</p><span class="mk">3</span></div>
+      <div class="tiles">
+        <div class="tile">Arrival and access <small><svg class="ic"><use href="#i-lock"/></svg> Codes for verified guests</small></div>
+        <div class="tile">Wi-Fi <small>Network: CasaColibri_5G</small></div>
+        <div class="tile">House rules <small>Quiet after 10 pm</small></div>
+        <div class="tile">Appliances <small>AC, washer, stove</small></div>
+        <div class="tile">Amenities <small>Pool, BBQ</small></div>
+        <div class="tile">Parking <small>2 cars inside gate</small></div>
+        <div class="tile">Checkout <small>5 quick steps</small></div>
+        <div class="tile">Emergency <small>911 and contacts</small></div>
+      </div>
+      <div class="row small muted"><span class="grow">Your access details are also in your Airbnb messages.</span><span class="mk">4</span></div>
+    </div>
+    <div class="tb"><span class="on">Guide</span><span>Explore</span><span>Extras</span><span>Ask <b class="mk" style="margin:0">5</b></span></div>
+  </div>
+  <figcaption>
+    <h2 id="wf-1-t">1. Guide home</h2>
+    <p class="meta">G-01 · Guest (Emily) · MVP</p>
+    <ol>
+      <li>Emergency is one tap away on every screen; the language switch sits next to it.</li>
+      <li>The stay card appears only on a stay link. Times use the property's time zone.</li>
+      <li>Arrival, Wi-Fi, and house rules come first and are in the first HTML response, readable within 5 s on slow 3G. The photo is small, so it is never a slow LCP element.</li>
+      <li>The guide is optional: essential details are also in the booking messages (PC-01).</li>
+      <li>Ask loads the chat code only when tapped (≤ 100 KB initial JavaScript).</li>
+    </ol>
+  </figcaption>
+</figure>
+
+<!-- 2. Verify -->
+<figure class="wf" id="wf-2" aria-labelledby="wf-2-t">
+  <div class="phone" role="img" aria-label="Wireframe: guest verification before showing the lockbox code">
+    <div class="sb" aria-hidden="true"><span>9:43 pm</span><span>4G</span></div>
+    <div class="ab"><span class="muted">&lsaquo;</span><div class="t">Arrival and access</div><span class="btn sos">Emergency</span></div>
+    <div class="bd">
+      <div class="img" style="height:110px" aria-hidden="true"></div>
+      <p class="small muted" style="margin:0">Step 2 of 3 · The lockbox is on the left pillar of the white gate.</p>
+      <div class="lockbox">
+        <svg class="ic lg" aria-hidden="true"><use href="#i-lock"/></svg>
+        <div><b>Lockbox code</b><br><span class="small">Enter the 6-character code from your booking messages to show it.</span></div>
+        <span class="mk">1</span>
+      </div>
+      <div class="label">Access code <span class="mk">2</span></div>
+      <div class="field lg">K7Q2M4</div>
+      <div class="btn">Verify</div>
+      <p class="small muted" style="margin:0">Find it in Ana's message in Airbnb, titled "Your guide access code". <span class="mk">3</span></p>
+      <div class="box small">After 5 wrong tries, verification pauses for 15 minutes and Ana is told. <span class="mk">4</span></div>
+      <p class="small muted" style="margin:0">Can't find it? Your access details are also in your Airbnb messages. <span class="mk">5</span></p>
+    </div>
+    <div class="tb"><span class="on">Guide</span><span>Explore</span><span>Extras</span><span>Ask</span></div>
+  </div>
+  <figcaption>
+    <h2 id="wf-2-t">2. Verify for access</h2>
+    <p class="meta">G-04 · Guest · MVP</p>
+    <ol>
+      <li>The lock is explained in words. With a property link or QR code, this box instead says "Codes appear only with your stay link".</li>
+      <li>One field, paste allowed, no split boxes, so it works with screen readers and password managers.</li>
+      <li>Placeholder method: a code shared in the booking thread. The real method is decided in spec 004 (OQ-20).</li>
+      <li>Brute-force protection is visible only when needed (SEC-03); shown here for review.</li>
+      <li>Fallback to the platform thread on every locked screen (PC-01).</li>
+    </ol>
+  </figcaption>
+</figure>
+
+<!-- 3. Access code shown -->
+<figure class="wf" id="wf-3" aria-labelledby="wf-3-t">
+  <div class="phone" role="img" aria-label="Wireframe: lockbox code revealed to a verified guest">
+    <div class="sb" aria-hidden="true"><span>9:44 pm</span><span>4G</span></div>
+    <div class="ab"><span class="muted">&lsaquo;</span><div class="t">Arrival and access</div><span class="btn sos">Emergency</span></div>
+    <div class="bd">
+      <div class="row"><div class="img" style="width:72px;height:56px" aria-hidden="true"></div><div class="grow small"><b>1. Park at the white gate</b><br>Gate opens by hand. Close it behind you.</div></div>
+      <div class="row"><div class="img" style="width:72px;height:56px" aria-hidden="true"></div><div class="grow small"><b>2. Lockbox, left pillar</b><br>Slide the cover down.</div></div>
+      <div class="card" style="border:2px solid var(--ink)">
+        <div class="between"><b>Lockbox code</b><span class="chip ok"><svg class="ic"><use href="#i-check"/></svg> Verified</span></div>
+        <div class="code" aria-label="2, 7, 0, 4">2704 <span class="mk">1</span></div>
+        <div class="row"><span class="btn sec sm grow">Copy code</span><span class="btn sec sm">Hide</span></div>
+        <p class="small muted" style="margin:0">Shown because you're a verified guest for Fri 12 – Fri 19 Dec. <span class="mk">2</span></p>
+        <p class="small muted" style="margin:0">Ana can see when the code was viewed. <span class="mk">3</span></p>
+      </div>
+      <div class="row small"><b class="grow">3. Keys are in the bowl by the door</b></div>
+      <div class="box small">Not saved for offline use. Without signal, the code is in your Airbnb messages. <span class="mk">4</span></div>
+    </div>
+    <div class="tb"><span class="on">Guide</span><span>Explore</span><span>Extras</span><span>Ask</span></div>
+  </div>
+  <figcaption>
+    <h2 id="wf-3-t">3. Access code shown</h2>
+    <p class="meta">G-05 · Guest · MVP</p>
+    <ol>
+      <li>Large digits after a deliberate "Show code" tap; screen readers read them one by one.</li>
+      <li>Shown only inside the stay window (FR-04.4, SEC-01).</li>
+      <li>Every reveal is logged for the host (SEC-16).</li>
+      <li>Never cached by the CDN or the offline service worker (SEC-04). A "Save until checkout" option appears only if OQ-28 allows it.</li>
+    </ol>
+  </figcaption>
+</figure>
+
+<!-- 4. Chat -->
+<figure class="wf" id="wf-4" aria-labelledby="wf-4-t">
+  <div class="phone" role="img" aria-label="Wireframe: guest chat with an answer and an escalation holding reply">
+    <div class="sb" aria-hidden="true"><span>11:02 pm</span><span>4G</span></div>
+    <div class="ab"><span class="muted">&lsaquo;</span><div class="t">Assistant<small>Casa Colibrí · answers from Ana's guide</small></div><span class="btn sos">Emergency</span><span class="mk">1</span></div>
+    <div class="bd">
+      <div class="msg a"><span class="who">Assistant</span>Hi! I'm the virtual assistant for Casa Colibrí. I answer from Ana's guide. In an emergency, call 911. <span class="mk">2</span></div>
+      <div class="msg g"><span class="who">You</span>How does the bedroom AC work?</div>
+      <div class="msg a"><span class="who">Assistant</span>Use the white remote on the nightstand. Press Power, then Mode until you see the snowflake. 24 °C works well at night.<br><a href="#wf-4" class="small">From: Appliances and how-tos</a> <span class="mk">3</span></div>
+      <div class="msg g"><span class="who">You</span>The bedroom AC is leaking water on the floor</div>
+      <div class="msg s"><span class="who">Assistant · Ana has been notified</span>I've let Ana know. She'll reply here as soon as she can. If water is near an outlet, switch the AC off at the wall switch by the door. You can also message Ana in Airbnb. <span class="mk">4</span></div>
+      <div class="row small muted"><span class="chip info">Waiting for Ana</span><span class="grow"></span><span class="mk">5</span></div>
+    </div>
+    <div class="composer"><div class="field">Ask about the house…</div><span class="btn sm">Send</span></div>
+  </div>
+  <figcaption>
+    <h2 id="wf-4-t">4. Guest chat</h2>
+    <p class="meta">G-06 · Guest · MVP</p>
+    <ol>
+      <li>Opened from Ask; the chat code loads now, and a skeleton shows while it does.</li>
+      <li>The guest always knows who is talking: "Assistant" or the host's name.</li>
+      <li>Answers link to the guide section they used (FR-05.2). Here "Appliances" is set to auto.</li>
+      <li>A malfunction is a mandatory escalation (PRD §6.2): holding reply within 2 s, host alerted by push and email. Safety tips appear only if the guide contains them. No offers during an escalation.</li>
+      <li>The host's reply appears here the next time Emily opens the chat. No phone or email is asked (PC-03).</li>
+    </ol>
+  </figcaption>
+</figure>
+
+<!-- 5. Explore -->
+<figure class="wf" id="wf-5" aria-labelledby="wf-5-t">
+  <div class="phone" role="img" aria-label="Wireframe: explore tab with host tips and affiliate experiences with disclosures">
+    <div class="sb" aria-hidden="true"><span>8:15 am</span><span>4G</span></div>
+    <div class="ab"><div class="t">Explore</div><span class="chip">ES · EN</span><span class="btn sos">Emergency</span></div>
+    <div class="bd">
+      <div class="between"><p class="sec-title">Ana's tips</p><span class="mk">1</span></div>
+      <div class="card"><b>Sunset at Playa Carrillo</b><span class="small muted">15 min by car. Ana's favorite spot.</span></div>
+      <div class="card"><b>Soda Las Brisas</b><span class="small muted">Casado lunch, about $8.</span><span><span class="pill">Ana gets a benefit from this business</span> <span class="mk">2</span></span></div>
+      <div class="between"><p class="sec-title">Experiences near Sámara</p><span class="mk">3</span></div>
+      <div class="card">
+        <div class="img" style="height:48px" aria-hidden="true"></div>
+        <b>Waterfall and canopy tour</b>
+        <span class="small muted">Civitatis · 5 hours · from $79</span>
+        <span class="pill">Guidesk earns a commission if you book</span>
+      </div>
+      <div class="card">
+        <div class="img" style="height:48px" aria-hidden="true"></div>
+        <b>Turtle nesting night tour</b>
+        <span class="small muted">Viator · 3 hours · from $55</span>
+        <span class="pill">Guidesk earns a commission if you book</span>
+        <div class="row"><span class="btn sec sm grow">Book on Viator</span><span class="mk">4</span></div>
+      </div>
+    </div>
+    <div class="tb"><span>Guide</span><span class="on">Explore</span><span>Extras</span><span>Ask</span></div>
+  </div>
+  <figcaption>
+    <h2 id="wf-5-t">5. Explore and experiences</h2>
+    <p class="meta">G-07 · Guest · MVP</p>
+    <ol>
+      <li>The host's own tips come first; the host can hide categories and pin recommendations (FR-09.2).</li>
+      <li>When Ana declares a benefit from a business, the disclosure appears automatically (PC-07).</li>
+      <li>Every affiliate card shows the disclosure in plain view, not behind a tap (FR-09.3). If hosts share commissions (OQ-08), the text changes to "Ana and Guidesk earn a commission".</li>
+      <li>Opens the partner site in a new tab with no referrer, so the guide link never leaks (SEC-02). The guest books and pays there.</li>
+    </ol>
+  </figcaption>
+</figure>
+
+<!-- 6. Checkout start -->
+<figure class="wf" id="wf-6" aria-labelledby="wf-6-t">
+  <div class="phone" role="img" aria-label="Wireframe: confirmed airport pickup ready for payment with Tilopay">
+    <div class="sb" aria-hidden="true"><span>10:20 am</span><span>4G</span></div>
+    <div class="ab"><span class="muted">&lsaquo;</span><div class="t">Extras</div><span class="btn sos">Emergency</span></div>
+    <div class="bd">
+      <div class="img" style="height:84px" aria-hidden="true"></div>
+      <p class="h">Airport pickup from Liberia (LIR) <span class="mk">1</span></p>
+      <div class="steps"><span class="done">Requested</span><span class="done">Confirmed</span><span class="now">Pay</span></div>
+      <div class="box small">Ana confirmed: Fri 12 Dec, 4:30 pm, up to 4 people with luggage. <span class="mk">2</span></div>
+      <table class="sum">
+        <tr><td>Airport pickup</td><td>USD 85.00</td></tr>
+        <tr><td>Taxes and fees</td><td>USD 11.05</td></tr>
+        <tr><td>Total</td><td>USD 96.05</td></tr>
+      </table>
+      <span class="pill">Offered by Ana. Guidesk receives a service fee.</span>
+      <div class="btn">Pay securely with Tilopay <span class="mk">3</span></div>
+      <p class="small muted" style="margin:0">You'll enter your card on Tilopay's page. Guidesk never sees your card. <span class="mk">4</span></p>
+      <div class="between"><span class="btn ghost small">Cancel request</span><span class="small muted">Optional. Your stay never depends on extras.</span></div>
+    </div>
+    <div class="tb"><span>Guide</span><span>Explore</span><span class="on">Extras</span><span>Ask</span></div>
+  </div>
+  <figcaption>
+    <h2 id="wf-6-t">6. Extra: checkout start</h2>
+    <p class="meta">G-09 · Guest · MVP (request), month 4 (payment)</p>
+    <ol>
+      <li>An airport pickup, because early check-in and late checkout wait for the legal review before checkout (OQ-35, FR-13.6). Amounts are illustrative.</li>
+      <li>Charged only after the host confirms, or when the host's rules pre-approve (FR-13.2). The total includes taxes and fees before paying (FR-13.4).</li>
+      <li>Opens Tilopay's hosted page (ADR-0007). Back in the guide, the order shows "Confirming your payment…" until the server verifies it (SEC-21).</li>
+      <li>Before month 4, or without host payouts, this reads "Ana will arrange payment with you" (FR-08.2).</li>
+    </ol>
+  </figcaption>
+</figure>
+
+<!-- 7. Onboarding (Spanish) -->
+<figure class="wf" id="wf-7" aria-labelledby="wf-7-t">
+  <div class="phone" role="img" aria-label="Wireframe: host onboarding questions, shown in Spanish" lang="es">
+    <div class="sb" aria-hidden="true"><span>7:30 am</span><span>4G</span></div>
+    <div class="ab"><div class="box" style="width:28px;height:28px;padding:0" aria-hidden="true"></div><div class="t">Bienvenida, Ana</div><span class="btn ghost small">Omitir</span><span class="mk">1</span></div>
+    <div class="bd">
+      <p class="h">Cuéntanos un poco (opcional) <span class="mk">2</span></p>
+      <p class="small muted" style="margin:0">Tres preguntas para preparar tu cuenta. Puedes cambiarlas después.</p>
+      <div class="label">¿Cuántas propiedades administras?</div>
+      <div class="opts"><div class="opt sel">1–2</div><div class="opt">3–10</div><div class="opt">10+</div></div>
+      <div class="label">¿Usas un PMS? <span class="mk">3</span></div>
+      <div class="chips"><div class="opt sel">Ninguno</div><div class="opt">Beds24</div><div class="opt">Hostex</div><div class="opt">Hostaway</div><div class="opt">Guesty</div><div class="opt">Otro</div></div>
+      <div class="label">País e idioma <span class="mk">4</span></div>
+      <div class="row"><div class="field grow">Costa Rica ▾</div><div class="field grow">Español ▾</div></div>
+      <div class="box small">Con 1–2 propiedades te ayudamos a crear tu primera guía pegando el texto de tu anuncio. <span class="mk">5</span></div>
+      <div class="btn">Continuar</div>
+      <span class="btn ghost small">Omitir por ahora</span>
+    </div>
+  </div>
+  <figcaption>
+    <h2 id="wf-7-t">7. Host onboarding questions</h2>
+    <p class="meta">A-04 · Host (Ana) · MVP · shown in Spanish, Ana's language</p>
+    <ol>
+      <li>Skippable at every point; the target is under 2 minutes from sign-up to the first property (spec 001 SC-001).</li>
+      <li>"Tell us a little (optional)": at most three questions (FR-005).</li>
+      <li>"Do you use a PMS?" The list plus "None" and "Other"; answers also help prioritize importers (FR-006).</li>
+      <li>Language defaults to the browser's. Spanish labels run longer, so options wrap instead of truncating.</li>
+      <li>The answers choose the path: individual host here, manager path for 10+ or a PMS.</li>
+    </ol>
+  </figcaption>
+</figure>
+
+<!-- 8. Draft review -->
+<figure class="wf" id="wf-8" aria-labelledby="wf-8-t">
+  <div class="phone" role="img" aria-label="Wireframe: guide draft review with completeness score and section status">
+    <div class="sb" aria-hidden="true"><span>7:52 am</span><span>4G</span></div>
+    <div class="ab"><span class="muted">&lsaquo;</span><div class="t">Casa Colibrí<small>Guide draft · not published</small></div><span class="mk">1</span></div>
+    <div class="bd">
+      <div class="card soft">
+        <div class="between"><b>64% complete</b><span class="mk">2</span></div>
+        <div class="meter" aria-hidden="true"><i></i></div>
+        <span class="small">Guests often ask about things your draft is missing:</span>
+        <span class="small">· How does the AC work? · Where do we park? · Photo of the lockbox</span>
+        <div class="row"><span class="btn sm grow">Fill gaps with the interview</span><span class="btn sec sm">Voice note</span></div>
+      </div>
+      <div class="between"><p class="sec-title">Sections</p><span class="mk">3</span></div>
+      <div class="list">
+        <div><span><b>Arrival and access</b><br><span class="small muted">From your listing</span></span><span class="chip">Needs review</span></div>
+        <div><span><b>Wi-Fi</b><br><span class="small muted">English: machine translation</span></span><span class="chip ok">Ready</span></div>
+        <div><span><b>House rules</b><br><span class="small muted">From your listing</span></span><span class="chip ok">Ready</span></div>
+        <div><span><b>Appliances and how-tos</b></span><span class="chip red">Missing</span></div>
+        <div><span><b>Parking and transport</b></span><span class="chip red">Missing</span></div>
+        <div><span><b>Emergency and contacts</b><br><span class="small muted">Shared by your workspace</span></span><span class="chip ok">Ready</span></div>
+      </div>
+      <div class="lockbox small"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span>Add the lockbox code in a locked field. Codes never go in the interview. <span class="mk">4</span></span></div>
+      <div class="row"><span class="btn sec sm grow">Preview as guest</span><span class="btn sm grow">Publish</span><span class="mk">5</span></div>
+    </div>
+    <div class="tb"><span>Home</span><span>Inbox</span><span class="on">Properties</span><span>Extras</span><span>More</span></div>
+  </div>
+  <figcaption>
+    <h2 id="wf-8-t">8. Guide draft review</h2>
+    <p class="meta">H-12 · Host (Ana) · MVP</p>
+    <ol>
+      <li>Imports and pasted text always produce a draft; nothing publishes automatically (FR-03.10).</li>
+      <li>The completeness score names the missing topics guests ask about most (FR-03.6). Number and list are text; the bar is decoration.</li>
+      <li>Each section shows its status, its source, shared blocks (FR-03.8), and translation status (FR-03.5). Three more sections are below the fold.</li>
+      <li>Restricted values go only into masked locked fields, never to the AI (FR-03.9, constitution VI).</li>
+      <li>Only owners and admins publish. Pre-publish checks warn but never publish for the host.</li>
+    </ol>
+  </figcaption>
+</figure>
+
+<!-- 9. Share -->
+<figure class="wf" id="wf-9" aria-labelledby="wf-9-t">
+  <div class="phone" role="img" aria-label="Wireframe: share the guide with a scheduled message template, QR poster, and stay links">
+    <div class="sb" aria-hidden="true"><span>8:05 am</span><span>4G</span></div>
+    <div class="ab"><span class="muted">&lsaquo;</span><div class="t">Share the guide<small>Casa Colibrí · published</small></div></div>
+    <div class="bd">
+      <div class="card">
+        <div class="between"><b>For every booking</b><span class="mk">1</span></div>
+        <div class="box small">Hi! Your guide to Casa Colibrí: guide.example/c/colibri. Check-in details are also in this chat.</div>
+        <div class="row"><span class="btn sm grow">Copy message</span><span class="chip">ES · EN</span></div>
+        <span class="small muted">Add to scheduled messages, sent after booking is confirmed.</span>
+      </div>
+      <div class="card">
+        <div class="between"><b>At the property</b><span class="mk">2</span></div>
+        <div class="row"><div class="qr" aria-hidden="true"></div><span class="small grow">Public guide only. Access codes are never shown from this QR code.</span></div>
+        <span class="btn sec sm">Download poster (PDF)</span>
+      </div>
+      <div class="card">
+        <div class="between"><b>For one stay</b><span class="mk">3</span></div>
+        <div class="between small"><span>Fri 12 – Fri 19 Dec · Airbnb</span><span class="btn sec sm">Copy stay link</span></div>
+        <div class="between small"><span>Sat 20 – Tue 23 Dec · Booking.com</span><span class="btn sec sm">Copy stay link</span></div>
+        <span class="small muted">Unlock codes during that stay only. Calendar synced 10 min ago.</span>
+      </div>
+      <div class="box small">The guide is optional. Keep check-in steps in platform messages too. <span class="mk">4</span></div>
+    </div>
+    <div class="tb"><span>Home</span><span>Inbox</span><span class="on">Properties</span><span>Extras</span><span>More</span></div>
+  </div>
+  <figcaption>
+    <h2 id="wf-9-t">9. Share the guide</h2>
+    <p class="meta">H-16 · Host (Ana) · MVP</p>
+    <ol>
+      <li>The property link goes into the platform's scheduled messages after confirmation, never before booking (PC-05). The domain is a placeholder.</li>
+      <li>The QR poster opens only public sections (SEC-01).</li>
+      <li>Stay links come from the iCal stays (FR-02.3). Copying one per booking is an interim design; see the gap on stay links without a PMS in the UX index.</li>
+      <li>The guide never replaces the platform thread (PC-01, PC-02).</li>
+    </ol>
+  </figcaption>
+</figure>
+
+<!-- 10. Inbox -->
+<figure class="wf" id="wf-10" aria-labelledby="wf-10-t">
+  <div class="phone" role="img" aria-label="Wireframe: host inbox with an escalation and a draft to approve">
+    <div class="sb" aria-hidden="true"><span>11:03 pm</span><span>4G</span></div>
+    <div class="ab"><span class="ws">Ana's homes · Owner</span><span class="grow" style="flex:1"></span><span class="box" style="width:26px;height:26px;padding:0" aria-hidden="true"></span></div>
+    <div class="bd">
+      <span class="btn sec">Paste a guest message</span>
+      <div class="tabs"><span class="on">Needs you (2)</span><span>All</span><span>Done</span><span class="mk">1</span></div>
+      <div class="card">
+        <div class="between"><span class="chip red">Malfunction</span><span class="small muted">2 min</span></div>
+        <b class="small">Casa Colibrí · 12–19 Dec · Guide chat <span class="mk">2</span></b>
+        <span class="small">"The bedroom AC is leaking water on the floor"</span>
+      </div>
+      <div class="card">
+        <div class="between"><span class="chip teal">Draft ready</span><span class="small muted">8 min</span></div>
+        <b class="small">Casa Colibrí · 20–23 Dec · Guide chat</b>
+        <span class="small muted">Guest: "Is there parking for two cars?"</span>
+        <div class="box small">Yes. There's room for two cars inside the gate. Please park on the gravel, not the grass.<br><span class="muted">From: Parking and transport · <u>Why this reply</u></span> <span class="mk">3</span></div>
+        <div class="row"><span class="btn sm grow">Approve</span><span class="btn sec sm">Edit</span><span class="btn sec sm">Reject</span><span class="mk">4</span></div>
+      </div>
+      <div class="box small">You've approved 5 parking replies without changes. Let the assistant answer parking questions on its own? <span class="mk">5</span><div class="row" style="margin-top:6px"><span class="btn sm">Turn on</span><span class="btn ghost small">Not now</span></div></div>
+    </div>
+    <div class="tb"><span>Home</span><span class="on badge" data-n="2">Inbox</span><span>Properties</span><span>Extras</span><span>More</span></div>
+  </div>
+  <figcaption>
+    <h2 id="wf-10-t">10. Inbox with a draft to approve</h2>
+    <p class="meta">H-20 and H-21 · Host (Ana, Marco's team) · MVP</p>
+    <ol>
+      <li>"Needs you" opens first: escalations, drafts, and extra requests. Reason chips are text, not only color.</li>
+      <li>Guide-chat guests have no name or contact data (PC-03), so items are labeled by property and stay.</li>
+      <li>"Why this reply" shows the section used, the topic, the autonomy setting, and the checks passed (FR-06.5).</li>
+      <li>One-tap approval; Edit re-runs the policy checks (FR-06.2).</li>
+      <li>The trust ladder: more autonomy is suggested only after unchanged approvals, never for mandatory categories (FR-07.2). The threshold of 5 is a starting value.</li>
+    </ol>
+  </figcaption>
+</figure>
+
+<!-- 11. Copilot -->
+<figure class="wf" id="wf-11" aria-labelledby="wf-11-t">
+  <div class="phone" role="img" aria-label="Wireframe: paste-to-reply copilot with a policy-checked draft">
+    <div class="sb" aria-hidden="true"><span>2:10 pm</span><span>4G</span></div>
+    <div class="ab"><span class="muted">&lsaquo;</span><div class="t">Copilot<small>Draft a reply for any platform chat</small></div><span class="mk">1</span></div>
+    <div class="bd">
+      <div class="label">Guest message</div>
+      <div class="field small">Hi Ana! Can we bring our small dog? He's very calm and house-trained.</div>
+      <div class="label">Property</div>
+      <div class="field">Casa Colibrí ▾</div>
+      <div class="label">Booking status <span class="mk">2</span></div>
+      <div class="opts" style="grid-template-columns:1fr 1fr"><div class="opt">Inquiry</div><div class="opt sel">Confirmed</div></div>
+      <div class="card">
+        <div class="between"><b class="small">Suggested reply</b><span class="chip ok"><svg class="ic"><use href="#i-check"/></svg> Passed checks</span></div>
+        <span class="small">Hi! Thanks for asking. Casa Colibrí doesn't allow pets, as noted in the house rules. Happy to help with anything else for your stay!</span>
+        <span class="small muted">From: House rules <span class="mk">3</span></span>
+        <span class="small muted">Checks: no links before booking · no off-platform payments · no promises of refunds or changes <span class="mk">4</span></span>
+      </div>
+      <div class="row"><span class="btn grow">Copy reply</span><span class="btn sec sm">Draft again</span></div>
+      <p class="small muted" style="margin:0">Paste it into the platform chat yourself. <span class="mk">5</span></p>
+    </div>
+    <div class="tb"><span>Home</span><span class="on">Inbox</span><span>Properties</span><span>Extras</span><span>More</span></div>
+  </div>
+  <figcaption>
+    <h2 id="wf-11-t">11. Copilot (paste to reply)</h2>
+    <p class="meta">H-22 · Host (Ana) · MVP</p>
+    <ol>
+      <li>The MVP bridge for platform chats without an integration (ADR-0003, FR-06.3).</li>
+      <li>Booking status matters: before booking, drafts contain no links or contact details (PC-05).</li>
+      <li>Grounded in the guide, with the source shown.</li>
+      <li>The same policy checks as automated messages (PC-14). A changed draft explains what was removed.</li>
+      <li>Copy and paste only; Guidesk never automates the platform chat (PC-12).</li>
+    </ol>
+  </figcaption>
+</figure>
+
+<!-- 12. Workspace switcher -->
+<figure class="wf" id="wf-12" aria-labelledby="wf-12-t">
+  <div class="phone" role="img" aria-label="Wireframe: workspace switcher sheet listing three workspaces with roles">
+    <div class="sb" aria-hidden="true"><span>9:12 am</span><span>4G</span></div>
+    <div class="ab"><span class="ws">Costa Stays · Agent</span><span class="mk">1</span></div>
+    <div class="bd" aria-hidden="true">
+      <div class="line" style="width:60%"></div><div class="card"><div class="line"></div><div class="line" style="width:70%"></div></div>
+      <div class="card"><div class="line"></div><div class="line" style="width:50%"></div></div>
+    </div>
+    <div class="tb"><span class="on">Inbox</span><span>Properties</span><span>More</span></div>
+    <div class="scrim" aria-hidden="true"></div>
+    <div class="sheet">
+      <div class="grab" aria-hidden="true"></div>
+      <div class="between"><b>Switch workspace</b><span class="mk">2</span></div>
+      <div class="wsrow cur"><div class="av" aria-hidden="true"></div><div class="grow"><b class="small">Costa Stays</b><br><span class="small muted">Marco's company · Agent</span></div><svg class="ic" aria-label="Current"><use href="#i-check"/></svg></div>
+      <div class="wsrow"><div class="av" aria-hidden="true"></div><div class="grow"><b class="small">Sámara Rentals</b><br><span class="small muted">Admin <span class="mk">3</span></span></div></div>
+      <div class="wsrow"><div class="av" aria-hidden="true"></div><div class="grow"><b class="small">Luisa's apartment</b><br><span class="small muted">Owner</span></div></div>
+      <span class="btn sec sm">+ Create workspace</span>
+      <p class="small muted" style="margin:0">Each workspace keeps its own properties, guests, and settings. <span class="mk">4</span></p>
+    </div>
+  </div>
+  <figcaption>
+    <h2 id="wf-12-t">12. Workspace switcher</h2>
+    <p class="meta">H-30 · Host (Luisa, co-host) · MVP</p>
+    <ol>
+      <li>The current workspace and role are always in the top bar (spec 001 FR-022). Agents get a 3-item bottom bar.</li>
+      <li>Two taps: open the sheet, pick a workspace. The new one loads in under 2 s (SC-007).</li>
+      <li>Roles are per workspace: agent in one, admin in another, owner of her own (FR-01.6).</li>
+      <li>Data never mixes between workspaces (FR-017). At sign-in, the last workspace used opens (FR-024).</li>
+    </ol>
+  </figcaption>
+</figure>
+
+</main>
+<footer>
+  <p>Guidesk UX documentation · Draft v0.1 · provisional. Brand, colors, and names are placeholders until OQ-11 is decided. Sample content is fictional.</p>
+</footer>
+</body>
+</html>

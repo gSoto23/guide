@@ -299,35 +299,47 @@ Notes:
 |---|---|
 | Security | Data classes, threat model, and controls SEC-01 to SEC-21 in the [security architecture](security.md). |
 | Performance | Targets, budgets, and degraded modes in the [performance architecture](performance.md). |
-| Authentication | Host auth for the portal (provider chosen in spec 001; see ADR-0004) with passkeys, MFA, and step-up re-authentication (SEC-05). Guests are anonymous, with a guide-scoped session plus verification for sensitive data (SEC-01 to SEC-03). |
+| Authentication | Host auth for the portal with Better Auth, self-hosted ([ADR-0008](adr/0008-authentication-better-auth.md)): passwordless sign-in, passkeys, MFA, and step-up re-authentication (SEC-05). Guests are anonymous, with a guide-scoped session plus verification for sensitive data (SEC-01 to SEC-03). |
 | Authorization | Role-based access per workspace (`owner`, `admin`, `agent`). RLS as defense in depth. |
 | Secrets | PMS tokens and API keys are encrypted at the application level (envelope encryption) and never logged. |
 | Idempotency | Every inbound webhook and every outbound message has an idempotency key, so retries never double-send. |
 | Internationalization | Spanish and English message catalogs; per-property time zone; money stored as integer minor units plus an ISO currency code. |
 | Observability | OpenTelemetry traces across API, worker, and LLM calls; structured logs; error tracking; an agent trace viewer in the back-office. |
 | Testing | Unit tests (domain), contract tests (adapters, with recorded fixtures), integration tests (API and DB), E2E tests (Playwright), and agent evals (golden conversations) gated in CI. |
-| Environments | `local` (Docker Compose for Postgres), `preview` (per pull request), `staging`, `production`. |
+| Environments | `local` (Docker Compose for Postgres and Mailpit), `preview` (portal per pull request, sharing the staging database), `staging`, `production`, on AWS `us-east-1` with SST ([ADR-0009](adr/0009-mvp-hosting-and-transactional-email.md)). |
 
-## 8. Repository layout (target)
+## 8. Repository layout
+
+Spec 001 built the portal, API, and worker, and the packages marked ✓. The rest arrive with
+later features.
 
 ```text
 guidesk/
 ├── .specify/                 # Spec Kit (constitution, templates, scripts)
 ├── specs/                    # One folder per feature: spec.md, plan.md, tasks.md, contracts/
 ├── docs/                     # Product, research, architecture, ADRs
+├── infra/                    # ✓ SST: network, database, services, router, email, secrets
 ├── apps/
-│   ├── portal/               # Host portal (Next.js)
+│   ├── portal/               # ✓ Host portal (Next.js)
 │   ├── guide/                # Guest guide PWA (Next.js)
-│   ├── api/                  # NestJS API + webhooks
-│   └── worker/               # Background jobs
+│   ├── api/                  # ✓ NestJS API + webhooks
+│   └── worker/               # ✓ Background jobs (pg-boss)
 ├── packages/
-│   ├── domain/               # Pure domain model + application services (no framework)
-│   ├── contracts/            # Zod schemas, OpenAPI, shared types
-│   ├── db/                   # Drizzle schema, migrations, RLS policies
+│   ├── domain/               # ✓ Pure domain model + application services (no framework)
+│   ├── contracts/            # ✓ Zod schemas, OpenAPI, shared types
+│   ├── db/                   # ✓ Drizzle schema, migrations, RLS policies
+│   ├── emails/               # ✓ Transactional email templates (React Email), Spanish and English
+│   ├── observability/        # ✓ Sentry and OpenTelemetry setup, with scrubbing
+│   ├── testing/              # ✓ Shared test helpers (disposable PostgreSQL with migrations)
 │   ├── agent/                # Prompts, tools, policy engine, eval harness
-│   ├── integrations/         # Adapters: ical, hospitable, hostaway, guesty, smoobu, channex
-│   ├── ui/                   # Shared React components
-│   ├── i18n/                 # Message catalogs
-│   └── config/               # tsconfig, eslint, prettier presets
+│   ├── integrations/         # ✓ Ports and adapters (auth and email so far); later: ical, hospitable, hostaway, guesty, smoobu, channex
+│   ├── ui/                   # Shared React components (scaffolded, empty so far)
+│   ├── i18n/                 # ✓ Message catalogs
+│   └── config/               # ✓ tsconfig, eslint, prettier presets
+├── e2e/                      # ✓ Playwright end-to-end and accessibility tests
+├── perf/                     # ✓ k6 load tests
 └── evals/                    # Golden conversations and graders
 ```
+
+Performance budgets are enforced in CI by the bundle-size check and Lighthouse CI on a local
+production build of the portal, until preview deployments exist ([performance](performance.md)).

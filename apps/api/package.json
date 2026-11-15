@@ -1,0 +1,43 @@
+{
+  "name": "@guidesk/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "node --env-file-if-exists=../../.env --watch --enable-source-maps dist/main.js",
+    "start": "node --enable-source-maps dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run",
+    "test:integration": "vitest run -c vitest.integration.config.ts"
+  },
+  "dependencies": {
+    "@better-auth/passkey": "^1.7.21",
+    "@guidesk/contracts": "workspace:*",
+    "@guidesk/db": "workspace:*",
+    "@guidesk/domain": "workspace:*",
+    "@guidesk/emails": "workspace:*",
+    "@guidesk/integrations": "workspace:*",
+    "@guidesk/observability": "workspace:*",
+    "@nestjs/common": "^12.4.2",
+    "@nestjs/core": "^12.4.2",
+    "@nestjs/platform-fastify": "^12.4.2",
+    "better-auth": "^1.7.21",
+    "drizzle-orm": "^0.45.4",
+    "fastify": "^5.12.8",
+    "pg": "^8.23.1",
+    "pg-boss": "^12.38.2",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@guidesk/config": "workspace:*",
+    "@guidesk/testing": "workspace:*",
+    "@nestjs/testing": "^12.4.2",
+    "@sentry/node": "^11.12.0",
+    "@testcontainers/postgresql": "^12.2.1",
+    "@types/pg": "^8.23.1"
+  }
+}

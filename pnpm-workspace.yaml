@@ -1,0 +1,17 @@
+packages:
+  - apps/*
+  - packages/*
+  - e2e
+
+# Supply-chain controls (SEC-12).
+# Dependency install scripts are blocked unless listed here as true.
+allowBuilds:
+  "@parcel/watcher": false
+  "@swc/core": false
+  cpu-features: false
+  esbuild: false
+  protobufjs: false
+  ssh2: false
+
+# Wait 3 days (in minutes) before installing a newly published version.
+minimumReleaseAge: 4320

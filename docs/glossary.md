@@ -14,17 +14,21 @@
 | **Channel** | Where a guest conversation happens: `guide_chat`, `airbnb`, `booking`, `vrbo`, or `direct`. |
 | **Channel manager** | Software that syncs listings, rates, availability, and bookings across OTAs. Guidesk is not a channel manager. |
 | **ChannelPort** | Guidesk's internal interface for receiving and sending guest messages. Each provider implements it in an adapter. |
+| **Completeness score** | A percentage shown in the guide builder that estimates how complete a guide is, with the missing topics guests ask about most (FR-03.6). |
 | **Constitution** | The non-negotiable project principles used by Spec Kit (`.specify/memory/constitution.md`). |
 | **Copilot** | The mode in which the agent drafts a reply for the host to send. In the MVP this includes paste-to-reply for OTA chats without integration. |
 | **Core Web Vitals** | Google's user-experience metrics for web pages: LCP (loading), INP (responsiveness), and CLS (visual stability). Guidesk's budgets are in the performance architecture. |
 | **Denial of wallet** | An attack that floods a paid service, such as the AI chat, to run up its costs. Countered by rate limits and budgets (SEC-07). |
 | **Design partner** | An early customer who uses the pilot and gives structured feedback. |
+| **Design token** | A named design value, such as a color or a spacing step, used by components instead of raw values. Guidesk's provisional tokens are in `docs/ux/design-system.md`. |
 | **Disclosure** | A UI notice that the host or Guidesk receives a commission or benefit from a recommended service. Required by policy. |
 | **Escalation** | Handing a conversation to a human (the host or their team). Some categories always escalate. |
 | **Eval** | An automated test of agent behavior against golden conversations and grading rubrics. |
 | **Guide** | The Guidesk digital guidebook for one property, served as a mobile web app (PWA). |
 | **Guide chat** | The chat with the agent inside the guide. The only guest channel fully owned by Guidesk. |
+| **Holding reply** | The short message the agent sends when it drafts or escalates instead of answering, telling the guest that the host will follow up. |
 | **iCal** | A calendar export feed provided by OTAs. Guidesk uses it in the MVP to learn stay dates. |
+| **Information architecture (IA)** | How screens and content are organized and connected: sitemaps, navigation, and labels. See `docs/ux/principles-and-ia.md`. |
 | **Knowledge base** | Everything Guidesk knows about a property: guide sections, facts, documents, catalog. |
 | **Member** | A user's membership in a workspace, with a role (`owner`, `admin`, `agent`). One user can be a member of several workspaces. |
 | **MoR** | Merchant of record. The legal entity that sells to the customer and handles payments. |
@@ -35,6 +39,7 @@
 | **PMS** | Property management system, e.g. Hostaway, Guesty, Hospitable, Smoobu. Professional managers run their operations and OTA messaging through it. |
 | **Policy engine** | Deterministic Guidesk code that decides what the agent may do (reply, draft, escalate) and checks every outgoing message. |
 | **Prompt caching** | A Claude API feature that reuses an unchanged prompt prefix (e.g. property knowledge) across requests at a lower cost. |
+| **Property link** | The guide link for a property, also behind its QR code. It shows public sections only; restricted fields stay locked (SEC-01). |
 | **PWA** | Progressive web app. A website that installs like an app and can work offline. |
 | **RAG** | Retrieval-augmented generation. Fetching relevant chunks of knowledge into the prompt. Not used in the MVP (full-context caching). At scale Guidesk moves to a hybrid: core facts stay in the prompt and long-tail knowledge is retrieved with pgvector (ADR-0005). |
 | **RLS** | Row-level security. PostgreSQL policies that restrict rows per tenant. |
@@ -42,12 +47,15 @@
 | **SEC-xx** | A security control defined in the security architecture and referenced by specs. |
 | **Sensitive field** | Property data such as door codes, Wi-Fi password, or alarm codes. Shown only to verified guests during their stay window. |
 | **Shared section** | Guide content defined once per workspace (e.g. policies, emergency contacts, checkout steps) that properties inherit and can override. |
-| **Spec Kit** | GitHub's open-source toolkit for Spec-Driven Development (the `specify` CLI and `/speckit.*` commands). |
+| **Spec Kit** | GitHub's open-source toolkit for Spec-Driven Development (the `specify` CLI and the `/speckit-*` skills for Claude Code). |
 | **SSRF** | Server-side request forgery: tricking a server into fetching an internal or unintended URL. |
 | **Stay** | Guidesk's canonical reservation: a property, dates, and minimal guest data. Sourced from iCal, a PMS, or manual entry. |
+| **Stay link** | A guide link for one stay, with an unguessable token that expires at checkout plus a short buffer. It can unlock restricted fields for a verified guest inside the stay window (SEC-01). |
 | **Stay window** | The period, around check-in through checkout, when sensitive information is available to a verified guest. |
 | **Step-up authentication** | Asking a signed-in user to authenticate again before a sensitive action. |
 | **STRIDE** | A threat-modeling checklist: spoofing, tampering, repudiation, information disclosure, denial of service, elevation of privilege. |
 | **Take rate** | Guidesk's revenue from a transaction divided by the transaction's gross value. |
 | **Tenant / Workspace** | A customer account (a host or a management company) that owns properties, members, and data. |
+| **Trust ladder** | The path by which a host gives the agent more autonomy per topic, from `draft` to `auto` to `full_auto`, as it proves itself. Mandatory escalation categories never move. |
 | **White-label connectivity** | A third-party certified OTA connection (e.g. Channex) that Guidesk can use under its own brand. |
+| **Wireframe** | A low-fidelity sketch of a screen's structure and content, without visual design. See `docs/ux/wireframes.html`. |

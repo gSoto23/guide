@@ -1,0 +1,31 @@
+# OS and editor files
+.DS_Store
+
+# Secrets: never commit real environment files
+.env
+.env.*
+!.env.example
+
+# Dependencies and build output
+node_modules/
+.turbo/
+.next/
+dist/
+coverage/
+
+# Claude Code local settings (may hold personal permissions or tokens)
+.claude/settings.local.json
+
+# Next.js generated types
+next-env.d.ts
+*.tsbuildinfo
+
+# SST
+.sst/
+
+# Playwright
+test-results/
+playwright-report/
+
+# Lighthouse CI reports (T100)
+.lighthouseci/
