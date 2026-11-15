@@ -11,13 +11,14 @@ import { Reflector } from "@nestjs/core";
 import type { FastifyRequest } from "fastify";
 import { and, eq } from "drizzle-orm";
 import { can, type Capability, type Role } from "@guidesk/domain";
-import { membership, type DbHandle } from "@guidesk/db";
+import { membership, workspace, type DbHandle } from "@guidesk/db";
 import { MfaGuard, StepUpGuard } from "../auth/step-up.guard.js";
 import { ApiProblem } from "../common/problem.js";
 import { DB_HANDLE } from "../database/database.module.js";
 import { SecurityLogService } from "../security-log/security-log.service.js";
 
 const CAPABILITY = "guidesk:capability";
+const ALLOW_PENDING = "guidesk:allowPendingDeletion";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 declare module "fastify" {
@@ -46,11 +47,16 @@ export class WorkspaceAccessGuard implements CanActivate {
     const workspaceId = (request.params as Record<string, string | undefined>).workspaceId ?? "";
     const [row] = UUID.test(workspaceId)
       ? await this.handle.db
-          .select({ role: membership.role })
+          .select({ role: membership.role, status: workspace.status })
           .from(membership)
+          .innerJoin(workspace, eq(workspace.id, membership.workspaceId))
           .where(and(eq(membership.workspaceId, workspaceId), eq(membership.userId, auth.user.id)))
           .limit(1)
       : [];
+    // A workspace pending deletion exists only for its owner (FR-027).
+    if (row && row.status === "pending_deletion" && row.role !== "owner") {
+      throw new ApiProblem(404, "not_found");
+    }
     if (!row) {
       await this.securityLog.record({
         type: "access.cross_workspace_denied",
@@ -62,6 +68,16 @@ export class WorkspaceAccessGuard implements CanActivate {
       throw new ApiProblem(404, "not_found");
     }
     request.workspaceRole = row.role;
+    if (
+      row.status === "pending_deletion" &&
+      !this.reflector.get<boolean | undefined>(ALLOW_PENDING, context.getHandler())
+    ) {
+      throw new ApiProblem(
+        409,
+        "workspace_pending_deletion",
+        "This workspace is scheduled for deletion. Restore it first.",
+      );
+    }
     const capability = this.reflector.get<Capability | undefined>(CAPABILITY, context.getHandler());
     if (capability && !can(row.role, capability)) {
       throw new ApiProblem(403, "forbidden", "Your role does not allow this action.");
@@ -76,6 +92,8 @@ export interface WorkspaceActionOptions {
   stepUp?: boolean;
   /** A second factor where the MFA threshold applies (contracts: MFA). */
   mfa?: boolean;
+  /** The route also works while the workspace is pending deletion (owner only: read, restore). */
+  allowPendingDeletion?: boolean;
 }
 
 /**
@@ -85,6 +103,7 @@ export interface WorkspaceActionOptions {
 export function WorkspaceAction(options: WorkspaceActionOptions = {}) {
   return applyDecorators(
     SetMetadata(CAPABILITY, options.capability),
+    SetMetadata(ALLOW_PENDING, options.allowPendingDeletion ?? false),
     UseGuards(
       WorkspaceAccessGuard,
       ...(options.stepUp ? [StepUpGuard] : []),

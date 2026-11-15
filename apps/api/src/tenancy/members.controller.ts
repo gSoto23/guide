@@ -1,41 +1,51 @@
-import { Controller, Get, Param } from "@nestjs/common";
-import { asc, eq } from "drizzle-orm";
-import { membership, user } from "@guidesk/db";
-import type { MemberList } from "@guidesk/contracts";
-import { RequestDb } from "../database/request-db.js";
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Req } from "@nestjs/common";
+import type { FastifyRequest } from "fastify";
+import {
+  changeRoleSchema,
+  type ChangeRoleBody,
+  type Member,
+  type MemberList,
+} from "@guidesk/contracts";
+import { ApiProblem } from "../common/problem.js";
+import { ZodValidationPipe } from "../common/zod.pipe.js";
+import { MembersService } from "./members.service.js";
 import { WorkspaceAction } from "./workspace-access.guard.js";
 
-const ROLE_ORDER = { owner: 0, admin: 1, agent: 2 } as const;
+function actorOf(request: FastifyRequest) {
+  if (!request.auth || !request.workspaceRole) throw new ApiProblem(401, "unauthenticated");
+  return { id: request.auth.user.id, role: request.workspaceRole };
+}
 
-/**
- * GET /api/v1/workspaces/{workspaceId}/members (contracts/http-api.md). Read-only for US3's team
- * screen; role changes and removal arrive with US5 (T092).
- */
+/** /api/v1/workspaces/{workspaceId}/members (contracts/http-api.md, T092). */
 @Controller("v1/workspaces/:workspaceId/members")
 export class MembersController {
-  constructor(private readonly requestDb: RequestDb) {}
+  constructor(private readonly members: MembersService) {}
 
   @Get()
   @WorkspaceAction({ capability: "members.manage" })
-  async list(@Param("workspaceId") workspaceId: string): Promise<MemberList> {
-    const rows = await this.requestDb
-      .current()
-      .select({
-        membershipId: membership.id,
-        userId: membership.userId,
-        role: membership.role,
-        joinedAt: membership.createdAt,
-        name: user.name,
-        email: user.email,
-      })
-      .from(membership)
-      .innerJoin(user, eq(user.id, membership.userId))
-      .where(eq(membership.workspaceId, workspaceId))
-      .orderBy(asc(membership.createdAt));
-    return {
-      members: rows
-        .sort((a, b) => ROLE_ORDER[a.role] - ROLE_ORDER[b.role])
-        .map((row) => ({ ...row, joinedAt: row.joinedAt.toISOString() })),
-    };
+  list(@Param("workspaceId") workspaceId: string): Promise<MemberList> {
+    return this.members.list(workspaceId);
+  }
+
+  @Patch(":membershipId")
+  @WorkspaceAction({ capability: "members.manage", stepUp: true, mfa: true })
+  changeRole(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("membershipId") membershipId: string,
+    @Body(new ZodValidationPipe(changeRoleSchema)) body: ChangeRoleBody,
+  ): Promise<Member> {
+    return this.members.changeRole(actorOf(request), workspaceId, membershipId, body.role);
+  }
+
+  @Delete(":membershipId")
+  @HttpCode(204)
+  @WorkspaceAction({ capability: "members.manage", stepUp: true, mfa: true })
+  async remove(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("membershipId") membershipId: string,
+  ): Promise<void> {
+    await this.members.remove(actorOf(request), workspaceId, membershipId);
   }
 }

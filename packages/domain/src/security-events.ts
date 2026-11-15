@@ -17,6 +17,7 @@ export const SECURITY_EVENT_TYPES = [
   "email.changed",
   "account.export_downloaded",
   "account.deletion_scheduled",
+  "account.deletion_cancelled",
   "account.deleted",
   "invitation.sent",
   "invitation.resent",

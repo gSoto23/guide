@@ -27,6 +27,12 @@ const TITLES: Record<ProblemCode, string> = {
   already_invited: "Already invited",
   email_mismatch: "Email does not match the invitation",
   idempotency_conflict: "Idempotency key conflict",
+  owner_must_transfer: "Transfer ownership first",
+  target_not_admin: "The new owner must be an admin",
+  target_mfa_required: "The new owner needs a second factor",
+  owns_shared_workspace: "Owns a workspace with other members",
+  email_in_use: "Email already in use",
+  workspace_pending_deletion: "Workspace scheduled for deletion",
 };
 
 const CODE_BY_STATUS: Record<number, ProblemCode> = {

@@ -71,7 +71,7 @@ export function WorkspaceSwitcher({
         onClick={() => setOpen((value) => !value)}
       >
         <span className="switcher-name" data-testid="current-workspace">
-          {current?.workspaceName}
+          {current?.workspaceName ?? t("none")}
         </span>
         {current ? <span className="switcher-role">{t(`roles.${current.role}`)}</span> : null}
         <span aria-hidden="true">▾</span>

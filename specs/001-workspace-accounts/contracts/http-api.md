@@ -84,11 +84,11 @@ Guidesk hooks on these endpoints:
 | `PUT /me/current-workspace` | any | must be a member | `{ workspaceId }`; records the last used workspace (FR-024) | 204, 404 |
 | `POST /me/step-up/challenge` | any | rate limit | `{ method: "email_otp" }`; emails a step-up code (passkey and TOTP step-up use `/api/auth/passkey/*` and `/api/auth/two-factor/verify-totp`) | 202, 429 |
 | `POST /me/step-up/verify` | any | rate limit, lockout | `{ method: "email_otp", code }`; returns `strongAuthAt` | 200, 403, 429 |
-| `POST /me/email-change` | any | SU | `{ newEmail }`; sends a code to the new address | 202, 409, 422 |
-| `POST /me/email-change/confirm` | any | — | `{ code }`; notifies the old address; revokes other sessions (FR-029) | 200, 410 |
-| `GET /me/export` | any | SU | JSON download of personal account data (FR-028) | 200 |
-| `DELETE /me` | any | SU | Schedules deletion in 30 days | 202, 409 (owns a workspace with members) |
-| `GET /me/security-events` | any | — | Own account events, cursor-paginated | 200 |
+| `POST /me/email-change` | any | SU | `{ newEmail }`; sends a code to the new address (5 per hour) | 202, 422, 429 |
+| `POST /me/email-change/confirm` | any | lockout | `{ code }`; notifies the old address; revokes other sessions (FR-029). An address another account uses answers `409 email_in_use` only here, after its code | 200, 403, 409, 410 |
+| `GET /me/export` | any | SU | JSON download of personal account data (FR-028): profile, onboarding, memberships, passkey names, sessions, devices, and own security events; never secrets | 200 |
+| `DELETE /me` | any | SU | Schedules deletion in 30 days and signs out everywhere; signing in again cancels it. Returns `{ purgeAfter }` | 202, 409 (`owns_shared_workspace`) |
+| `GET /me/security-events` | any | — | Own account events; `?limit` (≤ 100), `cursor` | 200 |
 
 ## Workspaces (`/api/v1/workspaces`)
 
@@ -97,18 +97,21 @@ Guidesk hooks on these endpoints:
 | `POST /workspaces` | any user | | | rate limit | `{ name }` (1–80 characters); the caller becomes owner and switches to it (FR-023). 5 per user per day | 201, 422, 429 |
 | `GET /workspaces/{workspaceId}` | ✓ | ✓ | ✓ | member | `{ id, name, status, role, createdAt }`, where `role` is the caller's | 200, 404 |
 | `PATCH /workspaces/{workspaceId}` | ✓ | ✓ | — | — | `{ name }`; returns the workspace | 200, 403, 404 |
-| `DELETE /workspaces/{workspaceId}` | ✓ | — | — | SU, MFA | `{ confirmName }`; sets `pending_deletion`; notifies members (FR-027) | 202, 403, 422 |
+| `DELETE /workspaces/{workspaceId}` | ✓ | — | — | SU, MFA | `{ confirmName }` (the exact name); sets `pending_deletion`, revokes open invitations, notifies members (FR-027). Returns `{ status, purgeAfter }` | 202, 403, 422 |
 | `POST /workspaces/{workspaceId}/restore` | ✓ | — | — | SU | Within 30 days | 200, 404, 410 |
-| `POST /workspaces/{workspaceId}/ownership-transfer` | ✓ | — | — | SU, MFA | `{ membershipId }`; the target must be an admin and satisfy MFA if required | 200, 409 |
-| `POST /workspaces/{workspaceId}/leave` | — | ✓ | ✓ | — | The owner gets 409 until ownership is transferred (FR-026) | 204, 409 |
+| `POST /workspaces/{workspaceId}/ownership-transfer` | ✓ | — | — | SU, MFA | `{ membershipId }`; the target must be an admin (`409 target_not_admin`) and, above the MFA threshold, have a second factor (`409 target_mfa_required`). The previous owner becomes an admin | 200, 409 |
+| `POST /workspaces/{workspaceId}/leave` | — | ✓ | ✓ | — | The owner gets `409 owner_must_transfer` until ownership is transferred (FR-026) | 204, 409 |
+
+While a workspace is pending deletion, members get `404` on all its routes, and the owner gets
+`409 workspace_pending_deletion` on every route except reading and restoring it.
 
 ## Members
 
 | Method and path | O | A | Ag | Guards | Purpose and body | Responses |
 |---|---|---|---|---|---|---|
 | `GET /workspaces/{workspaceId}/members` | ✓ | ✓ | — | — | Members with role and join date | 200 |
-| `PATCH /workspaces/{workspaceId}/members/{membershipId}` | ✓ | ✓ | — | SU, MFA | `{ role: "admin" or "agent" }`; never the owner's row (AC-SEC-003) | 200, 403, 404 |
-| `DELETE /workspaces/{workspaceId}/members/{membershipId}` | ✓ | ✓ | — | SU, MFA | Removes the member; access ends within 60 s (FR-025) | 204, 403, 404 |
+| `PATCH /workspaces/{workspaceId}/members/{membershipId}` | ✓ | ✓ | — | SU, MFA | `{ role: "admin" or "agent" }`; never the owner's row or one's own (AC-SEC-003; attempts on the owner are logged as denied) | 200, 403, 404 |
+| `DELETE /workspaces/{workspaceId}/members/{membershipId}` | ✓ | ✓ | — | SU, MFA | Removes the member; access ends on their next request (FR-025, SC-006) | 204, 403, 404 |
 
 ## Invitations
 
@@ -142,7 +145,7 @@ Implementation notes (US3):
 
 | Method and path | O | A | Ag | Purpose | Responses |
 |---|---|---|---|---|---|
-| `GET /workspaces/{workspaceId}/security-events` | ✓ | ✓ | — | Cursor-paginated events, filterable by type and date (FR-030) | 200, 403 |
+| `GET /workspaces/{workspaceId}/security-events` | ✓ | ✓ | — | `{ events, nextCursor }`, filterable with `?type`, `from`, `to`; each event shows its actor when the reader may see them (FR-030) | 200, 403 |
 
 ## Cross-cutting guarantees
 

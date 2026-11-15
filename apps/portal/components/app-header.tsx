@@ -10,14 +10,15 @@ export function AppHeader({ locale }: { locale: string }) {
   const t = useTranslations("workspace");
   const context = useMeContext();
   const me = context?.me;
-  if (!context || !me || me.memberships.length === 0) return null;
+  // Someone removed from their last workspace still sees the switcher, to create one (spec edge case).
+  if (!context || !me) return null;
   return (
     <header className="app-header">
       <WorkspaceSwitcher me={me} onChanged={context.refresh} />
       <nav aria-label="Guidesk">
         <Link href={`/${locale}/properties/new`}>{t("nav.home")}</Link>
         <Link href={`/${locale}/settings/members`}>{t("nav.team")}</Link>
-        <Link href={`/${locale}/settings/security`}>{t("nav.security")}</Link>
+        <Link href={`/${locale}/settings`}>{t("nav.settings")}</Link>
       </nav>
     </header>
   );

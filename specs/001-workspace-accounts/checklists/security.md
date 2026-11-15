@@ -33,10 +33,10 @@
 |---|---|---|---|
 | AC-SEC-001 | ✅ | `lockout.test.ts`, `step-up.test.ts`, `security-review.test.ts` | Email sign-in codes, email step-up codes, authenticator codes, and recovery codes all count toward the lock (5 failures in 15 minutes lock for 15 minutes). The counter is atomic. The owner gets a notice email, at most one per hour |
 | AC-SEC-002 | ✅ | `invitations.test.ts`, `us3-invitations.spec.ts` | Added with US3: another email gets `403 email_mismatch`, the invitation stays open for its owner, the attempt is logged as `invitation.accept_denied`, and the page shows only the workspace name. The public lookup returns only the workspace name, the inviter's display name, and the role |
-| AC-SEC-003 | ⚠️ | `tenancy.test.ts` | Request handlers cannot write memberships at all. The owner invariant (deferred trigger, now `SECURITY DEFINER`) and the one-owner index hold. Role and ownership endpoints come with US4 |
+| AC-SEC-003 | ✅ | `removal.test.ts`, `ownership.test.ts`, `tenancy.test.ts` | Added with US5: admins can't change or remove the owner (refused with `403` and logged as `denied`), and only the owner can transfer ownership. RLS policies and the ownership functions refuse the same in the database |
 | AC-SEC-004 | ✅ | `cross-tenant.test.ts`, `tenancy.test.ts`, `us4-switching.spec.ts` | Added with US4: every workspace endpoint, and every resource ID from another workspace, answers the same `404` as a missing one and logs `access.cross_workspace_denied`. Database refusals (`42501`) are mapped to `404` and logged too |
 | AC-SEC-005 | ⚠️ | `mfa-threshold.test.ts` | The MFA guard works, and enrolling a factor no longer counts as an MFA check. Door codes arrive in specs 002–003. No product route uses the guard yet |
-| AC-SEC-006 | ⚠️ | `sessions.test.ts` | Sessions are read from the database on every request (no cookie cache), and the caller's role is re-derived in every transaction. The removal flow is US4 |
+| AC-SEC-006 | ✅ | `removal.test.ts`, `us5-lifecycle.spec.ts` | Added with US5: a removed member's every session loses the workspace on its next request, because the role is re-derived from the membership row in every transaction |
 | AC-SEC-007 | ✅ | `otp.test.ts`, `lockout.test.ts`, `security-review.test.ts` | Same answer for known and unknown emails. Library endpoints that leaked timing (password reset, verify-email) are disabled. The per-email limit counts unknown emails too |
 | AC-SEC-008 | ✅ | `lockout.test.ts`, `rate-limit.test.ts`, `invitations.test.ts` | Sign-in codes: 5 per hour per email and 20 per hour per IP. Step-up codes: 5 per hour per user. Invitations (US3): 20 emails per workspace per hour and 3 resends per invitation per day |
 | AC-SEC-009 | ⏳ | — | No restricted values exist yet (spec 002 onward) |
@@ -61,7 +61,7 @@
 | V7.1 Documentation | ✅ | FR-015; research R5–R7 |
 | V7.2 Fundamental session security | ✅ | Sessions are server-side and checked against the database on every request. Tokens come from the library. Every sign-in creates a new session. A library rotation keeps the original sign-in time and assurance |
 | V7.3 Session timeout | ✅ | 7 days idle and 30 days absolute. The cap is enforced by the API's session guard and on the library's own endpoints, and a rotation cannot reset it (`sessions.test.ts`, `security-review.test.ts`) |
-| V7.4 Session termination | ✅ ⏳ | Sign-out; revoking one session or all others; removing a factor ends every other session. ⏳ An email change ending sessions comes with US5 (FR-029) |
+| V7.4 Session termination | ✅ | Sign-out; revoking one session or all others; removing a factor ends every other session; an email change ends every other session (US5, FR-029); account deletion ends all of them |
 | V7.5 Defenses against session abuse | ✅ | Re-authentication before sensitive changes. The session list shows device and approximate location. New-device alerts can no longer be suppressed with a crafted cookie |
 | V7.6 Federated re-authentication | N/A | Google is used only to sign in; step-up uses Guidesk's own factors |
 

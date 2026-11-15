@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { Inject, Injectable } from "@nestjs/common";
-import { eq } from "drizzle-orm";
+import { and, asc, eq, ne } from "drizzle-orm";
 import { defaultWorkspaceName } from "@guidesk/domain";
 import { membership, securityEvent, user, workspace, type DbHandle } from "@guidesk/db";
 import { DB_HANDLE } from "../database/database.module.js";
@@ -59,6 +59,29 @@ export class TenancyService {
       });
       return created;
     });
+  }
+
+  /**
+   * After a user leaves or loses a workspace: if it was their current one, point them at another
+   * membership, or at none (the portal then offers to create one).
+   */
+  async forgetWorkspace(userId: string, workspaceId: string): Promise<void> {
+    const [current] = await this.handle.db
+      .select({ last: user.lastWorkspaceId })
+      .from(user)
+      .where(eq(user.id, userId))
+      .limit(1);
+    if (current?.last !== workspaceId) return;
+    const [next] = await this.handle.db
+      .select({ workspaceId: membership.workspaceId })
+      .from(membership)
+      .where(and(eq(membership.userId, userId), ne(membership.workspaceId, workspaceId)))
+      .orderBy(asc(membership.createdAt))
+      .limit(1);
+    await this.handle.db
+      .update(user)
+      .set({ lastWorkspaceId: next?.workspaceId ?? null })
+      .where(eq(user.id, userId));
   }
 
   /** Records the workspace the user works in, so sign-in reopens it (FR-024, T083). */

@@ -51,6 +51,17 @@ describe("cross-workspace access (T080, AC-SEC-004)", () => {
       ["POST", `${invitationsUrl(bruno.workspaceId)}/${brunoInvitationId}/resend`, undefined],
       ["DELETE", `${invitationsUrl(bruno.workspaceId)}/${brunoInvitationId}`, undefined],
       ["PUT", "/api/v1/me/current-workspace", { workspaceId: bruno.workspaceId }],
+      ["PATCH", `/api/v1/workspaces/${bruno.workspaceId}/members/${MISSING}`, { role: "admin" }],
+      ["DELETE", `/api/v1/workspaces/${bruno.workspaceId}/members/${MISSING}`, undefined],
+      ["POST", `/api/v1/workspaces/${bruno.workspaceId}/leave`, undefined],
+      [
+        "POST",
+        `/api/v1/workspaces/${bruno.workspaceId}/ownership-transfer`,
+        { membershipId: MISSING },
+      ],
+      ["DELETE", `/api/v1/workspaces/${bruno.workspaceId}`, { confirmName: "x" }],
+      ["POST", `/api/v1/workspaces/${bruno.workspaceId}/restore`, undefined],
+      ["GET", `/api/v1/workspaces/${bruno.workspaceId}/security-events`, undefined],
     ] as const;
 
   it("answers 404 on every endpoint of another workspace and logs each attempt", async () => {

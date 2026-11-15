@@ -16,6 +16,8 @@ export const workspaceSchema = z.object({
   /** The caller's role in this workspace. */
   role: z.enum(["owner", "admin", "agent"]),
   createdAt: z.iso.datetime(),
+  /** When a workspace pending deletion is permanently deleted (FR-027); null otherwise. */
+  purgeAfter: z.iso.datetime().nullable(),
 });
 export type Workspace = z.infer<typeof workspaceSchema>;
 

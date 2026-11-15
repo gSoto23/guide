@@ -7,6 +7,7 @@ import type { Invitation, InvitationList, MemberList } from "@guidesk/contracts"
 import { ApiError, apiFetch } from "@/lib/api";
 import type { StepUpMethod } from "@/lib/step-up";
 import { useMe } from "@/lib/use-me";
+import { useStepUp } from "@/lib/use-step-up";
 import { StepUpDialog } from "./step-up-dialog";
 
 const KNOWN_ERRORS = new Set([
@@ -20,6 +21,7 @@ const KNOWN_ERRORS = new Set([
   "already_member",
   "already_invited",
   "idempotency_conflict",
+  "workspace_pending_deletion",
 ]);
 
 /** Team members and invitations for owners and admins (FR-016, FR-018, T077). */
@@ -41,6 +43,7 @@ export function MembersSettings({ locale }: { locale: string }) {
   const [stepUp, setStepUp] = useState<{ methods: StepUpMethod[]; retry: () => void } | null>(null);
 
   const base = workspaceId ? `/api/v1/workspaces/${workspaceId}` : null;
+  const memberActions = useStepUp();
 
   const refresh = useCallback(async () => {
     if (!base) return;
@@ -106,6 +109,43 @@ export function MembersSettings({ locale }: { locale: string }) {
         await apiFetch(`${base}/invitations/${invitation.id}`, { method: "DELETE" });
         setMessage({ kind: "info", text: t("revoked") });
       }
+      await refresh();
+    } catch (error) {
+      showError(error);
+    }
+  }
+
+  /** Role change and removal need a recent re-authentication (FR-025, FR-011). */
+  async function manage(
+    member: MemberList["members"][number],
+    action: "promote" | "demote" | "remove",
+  ) {
+    if (!base) return;
+    const name = member.name || member.email;
+    if (action === "remove" && !window.confirm(t("removeConfirm", { name }))) return;
+    setMessage(null);
+    try {
+      const done = await memberActions.run(() =>
+        action === "remove"
+          ? apiFetch(`${base}/members/${member.membershipId}`, { method: "DELETE" }).then(
+              () => true,
+            )
+          : apiFetch(`${base}/members/${member.membershipId}`, {
+              method: "PATCH",
+              body: { role: action === "promote" ? "admin" : "agent" },
+            }).then(() => true),
+      );
+      if (!done) return;
+      setMessage({
+        kind: "info",
+        text:
+          action === "remove"
+            ? t("removed", { name })
+            : t("roleChanged", {
+                name,
+                role: t(`roles.${action === "promote" ? "admin" : "agent"}`),
+              }),
+      });
       await refresh();
     } catch (error) {
       showError(error);
@@ -188,6 +228,27 @@ export function MembersSettings({ locale }: { locale: string }) {
                   {member.email}
                   {member.userId === me.user.id ? ` (${t("you")})` : ""} ·{" "}
                   {t(`roles.${member.role}`)}
+                  {member.role !== "owner" && member.userId !== me.user.id ? (
+                    <>
+                      {" "}
+                      <button
+                        type="button"
+                        className="button button-link"
+                        onClick={() =>
+                          void manage(member, member.role === "agent" ? "promote" : "demote")
+                        }
+                      >
+                        {member.role === "agent" ? t("makeAdmin") : t("makeAgent")}
+                      </button>
+                      <button
+                        type="button"
+                        className="button button-link"
+                        onClick={() => void manage(member, "remove")}
+                      >
+                        {t("remove")}
+                      </button>
+                    </>
+                  ) : null}
                 </li>
               ))}
             </ul>
@@ -234,6 +295,7 @@ export function MembersSettings({ locale }: { locale: string }) {
         <Link href={`/${locale}/settings/security`}>{t("securityLink")}</Link>
       </p>
 
+      {memberActions.dialog}
       {stepUp ? (
         <StepUpDialog
           methods={stepUp.methods}

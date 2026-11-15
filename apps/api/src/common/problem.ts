@@ -16,7 +16,13 @@ export type ProblemCode =
   | "already_member"
   | "already_invited"
   | "email_mismatch"
-  | "idempotency_conflict";
+  | "idempotency_conflict"
+  | "owner_must_transfer"
+  | "target_not_admin"
+  | "target_mfa_required"
+  | "owns_shared_workspace"
+  | "email_in_use"
+  | "workspace_pending_deletion";
 
 export interface ProblemBody {
   type: string;

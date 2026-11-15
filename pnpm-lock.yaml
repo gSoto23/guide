@@ -309,6 +309,9 @@ importers:
 
   apps/worker:
     dependencies:
+      '@guidesk/emails':
+        specifier: workspace:*
+        version: link:../../packages/emails
       '@guidesk/integrations':
         specifier: workspace:*
         version: link:../../packages/integrations

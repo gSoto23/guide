@@ -46,3 +46,27 @@ export function invitationTokenFor(ctx: Ctx, email: string): string {
 export function invitationsUrl(workspaceId: string): string {
   return `/api/v1/workspaces/${workspaceId}/invitations`;
 }
+
+/** Invites a new person with the role and has them accept; returns their session and membership. */
+export async function addMember(
+  ctx: Ctx,
+  owner: { cookie: string; workspaceId: string },
+  role: "admin" | "agent",
+  prefix = "member",
+) {
+  const email = uniqueEmail(prefix);
+  const created = await api(ctx, "POST", invitationsUrl(owner.workspaceId), owner.cookie, {
+    email,
+    role,
+  });
+  expect(created.statusCode, created.body).toBe(201);
+  const token = invitationTokenFor(ctx, email);
+  const cookie = await signIn(ctx, email, { cookie: `guidesk.invite=${token}` });
+  const accepted = await api(ctx, "POST", `/api/v1/invitations/${token}/accept`, cookie);
+  expect(accepted.statusCode, accepted.body).toBe(200);
+  const members = (
+    await api(ctx, "GET", `/api/v1/workspaces/${owner.workspaceId}/members`, owner.cookie)
+  ).json() as { members: { membershipId: string; email: string }[] };
+  const membershipId = members.members.find((m) => m.email === email)?.membershipId ?? "";
+  return { email, cookie, membershipId };
+}

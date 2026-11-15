@@ -20,9 +20,8 @@ export const workspace = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     name: text("name").notNull(),
-    createdBy: text("created_by")
-      .notNull()
-      .references(() => user.id),
+    // Kept for history; cleared when that account is purged (FR-028), never blocking it.
+    createdBy: text("created_by").references(() => user.id, { onDelete: "set null" }),
     status: text("status", { enum: ["active", "pending_deletion"] })
       .notNull()
       .default("active"),

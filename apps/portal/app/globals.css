@@ -301,3 +301,40 @@ legend {
   outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
+
+/* Settings index (US5). */
+.settings-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.settings-link {
+  display: block;
+  min-height: 48px;
+  color: var(--color-text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.danger-zone {
+  border: 1px solid var(--color-danger);
+}
+
+.button-danger {
+  background: var(--color-danger);
+  color: #ffffff;
+  border: 0;
+}
+
+.event-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--space) 0 0;
+}
+
+/* Disabled buttons must look disabled (for example "Leave" for the owner). */
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

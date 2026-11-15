@@ -1,13 +1,18 @@
-import { Body, Controller, Get, HttpCode, Param, Patch, Post, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Req } from "@nestjs/common";
 import type { FastifyRequest } from "fastify";
 import { eq } from "drizzle-orm";
 import { workspace } from "@guidesk/db";
 import {
   createWorkspaceSchema,
+  deleteWorkspaceSchema,
+  transferOwnershipSchema,
   updateWorkspaceSchema,
   type CreateWorkspaceBody,
+  type DeleteWorkspaceBody,
+  type TransferOwnershipBody,
   type UpdateWorkspaceBody,
   type Workspace,
+  type WorkspaceDeletionResponse,
 } from "@guidesk/contracts";
 import { ApiProblem } from "../common/problem.js";
 import { RateLimitService } from "../common/rate-limit.service.js";
@@ -15,6 +20,7 @@ import { ZodValidationPipe } from "../common/zod.pipe.js";
 import { RequestDb } from "../database/request-db.js";
 import { TenancyService } from "./tenancy.service.js";
 import { WorkspaceAction } from "./workspace-access.guard.js";
+import { WorkspaceLifecycleService } from "./workspace-lifecycle.service.js";
 
 /** New workspaces per user per day: generous for co-hosts, a brake on scripted abuse. */
 const CREATES_PER_DAY = 5;
@@ -26,6 +32,7 @@ export class WorkspacesController {
     private readonly tenancy: TenancyService,
     private readonly requestDb: RequestDb,
     private readonly rateLimit: RateLimitService,
+    private readonly lifecycle: WorkspaceLifecycleService,
   ) {}
 
   /** Any signed-in user can create a workspace; they become its owner and switch to it (FR-023). */
@@ -51,11 +58,12 @@ export class WorkspacesController {
       status: "active",
       role: "owner",
       createdAt: created.createdAt.toISOString(),
+      purgeAfter: null,
     };
   }
 
   @Get(":workspaceId")
-  @WorkspaceAction()
+  @WorkspaceAction({ allowPendingDeletion: true })
   async get(
     @Req() request: FastifyRequest,
     @Param("workspaceId") workspaceId: string,
@@ -79,6 +87,49 @@ export class WorkspacesController {
     return this.read(request, workspaceId);
   }
 
+  @Post(":workspaceId/leave")
+  @HttpCode(204)
+  @WorkspaceAction()
+  async leave(@Req() request: FastifyRequest, @Param("workspaceId") workspaceId: string) {
+    if (!request.auth || !request.workspaceRole) throw new ApiProblem(401, "unauthenticated");
+    await this.lifecycle.leave(request.auth.user.id, request.workspaceRole, workspaceId);
+  }
+
+  @Post(":workspaceId/ownership-transfer")
+  @HttpCode(200)
+  @WorkspaceAction({ capability: "workspace.ownership", stepUp: true, mfa: true })
+  async transfer(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Body(new ZodValidationPipe(transferOwnershipSchema)) body: TransferOwnershipBody,
+  ): Promise<Workspace> {
+    if (!request.auth) throw new ApiProblem(401, "unauthenticated");
+    await this.lifecycle.transferOwnership(request.auth.user.id, workspaceId, body.membershipId);
+    request.workspaceRole = "admin";
+    return this.read(request, workspaceId);
+  }
+
+  @Delete(":workspaceId")
+  @HttpCode(202)
+  @WorkspaceAction({ capability: "workspace.ownership", stepUp: true, mfa: true })
+  remove(
+    @Param("workspaceId") workspaceId: string,
+    @Body(new ZodValidationPipe(deleteWorkspaceSchema)) body: DeleteWorkspaceBody,
+  ): Promise<WorkspaceDeletionResponse> {
+    return this.lifecycle.scheduleDeletion(workspaceId, body.confirmName);
+  }
+
+  @Post(":workspaceId/restore")
+  @HttpCode(200)
+  @WorkspaceAction({ capability: "workspace.ownership", stepUp: true, allowPendingDeletion: true })
+  async restore(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+  ): Promise<Workspace> {
+    await this.lifecycle.restore(workspaceId);
+    return this.read(request, workspaceId);
+  }
+
   private async read(request: FastifyRequest, workspaceId: string): Promise<Workspace> {
     const [row] = await this.requestDb
       .current()
@@ -87,12 +138,18 @@ export class WorkspacesController {
         name: workspace.name,
         status: workspace.status,
         createdAt: workspace.createdAt,
+        purgeAfter: workspace.purgeAfter,
       })
       .from(workspace)
       .where(eq(workspace.id, workspaceId))
       .limit(1);
     // A workspace pending deletion is visible to its owner only (FR-027).
     if (!row || !request.workspaceRole) throw new ApiProblem(404, "not_found");
-    return { ...row, role: request.workspaceRole, createdAt: row.createdAt.toISOString() };
+    return {
+      ...row,
+      role: request.workspaceRole,
+      createdAt: row.createdAt.toISOString(),
+      purgeAfter: row.purgeAfter?.toISOString() ?? null,
+    };
   }
 }

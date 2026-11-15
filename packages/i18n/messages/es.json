@@ -29,7 +29,13 @@
     "already_member": "Esa persona ya forma parte del workspace.",
     "already_invited": "Ese email ya tiene una invitación abierta.",
     "email_mismatch": "Esta invitación es para otra dirección de email.",
-    "idempotency_conflict": "Esta solicitud ya se está procesando."
+    "idempotency_conflict": "Esta solicitud ya se está procesando.",
+    "owner_must_transfer": "Primero transfiere la propiedad a un administrador.",
+    "target_not_admin": "La propiedad solo puede pasar a un administrador.",
+    "target_mfa_required": "La persona debe agregar primero una passkey o una app de autenticación.",
+    "owns_shared_workspace": "Primero transfiere la propiedad o elimina los workspaces que compartes con otras personas.",
+    "email_in_use": "Otra cuenta de Guidesk ya usa ese email.",
+    "workspace_pending_deletion": "Este workspace se va a eliminar. Restáuralo primero."
   },
   "auth": {
     "signInCta": "Entrar o crear cuenta",
@@ -193,7 +199,13 @@
     "resent": "Reenviamos la invitación con un enlace nuevo.",
     "revoke": "Revocar",
     "revoked": "Invitación revocada; el enlace dejó de funcionar.",
-    "securityLink": "Seguridad de tu cuenta"
+    "securityLink": "Seguridad de tu cuenta",
+    "makeAdmin": "Hacer administrador",
+    "makeAgent": "Hacer agente",
+    "remove": "Quitar",
+    "removeConfirm": "¿Quitar a {name} del workspace? Pierde el acceso de inmediato.",
+    "removed": "{name} ya no forma parte del workspace.",
+    "roleChanged": "Ahora {name} es {role}."
   },
   "invite": {
     "loading": "Cargando invitación…",
@@ -233,8 +245,75 @@
     "nav": {
       "team": "Equipo",
       "security": "Seguridad",
-      "home": "Inicio"
+      "home": "Inicio",
+      "settings": "Ajustes"
     },
-    "loading": "Cargando…"
+    "loading": "Cargando…",
+    "none": "Sin workspace: crea uno"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "loading": "Cargando…",
+    "sections": {
+      "workspace": "Workspace",
+      "team": "Equipo",
+      "account": "Tu cuenta",
+      "security": "Seguridad",
+      "log": "Registro de seguridad"
+    },
+    "workspace": {
+      "title": "Workspace",
+      "nameLabel": "Nombre",
+      "save": "Guardar",
+      "saved": "Nombre guardado.",
+      "transferTitle": "Transferir la propiedad",
+      "transferBody": "El nuevo dueño debe ser un administrador. Tú quedas como administrador.",
+      "transferLabel": "Nuevo dueño",
+      "transferNone": "Primero haz administrador a alguien del equipo.",
+      "transfer": "Transferir",
+      "transferred": "Transferiste la propiedad.",
+      "leaveTitle": "Salir del workspace",
+      "leaveBody": "Pierdes el acceso a este workspace. Tus otros workspaces no cambian.",
+      "leave": "Salir",
+      "leaveOwner": "Como dueño, primero transfiere la propiedad a un administrador.",
+      "deleteTitle": "Eliminar el workspace",
+      "deleteBody": "Avisamos a todo el equipo. Puedes restaurarlo durante 30 días; después se borra para siempre. Escribe el nombre del workspace para confirmar.",
+      "deleteLabel": "Nombre del workspace",
+      "delete": "Eliminar workspace",
+      "deleted": "El workspace se eliminará el {date}.",
+      "pendingTitle": "Este workspace se va a eliminar",
+      "pendingBody": "Se borrará el {date}. Hasta entonces puedes restaurarlo.",
+      "restore": "Restaurar workspace",
+      "restored": "Workspace restaurado.",
+      "readOnly": "Solo el dueño y los administradores pueden cambiar el workspace.",
+      "renameTitle": "Cambiar el nombre"
+    },
+    "account": {
+      "title": "Tu cuenta",
+      "emailTitle": "Email",
+      "current": "Email actual: {email}",
+      "newEmail": "Nuevo email",
+      "sendCode": "Enviar código",
+      "codeSent": "Te enviamos un código a {email}. Vence en 10 minutos.",
+      "codeLabel": "Código de 6 dígitos",
+      "confirm": "Confirmar",
+      "changed": "Listo: tu cuenta ahora usa {email}. Cerramos la sesión en tus otros dispositivos.",
+      "exportTitle": "Tus datos",
+      "exportBody": "Descarga un archivo con tu perfil, tus workspaces, tus dispositivos y tu actividad de seguridad.",
+      "export": "Descargar mis datos",
+      "deleteTitle": "Eliminar tu cuenta",
+      "deleteBody": "Cerramos tu sesión en todos lados y borramos tu cuenta en 30 días. Si vuelves a entrar antes, se cancela.",
+      "delete": "Eliminar mi cuenta",
+      "deleteConfirm": "¿Seguro? Tu cuenta se eliminará en 30 días."
+    },
+    "log": {
+      "title": "Registro de seguridad",
+      "workspaceTab": "Este workspace",
+      "mineTab": "Mi cuenta",
+      "empty": "Todavía no hay eventos.",
+      "more": "Ver más",
+      "noAccess": "Solo el dueño y los administradores ven el registro del workspace.",
+      "unknownActor": "Sistema o cuenta eliminada"
+    }
   }
 }

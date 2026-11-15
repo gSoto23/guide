@@ -4,6 +4,7 @@ import { and, eq, gt, lte, ne } from "drizzle-orm";
 import { invitation, session, usedTotpCode, user, verification, type DbHandle } from "@guidesk/db";
 import { renderFactorChanged, toEmailLocale } from "@guidesk/emails";
 import { isStepUpFresh, type SecurityEventType } from "@guidesk/domain";
+import { AccountDeletionService } from "../account/account-deletion.service.js";
 import { RateLimitService } from "../common/rate-limit.service.js";
 import { API_CONFIG, type ApiConfig } from "../config/config.js";
 import { DB_HANDLE } from "../database/database.module.js";
@@ -50,6 +51,7 @@ export class AuthEventsService implements AuthEventHandlers {
     private readonly outbox: OutboxService,
     private readonly securityLog: SecurityLogService,
     private readonly rateLimit: RateLimitService,
+    private readonly accountDeletion: AccountDeletionService,
   ) {}
 
   private async findUser(where: { email?: string; id?: string }) {
@@ -112,6 +114,8 @@ export class AuthEventsService implements AuthEventHandlers {
     if (method) {
       await this.assurance.recordSignIn(created.id, created.userId, method);
       await this.devices.handleSignIn(created, headers);
+      // Signing in again within 30 days keeps an account scheduled for deletion (FR-028).
+      await this.accountDeletion.cancelIfScheduled(created.userId);
       return;
     }
     // A rotation is not a sign-in: no fresh authentication, no sign-in event (T103).

@@ -1,5 +1,6 @@
 import { Global, Module } from "@nestjs/common";
 import { noPropertiesYet } from "@guidesk/domain";
+import { AccountDeletionService } from "../account/account-deletion.service.js";
 import { AssuranceService } from "../auth/assurance.service.js";
 import { DeviceService } from "../auth/device.service.js";
 import { LockoutNoticeService } from "../auth/lockout-notice.service.js";
@@ -20,6 +21,7 @@ import { TenancyService } from "../tenancy/tenancy.service.js";
     OutboxService,
     LockoutService,
     LockoutNoticeService,
+    AccountDeletionService,
     AssuranceService,
     DeviceService,
     TenancyService,
@@ -33,6 +35,7 @@ import { TenancyService } from "../tenancy/tenancy.service.js";
     OutboxService,
     LockoutService,
     LockoutNoticeService,
+    AccountDeletionService,
     AssuranceService,
     DeviceService,
     TenancyService,

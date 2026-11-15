@@ -77,9 +77,14 @@ The data class is Internal. Reporting to Guidesk is aggregate only (SEC-20).
 
 | Field | Type | Rules |
 |---|---|---|
-| `user_id` | uuid, PK | — |
+| `user_id` | text, PK, no foreign key | Outlives the purged account as the record of completion |
 | `requested_at`, `purge_after` | timestamptz | `purge_after` = requested + 30 days (FR-028) |
-| `status` | enum `scheduled`, `completed`, `cancelled` | — |
+| `status` | enum `scheduled`, `completed`, `cancelled` | Signing in again cancels; the worker completes it with `purge_account()` |
+
+### `email_change_request` (added in implementation)
+
+One pending change per user: the new address, an HMAC of the 6-digit code, the 10-minute expiry,
+and the attempts (at most 5). System-only.
 
 ### Privileges of `guidesk_app` (security review T103)
 
@@ -103,7 +108,7 @@ check `pnpm lint:rls` fails on any table `guidesk_app` can reach without forced 
 |---|---|---|
 | `id` | uuid, PK | This is the `workspace_id` for the row itself |
 | `name` | text, 1–80 characters | Defaults from the creator's name (FR-004) |
-| `created_by` | uuid, FK → user | — |
+| `created_by` | text, nullable, FK → user (`ON DELETE SET NULL`) | History only; cleared when that account is purged |
 | `status` | enum `active`, `pending_deletion` | — |
 | `deleted_at`, `purge_after` | timestamptz, nullable | Set on deletion; `purge_after` = +30 days (FR-027) |
 | `seat_limit` | int, nullable, > 0 | Pilot seat limit set by Guidesk; null uses the default of 10 (FR-021, until feature 011) |
@@ -199,7 +204,7 @@ account-level events (`workspace_id` is null and `actor_user_id` is the user).
 | Sign-in | `signin.succeeded`, `signin.failed`, `signin.locked`, `signin.new_device` |
 | Factors | `passkey.added`, `passkey.removed`, `mfa.enrolled`, `mfa.removed`, `recovery_code.used`, `step_up.succeeded`, `step_up.failed` |
 | Sessions | `session.revoked`, `sessions.revoked_all` |
-| Account | `email.change_requested`, `email.changed`, `account.export_downloaded`, `account.deletion_scheduled`, `account.deleted` |
+| Account | `email.change_requested`, `email.changed`, `account.export_downloaded`, `account.deletion_scheduled`, `account.deletion_cancelled`, `account.deleted` |
 | Invitations | `invitation.sent`, `invitation.resent`, `invitation.accepted`, `invitation.revoked`, `invitation.accept_denied` |
 | Membership | `member.role_changed`, `member.removed`, `member.left`, `ownership.transferred` |
 | Workspace | `workspace.created`, `workspace.deletion_scheduled`, `workspace.restored`, `workspace.purged` |

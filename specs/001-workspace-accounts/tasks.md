@@ -476,28 +476,65 @@ email change, data export, account deletion, and the security log views.
 
 ### Tests for User Story 5 ⚠️
 
-- [ ] T086 [P] [US5] Integration test: a removed member is refused within 60 s in every session (SC-006). In `apps/api/test/integration/removal.test.ts`
-- [ ] T087 [P] [US5] Integration test: the owner cannot leave; ownership transfer requires an admin target that satisfies MFA when required. In `apps/api/test/integration/ownership.test.ts`
-- [ ] T088 [P] [US5] Integration test: workspace deletion sets `pending_deletion`, restore works, and the purge job runs after 30 days. In `apps/api/test/integration/workspace-deletion.test.ts`
-- [ ] T089 [P] [US5] Integration test: account deletion is blocked while the user owns a workspace with members; the export contains the profile, memberships, and own events. In `apps/api/test/integration/account-lifecycle.test.ts`
-- [ ] T090 [P] [US5] Integration test: `security_event` rejects `UPDATE` and `DELETE`. In `apps/api/test/integration/security-log.test.ts`
-- [ ] T091 [P] [US5] End-to-end test of removal, the owner leaving, and deletion and restore (V15–V17) in `e2e/us5-lifecycle.spec.ts`
+- [X] T086 [P] [US5] Integration test: a removed member is refused within 60 s in every session (SC-006). In `apps/api/test/integration/removal.test.ts`
+- [X] T087 [P] [US5] Integration test: the owner cannot leave; ownership transfer requires an admin target that satisfies MFA when required. In `apps/api/test/integration/ownership.test.ts`
+- [X] T088 [P] [US5] Integration test: workspace deletion sets `pending_deletion`, restore works, and the purge job runs after 30 days. In `apps/api/test/integration/workspace-deletion.test.ts`
+- [X] T089 [P] [US5] Integration test: account deletion is blocked while the user owns a workspace with members; the export contains the profile, memberships, and own events. In `apps/api/test/integration/account-lifecycle.test.ts`
+- [X] T090 [P] [US5] Integration test: `security_event` rejects `UPDATE` and `DELETE`. In `apps/api/test/integration/security-log.test.ts`
+- [X] T091 [P] [US5] End-to-end test of removal, the owner leaving, and deletion and restore (V15–V17) in `e2e/us5-lifecycle.spec.ts`
 
 ### Implementation for User Story 5
 
-- [ ] T092 [US5] Implement the member role-change and removal endpoints (step-up and MFA; never the owner) in `apps/api/src/tenancy/members.controller.ts`, with the templates `team.member_removed` and `team.role_changed`
-- [ ] T093 [US5] Implement the leave and ownership-transfer endpoints in `apps/api/src/tenancy/workspaces.controller.ts`, with the template `team.ownership_transferred`
-- [ ] T094 [US5] Implement workspace deletion (`confirmName`) and restore, plus the purge job in `apps/worker/src/jobs/purge-workspaces.ts`, with the templates `workspace.deletion_scheduled` and `workspace.restored`
-- [ ] T095 [US5] Create the `account_deletion_request` schema, implement `DELETE /me`, and add the purge job that pseudonymizes the actor in `security_event`, in `apps/worker/src/jobs/purge-accounts.ts`
-- [ ] T096 [US5] Implement `GET /me/export` (JSON with the profile, memberships, and own security events) in `apps/api/src/account/export.service.ts`
-- [ ] T097 [US5] Implement the email-change flow (`POST /me/email-change` and its confirmation, notices, and revoking other sessions) in `apps/api/src/account/email-change.controller.ts`, with the templates `account.email_change_code` and `account.email_changed`
-- [ ] T098 [US5] Implement `GET /me/security-events` and `GET /workspaces/{workspaceId}/security-events` in `apps/api/src/security-log/security-log.controller.ts`
-- [ ] T099 [P] [US5] Build the portal settings screens under `apps/portal/app/[locale]/(app)/settings/`:
+- [X] T092 [US5] Implement the member role-change and removal endpoints (step-up and MFA; never the owner) in `apps/api/src/tenancy/members.controller.ts`, with the templates `team.member_removed` and `team.role_changed`
+- [X] T093 [US5] Implement the leave and ownership-transfer endpoints in `apps/api/src/tenancy/workspaces.controller.ts`, with the template `team.ownership_transferred`
+- [X] T094 [US5] Implement workspace deletion (`confirmName`) and restore, plus the purge job in `apps/worker/src/jobs/purge-workspaces.ts`, with the templates `workspace.deletion_scheduled` and `workspace.restored`
+- [X] T095 [US5] Create the `account_deletion_request` schema, implement `DELETE /me`, and add the purge job that pseudonymizes the actor in `security_event`, in `apps/worker/src/jobs/purge-accounts.ts`
+- [X] T096 [US5] Implement `GET /me/export` (JSON with the profile, memberships, and own security events) in `apps/api/src/account/export.service.ts`
+- [X] T097 [US5] Implement the email-change flow (`POST /me/email-change` and its confirmation, notices, and revoking other sessions) in `apps/api/src/account/email-change.controller.ts`, with the templates `account.email_change_code` and `account.email_changed`
+- [X] T098 [US5] Implement `GET /me/security-events` and `GET /workspaces/{workspaceId}/security-events` in `apps/api/src/security-log/security-log.controller.ts`
+- [X] T099 [P] [US5] Build the portal settings screens under `apps/portal/app/[locale]/(app)/settings/`:
   - workspace: rename, delete and restore, transfer ownership;
   - account: email change, export, deletion;
   - the security log viewer
 
 **Checkpoint**: All five user stories are functional.
+
+**US5 notes (2026-11-14):**
+
+- **Migrations:** `0013_account_lifecycle` (generated: `account_deletion_request`,
+  `email_change_request`, and `workspace.created_by` made nullable with `ON DELETE SET NULL`, so
+  a purged creator never blocks deletion) and `0014_member_lifecycle`:
+  - `guidesk_app` may change roles between admin and agent, remove members, and leave, through
+    RLS policies that never touch the owner's row or let anyone act on themselves;
+  - `transfer_ownership()`, `schedule_workspace_deletion()`, and `restore_workspace()` are
+    `SECURITY DEFINER` and check that the caller owns the workspace;
+  - `purge_due_workspaces()` and `purge_account()` are for the worker only.
+- **Where things landed:**
+  - Members: `members.service.ts`; leave, transfer, delete, and restore:
+    `workspace-lifecycle.service.ts`; account: `account.controller.ts` with
+    `account-deletion.service.ts`, `export.service.ts`, and `email-change.service.ts`; logs:
+    `security-log/security-log.controller.ts`.
+  - Worker: `jobs/purge-workspaces.ts` and `jobs/purge-accounts.ts` (daily); the worker now
+    depends on `@guidesk/emails` for `account.deleted`.
+  - T091 lives in `e2e/specs/us5-lifecycle.spec.ts`.
+- **Decisions:**
+  - Account deletion signs the user out everywhere; signing in again within 30 days cancels it
+    (new event `account.deletion_cancelled`). The purge skips, and retries daily, an account that
+    still owns a workspace shared with others.
+  - Security events keep a `deleted:<hash>` pseudonym after the purge.
+  - A workspace pending deletion is invisible to members and answers `409
+    workspace_pending_deletion` to its owner on every route except reading and restoring.
+    Deletion revokes its open invitations.
+  - Email change: the code goes to the new address inline; whether the address is taken is only
+    revealed after its code is entered (`409 email_in_use`). Wrong codes count toward the user
+    lockout.
+  - Attempts to change or remove the owner are refused (`403`) and logged with outcome `denied`
+    (AC-SEC-003).
+  - A user removed from their last workspace still sees the switcher, offering to create one.
+  - `GET /workspaces/{workspaceId}` now includes `purgeAfter`.
+- **Verified:** unit tests 86; integration tests 101 (DB 20, API 81; the cross-tenant suite now
+  covers the US5 endpoints); end to end 10 (V15–V17 added); lint, typecheck, build, format, and
+  `lint:rls`.
 
 ---
 
