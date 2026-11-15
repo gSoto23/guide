@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import pg from "pg";
 import { afterAll, beforeAll, describe, expect, inject, it } from "vitest";
 import { signIn, systemQuery, totpCode, uniqueEmail } from "./helpers.js";
@@ -399,8 +398,12 @@ describe("security review of US3–US5 (T103)", () => {
     ]);
     const pseudonym = purged.rows[0]?.pseudonym ?? "";
     expect(pseudonym).toMatch(/^deleted:[0-9a-f]{16}$/);
-    const md5 = createHash("md5").update(userId).digest("hex").slice(0, 16);
-    expect(pseudonym).not.toBe(`deleted:${md5}`);
+    // Migration 0014 derived the pseudonym from the user ID (reversible); 0015 makes it random.
+    const legacy = await db.query<{ pseudonym: string }>(
+      `SELECT 'deleted:' || left(md5($1), 16) AS pseudonym`,
+      [userId],
+    );
+    expect(pseudonym).not.toBe(legacy.rows[0]?.pseudonym);
 
     const counts = await db.query<{ name: string; n: string }>(
       `SELECT 'new_owner' AS name, count(*) AS n FROM security_event WHERE metadata->>'new_owner' = $1

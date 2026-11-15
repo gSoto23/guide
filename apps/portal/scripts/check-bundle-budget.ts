@@ -12,11 +12,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
 
+import config from "../bundle-budget.json" with { type: "json" };
+
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const config = JSON.parse(await readFile(path.join(root, "bundle-budget.json"), "utf8")) as {
-  budgetKb: number;
-  routes: string[];
-};
 const port = Number(process.env.BUNDLE_CHECK_PORT ?? 3100);
 const base = `http://127.0.0.1:${port}`;
 
