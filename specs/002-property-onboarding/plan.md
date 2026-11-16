@@ -116,10 +116,10 @@ the new extraction eval suite (`evals/extraction/`).
 | II. Platform Compliance | **PC-12:** no listing page is ever fetched; a URL-only input makes no fetch and no AI call (test). No OTA passwords are asked for. Stays come from OTA iCal exports and PMS APIs only. **PC-11:** PMS guest names are used only to show stays; they never go to the AI or marketing. **PC-03:** no guest contact data is stored (AC-SEC-012) | [x] |
 | III. Guest Trust and Human-in-the-Loop | No guest-facing agent behavior. Extracted and imported content is a draft that is never published (FR-018). Each extraction records model, tokens, and cost | [x] |
 | IV. Channel-Agnostic Core | `PmsPort` (Beds24, Hostex), `LlmPort`, `TextRecognitionPort`, `KeyManagementPort`, `ObjectStoragePort`, and `SandboxPort`. Each adapter has contract tests on recorded fixtures, and R7 documents each PMS's field mapping | [x] |
-| V. Test-First and Eval-Driven | Test layers in R14; tasks list tests first. A new extraction eval suite (30 listings plus injection cases) gates prompt, schema, model, and effort changes (R6) | [x] |
+| V. Test-First and Eval-Driven | Test layers in R14; tasks list tests first. A new extraction eval suite (30 listings plus injection cases) runs on every pull request and gates prompt, schema, model, and effort changes (R6) | [x] |
 | VI. Security and Privacy | Every Security Considerations item maps to a control: SEC-05 (step-up), SEC-06 (R5), SEC-07 (R12), SEC-09 (R2), SEC-10 (R2, R9), SEC-13 (R7), SEC-14 (RLS forced on all 11 new tables, plus the CI check), SEC-16 (data model §5), and SEC-20 (minimization and retention, data model §6). Restricted data is encrypted, decrypted only by the worker, and kept out of logs and prompts | [x] |
 | VII. Simplicity | No new runtime, datastore, or vendor. S3 and KMS are already in ADR-0009. The sandbox functions use the same Node.js runtime and SST. GuardDuty Malware Protection and Tesseract are an AWS service and a library. Tasks amend ADR-0009's service table and SEC-09's wording. The sandbox is justified in Complexity Tracking | [x] |
-| VIII. Observability | OpenTelemetry spans for every job and sandbox call, failure counters per provider and error code, Sentry with the existing scrubbing, and AI usage stored per extraction (R13) | [x] |
+| VIII. Observability | OpenTelemetry spans for every job and sandbox call, failure counters per provider and error code, Sentry with the existing scrubbing in the API, the worker, and both sandbox functions, structured logs in the sandbox without inputs or outputs, and AI usage stored per extraction (R13) | [x] |
 | IX. International | Spanish and English for every screen, email, the CSV template, and CSV headers. Times shown in the property's time zone. Extracted content keeps its language. No currency in this feature | [x] |
 | Performance | Budget declared below; Lighthouse CI, bundle check, k6, and timing tests in CI | [x] |
 
@@ -223,8 +223,9 @@ The Phase 1 design keeps every check above.
 - **Retention:**
   - Screenshots and CSV files are deleted after processing, with a 1-day bucket backstop.
   - Extraction text is deleted after confirmation or 7 days.
-  - Guest names are deleted 12 months after checkout, pending OQ-35.
-  - PMS credentials are deleted at disconnect.
+  - Guest names are deleted 12 months after checkout, pending OQ-35, or at once on request.
+  - PMS credentials are deleted at disconnect, even when the provider did not revoke them.
+  - CSV calendar links are deleted once read; CSV row values 7 days after the run.
 
 ## Complexity Tracking
 

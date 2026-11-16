@@ -326,7 +326,9 @@ and content and none of the excluded data; an owner removes a property and resto
 - **FR-004**: Every creation path (blank, listing text or screenshots, CSV, PMS, duplicate) MUST
   end with the same core-facts confirmation step before the property counts as set up. A property
   created without every required fact (from a PMS import) MUST get the setup status "needs
-  details", listing what is missing.
+  details", listing what is missing. A property imported with every required fact (from a CSV or
+  a PMS) MUST get the setup status "to confirm" until the host confirms it, one at a time or
+  several at once from the list.
 - **FR-005**: Owners and admins MUST be able to edit a property's core facts at any time. Times
   MUST always be shown in the property's time zone.
 - **FR-006**: The property list MUST show each property's name, setup status, source (manual,
@@ -345,7 +347,8 @@ and content and none of the excluded data; an owner removes a property and resto
 **Listing text and screenshots**
 
 - **FR-009**: Hosts MUST be able to submit pasted listing text (up to 20,000 characters), up to 10
-  screenshots (JPEG, PNG, WebP, or HEIC, up to 10 MB each), or both.
+  screenshots (JPEG, PNG, WebP, or HEIC where the host's device can convert it, up to 10 MB
+  each), or both. On a device that cannot read HEIC, the host is asked for a JPEG or PNG.
 - **FR-010**: The system MUST extract and structure the content into title, description, house
   rules, amenities, and any core facts it finds, and present them for review. It MUST NOT invent
   facts that are not in the input.
@@ -383,7 +386,8 @@ and content and none of the excluded data; an owner removes a property and resto
 **Calendar feeds (iCal)**
 
 - **FR-020**: Owners and admins MUST be able to add up to 5 calendar feed links (iCal) per
-  property, one per channel. Only HTTPS links are accepted.
+  property, one per channel. Several feeds of another channel are allowed when each has its own
+  channel name. Only HTTPS links are accepted.
 - **FR-021**: The system MUST check a feed when it is saved and show the upcoming stays it found.
 - **FR-022**: Feed entries that represent reservations MUST become stays with the feed's dates and
   the property's check-in and checkout times. Entries the feed labels as blocked or unavailable
@@ -456,8 +460,11 @@ and content and none of the excluded data; an owner removes a property and resto
   file. Rows that duplicate each other or an existing property MUST be flagged as warnings.
 - **FR-041**: Downloadable files MUST neutralize cells that start with a spreadsheet formula
   character (`=`, `+`, `-`, `@`, tab, or carriage return).
-- **FR-042**: Calendar feed links in a CSV MUST go through the same checks as FR-020 to FR-026; a
-  row with an invalid link MUST be reported as an error for that column only.
+- **FR-042**: Calendar feed links in a CSV MUST be checked for format when the file is validated;
+  a row with an invalid link MUST be reported as an error for that column only and can still be
+  created without the link. The link is read after the property is created, under FR-020 to
+  FR-026; if it is rejected then, the property keeps no feed and the import result shows the
+  reason for that column.
 
 **Duplicate and remove**
 
@@ -487,7 +494,8 @@ and content and none of the excluded data; an owner removes a property and resto
 - **FR-049**: A workspace pending deletion MUST NOT accept new properties, imports, or feeds.
 - **FR-050**: The security log MUST record PMS connections and disconnections, imports started
   and finished, calendar feed links added, changed, or removed, stays added, changed, or cancelled
-  by hand, and properties removed, restored, or permanently deleted (SEC-16).
+  by hand, guest names removed, and properties removed, restored, or permanently deleted
+  (SEC-16).
 - **FR-051**: Every screen in this feature MUST be available in Spanish and English and fully
   usable on a phone (NFR-12), including CSV upload and screenshots taken on the phone.
 
@@ -498,16 +506,18 @@ and content and none of the excluded data; an owner removes a property and resto
   default, or another channel name). Check-in and checkout times MUST default to the property's
   times and MAY be changed for that stay.
 - **FR-053**: Owners and admins MUST be able to edit and cancel stays added by hand. Stays from a
-  calendar feed or a PMS MUST be read-only in Guidesk, except hiding a stay marked "may be a
-  block" (FR-022). Calendar or PMS refreshes MUST NOT change or cancel stays added by hand.
+  calendar feed or a PMS MUST be read-only in Guidesk, with two exceptions: hiding a stay marked
+  "may be a block" (FR-022), and removing the guest's name on request (for example when the guest
+  asks for their data to be deleted). Later refreshes MUST NOT restore a removed name. Calendar
+  or PMS refreshes MUST NOT change or cancel stays added by hand.
 - **FR-054**: A stay added by hand that overlaps another stay of the same property MUST show a
   warning that the host can dismiss.
 
 ### Key Entities *(include if feature involves data)*
 
 - **Property**: A rental unit in a workspace. Core facts (name, address, time zone, check-in and
-  checkout times, maximum guests, guide languages), setup status (needs details, ready for the
-  guide; later features add published), source (manual, listing text, CSV, a PMS, duplicate), and
+  checkout times, maximum guests, guide languages), setup status (needs details, to confirm, ready
+  for the guide; later features add published), source (manual, listing text, CSV, a PMS, duplicate), and
   for imported properties the PMS listing identifier. Can be removed and restored for 30 days.
 - **Listing content**: Draft content attached to a property: title, description, house rules,
   amenities. Each item records its source and whether the host has reviewed it.
@@ -519,7 +529,8 @@ and content and none of the excluded data; an owner removes a property and resto
   hand. Holds check-in and checkout dates and times, channel, status (upcoming, cancelled,
   hidden), its source, and for unlabeled feed entries the "may be a block" mark. Stays from a PMS also hold the booking reference, number of guests, and guest name
   (FR-030); stays added by hand hold the number of guests and an optional guest name (FR-052).
-  Only stays added by hand can be edited in Guidesk.
+  Only stays added by hand can be edited in Guidesk, but the guest name of any stay can be
+  removed (FR-053).
 - **PMS connection**: A workspace's link to one PMS account, holding the encrypted credential,
   the provider, who connected it and when, the last successful refresh, and failure state. It
   stays active until the host disconnects.

@@ -42,6 +42,10 @@
     at least every 3 hours until the host disconnects.
   - Follow-on updates: User Story 4 (scenarios 9 to 11), FR-022, edge cases, Key Entities (Stay,
     PMS connection), SC-006, SEC-13, SEC-20, AC-SEC-012 and AC-SEC-013, and Assumptions.
+- Iteration 3 (2026-11-16): remediation after `/speckit-analyze`. FR-004 (the "to confirm"
+  status), FR-009 (HEIC by device), FR-020 (one feed per channel), FR-042 (column error for CSV
+  links), FR-050 and FR-053 (removing a guest name on request), and Key Entities changed. Every
+  item still passes.
 - File formats (iCal, CSV, image types, UTF-8) and HTTPS appear because they are part of what
   the host does or provides, not implementation choices.
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`.

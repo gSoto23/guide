@@ -148,6 +148,7 @@ these values; revealing them is spec 003 (`restricted.reveal`).
 | `screenshot_count` | smallint 0–10 | FR-009 |
 | `redactions` | jsonb | Counts per kind, for example `{"door_code": 1}`. Never the values |
 | `url_only` | boolean | The input was only a URL; no AI call is made (FR-011) |
+| `retry_of_id` | uuid, nullable, FK → extraction_request (`ON DELETE SET NULL`) | Set on a retry, which reuses the failed request's redacted and recognized text; screenshots are not uploaded again (FR-016) |
 | `result` | jsonb, nullable | Structured output: content items, proposed facts, detected language |
 | `failed_screenshots` | smallint | Screenshots that could not be read (US2 scenario 5) |
 | `error_code` | text, nullable | For example `timeout`, `ai_unavailable`, `nothing_found`, `limit_reached` |
@@ -156,7 +157,8 @@ these values; revealing them is spec 003 (`restricted.reveal`).
 | `created_at`, `started_at`, `completed_at`, `input_deleted_at` | timestamptz | `completed_at` − `created_at` ≤ 60 s target (FR-016) |
 
 **Daily limit (FR-017):** `2 × property_limit`, with a minimum of 10, counted per workspace and
-UTC day in `rate_limit_bucket` (feature 001). Refused requests make no AI call (AC-SEC-010).
+UTC day in `rate_limit_bucket` (feature 001). Refused requests make no AI call (AC-SEC-010). A
+URL-only input does not count; a retry counts like a new request.
 
 ## 3. Calendar feeds and stays
 
@@ -166,8 +168,8 @@ UTC day in `rate_limit_bucket` (feature 001). Refused requests make no AI call (
 |---|---|---|
 | `id` | uuid, PK | — |
 | `workspace_id`, `property_id` | uuid, FK (`ON DELETE CASCADE`) | At most 5 per property (FR-020), enforced by a trigger |
-| `channel` | enum `airbnb`, `booking`, `vrbo`, `other` | Detected from the link's host; the host can change it |
-| `channel_label` | text, ≤ 40, nullable | When `channel = other` |
+| `channel` | enum `airbnb`, `booking`, `vrbo`, `other` | Detected from the link's host; the host can change it. One feed per channel (FR-020): partial unique index on `(property_id, channel)` where `channel <> 'other'` |
+| `channel_label` | text, ≤ 40, nullable | Required when `channel = other` (check constraint). Partial unique index on `(property_id, channel_label)` where `channel = 'other'` |
 | `url_ciphertext` | bytea | Restricted (FR-025) |
 | `url_fingerprint` | text | HMAC-SHA-256 of the normalized URL with a server secret. Unique per property, to reject the same link twice without decrypting |
 | `display_hint` | text | Masked form shown after saving, for example `airbnb.com/…/a1b2.ics` |
@@ -179,8 +181,11 @@ UTC day in `rate_limit_bucket` (feature 001). Refused requests make no AI call (
 | `manual_refresh_at` | timestamptz, nullable | "Refresh now" at most once every 5 minutes per property (FR-023) |
 | `created_by`, `created_at`, `updated_at` | — | — |
 
-**RLS:** members read rows, but agents read only through the `calendar_feed_public` view, which
-omits `url_ciphertext`, `url_fingerprint`, and `display_hint` (FR-025, US3 scenario 6).
+**RLS:** owners and admins read rows. Every member, agents included, reads through the
+`calendar_feed_public` view, which omits `url_ciphertext`, `url_fingerprint`, and `display_hint`
+(FR-025, US3 scenario 6). The view runs with its owner's rights, so the table's policies do not
+apply to it: it filters itself with `workspace_id = current_setting('app.workspace_id')::uuid`
+and `app_current_workspace_role() IS NOT NULL`, and returns nothing without a workspace context.
 
 ### `stay`
 
@@ -199,6 +204,7 @@ omits `url_ciphertext`, `url_fingerprint`, and `display_hint` (FR-025, US3 scena
 | `may_be_block` | boolean | Unlabeled feed entry (FR-022) |
 | `guest_count` | smallint, nullable | PMS or manual only |
 | `guest_name` | text, ≤ 120, nullable | Confidential. PMS or manual only (FR-030, FR-052) |
+| `guest_name_removed_at` | timestamptz, nullable | Set when an owner or admin removes the guest name on request; refreshes never write `guest_name` again while it is set (FR-053) |
 | `booking_reference` | text, ≤ 80, nullable | PMS only |
 | `duplicate_of_id` | uuid, nullable, FK → stay | Set when the same reservation arrives from another source; hidden from lists (edge cases) |
 | `overlaps` | boolean | Overlap with another visible stay (iCal edge case, FR-054) |
@@ -208,17 +214,20 @@ omits `url_ciphertext`, `url_fingerprint`, and `display_hint` (FR-025, US3 scena
 
 **Rules:**
 
-- Only `manual` stays are editable (FR-053). Feed and PMS stays allow one change: `active` →
-  `hidden` when `may_be_block` is true. A hidden row keeps its `external_uid`, so later refreshes
-  leave it hidden.
-- Refreshes never touch `manual` stays (FR-053).
+- Only `manual` stays are editable (FR-053). Feed and PMS stays allow two changes from a member:
+  `active` → `hidden` when `may_be_block` is true, and removing the guest name (`guest_name` set
+  to null, `guest_name_removed_at` set). A hidden row keeps its `external_uid`, so later
+  refreshes leave it hidden.
+- Refreshes never touch `manual` stays (FR-053), and never restore a removed guest name.
 - **Deduplication** (edge cases): a PMS stay wins over a feed stay with the same property and
   dates; an unlabeled feed entry whose dates match a labeled reservation from another feed is
   marked `duplicate_of_id`.
 - Stays with `checkout_date` before today are not created by refreshes (FR-022).
 
 **RLS:** members read rows, including agents (FR-046). Writes need `properties.manage` and are
-limited to `manual` rows, or to the hide transition.
+limited to `manual` rows, or to the hide and guest-name-removal changes. The trigger that limits
+feed and PMS rows applies only to the request role (`current_user = 'guidesk_app'`); the system
+context that refreshes run in updates and cancels feed and PMS stays.
 
 ## 4. PMS connections and imports
 
@@ -231,7 +240,7 @@ limited to `manual` rows, or to the hide transition.
 | `provider` | enum `beds24`, `hostex` | Hostaway is added only after OQ-26 |
 | `external_account_id` | text | Provider account identifier (non-secret) |
 | `account_label` | text, ≤ 80 | Shown in the portal, for example the account name |
-| `credential_ciphertext` | bytea, nullable | Restricted (SEC-06). Set to null on disconnect (FR-036) |
+| `credential_ciphertext` | bytea, nullable | Restricted (SEC-06). Set to null on disconnect (FR-036), whether or not the provider revoked the token |
 | `data_key_id` | uuid, nullable | — |
 | `status` | enum `active`, `failing`, `disconnected` | — |
 | `last_refresh_at`, `failing_since`, `alerted_at`, `manual_refresh_at` | timestamptz, nullable | Alert after 24 hours of failures; "Refresh now" once every 5 minutes (FR-035) |
@@ -268,22 +277,24 @@ limited to `manual` rows, or to the hide transition.
 | `reason_code` | text, nullable | For example `plan_limit`, `invalid_time_zone`, `provider_error`, `reconnect_pms` |
 | `errors` | jsonb | CSV: `[{column, code}]`, localized when shown or exported |
 | `warnings` | jsonb | Duplicate rows or addresses (FR-040) |
-| `row_values` | jsonb, nullable | Validated CSV values **without** the calendar link |
-| `calendar_url_ciphertext` | bytea, nullable | The CSV calendar link, encrypted at validation time |
+| `row_values` | jsonb, nullable | Validated CSV values **without** the calendar link. Set to null 7 days after the run finishes (§6) |
+| `calendar_url_ciphertext` | bytea, nullable | The CSV calendar link, encrypted at validation time. Set to null once the feed is saved or rejected, and when the run is cancelled (§6) |
 | `property_id` | uuid, nullable | Result |
 
 The CSV file is deleted after validation. The error file is generated on request from
-`import_item` rows; its calendar-link cells are left empty with a note, so a restricted value
-never appears in a download.
+`import_item` rows, for 7 days after the run finishes. It lists every row with an error,
+including created rows whose calendar link was rejected (FR-042). Its calendar-link cells are
+left empty with a note, so a restricted value never appears in a download.
 
 ## 5. Security log events (added to the spec 001 catalog)
 
 | Event | When (FR-050) |
 |---|---|
-| `integration.connected`, `integration.disconnected` | PMS connected or disconnected |
+| `integration.connected`, `integration.disconnected` | PMS connected or disconnected. `integration.disconnected` records `providerRevoked` |
 | `import.started`, `import.finished` | PMS or CSV import; metadata holds counts, never row values |
 | `calendar_feed.added`, `calendar_feed.changed`, `calendar_feed.removed` | Metadata holds the channel only, never the link |
 | `stay.added_manually`, `stay.changed_manually`, `stay.cancelled_manually` | Metadata holds the dates, never the guest name |
+| `stay.guest_name_removed` | A guest name removed on request (FR-053). Metadata holds the stay ID and dates, never the name |
 | `property.removed`, `property.restored`, `property.purged` | — |
 
 Refusals keep using `access.role_denied` and `access.cross_workspace_denied` (AC-SEC-001,
@@ -295,7 +306,10 @@ AC-SEC-009).
 |---|---|---|
 | Screenshots and CSV files | Deleted after processing; bucket lifecycle deletes anything older than 1 day | Worker, plus S3 lifecycle |
 | `extraction_request.input_text`, `recognized_text` | Deleted when the property is confirmed, or 7 days after the request | Daily `retention` job |
-| `stay.guest_name` | Set to null 12 months after `checkout_date` (Confidential class; to be confirmed by OQ-35) | Daily `retention` job |
+| `stay.guest_name` | Set to null 12 months after `checkout_date` (Confidential class; to be confirmed by OQ-35), or at once when an owner or admin removes it on request (FR-053) | Daily `retention` job; API for removal on request |
+| `import_item.calendar_url_ciphertext` | Set to null once the feed is saved or rejected, and when the run is cancelled | Worker (`csv.import`) and API (cancel); the daily `retention` job clears any left on finished runs |
+| `import_item.row_values` | Set to null 7 days after the run finishes; the error file is no longer available after that | Daily `retention` job |
+| CSV runs in `awaiting_confirmation` | Cancelled after 7 days, which clears their items as above | Daily `retention` job |
 | Removed properties | Deleted with their stays, listing content, feeds, and restricted values when `purge_after` passes (FR-045) | Daily `purge-properties` job |
 | `pms_connection.credential_ciphertext` | Set to null at once on disconnect | API, in the disconnect transaction |
 
@@ -308,6 +322,14 @@ blank, listing text, duplicate: confirmation step with every fact ──> ready
 CSV or PMS import: facts incomplete ──> needs_details ──(host fills them)──> to_confirm
                    facts complete   ──> to_confirm ──(host confirms, one or many)──> ready
 ready ──(a required fact cleared)──> needs_details
+manual, listing text, duplicate: needs_details ──(host fills them)──> ready
+```
+
+A `PATCH` that fills the last missing fact makes a manual, listing-text, or duplicate property
+`ready`, because the host is editing it directly, and a CSV or PMS property `to_confirm`, because
+its other facts still come from the import.
+
+```text
 active ──(remove: typed name + step-up)──> removed ──(restore within 30 days, free slot)──> active
 removed ──(purge_after passes)──> deleted permanently
 ```
@@ -318,13 +340,14 @@ removed ──(purge_after passes)──> deleted permanently
 awaiting_uploads ──(submit)──> queued ──> running ──> succeeded
                                                   └─> failed (timeout, ai_unavailable, nothing_found)
 url_only input ──> failed (url_only) with no AI call
+failed (timeout, ai_unavailable) ──(retry)──> a new request, queued, with retry_of_id set
 ```
 
 ### Import run
 
 ```text
 CSV: validating ──> awaiting_confirmation ──(create valid rows)──> running ──> completed
-                                          └─(cancel)──> cancelled
+                                          └─(cancel, or 7 days without confirmation)──> cancelled
 PMS: running ──> completed (with per-item outcomes) | failed (credential revoked: remaining items failed)
 ```
 
@@ -345,7 +368,7 @@ PMS connection: active ⇄ failing ──(disconnect)──> disconnected (crede
 | Pasted text ≤ 20,000 characters; ≤ 10 screenshots of ≤ 10 MB each | FR-009 |
 | Likely restricted values removed before any AI call; images never sent to the AI | FR-012, FR-013 |
 | Extraction limit = max(10, 2 × property limit) per workspace per UTC day | FR-017 |
-| ≤ 5 feeds per property, HTTPS only, at most 3 redirects, 2 MB and 10 s per read | FR-020, FR-026 |
+| ≤ 5 feeds per property, one per channel (several `other` feeds with distinct labels), HTTPS only, at most 3 redirects, 2 MB and 10 s per read | FR-020, FR-026 |
 | Feed refresh every 3 hours; "Refresh now" once every 5 minutes per property | FR-023 |
 | PMS stays keep only dates, channel, reference, guest count, and guest name | FR-030 |
 | Re-import matches by `external_id`; `edited` facts and reviewed content are never overwritten | FR-033 |

@@ -133,6 +133,9 @@ first-hand is marked **unverified**.
   refreshes. The API encrypts but never reads plaintext back. A lint rule limits imports of the
   vault's `decrypt` to worker modules. Imported codes are never decrypted in this feature; the
   reveal flow is spec 003.
+  - Two API routes need a stored credential: listing PMS listings again, and revoking a Beds24
+    token on disconnect. The API sends a worker job and waits up to 15 seconds for its output,
+    so it still never decrypts.
 - **Local and test:** `LocalKeyManagement` wraps data keys with a key from the environment, used
   only in development and CI.
 - **Alternatives:**
@@ -160,8 +163,11 @@ first-hand is marked **unverified**.
 - **Evals (constitution V, SC-002):** `evals/extraction/` holds 30 sample listings (15 Spanish,
   15 English) with expected fields. The suite scores field placement (≥ 90%), invented facts (0),
   and injection resistance (5 injection cases). Changes to the prompt, schema, model, or effort
-  must pass it before merge. CI runs it only when those files change, because it needs the API
-  key.
+  must pass it before merge. CI runs it on every pull request (constitution V), with the API key
+  as a repository secret. One run is 35 calls, about $1–2.
+- **Test data:** the repository is public, so the sample listings, and the screenshots rendered
+  from them, are synthetic: written for the suite, with no copied listing text, real addresses,
+  host or guest names, or real codes.
 - **Alternatives:** tool use with a strict tool was rejected because structured output is simpler
   and returns the same guarantee for a single extraction.
 
@@ -184,7 +190,8 @@ at the boundary and never stored or logged (FR-030). Contract tests run against 
   - The refresh token stays valid while it is used at least every 30 days, which the 3-hour
     refresh guarantees.
   - On disconnect, Guidesk calls `DELETE /authentication/token` and then deletes its copy
-    (SEC-13).
+    (SEC-13). If that call fails or takes more than 15 seconds, the copy is deleted anyway, and
+    the host is told to remove the token in Beds24.
   - `read:bookings-personal` is needed for guest names (the 2026-11-15 decision) and also exposes
     contact data. The adapter drops that data.
 - **Mapping:**
@@ -309,11 +316,13 @@ accounts.
   2 MB, are rejected before parsing.
 - **Headers:** Spanish and English aliases map to canonical columns (FR-037), case- and
   accent-insensitive. The template is generated per language with one example row and
-  instructions.
+  instructions. The instructions are leading lines that start with `#`, which the parser skips.
 - **Validation:** domain rules per row (FR-039) run in the worker. All errors are collected,
   never just the first. Duplicate rows and matches with existing properties are warnings
-  (FR-040). Calendar links go through the same checks as FR-020 to FR-026, but are read only
-  after the property is created.
+  (FR-040). Calendar links are checked for format at validation; an invalid link is an error
+  for that column only, and the row can still be created without it. Links are read only after
+  the property is created, under FR-020 to FR-026; a link rejected then is reported as a column
+  error on that row (FR-042).
 - **Error file:** written with `csv-stringify`. Any cell starting with `=`, `+`, `-`, `@`, tab,
   or carriage return is prefixed with `'` (FR-041, AC-SEC-006). Calendar-link cells are left
   empty (data model §4).
@@ -360,7 +369,7 @@ accounts.
 | `pms.import` | API | One job per run; items processed in order with progress updates; credit-aware (R7) |
 | `pms.refresh` | Cron every 15 minutes, or "Refresh now" | Connections due every 3 hours |
 | `calendar.refresh` | Cron every 15 minutes, or "Refresh now" | Feeds due every 3 hours (R8) |
-| `retention.daily` | Daily cron | Extraction input text after 7 days, guest names 12 months after checkout |
+| `retention.daily` | Daily cron | Extraction input text after 7 days, guest names 12 months after checkout, CSV row values 7 days after the run, and unconfirmed CSV runs after 7 days |
 | `properties.purge` | Daily cron | Removed properties after 30 days (FR-045) |
 
 - **Notifications (FR-029, FR-024, FR-035):** emails through the existing outbox and React Email
@@ -369,15 +378,20 @@ accounts.
   center and web push arrive with spec 006.
 - **Observability:** every job runs in an OpenTelemetry span with the workspace ID and counts.
   Restricted values and guest names are kept out of span attributes by the existing allowlist.
-  Import and refresh failures are counted per provider and error code.
+  Import and refresh failures are counted per provider and error code. Every sandbox call runs in
+  a span with the function name, duration, and outcome code. The sandbox functions write
+  structured JSON logs (request ID, error code, duration) and report errors to Sentry with the
+  existing allowlist; their inputs and outputs are never logged.
 
 ## R14. Testing
 
 - **Unit (domain):** core facts and setup status, the restricted-value corpus (R4), feed
   classification fixtures, CSV rules (BOM, semicolons, accents, formula cells), time zone
   suggestions, limits.
-- **Contract (adapters):** Beds24 and Hostex against recorded fixtures, including revoked tokens,
-  rate-limit responses, and payloads with contact data that must be dropped. Also Anthropic
+- **Contract (adapters):** Beds24 and Hostex against fixtures recorded from test accounts,
+  including revoked tokens, rate-limit responses, and payloads with contact data that must be
+  dropped. Cases a test account cannot produce may be synthetic and are marked as such. Recorded
+  data is scrubbed: names, contacts, and codes are replaced with synthetic values before commit. Also Anthropic
   against a recorded response, S3 presigned forms, and KMS (local) round trips.
 - **Integration (API and database, Testcontainers):**
   - RLS and cross-tenant tests on every new table (AC-SEC-009).

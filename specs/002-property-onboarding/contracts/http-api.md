@@ -19,7 +19,7 @@ more properties (FR-048).
 | 409 | `plan_limit_reached` | Creating, importing, duplicating, or restoring would exceed the property limit. Body: `{limit, used}` (FR-047) |
 | 409 | `workspace_pending_deletion` | The workspace is pending deletion (FR-049) |
 | 409 | `feed_limit_reached` | The property already has 5 calendar feeds (FR-020) |
-| 409 | `duplicate_feed` | The same link is already saved for this property |
+| 409 | `duplicate_feed` | The same link is already saved for this property, or the property already has a feed for that channel (a second `other` feed needs a different label) (FR-020). Body: `{reason: same_link \| same_channel}` |
 | 409 | `refresh_too_soon` | "Refresh now" was used less than 5 minutes ago. Body: `{retryAfterSeconds}` |
 | 409 | `confirmation_mismatch` | The typed name does not match the property name (FR-044) |
 | 422 | `feed_rejected` | The link is not HTTPS, resolves to a blocked address, redirects too often, is too large or slow, or is not iCal. Body: `{reason}` |
@@ -35,7 +35,7 @@ more properties (FR-048).
 | `GET /properties/start-options` | O A | Ordered options with the recommended one first, from the onboarding answers (FR-008) |
 | `POST /properties` | O A, MFA | Create from the confirmation step. Body: core facts, `source` (`manual`, `listing_text`, `duplicate`), optional `extractionRequestId` or `duplicateOf`, and `contentItems` accepted from the extraction. Returns the property with `setupStatus` and `missingFacts`. `201`, or `409 plan_limit_reached` |
 | `GET /properties/{propertyId}` | O A Ag | Core facts, setup status, source label, counts of feeds, stays, and restricted values. Agents get no feed or restricted-value details |
-| `PATCH /properties/{propertyId}` | O A | Edit core facts (FR-005). Imported properties record the field in `edited_facts` |
+| `PATCH /properties/{propertyId}` | O A | Edit core facts (FR-005). Imported properties record the field in `edited_facts`. Filling the last missing fact makes a manual, listing-text, or duplicate property `ready`, and a CSV or PMS property `to_confirm` ([data model §7](../data-model.md#7-state-machines)) |
 | `POST /properties/confirm` | O A | Body: `{propertyIds}`. Confirms the facts of imported properties in `to_confirm` (one or many from the list), moving them to `ready` (FR-004). Properties still missing facts are returned as `needs_details` |
 | `GET /properties/address-check?line1=&unit=&city=&country=` | O A | `{matches: [{propertyId, name}]}` for the dismissible duplicate warning (FR-007) |
 | `GET /properties/{propertyId}/duplicate-draft` | O A | Prefill for the confirmation step: copied facts and content, name "Copy of …", empty address (FR-043). Nothing is created until `POST /properties` |
@@ -56,9 +56,10 @@ check and rate limits apply.
 
 | Method and path | Roles | Notes |
 |---|---|---|
-| `POST /extractions` | O A | Body: `{text?, screenshots: [{contentType, size}]}` (≤ 20,000 characters; ≤ 10 screenshots of ≤ 10 MB; JPEG, PNG, or WebP after the portal converts HEIC). Counts toward the daily limit. Returns `{extractionId, redactions, urlOnly, uploads: [{uploadId, url, fields}]}` with presigned upload forms. A URL-only input returns `urlOnly: true` and makes no AI call (FR-011) |
+| `POST /extractions` | O A | Body: `{text?, screenshots: [{contentType, size}]}` (≤ 20,000 characters; ≤ 10 screenshots of ≤ 10 MB; JPEG, PNG, or WebP after the portal converts HEIC). Counts toward the daily limit, except a URL-only input. Returns `{extractionId, redactions, urlOnly, uploads: [{uploadId, url, fields}]}` with presigned upload forms. A URL-only input returns `urlOnly: true` and makes no AI call (FR-011) |
 | `POST /extractions/{extractionId}/submit` | O A | Called after the uploads finish. Queues the job. `202` |
 | `GET /extractions/{extractionId}` | O A | Status and, when done, `result`: content items with `source`, proposed facts, detected language, `failedScreenshots`, `redactions` |
+| `POST /extractions/{extractionId}/retry` | O A | "Try again" after `failed` with `timeout` or `ai_unavailable` (FR-016). Creates a new request from the failed one's stored redacted text and recognized text, without uploading the screenshots again, and queues it. Counts toward the daily limit. Returns the new `{extractionId}`. `202`, or `409 conflict` for any other state |
 
 The redaction summary is returned as counts per kind (for example "1 door code removed"), so the
 portal can tell the host what was removed without echoing the value (FR-012).
@@ -84,6 +85,7 @@ portal can tell the host what was removed without echoing the value (FR-012).
 | `POST /properties/{propertyId}/stays` | O A | Add a stay by hand: dates, guest count, optional guest name, channel (default "Direct"), optional times (FR-052). The response flags overlaps (FR-054) |
 | `PATCH /stays/{stayId}` | O A | Manual stays: edit. Feed or PMS stays: only `{status: "hidden"}` when `mayBeBlock` is true (FR-022, FR-053). Anything else returns `409 conflict` |
 | `POST /stays/{stayId}/cancel` | O A | Manual stays only |
+| `POST /stays/{stayId}/remove-guest-name` | O A | Any stay: sets the guest name to null on request, and later refreshes do not restore it (FR-053). Logs `stay.guest_name_removed` |
 
 ## PMS connections and imports
 
@@ -91,10 +93,10 @@ portal can tell the host what was removed without echoing the value (FR-012).
 |---|---|---|
 | `GET /pms-connections` | O A | Provider, account label, status, last refresh, last error. Never the credential |
 | `POST /pms-connections` | O A, SU, MFA | Body: `{provider, credential}` where `credential` is the provider's own value (a Beds24 invite code, a Hostex access token; [research R7](../research.md#r7-pms-adapters-beds24-and-hostex)). The API validates it with the provider, stores it encrypted, and returns the connection with its listings (`externalId`, name, `alreadyImported`, `propertyId`). `201`, or `422 invalid_credential` with nothing stored (US4 scenario 3) |
-| `GET /pms-connections/{connectionId}/listings` | O A | Lists the PMS listings again, for a later import (FR-033) |
+| `GET /pms-connections/{connectionId}/listings` | O A | Lists the PMS listings again, for a later import (FR-033). The API asks the worker for them and waits up to 15 s, because only the worker decrypts the credential ([research R5](../research.md#r5-field-level-encryption-sec-06)) |
 | `POST /pms-connections/{connectionId}/imports` | O A | Body: `{externalIds}`; capped at the remaining limit (FR-028). Returns the `import_run`. `202` |
 | `POST /pms-connections/{connectionId}/refresh` | O A | "Refresh now" for reservations; once every 5 minutes per connection (FR-035). `202` |
-| `DELETE /pms-connections/{connectionId}` | O A | Disconnect: the credential is deleted in the same transaction, refreshes stop, and imported properties remain (FR-036). Beds24 tokens are also revoked at the provider. Hostex has no revoke endpoint, so the response tells the host to delete the token in Hostex as well (`{providerRevoked: false, instructionsUrl}`) |
+| `DELETE /pms-connections/{connectionId}` | O A | Disconnect (FR-036). For Beds24 the API first asks the worker to revoke the token at the provider and waits up to 15 s. Then, whatever the result, it sets the credential to null and the status to `disconnected` in one transaction; refreshes stop, and imported properties remain. When the token was not revoked (Hostex, which has no revoke endpoint, or a Beds24 failure or timeout), the response tells the host to delete it at the provider as well: `{providerRevoked: false, instructionsUrl}`. `integration.disconnected` records `providerRevoked` |
 
 ## CSV import
 
@@ -114,7 +116,7 @@ portal can tell the host what was removed without echoing the value (FR-012).
 | `GET /imports/{importRunId}` | O A | Progress counts and status |
 | `GET /imports/{importRunId}/items?outcome=failed` | O A | Per-listing or per-row results with reasons |
 | `POST /imports/{importRunId}/items/{itemId}/retry` | O A | Retry one failed PMS listing (FR-032) |
-| `GET /imports/{importRunId}/error-file?lang=es` | O A | CSV of rejected rows with row number, column, and reason; formula cells neutralized (FR-039, FR-041); calendar links left empty |
+| `GET /imports/{importRunId}/error-file?lang=es` | O A | CSV of every row with an error, including created rows whose calendar link was rejected (FR-042), with row number, column, and reason; formula cells neutralized (FR-039, FR-041); calendar links left empty. Available for 7 days after the run finishes |
 
 ## Uploads
 
@@ -131,4 +133,5 @@ expires after 10 minutes. The API never accepts file bytes on its own routes.
 - Creating paths re-check the plan limit and the pending-deletion state inside the same
   transaction that inserts the property.
 - Agents get `404 not_found`, not `403`, for feed and connection routes, so the existence of a
-  feed or connection is not revealed to them.
+  feed or connection is not revealed to them. The refusal is still logged as
+  `access.role_denied` (AC-SEC-001).

@@ -115,6 +115,8 @@ only one allowlisted by `SANDBOX_TEST_ALLOW_HOST`, which works only in developme
 - Unlabeled entries appear marked "may be a block", and hiding one keeps it hidden after
   **Refresh now**.
 - A second **Refresh now** within 5 minutes returns `409 refresh_too_soon`.
+- A second Airbnb link for the same property returns `409 duplicate_feed` with
+  `reason: same_channel`.
 
 Then try these links:
 
@@ -151,8 +153,11 @@ With `PMS_BEDS24=true` and the recorded Beds24 fixtures:
   phone, and notes are absent from the database (AC-SEC-012).
 - A code found in the fixture's house rules is stored only as a masked restricted value.
 - Importing again creates no duplicates and keeps facts edited in Guidesk.
+- Removing the guest name from an imported stay keeps it removed after **Refresh now**
+  (FR-053).
 - **Disconnect** deletes the credential at once, and the next scheduled refresh makes no request
-  (AC-SEC-011).
+  (AC-SEC-011). With the worker stopped, disconnect still deletes the credential and answers
+  `providerRevoked: false`.
 
 Repeat with `PMS_HOSTEX=true`.
 
@@ -167,6 +172,8 @@ Download the Spanish template, fill in 25 rows (two invalid, one cell `=HYPERLIN
 - The per-row errors are listed by row and column.
 - The 23 valid rows are created as `to_confirm`, and **Confirm all** makes them `ready`.
 - In the error file, the formula cell is prefixed with `'` and calendar links are empty.
+- A valid row whose calendar link points to `https://169.254.169.254/` is created without a
+  feed, and the result shows a column error for that link (FR-042).
 
 ### 11. Duplicate and remove (US6)
 
@@ -208,9 +215,9 @@ pnpm lint:rls
 pnpm test:e2e
 ```
 
-The extraction eval suite needs `ANTHROPIC_API_KEY` and runs in CI when the prompt, schema,
-model, or effort changes. The target is at least 90% of facts in the right field and no invented
-facts (SC-002). The exact command is defined in tasks.
+The extraction eval suite needs `ANTHROPIC_API_KEY` and runs in CI on every pull request. The
+target is at least 90% of facts in the right field and no invented facts (SC-002). The exact
+command is defined in tasks.
 
 ## Done when
 
