@@ -648,3 +648,32 @@ input[type="radio"] {
 .restricted-list li {
   display: contents;
 }
+
+/* CSV review (US5): errors and warnings by row, and the row of actions. */
+.issue-list {
+  margin: var(--space) 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 8px;
+}
+
+.issue-list ul {
+  margin: 4px 0 0;
+  padding-left: 1.25rem;
+}
+
+.issue-details {
+  margin: var(--space) 0;
+}
+
+.issue-details summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: var(--space) 0;
+}

@@ -352,7 +352,7 @@ export class PmsService {
       targetId: run!.id,
       metadata: { kind: "pms", total: items.length },
     });
-    return toImportRun(run!, connection.provider);
+    return toImportRun(run!, connection.provider, null);
   }
 
   /** "Refresh now" for reservations, once every 5 minutes per connection (FR-035). */

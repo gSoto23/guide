@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { loadApiConfig } from "../../src/config/config.js";
 
@@ -89,7 +90,8 @@ describe("integration settings (T006)", () => {
     const { integrations } = loadApiConfig(base);
     expect(integrations).toMatchObject({
       kms: { mode: "local" },
-      storage: { mode: "local", dir: ".uploads" },
+      // A relative folder is read from the monorepo root, so the API and the worker share it.
+      storage: { mode: "local", dir: resolve(import.meta.dirname, "../../../../.uploads") },
       sandbox: { mode: "in-process" },
       llm: { mode: "none" },
       pms: { mode: "fixtures" },

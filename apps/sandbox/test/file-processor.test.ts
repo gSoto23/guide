@@ -307,19 +307,6 @@ describe("createFileProcessor (FR-015)", () => {
     expect(storage.deleted).toEqual([KEY]);
   });
 
-  it("answers unsupported_type for a CSV file for now (T108) and deletes it", async () => {
-    const storage = new MemoryStorage({ [KEY]: Buffer.from("name,guests\nCabin,4\n") });
-    const processFile = createFileProcessor({
-      storage,
-      recognizer: fakeRecognizer("x").recognizer,
-    });
-
-    expect(await processFile({ objectKey: KEY, purpose: "csv" })).toEqual({
-      error: "unsupported_type",
-    });
-    expect(storage.deleted).toEqual([KEY]);
-  });
-
   it("deletes the object when recognition fails unexpectedly, then rethrows", async () => {
     const storage = new MemoryStorage({ [KEY]: await screenshotPng() });
     const processFile = createFileProcessor({

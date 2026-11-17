@@ -6,6 +6,7 @@ import {
   type FileProcessRequest,
   type FileProcessResponse,
 } from "../protocol.js";
+import { parseCsvFile } from "./csv.js";
 import { detectImageType, normalizeImage } from "./images.js";
 import { TesseractRecognizer } from "./ocr.js";
 import { S3ObjectSource } from "./s3-source.js";
@@ -57,9 +58,9 @@ export interface FileProcessorDeps {
  * 1. validates the request against the protocol schema (`internal` when it does not match: the
  *    API generates object keys, so a bad one is a bug);
  * 2. reads the object (`not_found` when it does not exist);
- * 3. processes it: `purpose: "csv"` is `unsupported_type` until CSV parsing lands (T108); a
- *    screenshot over `maxBytes` is `too_large`, one that is not JPEG, PNG, or WebP by its magic
- *    bytes is `unsupported_type`, and one that cannot be decoded or shows no text is `unreadable`;
+ * 3. processes it: a CSV file is parsed into rows (`csv.ts`, FR-038); a screenshot over
+ *    `maxBytes` is `too_large`, one that is not JPEG, PNG, or WebP by its magic bytes is
+ *    `unsupported_type`, and one that cannot be decoded or shows no text is `unreadable`;
  * 4. deletes the object, after success and after every failure, a thrown error included (FR-015).
  *
  * A result is returned only once the object is deleted: when the delete fails, the call throws
@@ -76,7 +77,7 @@ export function createFileProcessor(
     const bytes = await deps.storage.get(objectKey);
     if (bytes === null) return { error: "not_found" };
     try {
-      if (purpose === "csv") return { error: "unsupported_type" };
+      if (purpose === "csv") return parseCsvFile(bytes);
       return await recognizeScreenshot(bytes, deps);
     } finally {
       await deps.storage.delete(objectKey);

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { and, desc, eq, sql } from "drizzle-orm";
 import type { ImportItemList, ImportRun, ImportRunList } from "@guidesk/contracts";
-import { importItem, importRun, pmsConnection } from "@guidesk/db";
+import { importItem, importRun, pmsConnection, upload } from "@guidesk/db";
 import { JOB_QUEUES } from "@guidesk/domain";
 import type { PmsProvider } from "@guidesk/integrations";
 import { assertUuid } from "../common/ids.js";
@@ -11,7 +11,11 @@ import { JobQueueService } from "../jobs/job-queue.service.js";
 
 type RunRow = typeof importRun.$inferSelect;
 
-export function toImportRun(row: RunRow, provider: PmsProvider | null): ImportRun {
+export function toImportRun(
+  row: RunRow,
+  provider: PmsProvider | null,
+  rejectReason: string | null,
+): ImportRun {
   return {
     id: row.id,
     kind: row.kind,
@@ -25,6 +29,8 @@ export function toImportRun(row: RunRow, provider: PmsProvider | null): ImportRu
     skipped: row.skipped,
     createdAt: row.createdAt.toISOString(),
     finishedAt: row.finishedAt?.toISOString() ?? null,
+    // Why a CSV file could not be used, kept on its upload (data model §2).
+    errorCode: row.status === "failed" && row.kind === "csv" ? rejectReason : null,
   };
 }
 
@@ -42,9 +48,14 @@ export class ImportRunsService {
   private runs() {
     return this.requestDb
       .current()
-      .select({ run: importRun, provider: pmsConnection.provider })
+      .select({
+        run: importRun,
+        provider: pmsConnection.provider,
+        rejectReason: upload.rejectReason,
+      })
       .from(importRun)
-      .leftJoin(pmsConnection, eq(pmsConnection.id, importRun.pmsConnectionId));
+      .leftJoin(pmsConnection, eq(pmsConnection.id, importRun.pmsConnectionId))
+      .leftJoin(upload, eq(upload.id, importRun.uploadId));
   }
 
   async list(workspaceId: string, status?: ImportRun["status"]): Promise<ImportRunList> {
@@ -57,7 +68,11 @@ export class ImportRunsService {
       )
       .orderBy(desc(importRun.createdAt))
       .limit(20);
-    return { items: rows.map(({ run, provider }) => toImportRun(run, provider)) };
+    return {
+      items: rows.map(({ run, provider, rejectReason }) =>
+        toImportRun(run, provider, rejectReason),
+      ),
+    };
   }
 
   async get(workspaceId: string, importRunId: string): Promise<ImportRun> {
@@ -66,7 +81,7 @@ export class ImportRunsService {
       .where(and(eq(importRun.id, importRunId), eq(importRun.workspaceId, workspaceId)))
       .limit(1);
     if (!row) throw new ApiProblem(404, "not_found");
-    return toImportRun(row.run, row.provider);
+    return toImportRun(row.run, row.provider, row.rejectReason);
   }
 
   async items(
@@ -82,9 +97,12 @@ export class ImportRunsService {
         externalId: importItem.externalId,
         rowNumber: importItem.rowNumber,
         label: importItem.label,
+        selected: importItem.selected,
         outcome: importItem.outcome,
         reasonCode: importItem.reasonCode,
         propertyId: importItem.propertyId,
+        errors: importItem.errors,
+        warnings: importItem.warnings,
       })
       .from(importItem)
       .where(
@@ -134,6 +152,6 @@ export class ImportRunsService {
       { importRunId, workspaceId },
       { singletonKey: `import:${importRunId}`, startAfter: 2, retryLimit: 3, retryDelay: 5 },
     );
-    return toImportRun(run!, row.provider);
+    return toImportRun(run!, row.provider, null);
   }
 }

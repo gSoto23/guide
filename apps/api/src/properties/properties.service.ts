@@ -57,7 +57,7 @@ import { toDetail, toSummary, toTimeOfDay, type PropertyRow } from "./property-m
  * Creation paths built so far; `start-options` leaves out the others (T042). Each user story adds
  * its path here when it lands.
  */
-export const AVAILABLE_START_OPTIONS: readonly StartOption[] = ["listing", "pms", "blank"];
+export const AVAILABLE_START_OPTIONS: readonly StartOption[] = ["listing", "pms", "csv", "blank"];
 
 const CORE_FACT_KEYS = [
   "name",

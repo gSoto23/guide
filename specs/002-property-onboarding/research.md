@@ -345,6 +345,11 @@ accounts.
 - **Timing:** SC-005 asks for 200 rows validated within 10 seconds, and the performance doc for
   500 rows within 30 seconds. Parsing is in-memory, so the budget goes to queue pickup and the
   sandbox call.
+- **As built:** the template's example row also starts with `#`, so it is never created. Files
+  that are not valid UTF-8 are read as Windows-1252, the encoding spreadsheets in Spanish still
+  write. The file processor returns each row's number in the file with its cells, so errors name
+  the row a spreadsheet shows. The worker test checks 200 rows, each with an encrypted calendar
+  link, against the 10-second budget.
 
 ## R11. Time zone suggestion without an outside service
 

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { ImportItem, ImportItemList, ImportRun } from "@guidesk/contracts";
-import { problemOf } from "@/lib/properties-api";
+import { csvLanguage, useCsvIssueText } from "@/lib/csv";
+import { problemOf, workspacePath } from "@/lib/properties-api";
 import { useOnline } from "@/lib/use-online";
 import { useWorkspace } from "@/lib/use-workspace";
 
@@ -16,15 +17,20 @@ const REASONS = new Set([
   "provider_error",
   "not_found_in_pms",
   "workspace_pending_deletion",
+  "invalid_row",
+  "not_selected",
+  "internal",
 ]);
 
 /**
- * An import run (FR-029, FR-032, T099): "Importing 12 of 40" while it runs, then each listing's
- * result, the reason for failures and skips, and "Try again" for a failed listing.
+ * An import run (FR-029, FR-032, T099, T111): "Importing 12 of 40" while it runs, then each
+ * listing's or row's result, the reason for failures and skips, and "Try again" for a failed
+ * listing. A CSV run also shows each row's errors by column and the error file (FR-039, FR-042).
  */
 export function ImportRunView({ locale, importRunId }: { locale: string; importRunId: string }) {
   const t = useTranslations("properties.imports");
   const errors = useTranslations("errors");
+  const issueText = useCsvIssueText();
   const workspace = useWorkspace();
   const online = useOnline();
   const [run, setRun] = useState<ImportRun | null>(null);
@@ -90,6 +96,8 @@ export function ImportRunView({ locale, importRunId }: { locale: string; importR
 
   const source = run.provider ? t(`sources.${run.provider}`) : t("sources.csv");
   const running = run.status === "running";
+  const csv = run.kind === "csv";
+  const showErrorFile = csv && !running && items.some((item) => item.errors.length > 0);
 
   return (
     <>
@@ -129,6 +137,9 @@ export function ImportRunView({ locale, importRunId }: { locale: string; importR
           <li key={item.id} className="content-item">
             <div className="content-item-head">
               <h3>
+                {csv && item.rowNumber !== null ? (
+                  <span className="muted">{t("row", { row: item.rowNumber })} · </span>
+                ) : null}
                 {item.propertyId ? (
                   <Link href={`/${locale}/properties/${item.propertyId}`}>{item.label}</Link>
                 ) : (
@@ -152,6 +163,13 @@ export function ImportRunView({ locale, importRunId }: { locale: string; importR
                 {t(`reasons.${REASONS.has(item.reasonCode) ? item.reasonCode : "provider_error"}`)}
               </p>
             ) : null}
+            {item.errors.length > 0 ? (
+              <ul className="issue-list">
+                {item.errors.map((issue, index) => (
+                  <li key={index}>{issueText(issue)}</li>
+                ))}
+              </ul>
+            ) : null}
             {item.outcome === "failed" && run.kind === "pms" && !running ? (
               <button
                 type="button"
@@ -165,6 +183,20 @@ export function ImportRunView({ locale, importRunId }: { locale: string; importR
           </li>
         ))}
       </ul>
+      {showErrorFile ? (
+        <p>
+          <a
+            className="button button-secondary"
+            href={workspacePath(
+              workspace.workspaceId,
+              `/imports/${encodeURIComponent(run.id)}/error-file?lang=${csvLanguage(locale)}`,
+            )}
+            download
+          >
+            {t("errorFile")}
+          </a>
+        </p>
+      ) : null}
       {!running ? (
         <Link className="button button-secondary" href={`/${locale}/properties`}>
           {t("toProperties")}

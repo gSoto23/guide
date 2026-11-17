@@ -106,9 +106,9 @@ portal can tell the host what was removed without echoing the value (FR-012).
 |---|---|---|
 | `GET /imports/csv-template?lang=es` | O A | The template in the requested language: headers, one example row, and instructions (FR-037) |
 | `POST /imports/csv` | O A | Body: `{contentType, size}` (≤ 2 MB). Returns `{importRunId, upload: {uploadId, url, fields}}` |
-| `POST /imports/{importRunId}/validate` | O A | Called after the upload. `202`; the run moves to `awaiting_confirmation` with per-row results |
-| `POST /imports/{importRunId}/confirm` | O A | Body: `{rowNumbers?}` when the valid rows exceed the limit (US5 scenario 5). Creates the valid rows. `202` |
-| `POST /imports/{importRunId}/cancel` | O A | — |
+| `POST /imports/{importRunId}/validate` | O A | Called after the upload. `202`; the run moves to `awaiting_confirmation` with per-row results, or to `failed` with `errorCode` when the file cannot be used. A second call is `409` |
+| `POST /imports/{importRunId}/confirm` | O A | Body: `{rowNumbers?}` when the valid rows exceed the limit (US5 scenario 5). Creates the valid rows. `202` with the run. Without `rowNumbers` when they do not fit, or with more rows than fit or rows that cannot be created: `422 validation_failed` with `fields.rowNumbers` and `{free, limit}`. No free slot: `409 plan_limit_reached`. No row that can be created: `409 conflict`. Rows left out become `skipped` (`not_selected`), and every calendar link of a row that will not be created is set to null |
+| `POST /imports/{importRunId}/cancel` | O A | While `validating` or `awaiting_confirmation`; `409` after. Returns the `cancelled` run, with every calendar link of its rows set to null |
 
 ## Import runs (PMS and CSV)
 
@@ -118,7 +118,11 @@ portal can tell the host what was removed without echoing the value (FR-012).
 | `GET /imports/{importRunId}` | O A | Progress counts and status |
 | `GET /imports/{importRunId}/items?outcome=failed` | O A | Per-listing or per-row results with reasons |
 | `POST /imports/{importRunId}/items/{itemId}/retry` | O A | Retry one failed PMS listing (FR-032) |
-| `GET /imports/{importRunId}/error-file?lang=es` | O A | CSV of every row with an error, including created rows whose calendar link was rejected (FR-042), with row number, column, and reason; formula cells neutralized (FR-039, FR-041); calendar links left empty. Available for 7 days after the run finishes |
+| `GET /imports/{importRunId}/error-file?lang=es` | O A | CSV of every row with an error, including created rows whose calendar link was rejected (FR-042), with row number, column, and reason; formula cells neutralized (FR-039, FR-041); calendar links left empty. Available while the host decides and for 7 days after the run finishes; `410 gone` after. `404` for a PMS run |
+
+Runs carry `errorCode` (why a CSV file could not be used, else null). Items carry `selected`,
+`errors`, and `warnings` (`[{column?, code, row?}]`, empty for PMS listings), localized by the
+portal. The CSV routes answer agents with `404`, like the PMS routes (AC-SEC-001).
 
 ## Uploads
 

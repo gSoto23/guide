@@ -896,21 +896,21 @@ row and column. The error file is safe to open, and only the valid rows become p
 
 ### Tests for User Story 5 ⚠️ (write first, must fail)
 
-- [ ] T103 [P] [US5] Unit tests in `packages/domain/test/properties/csv.test.ts`:
+- [X] T103 [P] [US5] Unit tests in `packages/domain/test/properties/csv.test.ts`:
   - Spanish and English header aliases, matched without case or accents (FR-037);
   - every row is validated, with all its errors by row, column, and code (FR-039);
   - time zones are validated;
   - duplicate rows, and rows matching an existing property, are warnings (FR-040);
   - the calendar link column is checked for HTTPS syntax only;
   - `neutralizeCell` prefixes cells that start with `=`, `+`, `-`, `@`, tab, or carriage return with `'` (FR-041)
-- [ ] T104 [P] [US5] Sandbox tests in `apps/sandbox/test/csv.test.ts` (FR-038):
+- [X] T104 [P] [US5] Sandbox tests in `apps/sandbox/test/csv.test.ts` (FR-038):
   - UTF-8 with and without a byte-order mark;
   - comma or semicolon, detected from the header line;
   - accented characters;
   - `#` instruction lines are skipped;
   - more than 500 rows, or more than 2 MB, is rejected before parsing;
   - a binary file is rejected
-- [ ] T105 [P] [US5] Integration tests in `apps/api/test/integration/csv-import.test.ts`:
+- [X] T105 [P] [US5] Integration tests in `apps/api/test/integration/csv-import.test.ts` (as built: the API side there, with validated rows seeded as `csv.validate` leaves them; validation, creation, the CSV object's deletion, the calendar links, and SC-005 in `apps/worker/test/integration/csv-jobs.test.ts`, which runs the jobs with the sandbox's real parser):
   - the template in Spanish and in English, with headers, one example row, and instructions;
   - 25 rows with 2 invalid → per-row errors and `awaiting_confirmation`. Confirming creates 23 properties as `to_confirm`, and "Confirm all" makes them `ready`;
   - more valid rows than free slots → `rowNumbers` is required (US5 scenario 5);
@@ -922,24 +922,24 @@ row and column. The error file is safe to open, and only the valid rows become p
   - the CSV object is deleted after validation;
   - agents are refused;
   - 200 rows are validated within 10 seconds (SC-005)
-- [ ] T106 [P] [US5] End-to-end test in `e2e/specs/properties-us5-csv.spec.ts` (quickstart 10)
+- [X] T106 [P] [US5] End-to-end test in `e2e/specs/properties-us5-csv.spec.ts` (quickstart 10; as built on the Free plan, so the host chooses the 2 rows that fit, which also covers US5 scenario 5; the 23-row creation is covered by the worker test)
 
 ### Implementation for User Story 5
 
-- [ ] T107 [US5] Implement `packages/domain/src/properties/csv.ts`:
+- [X] T107 [US5] Implement `packages/domain/src/properties/csv.ts`:
   - the canonical columns, with Spanish and English aliases;
   - row validation, reusing `core-facts.ts` and `time-zones.ts`;
   - warnings;
   - `neutralizeCell`
-- [ ] T108 [US5] Add the CSV mode to the file processor in `apps/sandbox/src/file-processor/csv.ts`: `csv-parse`, byte-order mark handling, delimiter detection, and the size and row limits
-- [ ] T109 [US5] Implement the CSV endpoints in `apps/api/src/imports/csv.controller.ts`:
+- [X] T108 [US5] Add the CSV mode to the file processor in `apps/sandbox/src/file-processor/csv.ts`: `csv-parse`, byte-order mark handling, delimiter detection, and the size and row limits
+- [X] T109 [US5] Implement the CSV endpoints in `apps/api/src/imports/csv.controller.ts` (as built: `csv-imports.controller.ts` and `csv-imports.service.ts`):
   - `GET /imports/csv-template?lang=`: generated with `csv-stringify`, with the instructions as `#` lines (decision 4);
   - `POST /imports/csv`: creates the run and the presigned form, up to 2 MB;
   - `POST …/validate`: `202`, and queues `csv.validate`;
   - `POST …/confirm`: `rowNumbers` within the free slots, and queues `csv.import`;
   - `POST …/cancel`: also sets every `calendar_url_ciphertext` of the run's items to null;
   - `GET /imports/{id}/error-file?lang=`: every row with an error, including created rows whose calendar link was rejected; localized reasons, neutralized cells, and empty calendar links. Available for 7 days after the run finishes
-- [ ] T110 [US5] Implement the worker jobs in `apps/worker/src/jobs/csv.ts`:
+- [X] T110 [US5] Implement the worker jobs in `apps/worker/src/jobs/csv.ts`:
   - **`csv.validate`:**
     - parses the file through the sandbox and validates the rows;
     - stores each `import_item`, with `row_values` without the link and the link in `calendar_url_ciphertext`;
@@ -948,13 +948,22 @@ row and column. The error file is safe to open, and only the valid rows become p
     - creates the selected valid rows as `to_confirm` or `needs_details`, within the free slots;
     - then reads and saves each calendar link through the feed path, adding a column error when the link is rejected, and sets the item's `calendar_url_ciphertext` to null either way;
     - logs `import.finished`, and queues the email with the source "CSV"
-- [ ] T111 [US5] Build the CSV flow in `apps/portal/app/[locale]/(app)/properties/new/csv/page.tsx` with `apps/portal/components/properties/csv-import.tsx`, loading the preview on demand:
+- [X] T111 [US5] Build the CSV flow in `apps/portal/app/[locale]/(app)/properties/new/csv/page.tsx` with `apps/portal/components/properties/csv-import.tsx`, loading the preview on demand (as built: the preview is `csv-review.tsx`, loaded with `next/dynamic`; the run page shows each row's errors and the error file):
   - the template download in the host's language;
   - upload from a phone;
   - errors by row and column, and the error file download;
   - the choice of rows within the limit;
   - create or cancel
-- [ ] T112 [P] [US5] Add the US5 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`: column names and error reasons
+- [X] T112 [P] [US5] Add the US5 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`: column names and error reasons
+
+- **As built (US5):**
+  - **Row numbers:** the sandbox returns each row's number in the file with its cells (`rowNumbers` in the protocol), counting `#` rows and blank rows, so errors name the row a spreadsheet shows. The header is row 1 only when the file has no instruction rows.
+  - **Template:** the example row starts with `#` too, so a template uploaded unchanged creates nothing and takes no slot. Spanish uses semicolons and English commas, both with a byte-order mark and CRLF.
+  - **Encodings:** a file that is not valid UTF-8 is read as Windows-1252, which spreadsheets in Spanish still write; binary files (ZIP, so `.xlsx`, OLE, PDF, images, UTF-16) are `unsupported_type`.
+  - **Rows:** only a missing name, or an invalid value, blocks a row. Other missing facts are `missing` warnings, and the property is created needing details. The stored `row_values` are normalized (country code, `HH:MM`, zone, languages), so the import validates them again with the same result.
+  - **File errors:** a file that cannot be used fails the run, and `ImportRun.errorCode` gives the reason from `upload.reject_reason` (`too_large`, `too_many_rows`, `unsupported_type`, `unreadable`, `not_found`, `missing_name_column`, `duplicate_column`, `no_rows`).
+  - **Items:** `ImportItem` now carries `selected`, `errors`, and `warnings`. Rows not chosen are `skipped` with `not_selected`; invalid rows are `failed` with `invalid_row`. Confirming sets to null the calendar link of every row that will not be created.
+  - **Local storage:** `LOCAL_STORAGE_DIR` is read from the monorepo root when relative (`resolveLocalDir`), so the API and the worker share one uploads folder in development. Before, each read its own, and the worker could not find uploaded files.
 
 **Checkpoint**: US5 works: template, validation, error file, and creation of valid rows.
 

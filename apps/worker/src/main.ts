@@ -13,6 +13,7 @@ import {
 import { createEmailHandler, EMAIL_QUEUE } from "./jobs/email.js";
 import { createExtractionHandler } from "./jobs/extraction.js";
 import { createPmsListingsHandler, createPmsRevokeHandler } from "./jobs/pms-calls.js";
+import { createCsvImportHandler, createCsvValidateHandler } from "./jobs/csv.js";
 import { createPmsImportHandler } from "./jobs/pms-import.js";
 import {
   createPmsRefreshHandler,
@@ -155,6 +156,21 @@ async function main(): Promise<void> {
     await schedulePms();
   });
   await boss.schedule(PMS_SCHEDULE_QUEUE, PMS_SCHEDULE_CRON, null, { tz: "UTC" });
+
+  // CSV validation and import (US5, research R10).
+  const csvDeps = {
+    db: services.db.db,
+    sandbox: services.sandbox,
+    vault: services.vault,
+    decrypter: services.decrypter,
+    fingerprint: services.feedFingerprint,
+    queueEmail: services.queueEmail,
+    portalUrl: services.portalUrl,
+  };
+  await createQueue(JOB_QUEUES.csvValidate);
+  await boss.work(JOB_QUEUES.csvValidate, createCsvValidateHandler(csvDeps));
+  await createQueue(JOB_QUEUES.csvImport);
+  await boss.work(JOB_QUEUES.csvImport, createCsvImportHandler(csvDeps));
   console.warn("Guidesk worker started");
 
   const shutdown = async (signal: string): Promise<void> => {

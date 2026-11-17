@@ -24,6 +24,11 @@ export const importRunSchema = z.object({
   skipped: z.number().int(),
   createdAt: z.iso.datetime(),
   finishedAt: z.iso.datetime().nullable(),
+  /**
+   * Why a CSV file could not be read: `too_large`, `too_many_rows`, `unsupported_type`,
+   * `unreadable`, `not_found`, `missing_name_column`, `duplicate_column`, or `no_rows`.
+   */
+  errorCode: z.string().nullable(),
 });
 export type ImportRun = z.infer<typeof importRunSchema>;
 
@@ -43,15 +48,29 @@ export const importItemOutcomeSchema = z.enum([
   "skipped",
 ]);
 
+/** A CSV error or warning: the column, the code, and for a duplicate row the row it repeats. */
+export const csvIssueSchema = z.object({
+  column: z.string().optional(),
+  code: z.string(),
+  row: z.number().int().optional(),
+});
+export type CsvIssueBody = z.infer<typeof csvIssueSchema>;
+
 export const importItemSchema = z.object({
   id: z.uuid(),
   externalId: z.string().nullable(),
   rowNumber: z.number().int().nullable(),
   label: z.string(),
+  /** PMS: chosen to import. CSV: a row that can be created, or the row chosen within the limit. */
+  selected: z.boolean(),
   outcome: importItemOutcomeSchema,
-  /** For example `plan_limit`, `provider_error`, `reconnect_pms`, `invalid_time_zone`. */
+  /** For example `plan_limit`, `provider_error`, `reconnect_pms`, `invalid_row`, `not_selected`. */
   reasonCode: z.string().nullable(),
   propertyId: z.uuid().nullable(),
+  /** CSV: errors by column (FR-039), localized when shown. Empty for PMS listings. */
+  errors: z.array(csvIssueSchema),
+  /** CSV: missing facts, duplicate rows, and matches with existing properties (FR-040). */
+  warnings: z.array(csvIssueSchema),
 });
 export type ImportItem = z.infer<typeof importItemSchema>;
 
@@ -61,3 +80,42 @@ export type ImportItemList = z.infer<typeof importItemListSchema>;
 export const listImportItemsQuerySchema = z
   .object({ outcome: importItemOutcomeSchema.optional() })
   .strict();
+
+// --- CSV (US5, FR-037 to FR-042) ---
+
+export const csvLanguageSchema = z.enum(["es", "en"]);
+
+/** `GET /imports/csv-template?lang=` and `GET /imports/{id}/error-file?lang=`. */
+export const csvLanguageQuerySchema = z.object({ lang: csvLanguageSchema.default("es") }).strict();
+
+/** `POST /imports/csv`: the file the browser is about to upload, up to 2 MB (FR-038). */
+export const createCsvImportSchema = z
+  .object({
+    contentType: z.string().trim().min(1).max(100),
+    size: z
+      .number()
+      .int()
+      .min(1)
+      .max(2 * 1024 * 1024),
+  })
+  .strict();
+export type CreateCsvImportBody = z.infer<typeof createCsvImportSchema>;
+
+export const createdCsvImportSchema = z.object({
+  importRunId: z.uuid(),
+  upload: z.object({
+    uploadId: z.uuid(),
+    url: z.string(),
+    fields: z.record(z.string(), z.string()),
+  }),
+});
+export type CreatedCsvImport = z.infer<typeof createdCsvImportSchema>;
+
+/**
+ * `POST /imports/{id}/confirm`: the rows to create. Required when the rows that can be created
+ * are more than the free slots (US5 scenario 5); otherwise every such row is created.
+ */
+export const confirmCsvImportSchema = z
+  .object({ rowNumbers: z.array(z.number().int().min(1)).min(1).max(500).optional() })
+  .strict();
+export type ConfirmCsvImportBody = z.infer<typeof confirmCsvImportSchema>;
