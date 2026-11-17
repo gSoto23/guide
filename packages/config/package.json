@@ -15,7 +15,7 @@
       "default": "./vitest.config.js"
     }
   },
-  "dependencies": {
+  "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.14.0",
     "prettier": "^3.10.0",

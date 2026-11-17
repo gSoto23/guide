@@ -87,12 +87,35 @@ jobs:
           include-hidden-files: true
           retention-days: 14
 
+  # The extraction eval needs the ANTHROPIC_API_KEY repository secret, which pull requests from
+  # forks do not receive. Without it, this job leaves a notice and `evals-extraction` is skipped
+  # instead of failing. A skipped job counts as passing for a required check, so the eval gate
+  # only holds once the secret exists.
+  evals-extraction-secret:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      present: ${{ steps.check.outputs.present }}
+    steps:
+      - id: check
+        env:
+          # Only whether the secret is set, never its value.
+          PRESENT: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+        run: |
+          echo "present=$PRESENT" >> "$GITHUB_OUTPUT"
+          if [ "$PRESENT" != "true" ]; then
+            message="ANTHROPIC_API_KEY is not available to this run (no repository secret, or a pull request from a fork), so the extraction eval was skipped."
+            echo "::notice title=Extraction eval skipped::$message"
+            echo "$message" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
   # Listing extraction eval suite (research R6, constitution V). Runs on every pull request and
   # blocks the merge when it fails (make it a required check in the branch protection rules).
-  # One run is 35 calls to Claude, about $1–2. Needs the ANTHROPIC_API_KEY repository secret,
-  # which pull requests from forks do not receive.
+  # One run is 35 calls to Claude, about $1–2.
   evals-extraction:
-    if: github.event_name == 'pull_request'
+    needs: evals-extraction-secret
+    if: needs.evals-extraction-secret.outputs.present == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

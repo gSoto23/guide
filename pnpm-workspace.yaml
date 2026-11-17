@@ -18,3 +18,13 @@ allowBuilds:
 
 # Wait 3 days (in minutes) before installing a newly published version.
 minimumReleaseAge: 4320
+
+# Advisories that `pnpm audit` (CI, SEC-12) skips. Each entry needs a reason and an exit condition.
+auditConfig:
+  ignoreGhsas:
+    # picomatch <=4.0.7, ReDoS through single-branch repeated extglobs; no patched version yet.
+    # Only production path: apps/portal > next-intl > @parcel/watcher. The watcher runs only in
+    # `next dev` (next-intl's message extractor) and compiles next-intl's own fixed ignore globs,
+    # never user input. The lint tooling paths are devDependencies, outside `--prod`.
+    # Remove this entry once picomatch ships a fix and the lockfile picks it up.
+    - GHSA-fc5q-39xc-vjpf
