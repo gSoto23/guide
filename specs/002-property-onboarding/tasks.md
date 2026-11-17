@@ -1031,18 +1031,18 @@ none of the excluded data. A removed property is restored.
 
 **Purpose**: Retention, the security review, performance, accessibility, docs, and validation.
 
-- [ ] T121 Implement the worker job `apps/worker/src/jobs/retention.ts` (`retention.daily`), with a test in `apps/worker/test/retention-job.test.ts` (data model §6):
+- [X] T121 Implement the worker job `apps/worker/src/jobs/retention.ts` (`retention.daily`), with a test in `apps/worker/test/retention-job.test.ts` (data model §6; as built: `apps/worker/test/integration/retention.test.ts`, and CSV runs left in `validating` are cancelled too):
   - clears extraction `input_text` and `recognized_text` 7 days after the request;
   - sets `stay.guest_name` to null 12 months after `checkout_date` (pending OQ-35);
   - deletes expired `upload` rows and their objects;
   - cancels CSV runs left in `awaiting_confirmation` for more than 7 days;
   - sets `import_item.row_values` to null 7 days after the run finishes, and clears any `calendar_url_ciphertext` left on finished or cancelled runs
-- [ ] T122 [P] Write the security review sweep in `apps/api/test/integration/security-review-002.test.ts` (quickstart 12, SC-003):
+- [X] T122 [P] Write the security review sweep in `apps/api/test/integration/security-review-002.test.ts` (quickstart 12, SC-003; as built: the worker's jobs and spans in `apps/worker/test/integration/security-review-002.test.ts`, and the `404` across workspaces in T123):
   - run every flow with known secrets: a feed link, a PMS token, codes, guest names, and a guest email;
   - assert that none appears in API or worker logs, spans, Sentry events, responses, or emails;
   - assert the same `404` across workspaces on every new route (AC-SEC-009)
-- [ ] T123 [P] Extend `apps/api/test/integration/cross-tenant.test.ts` to the new routes and the `calendar_feed_public` view
-- [ ] T124 [P] Add the performance checks from the [Performance Budget](plan.md#performance-budget):
+- [X] T123 [P] Extend `apps/api/test/integration/cross-tenant.test.ts` to the new routes and the `calendar_feed_public` view
+- [X] T124 [P] Add the performance checks from the [Performance Budget](plan.md#performance-budget) (as built: `apps/api/test/integration/feed-save.perf.test.ts` and `refresh-now.test.ts`; the PMS import and the 500-row CSV in the worker, `pms-import.perf.test.ts` and `csv-jobs.test.ts`; the credential check in `packages/integrations/test/pms/latency.perf.test.ts`; extraction's 60-second limit was already in `extraction-job.test.ts`):
   - the property routes in `lighthouserc.json`;
   - `apps/portal/bundle-budget.json`: at most 150 KB of initial JavaScript per route, with `image-normalize` and the CSV preview loaded on demand;
   - `perf/k6/properties.js`: list, detail, stays, listing content, and import status, at p95 ≤ 300 ms;
@@ -1051,14 +1051,14 @@ none of the excluded data. A removed property is restored.
   - validating a PMS credential and listing the listings takes 15 s or less at p95, with the providers' recorded latency;
   - a 500-row CSV is validated within 30 seconds (R10);
   - "Refresh now" for a PMS connection is applied within 1 minute (SC-006)
-- [ ] T125 [P] Extend `e2e/specs/a11y.spec.ts` to the new screens: the list, the starting options, the listing flow, the confirmation step, calendars, stays, PMS import, CSV, and removal
-- [ ] T126 [P] Update the docs:
+- [X] T125 [P] Extend `e2e/specs/a11y.spec.ts` to the new screens: the list, the starting options, the listing flow, the confirmation step, calendars, stays, PMS import, CSV, and removal
+- [X] T126 [P] Update the docs:
   - SEC-09 in `docs/architecture/security.md`: "an isolated fetcher with no route to internal services" (R2);
   - the service table in `docs/architecture/adr/0009-mvp-hosting-and-transactional-email.md`: the uploads bucket, the KMS key, the sandbox functions, and GuardDuty Malware Protection;
   - FR-02.5 in `docs/product/prd.md`: replace "keep them in sync" with the read-only reservation refresh;
   - flow 5.4 in `docs/architecture/overview.md`: drafting the guide belongs to spec 003
-- [ ] T127 [P] Document the new commands in `README.md`: `pnpm tz:check`, the eval command, and the iCal fixture server
-- [ ] T128 Run the scenarios 1 to 12 of `specs/002-property-onboarding/quickstart.md` locally, and record the results under "Implementation notes" in `specs/002-property-onboarding/tasks.md`
+- [X] T127 [P] Document the new commands in `README.md`: `pnpm tz:check`, the eval command, and the iCal fixture server
+- [X] T128 Run the scenarios 1 to 12 of `specs/002-property-onboarding/quickstart.md` locally, and record the results under "Implementation notes" in `specs/002-property-onboarding/tasks.md`
 - [ ] T129 Close the production gates (founder) and record each outcome in R15 of `specs/002-property-onboarding/research.md`:
   - OQ-26: written confirmation from Beds24 and from Hostex, before `PMS_BEDS24` or `PMS_HOSTEX` is turned on;
   - the R3 gate (T057), before `EXTRACTION_SCREENSHOTS` is turned on;
@@ -1159,3 +1159,53 @@ Task: "Email template in packages/emails/src/properties/feed-failing.tsx"
 - [P] tasks touch different files and have no dependency on an unfinished task.
 - Commit after each task or logical group, and stop at any checkpoint to validate.
 - Leave the untracked " 2" duplicate files out of every commit.
+
+## Implementation notes
+
+### Quickstart run, locally (T128, 2026-11-17)
+
+Run on the local stack (Docker PostgreSQL and Mailpit, `pnpm dev`), with the iCal fixture server
+settings and both PMS flags turned on for the run only. Every scenario passed.
+
+| Scenario | How it was run | Result |
+|---|---|---|
+| 1. Blank property | `e2e/specs/properties-us1-blank.spec.ts` | Passed |
+| 2. Time zone choice | Same spec | Passed |
+| 3. Listing text with a code | `e2e/specs/properties-us2-listing.spec.ts`; the code never reached the model, a response, or a log (`security-review-002` tests) | Passed |
+| 4. URL only | `properties-us2-listing.spec.ts` | Passed |
+| 5. Screenshots | Not in the portal: `EXTRACTION_SCREENSHOTS` stays off until the R3 spot check with real host screenshots. The path is covered by the sandbox tests (type checks, re-encoding, recognition) and the extraction job tests with real recognition | Covered by tests; flag off |
+| 6. Extraction limit | `properties-us2-listing.spec.ts` and `extractions.test.ts` | Passed |
+| 7. Calendar feed | `e2e/specs/properties-us3-calendar.spec.ts`, with the fixture server's CA | Passed |
+| 8. Stays by hand | Same spec | Passed |
+| 9. PMS import with fixtures | `e2e/specs/properties-us4-pms.spec.ts`, Beds24 and Hostex, `PMS_MODE=fixtures` | Passed |
+| 10. CSV | `e2e/specs/properties-us5-csv.spec.ts` (25 rows, formula cell, blocked link) | Passed |
+| 11. Duplicate and remove | `e2e/specs/properties-us6-lifecycle.spec.ts` | Passed |
+| 12. Tenant isolation and logging | `cross-tenant.test.ts` (every new route, both workspace paths, and `calendar_feed_public`) and the two `security-review-002` sweeps | Passed |
+
+- **Whole end-to-end suite:** 19 of 19 tests passed. On a cold start of `pnpm dev`, sign-in
+  redirects can take longer than the 5-second URL wait while Next.js compiles routes; the first
+  run then fails at that step, and a second run passes. `us2-security` V7 failed once that way
+  inside the full run and passed on its own.
+- **Accessibility:** axe finds no WCAG 2.2 A or AA violation on any property screen
+  (`a11y.spec.ts`, light theme). Link contrast in the dark theme is a known gap, left to the
+  brand work.
+- **Performance, locally:**
+  - k6 on the property reads (`perf/k6/properties.js`, 8 virtual users): p95 109 ms, no failed
+    requests (budget 300 ms).
+  - Initial JavaScript: every route under 150 KB gzip; the listing page is the largest, at
+    149.0 KB.
+  - Saving a calendar link: p95 well under 12 s over 20 saves; a feed that answers after 12 s is
+    cut at the 10-second read limit.
+  - CSV validation: 200 rows within 10 s and 500 rows within 30 s, each row with an encrypted
+    calendar link.
+  - PMS import of 50 listings: within 10 minutes on a simulated clock, including a wait for
+    Beds24's credit window.
+  - PMS credential check and listing: within 15 s at an assumed 2 s per request.
+  - The provider latencies are assumptions until the fixtures are replaced with recordings
+    (T129).
+- **Found and fixed while polishing:**
+  - "Refresh now" could wait up to 10 minutes behind a scheduled refresh: the queues keep one
+    waiting job per feed or connection. It now moves that job forward (`JobQueueService.sendNow`).
+  - Import runs and PMS connections of another workspace answered `404` without logging the
+    attempt; they now log it like properties, feeds, and stays.
+- **Staging:** not run yet; it is one of the production gates (T129).

@@ -86,3 +86,100 @@ test("auth, onboarding, settings, and invitation screens have no WCAG A/AA viola
   await expect(english.getByRole("heading", { level: 1 })).toBeVisible();
   await expectNoViolations(english, "sign-in (en)");
 });
+
+/** Feature 002 screens (T125): every property screen, in the states a host sees them. */
+test("property screens have no WCAG A/AA violations", async ({ browser }) => {
+  test.setTimeout(180_000);
+  const email = uniqueEmail("a11y-properties");
+  const page = await newPage(browser);
+  const day = (offset: number) =>
+    new Date(Date.now() + offset * 86_400_000).toISOString().slice(0, 10);
+  const settled = async (path: string) => {
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(page.getByText(/^Cargando/)).toHaveCount(0);
+    await expectNoViolations(page, path);
+  };
+
+  await page.goto("/es/sign-in");
+  await page.getByLabel("Tu email").fill(email);
+  await page.getByRole("button", { name: "Enviarme un código" }).click();
+  await waitForSubject(email, "Tu código de Guidesk");
+  await page.getByLabel("Código").fill(await latestCodeFor(email));
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await expect(page).toHaveURL(/\/es\/onboarding/);
+
+  // The starting options, the listing flow, PMS import, CSV, and the confirmation step.
+  for (const path of [
+    "/es/properties",
+    "/es/properties/new",
+    "/es/properties/new/listing",
+    "/es/properties/new/pms",
+    "/es/properties/new/csv",
+    "/es/properties/new/blank",
+  ]) {
+    await page.goto(path);
+    await settled(path);
+  }
+
+  // A property's page, with its calendar and stay forms open.
+  await page.getByLabel(/^Nombre de la propiedad/).fill("Casa Colibrí");
+  await page.getByLabel(/^País/).selectOption("CR");
+  await page.getByLabel(/^Calle y número/).fill("Calle Ficticia 123");
+  await page.getByLabel(/^Ciudad/).fill("Sámara");
+  await page.getByLabel(/^Máximo de huéspedes/).fill("4");
+  await expect(page.getByLabel(/^Zona horaria/)).toHaveValue("America/Costa_Rica");
+  await page.getByRole("button", { name: "Guardar propiedad" }).click();
+  await expect(page.getByRole("heading", { name: "Casa Colibrí" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Próximas estadías" })).toBeVisible();
+  await settled("property");
+  const propertyUrl = page.url();
+  await page.getByRole("button", { name: "Agregar un calendario" }).click();
+  await settled("calendar form");
+  await page.getByRole("button", { name: "Agregar una estadía a mano" }).click();
+  await page.getByLabel(/^Fecha de entrada/).fill(day(5));
+  await page.getByLabel(/^Fecha de salida/).fill(day(8));
+  await page.getByLabel("Cantidad de huéspedes").fill("2");
+  await page.getByRole("button", { name: "Agregar estadía" }).click();
+  await expect(page.getByText("Estadía agregada.")).toBeVisible();
+  await settled("stays");
+
+  // The list with a property, and the copy's confirmation step.
+  await page.goto("/es/properties");
+  await expect(page.getByRole("link", { name: /Casa Colibrí/ })).toBeVisible();
+  await settled("list");
+  await page.goto(propertyUrl);
+  await page.getByRole("link", { name: "Duplicar" }).click();
+  await expect(page.getByText("Copia de «Casa Colibrí»")).toBeVisible();
+  await settled("duplicate");
+
+  // The CSV review and the import run.
+  await page.goto("/es/properties/new/csv");
+  await page.getByLabel("Elegir archivo").setInputFiles({
+    name: "propiedades.csv",
+    mimeType: "text/csv",
+    buffer: Buffer.from(
+      "﻿Nombre;País;Ciudad;Calle y número;Zona horaria\r\n" +
+        "Cabina Norte;CR;Sámara;Calle Ficticia 9;America/Costa_Rica\r\n" +
+        "Cabina Sur;CR;Sámara;Calle Ficticia 11;Marte/Olimpo\r\n",
+      "utf8",
+    ),
+  });
+  await page.getByRole("button", { name: "Revisar el archivo" }).click();
+  await expect(page.getByRole("heading", { name: "Revisa el archivo" })).toBeVisible({
+    timeout: 60_000,
+  });
+  await settled("CSV review");
+  await page.getByRole("button", { name: "Crear 1 propiedad" }).click();
+  await expect(page.getByText("La importación terminó")).toBeVisible({ timeout: 60_000 });
+  await settled("import run");
+
+  // Removing, and the removed list.
+  await page.goto(propertyUrl);
+  await page.getByRole("button", { name: "Eliminar propiedad" }).click();
+  await expect(page.getByText(/estadía próxima/)).toBeVisible();
+  await settled("removal");
+  await page.getByLabel("Escribe «Casa Colibrí» para confirmar").fill("Casa Colibrí");
+  await page.getByRole("button", { name: "Eliminar", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Propiedades eliminadas" })).toBeVisible();
+  await settled("removed list");
+});

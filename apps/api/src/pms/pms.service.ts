@@ -36,6 +36,7 @@ import { PMS_ADAPTERS, VAULT } from "../integrations/integrations.module.js";
 import { toImportRun } from "../imports/import-runs.service.js";
 import { JobCallError, JobQueueService } from "../jobs/job-queue.service.js";
 import { SecurityLogService } from "../security-log/security-log.service.js";
+import { CrossTenantService } from "../tenancy/cross-tenant.js";
 
 interface Caller {
   userId: string;
@@ -94,6 +95,7 @@ export class PmsService {
     private readonly requestDb: RequestDb,
     private readonly jobs: JobQueueService,
     private readonly securityLog: SecurityLogService,
+    private readonly crossTenant: CrossTenantService,
     @Inject(VAULT) private readonly vault: Vault,
     @Inject(PMS_ADAPTERS) private readonly adapters: Record<PmsProvider, PmsPort>,
     @Inject(API_CONFIG) private readonly config: ApiConfig,
@@ -113,7 +115,16 @@ export class PmsService {
       .from(pmsConnection)
       .where(and(eq(pmsConnection.id, connectionId), eq(pmsConnection.workspaceId, workspaceId)))
       .limit(1)) as ConnectionRow[];
-    if (!row || !this.enabled(row.provider)) throw new ApiProblem(404, "not_found");
+    if (!row) {
+      // The same 404 for another workspace's connection, which is logged there (AC-SEC-009).
+      throw await this.crossTenant.notFoundInRequest(
+        this.requestDb.current(),
+        workspaceId,
+        "pms_connection",
+        connectionId,
+      );
+    }
+    if (!this.enabled(row.provider)) throw new ApiProblem(404, "not_found");
     return row;
   }
 
@@ -377,10 +388,11 @@ export class PmsService {
       .update(pmsConnection)
       .set({ manualRefreshAt: now })
       .where(eq(pmsConnection.id, connectionId));
-    await this.jobs.send(
+    // A scheduled refresh already waiting is moved forward instead (SC-006).
+    await this.jobs.sendNow(
       JOB_QUEUES.pmsRefresh,
       { connectionId, workspaceId, full: true },
-      { priority: REFRESH_NOW_PRIORITY, singletonKey: `pms:${connectionId}` },
+      { priority: REFRESH_NOW_PRIORITY, singletonKey: `pms:${connectionId}`, startAfter: 2 },
     );
   }
 

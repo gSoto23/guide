@@ -440,3 +440,15 @@ accounts.
   - the GuardDuty plan enabled on the uploads bucket (R9).
 - **Unchanged:** OQ-03 (which PMS the design partners use) may add or remove a provider later; the
   port keeps that change contained.
+- **Production gates, status on 2026-11-17 (T129, founder):** none is closed yet. Each needs a
+  step outside the code; record the outcome here when it closes.
+
+  | Gate | Blocks | Status |
+  |---|---|---|
+  | Written confirmation from Beds24 that a customer's own invite code may be used without a partner agreement (OQ-26) | `PMS_BEDS24` in production | Open |
+  | Written confirmation from Hostex for a customer's own access token (OQ-26) | `PMS_HOSTEX` in production | Open |
+  | R3: a spot check with real host screenshots, after the 99.59% result on rendered samples (T057) | `EXTRACTION_SCREENSHOTS` in production | Open |
+  | Real Booking.com and Vrbo iCal exports added to the classification fixtures (R8) | Relying on the "may be a block" rules for those channels | Open |
+  | GuardDuty Malware Protection enabled on the uploads bucket (R9) | Screenshots and CSV import in production | Open |
+  | PMS fixtures replaced with recordings from test accounts: T082 started from synthetic fixtures | `PMS_BEDS24` and `PMS_HOSTEX` in production, and the latencies assumed in the performance tests | Open |
+  | The quickstart run on staging | Release | Open; it passed locally (tasks.md, Implementation notes) |

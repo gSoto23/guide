@@ -130,7 +130,9 @@ criteria.
     (Beds24, Hostex). Hostaway is added if its terms allow a customer's API key before partner
     approval (OQ-26). The final choice follows the design partners' PMSs (OQ-03).
   - The import creates a guide draft for each property (FR-03.10).
-  - Messaging through the PMS and continuous sync remain in F12 (Phase 2).
+  - After the import, upcoming reservations are refreshed read-only: every 3 hours, and on
+    "Refresh now" (feature 002, FR-034 and FR-035). Guidesk never writes to the PMS.
+  - Messaging through the PMS and two-way sync remain in F12 (Phase 2).
 - **FR-02.6** A host MUST be able to duplicate an existing property as a starting point.
   - Copied: guide sections, links to shared content, services, and agent settings.
   - Not copied: address, iCal URL, stays, conversations, and sensitive values.
@@ -284,7 +286,8 @@ criteria.
 - **FR-12.1** A host MUST be able to connect a supported PMS from a guided wizard. OAuth is used
   where the PMS supports it; otherwise an API-key flow with step-by-step help.
 - **FR-12.2** On connection, the system MUST import properties, listing content, and upcoming
-  reservations (as in FR-02.5) and keep them in sync.
+  reservations (as in FR-02.5), and keep reservations current beyond the MVP's read-only
+  refresh.
 - **FR-12.3** The system MUST receive guest messages from the PMS (webhooks or polling), run them
   through the agent, and send replies back through the PMS into the OTA thread. The host's
   autonomy settings apply.

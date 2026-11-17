@@ -130,9 +130,35 @@ pnpm dev
 | `pnpm test:e2e` | Playwright end-to-end and accessibility tests (needs the running stack) |
 | `pnpm --filter @guidesk/portal bundle:check` | Initial JavaScript per route ≤ 150 KB gzip |
 | `pnpm perf:lighthouse` | Lighthouse CI budgets on a production build of the portal |
+| `pnpm --filter @guidesk/domain tz:check` | Checks the time zone reference data against its sources (feature 002, research R11); `tz:generate` rebuilds it |
+| `pnpm --filter @guidesk/evals-extraction eval` | The listing extraction eval suite: 30 synthetic listings and 5 injection cases (SC-002). Calls the real model, so it needs `ANTHROPIC_API_KEY`; CI runs it on every pull request. The report goes to `evals/extraction/report/` |
+| `pnpm --filter @guidesk/sandbox build && node apps/sandbox/scripts/ocr-accuracy.ts` | Text recognition accuracy on the 30 rendered sample listings (research R3) |
 
 The [spec 001 quickstart](specs/001-workspace-accounts/quickstart.md) has the full validation
-scenarios, the k6 load test, and notes for local end-to-end runs.
+scenarios, the k6 load test, and notes for local end-to-end runs. The
+[spec 002 quickstart](specs/002-property-onboarding/quickstart.md) covers the property scenarios.
+
+### Calendar feeds locally (feature 002)
+
+The feed reader only accepts public HTTPS links. To try calendar links on your machine, start
+the iCal fixture server, which serves fictional feeds over HTTPS with a test certificate:
+
+```bash
+node e2e/helpers/ical-server.ts
+```
+
+It prints a feed link and two settings, `SANDBOX_TEST_ALLOW_HOST` and `SANDBOX_TEST_CA_FILE`.
+Add them to `.env` and restart `pnpm dev`, so the API and the worker read them. Both settings are refused in production (research R2). The end-to-end test of calendars
+(`e2e/specs/properties-us3-calendar.spec.ts`) needs them too. The PMS import uses recorded
+fixture servers by default (`PMS_MODE=fixtures`); turn on `PMS_BEDS24` or `PMS_HOSTEX` to see
+it in the portal, with the fixture invite code `FIXTURE-BEDS24-INVITE` or the token
+`FIXTURE-HOSTEX-TOKEN`.
+
+Load tests run with k6 in Docker against the local stack:
+
+```bash
+docker run --rm -i -e BASE_URL=http://host.docker.internal:3000 -e ORIGIN=http://localhost:3000 -e MAILPIT_URL=http://host.docker.internal:8025 grafana/k6:1.8.2 run - < perf/k6/properties.js
+```
 
 ## Repository layout
 

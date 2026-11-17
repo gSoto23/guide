@@ -345,7 +345,7 @@ export class CalendarFeedsService {
     }
     if (body.url !== undefined) {
       // The worker applies the new link's stays once this request has committed.
-      await this.jobs.send(
+      await this.jobs.sendNow(
         JOB_QUEUES.calendarRefresh,
         { feedId: feed.id, workspaceId } satisfies CalendarRefreshJob,
         { priority: REFRESH_NOW_PRIORITY, singletonKey: `feed:${feed.id}`, startAfter: 2 },
@@ -411,10 +411,11 @@ export class CalendarFeedsService {
       .where(eq(calendarFeed.propertyId, propertyId))
       .returning({ id: calendarFeed.id });
     for (const feed of feeds) {
-      await this.jobs.send(
+      // A scheduled refresh already waiting is moved forward instead (SC-006).
+      await this.jobs.sendNow(
         JOB_QUEUES.calendarRefresh,
         { feedId: feed.id, workspaceId } satisfies CalendarRefreshJob,
-        { priority: REFRESH_NOW_PRIORITY, singletonKey: `feed:${feed.id}` },
+        { priority: REFRESH_NOW_PRIORITY, singletonKey: `feed:${feed.id}`, startAfter: 2 },
       );
     }
   }

@@ -15,6 +15,7 @@ import { createExtractionHandler } from "./jobs/extraction.js";
 import { createPmsListingsHandler, createPmsRevokeHandler } from "./jobs/pms-calls.js";
 import { createCsvImportHandler, createCsvValidateHandler } from "./jobs/csv.js";
 import { createPropertiesPurgeHandler, PURGE_PROPERTIES_CRON } from "./jobs/purge-properties.js";
+import { createRetentionHandler, RETENTION_CRON } from "./jobs/retention.js";
 import { createPmsImportHandler } from "./jobs/pms-import.js";
 import {
   createPmsRefreshHandler,
@@ -177,6 +178,14 @@ async function main(): Promise<void> {
   await createQueue(JOB_QUEUES.propertiesPurge);
   await boss.work(JOB_QUEUES.propertiesPurge, createPropertiesPurgeHandler({ db: services.db.db }));
   await boss.schedule(JOB_QUEUES.propertiesPurge, PURGE_PROPERTIES_CRON, null, { tz: "UTC" });
+
+  // Retention of extraction input, guest names, uploads, and CSV rows (data model §6).
+  await createQueue(JOB_QUEUES.retentionDaily);
+  await boss.work(
+    JOB_QUEUES.retentionDaily,
+    createRetentionHandler({ db: services.db.db, storage: services.storage }),
+  );
+  await boss.schedule(JOB_QUEUES.retentionDaily, RETENTION_CRON, null, { tz: "UTC" });
   console.warn("Guidesk worker started");
 
   const shutdown = async (signal: string): Promise<void> => {

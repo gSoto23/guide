@@ -22,6 +22,7 @@ import { ApiProblem } from "../common/problem.js";
 import { RequestDb } from "../database/request-db.js";
 import { JobQueueService } from "../jobs/job-queue.service.js";
 import { SecurityLogService } from "../security-log/security-log.service.js";
+import { CrossTenantService } from "../tenancy/cross-tenant.js";
 import { UploadsService } from "../uploads/uploads.service.js";
 import { toImportRun } from "./import-runs.service.js";
 
@@ -56,6 +57,7 @@ export class CsvImportsService {
     private readonly uploads: UploadsService,
     private readonly jobs: JobQueueService,
     private readonly securityLog: SecurityLogService,
+    private readonly crossTenant: CrossTenantService,
   ) {}
 
   /** The template in the host's language (FR-037). */
@@ -71,7 +73,15 @@ export class CsvImportsService {
       .from(importRun)
       .where(and(eq(importRun.id, importRunId), eq(importRun.workspaceId, workspaceId)))
       .limit(1);
-    if (!run) throw new ApiProblem(404, "not_found");
+    if (!run) {
+      // The same 404 for another workspace's run, which is logged there (AC-SEC-009).
+      throw await this.crossTenant.notFoundInRequest(
+        this.requestDb.current(),
+        workspaceId,
+        "import_run",
+        importRunId,
+      );
+    }
     return run;
   }
 

@@ -356,6 +356,17 @@ describe("csv.validate (FR-038, FR-039)", () => {
   });
 });
 
+describe("csv.validate at the row limit (R10, T124)", () => {
+  it("validates 500 rows, each with a calendar link, within 30 seconds", async () => {
+    const rows = Array.from({ length: 500 }, (_, i) => row(i + 2, { 12: `${GOOD_LINK}&n=${i}` }));
+    const { runId } = await uploadedRun(spanishFile(rows));
+    const started = performance.now();
+    await runCsvValidate(deps(), { importRunId: runId, workspaceId });
+    expect(performance.now() - started).toBeLessThan(30_000);
+    expect(await runOf(runId)).toMatchObject({ status: "awaiting_confirmation", total: 500 });
+  }, 60_000);
+});
+
 describe("csv.import (FR-040, FR-042)", () => {
   it("creates the chosen rows as to_confirm or needs_details, then reports", async () => {
     const { runId } = await uploadedRun(

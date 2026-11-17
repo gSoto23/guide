@@ -8,6 +8,7 @@ import { assertUuid } from "../common/ids.js";
 import { ApiProblem } from "../common/problem.js";
 import { RequestDb } from "../database/request-db.js";
 import { JobQueueService } from "../jobs/job-queue.service.js";
+import { CrossTenantService } from "../tenancy/cross-tenant.js";
 
 type RunRow = typeof importRun.$inferSelect;
 
@@ -43,6 +44,7 @@ export class ImportRunsService {
   constructor(
     private readonly requestDb: RequestDb,
     private readonly jobs: JobQueueService,
+    private readonly crossTenant: CrossTenantService,
   ) {}
 
   private runs() {
@@ -80,7 +82,15 @@ export class ImportRunsService {
     const [row] = await this.runs()
       .where(and(eq(importRun.id, importRunId), eq(importRun.workspaceId, workspaceId)))
       .limit(1);
-    if (!row) throw new ApiProblem(404, "not_found");
+    if (!row) {
+      // The same 404 for another workspace's run, which is logged there (AC-SEC-009).
+      throw await this.crossTenant.notFoundInRequest(
+        this.requestDb.current(),
+        workspaceId,
+        "import_run",
+        importRunId,
+      );
+    }
     return toImportRun(row.run, row.provider, row.rejectReason);
   }
 
@@ -123,7 +133,15 @@ export class ImportRunsService {
     const [row] = await this.runs()
       .where(and(eq(importRun.id, importRunId), eq(importRun.workspaceId, workspaceId)))
       .limit(1);
-    if (!row) throw new ApiProblem(404, "not_found");
+    if (!row) {
+      // The same 404 for another workspace's run, which is logged there (AC-SEC-009).
+      throw await this.crossTenant.notFoundInRequest(
+        this.requestDb.current(),
+        workspaceId,
+        "import_run",
+        importRunId,
+      );
+    }
     if (row.run.kind !== "pms") throw new ApiProblem(409, "conflict");
     const [item] = await tx
       .update(importItem)

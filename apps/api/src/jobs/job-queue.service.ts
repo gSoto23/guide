@@ -127,4 +127,26 @@ export class JobQueueService implements OnModuleInit, OnModuleDestroy {
   call<T>(queue: string, data: object, timeoutMs: number): Promise<T> {
     return this.started().call<T>(queue, data, timeoutMs);
   }
+
+  /**
+   * Queues a job that must start now, such as "Refresh now" (SC-006). On a `stately` queue, a
+   * job already waiting under the same singleton key refuses the new one: a scheduled refresh,
+   * which the schedulers spread over up to 10 minutes. That waiting job is then moved forward to
+   * start now with this priority, so the host is never held behind the schedule.
+   */
+  async sendNow(
+    queue: string,
+    data: object,
+    options: SendOptions & { singletonKey: string; priority: number },
+  ): Promise<void> {
+    const id = await this.send(queue, data, options);
+    if (id || !this.boss) return;
+    await this.boss.getDb().executeSql(
+      `UPDATE pgboss.job
+          SET start_after = least(start_after, now() + make_interval(secs => $3::int)),
+              priority = greatest(priority, $4::int)
+        WHERE name = $1 AND singleton_key = $2 AND state IN ('created', 'retry')`,
+      [queue, options.singletonKey, options.startAfter ?? 0, options.priority],
+    );
+  }
 }
