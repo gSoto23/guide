@@ -1,3 +1,4 @@
+import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import * as Sentry from "@sentry/node";
@@ -43,6 +44,8 @@ const GUEST_NAME = "Rosaura Prueba Secreta";
 let ctx: Awaited<ReturnType<typeof createTestApp>>;
 let db: ReturnType<typeof systemQuery>;
 let ical: IcalServer;
+/** A private folder with a unique name for this run's test certificates (CodeQL js/insecure-temporary-file). */
+const certificateDir = mkdtempSync(join(tmpdir(), "guidesk-ical-certs-"));
 let team: TeamWorkspace;
 let logs: ReturnType<typeof captureLogs>;
 /** Every response body, with the route it answered. */
@@ -64,7 +67,7 @@ async function call(
 }
 
 beforeAll(async () => {
-  ical = await startIcalServer(join(tmpdir(), "guidesk-ical-certs"));
+  ical = await startIcalServer(certificateDir);
   ctx = await createTestApp(inject("databaseUrl"), {
     SANDBOX_TEST_ALLOW_HOST: ical.host,
     SANDBOX_TEST_CA_FILE: ical.caFile,
@@ -146,6 +149,7 @@ afterAll(async () => {
   await db.close();
   await ctx.app.close();
   await ical.close();
+  rmSync(certificateDir, { recursive: true, force: true });
 });
 
 /** Each secret with the forms it could leak in. */

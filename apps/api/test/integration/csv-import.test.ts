@@ -163,8 +163,21 @@ describe("the template (FR-037, US5 scenario 1)", () => {
     const lines = body.slice(1).split("\r\n");
     expect(lines.filter((line) => /^"?# /.test(line)).length).toBeGreaterThanOrEqual(4);
     expect(lines).toContain(
-      "Nombre;Calle y número;Unidad;Ciudad;Provincia o región;Código postal;País;Zona horaria;" +
-        "Hora de entrada;Hora de salida;Máximo de huéspedes;Idiomas de la guía;Enlace del calendario (iCal)",
+      [
+        "Nombre",
+        "Calle y número",
+        "Unidad",
+        "Ciudad",
+        "Provincia o región",
+        "Código postal",
+        "País",
+        "Zona horaria",
+        "Hora de entrada",
+        "Hora de salida",
+        "Máximo de huéspedes",
+        "Idiomas de la guía",
+        "Enlace del calendario (iCal)",
+      ].join(";"),
     );
     expect(lines.some((line) => line.startsWith("# Casa Colibrí (ejemplo);"))).toBe(true);
   });
@@ -180,8 +193,21 @@ describe("the template (FR-037, US5 scenario 1)", () => {
     expect(response.statusCode).toBe(200);
     const lines = response.body.slice(1).split("\r\n");
     expect(lines).toContain(
-      "Name,Street and number,Unit,City,State or region,Postal code,Country,Time zone," +
-        "Check-in time,Checkout time,Maximum guests,Guide languages,Calendar link (iCal)",
+      [
+        "Name",
+        "Street and number",
+        "Unit",
+        "City",
+        "State or region",
+        "Postal code",
+        "Country",
+        "Time zone",
+        "Check-in time",
+        "Checkout time",
+        "Maximum guests",
+        "Guide languages",
+        "Calendar link (iCal)",
+      ].join(","),
     );
     expect(response.body).toMatch(/Never type door codes/);
   });

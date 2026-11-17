@@ -206,6 +206,14 @@ describe("row validation (FR-039)", () => {
     expect(parseTimeOfDay("mediodía")).toBeNull();
   });
 
+  it("reads a cell full of spaces in linear time", () => {
+    const started = performance.now();
+    expect(parseTimeOfDay(`15:${" ".repeat(50_000)}x`)).toBeNull();
+    // Spaces are dropped before matching, so this is still 3 pm.
+    expect(parseTimeOfDay(`3${" \t".repeat(50_000)}pm`)).toBe("15:00");
+    expect(performance.now() - started).toBeLessThan(200);
+  });
+
   it("validates time zones (FR-002)", () => {
     expect(
       validateCsvRow(2, { ...complete, timeZone: "america/costa_rica" }, "es").facts.timeZone,

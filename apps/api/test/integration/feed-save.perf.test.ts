@@ -1,3 +1,4 @@
+import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, inject, it } from "vitest";
@@ -17,13 +18,15 @@ const BUDGET_MS = 12_000;
 let ctx: Awaited<ReturnType<typeof createTestApp>>;
 let db: ReturnType<typeof systemQuery>;
 let ical: IcalServer;
+/** A private folder with a unique name for this run's test certificates (CodeQL js/insecure-temporary-file). */
+const certificateDir = mkdtempSync(join(tmpdir(), "guidesk-ical-certs-"));
 let team: TeamWorkspace;
 
 const day = (offset: number) =>
   new Date(Date.now() + offset * 86_400_000).toISOString().slice(0, 10);
 
 beforeAll(async () => {
-  ical = await startIcalServer(join(tmpdir(), "guidesk-ical-certs"));
+  ical = await startIcalServer(certificateDir);
   ctx = await createTestApp(inject("databaseUrl"), {
     SANDBOX_TEST_ALLOW_HOST: ical.host,
     SANDBOX_TEST_CA_FILE: ical.caFile,
@@ -37,6 +40,7 @@ afterAll(async () => {
   await db.close();
   await ctx.app.close();
   await ical.close();
+  rmSync(certificateDir, { recursive: true, force: true });
 });
 
 function percentile(values: number[], p: number): number {

@@ -259,14 +259,22 @@ export function parseTimeZone(value: string): string | null {
   }
 }
 
-const TIME_WRITTEN = /^(\d{1,2})(?:\s*[:.h]\s*(\d{2})?)?(?::(\d{2}))?\s*(?:(a|p)\.?\s*m\.?)?$/i;
+/**
+ * A time once its spaces are removed. No two parts can match the same characters, so it runs in
+ * linear time on any cell (CodeQL js/polynomial-redos).
+ */
+const TIME_WRITTEN = /^(\d{1,2})(?:[:.h](\d{2})?)?(?::(\d{2}))?(?:(a|p)\.?m\.?)?$/i;
+/** Longer than any way of writing a time, such as `12:30:00p.m.`. */
+const TIME_MAX_LENGTH = 12;
 
 /**
  * A time as `HH:MM` from the ways spreadsheets and people write it: `15:00`, `9:30`, `11:00:00`,
  * `3 pm`, `3:30 p.m.`, `15h`, or `15.30`. Null when it is not a time of day.
  */
 export function parseTimeOfDay(value: string): string | null {
-  const match = TIME_WRITTEN.exec(value.trim());
+  const compact = value.replace(/\s+/g, "");
+  if (compact.length > TIME_MAX_LENGTH) return null;
+  const match = TIME_WRITTEN.exec(compact);
   if (!match) return null;
   let hour = Number(match[1]);
   const minute = match[2] === undefined ? 0 : Number(match[2]);
