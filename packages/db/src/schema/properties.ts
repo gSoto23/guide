@@ -18,6 +18,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { user } from "./auth.js";
 import { bytea, createdAt, inList, updatedAt } from "./columns.js";
+import { PMS_PROVIDERS } from "./enums.js";
 import { extractionRequest } from "./extractions.js";
 import { workspaceDataKey } from "./keys.js";
 import { pmsConnection } from "./pms.js";
@@ -25,7 +26,7 @@ import { workspace } from "./tenancy.js";
 
 export const PROPERTY_SETUP_STATUSES = ["needs_details", "to_confirm", "ready"] as const;
 export const PROPERTY_SOURCES = ["manual", "listing_text", "csv", "pms", "duplicate"] as const;
-export const PMS_PROVIDERS = ["beds24", "hostex"] as const;
+export { PMS_PROVIDERS };
 export const PROPERTY_PMS_STATUSES = ["linked", "not_found"] as const;
 export const PROPERTY_STATUSES = ["active", "removed"] as const;
 export const GUIDE_LANGUAGES = ["es", "en"] as const;

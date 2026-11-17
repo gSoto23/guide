@@ -7,7 +7,7 @@ import { check, index, pgTable, text, timestamp, uniqueIndex, uuid } from "drizz
 import { user } from "./auth.js";
 import { bytea, inList } from "./columns.js";
 import { workspaceDataKey } from "./keys.js";
-import { PMS_PROVIDERS } from "./properties.js";
+import { PMS_PROVIDERS } from "./enums.js";
 import { workspace } from "./tenancy.js";
 
 export const PMS_CONNECTION_STATUSES = ["active", "failing", "disconnected"] as const;
