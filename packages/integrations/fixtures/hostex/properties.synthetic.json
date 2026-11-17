@@ -1,0 +1,53 @@
+{
+  "request_id": "RT-synthetic-properties-0001",
+  "error_code": 200,
+  "error_msg": "Done.",
+  "data": {
+    "properties": [
+      {
+        "id": 910001,
+        "title": "Casa Colibrí Sámara",
+        "address": "Calle Ficticia 1, 200 m norte de la plaza, Sámara, Nicoya, Guanacaste, Costa Rica",
+        "latitude": "9.8800",
+        "longitude": "-85.5200",
+        "channels": [
+          { "channel_type": "airbnb", "listing_id": "880000101", "currency": "USD" },
+          { "channel_type": "booking.com", "listing_id": "5550101-77001", "currency": "USD" }
+        ],
+        "groups": [{ "id": 31, "name": "Guanacaste (synthetic)" }],
+        "tags": [{ "id": 41, "name": "Beach", "color": "#FD587B" }]
+      },
+      {
+        "id": 910002,
+        "title": "Loft Escazú",
+        "address": "Avenida Ejemplo 12, San Rafael de Escazú, San José, Costa Rica",
+        "latitude": "9.9200",
+        "longitude": "-84.1400",
+        "channels": [
+          { "channel_type": "booking.com", "listing_id": "5550102-77002", "currency": "USD" },
+          { "channel_type": "vrbo", "listing_id": "vrbo-syn-0102", "currency": "USD" }
+        ],
+        "groups": [],
+        "tags": []
+      },
+      {
+        "id": 910003,
+        "title": "Villa Nosara",
+        "address": "Ruta Ejemplo 160, Playa Guiones, Nosara, Guanacaste, Costa Rica",
+        "latitude": "9.9400",
+        "longitude": "-85.6600",
+        "channels": [{ "channel_type": "airbnb", "listing_id": "880000103", "currency": "USD" }],
+        "groups": [{ "id": 31, "name": "Guanacaste (synthetic)" }],
+        "tags": []
+      },
+      {
+        "id": 910004,
+        "title": "Cabina Monteverde",
+        "channels": [{ "channel_type": "airbnb", "listing_id": "880000104", "currency": "USD" }],
+        "groups": [],
+        "tags": [{ "id": 42, "name": "Mountain", "color": "#3D9970" }]
+      }
+    ],
+    "total": 4
+  }
+}

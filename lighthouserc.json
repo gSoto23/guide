@@ -7,7 +7,11 @@
       "url": [
         "http://localhost:3000/es/sign-in",
         "http://localhost:3000/en/sign-in",
-        "http://localhost:3000/es/onboarding"
+        "http://localhost:3000/es/onboarding",
+        "http://localhost:3000/es/properties",
+        "http://localhost:3000/es/properties/new",
+        "http://localhost:3000/es/properties/new/listing",
+        "http://localhost:3000/es/properties/new/blank"
       ],
       "numberOfRuns": 3,
       "settings": {

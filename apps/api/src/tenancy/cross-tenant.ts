@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { and, eq, ne } from "drizzle-orm";
+import { and, eq, ne, sql } from "drizzle-orm";
 import {
   calendarFeed,
   extractionRequest,
@@ -10,6 +10,7 @@ import {
   property,
   stay,
   type DbHandle,
+  type Transaction,
 } from "@guidesk/db";
 import { ApiProblem } from "../common/problem.js";
 import { DB_HANDLE } from "../database/database.module.js";
@@ -70,5 +71,23 @@ export class CrossTenantService {
       }
     }
     return new ApiProblem(404, "not_found");
+  }
+
+  /**
+   * `notFound` for services that hold only the request's transaction: the caller is the
+   * transaction's RLS user (`app.user_id`), set by withRlsContext for every request.
+   */
+  async notFoundInRequest(
+    tx: Transaction,
+    routeWorkspaceId: string,
+    resource: TenantResource,
+    id: string,
+  ): Promise<ApiProblem> {
+    const result = await tx.execute<{ user_id: string | null }>(
+      sql`SELECT nullif(current_setting('app.user_id', true), '') AS user_id`,
+    );
+    const userId = result.rows[0]?.user_id;
+    if (!userId) return new ApiProblem(404, "not_found");
+    return this.notFound(userId, routeWorkspaceId, resource, id);
   }
 }

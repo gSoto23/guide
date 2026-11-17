@@ -2,6 +2,7 @@ import { createDb, type DbHandle } from "@guidesk/db";
 import {
   AnthropicLlmAdapter,
   createKeyManagement,
+  createPmsAdapters,
   FakeLlmAdapter,
   InProcessSandbox,
   LambdaSandbox,
@@ -11,6 +12,8 @@ import {
   type KeyManagementPort,
   type LlmPort,
   type ObjectStoragePort,
+  type PmsPort,
+  type PmsProvider,
   type SandboxPort,
 } from "@guidesk/integrations";
 import {
@@ -21,6 +24,7 @@ import {
 } from "@guidesk/sandbox/in-process";
 import { Vault } from "@guidesk/vault";
 import { VaultDecrypter } from "@guidesk/vault/decrypt";
+import { createHmac } from "node:crypto";
 import { readFileSync } from "node:fs";
 import type { WorkerConfig } from "./config.js";
 
@@ -37,6 +41,10 @@ export interface WorkerServices {
   sandbox: SandboxPort;
   storage: ObjectStoragePort;
   llm: LlmPort;
+  /** PMS adapters; recorded fixtures outside production (T092). */
+  pms: Record<PmsProvider, PmsPort>;
+  /** HMAC of a normalized calendar link with the feed pepper, as the API computes it (FR-020). */
+  feedFingerprint: (normalizedUrl: string) => string;
   portalUrl: string;
   /** Queues a rendered email for the email job (retries with backoff). */
   queueEmail: (message: EmailMessage) => Promise<void>;
@@ -104,6 +112,9 @@ export function createWorkerServices(
     sandbox,
     storage,
     llm: createLlm(config),
+    pms: createPmsAdapters({ mode: config.integrations.pms.mode }),
+    feedFingerprint: (normalizedUrl) =>
+      createHmac("sha256", config.integrations.feedUrlPepper).update(normalizedUrl).digest("hex"),
     portalUrl: config.portalUrl,
     queueEmail,
     close: async () => {

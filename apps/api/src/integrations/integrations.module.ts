@@ -3,9 +3,12 @@ import { readFileSync } from "node:fs";
 import { Global, Module } from "@nestjs/common";
 import {
   createKeyManagement,
+  createPmsAdapters,
   InProcessSandbox,
   LambdaSandbox,
   type KeyManagementPort,
+  type PmsPort,
+  type PmsProvider,
   type SandboxPort,
 } from "@guidesk/integrations";
 import { createFeedReader, createPinnedSend } from "@guidesk/sandbox/in-process";
@@ -16,6 +19,8 @@ export const SANDBOX = Symbol("SANDBOX");
 export const KEY_MANAGEMENT = Symbol("KEY_MANAGEMENT");
 export const VAULT = Symbol("VAULT");
 export const FEED_FINGERPRINT = Symbol("FEED_FINGERPRINT");
+/** The PMS adapters (research R7); recorded fixtures in development and tests (T092). */
+export const PMS_ADAPTERS = Symbol("PMS_ADAPTERS");
 
 /** HMAC-SHA-256 of a normalized calendar link with FEED_URL_PEPPER (data model §3). */
 export type FeedFingerprint = (normalizedUrl: string) => string;
@@ -48,6 +53,12 @@ function createSandbox(config: ApiConfig): SandboxPort {
 @Global()
 @Module({
   providers: [
+    {
+      provide: PMS_ADAPTERS,
+      inject: [API_CONFIG],
+      useFactory: (config: ApiConfig): Record<PmsProvider, PmsPort> =>
+        createPmsAdapters({ mode: config.integrations.pms.mode }),
+    },
     { provide: SANDBOX, inject: [API_CONFIG], useFactory: createSandbox },
     {
       provide: KEY_MANAGEMENT,
@@ -71,6 +82,6 @@ function createSandbox(config: ApiConfig): SandboxPort {
             .digest("hex"),
     },
   ],
-  exports: [SANDBOX, KEY_MANAGEMENT, VAULT, FEED_FINGERPRINT],
+  exports: [SANDBOX, KEY_MANAGEMENT, VAULT, FEED_FINGERPRINT, PMS_ADAPTERS],
 })
 export class IntegrationsModule {}

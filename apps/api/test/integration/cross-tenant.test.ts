@@ -1,6 +1,10 @@
 import { afterAll, beforeAll, describe, expect, inject, it } from "vitest";
+import { sql } from "drizzle-orm";
+import { withRlsContext, type DbHandle } from "@guidesk/db";
+import { REQUEST_DB_HANDLE } from "../../src/database/database.module.js";
 import { systemQuery, uniqueEmail } from "./helpers.js";
 import { api, invitationsUrl, newOwner } from "./invitation-helpers.js";
+import { insertFeed, insertPmsConnection, insertProperty, insertStay } from "./property-helpers.js";
 import { createTestApp } from "./test-app.js";
 
 /**
@@ -15,7 +19,7 @@ let brunoInvitationId: string;
 const MISSING = "00000000-0000-4000-8000-000000000000";
 
 beforeAll(async () => {
-  ctx = await createTestApp(inject("databaseUrl"));
+  ctx = await createTestApp(inject("databaseUrl"), { PMS_BEDS24: "true", PMS_HOSTEX: "true" });
   db = systemQuery(inject("databaseUrl"));
   alice = await newOwner(ctx, "tenant-a");
   bruno = await newOwner(ctx, "tenant-b");
@@ -133,5 +137,159 @@ describe("cross-workspace access (T080, AC-SEC-004)", () => {
       alice.cookie,
     );
     expect(unknownWorkspace.json()).toEqual(foreignWorkspace.json());
+  });
+});
+
+/**
+ * Feature 002 routes (T123, AC-SEC-009): a property, feed, stay, PMS connection, import run, or
+ * extraction of another workspace gets the same `404` as one that does not exist, under either
+ * workspace's path, and the attempt is logged.
+ */
+describe("feature 002 resources across workspaces (T123, AC-SEC-009)", () => {
+  let ids: {
+    property: string;
+    feed: string;
+    stay: string;
+    connection: string;
+    run: string;
+    extraction: string;
+  };
+
+  beforeAll(async () => {
+    const property = await insertProperty(db, bruno.workspaceId, { name: "Casa de Bruno" });
+    const feed = await insertFeed(db, bruno.workspaceId, property);
+    const stay = await insertStay(db, bruno.workspaceId, property, {
+      checkInDate: "2026-12-10",
+      checkoutDate: "2026-12-12",
+      guestName: "Huésped de Bruno",
+    });
+    const connection = await insertPmsConnection(db, bruno.workspaceId);
+    const { rows: runs } = await db.query<{ id: string }>(
+      `INSERT INTO import_run (workspace_id, kind, status) VALUES ($1, 'csv', 'awaiting_confirmation')
+       RETURNING id`,
+      [bruno.workspaceId],
+    );
+    const { rows: extractions } = await db.query<{ id: string }>(
+      `INSERT INTO extraction_request (workspace_id, status, error_code) VALUES ($1, 'failed', 'timeout')
+       RETURNING id`,
+      [bruno.workspaceId],
+    );
+    ids = { property, feed, stay, connection, run: runs[0]!.id, extraction: extractions[0]!.id };
+  });
+
+  /** Every new route that names a resource, as [method, path, body] under workspace `ws`. */
+  const routes = (ws: string) => {
+    const w = `/api/v1/workspaces/${ws}`;
+    const { property: p, feed: f, stay: s, connection: c, run: r, extraction: e } = ids;
+    return [
+      ["GET", `${w}/properties/${p}`, undefined],
+      ["PATCH", `${w}/properties/${p}`, { name: "Tomada" }],
+      ["GET", `${w}/properties/${p}/duplicate-draft`, undefined],
+      ["DELETE", `${w}/properties/${p}?dryRun=true`, undefined],
+      ["POST", `${w}/properties/${p}/restore`, undefined],
+      ["GET", `${w}/properties/${p}/restricted-values`, undefined],
+      ["GET", `${w}/properties/${p}/listing-content`, undefined],
+      ["GET", `${w}/properties/${p}/calendar-feeds`, undefined],
+      ["POST", `${w}/properties/${p}/calendar-feeds/refresh`, undefined],
+      ["GET", `${w}/properties/${p}/stays`, undefined],
+      ["PATCH", `${w}/calendar-feeds/${f}`, { channelLabel: "Tomado" }],
+      ["DELETE", `${w}/calendar-feeds/${f}`, undefined],
+      ["PATCH", `${w}/stays/${s}`, { status: "hidden" }],
+      ["POST", `${w}/stays/${s}/cancel`, undefined],
+      ["POST", `${w}/stays/${s}/remove-guest-name`, undefined],
+      ["GET", `${w}/pms-connections/${c}/listings`, undefined],
+      ["POST", `${w}/pms-connections/${c}/imports`, { externalIds: ["1"] }],
+      ["POST", `${w}/pms-connections/${c}/refresh`, undefined],
+      ["GET", `${w}/imports/${r}`, undefined],
+      ["GET", `${w}/imports/${r}/items`, undefined],
+      ["POST", `${w}/imports/${r}/validate`, undefined],
+      ["POST", `${w}/imports/${r}/confirm`, {}],
+      ["POST", `${w}/imports/${r}/cancel`, undefined],
+      ["GET", `${w}/imports/${r}/error-file`, undefined],
+      ["GET", `${w}/extractions/${e}`, undefined],
+      ["POST", `${w}/extractions/${e}/retry`, undefined],
+    ] as const;
+  };
+
+  function call(method: string, url: string, payload: object | undefined) {
+    return ctx.fastify.inject({
+      method: method as "GET",
+      url,
+      headers: {
+        origin: "http://localhost:3000",
+        cookie: alice.cookie,
+        ...(payload ? { "content-type": "application/json" } : {}),
+      },
+      ...(payload ? { payload } : {}),
+    });
+  }
+
+  it("answers 404 under the other workspace's path, and logs each attempt", async () => {
+    for (const [method, url, payload] of routes(bruno.workspaceId)) {
+      const before = await deniedCount();
+      const response = await call(method, url, payload);
+      expect(response.statusCode, `${method} ${url}`).toBe(404);
+      expect(response.json(), `${method} ${url}`).toMatchObject({ code: "not_found" });
+      expect(await deniedCount(), `${method} ${url} logged`).toBe(before + 1);
+    }
+  });
+
+  it("answers the same 404 for another workspace's IDs under the caller's own path, and logs each", async () => {
+    for (const [method, url, payload] of routes(alice.workspaceId)) {
+      const before = await deniedCount();
+      const response = await call(method, url, payload);
+      expect(response.statusCode, `${method} ${url}`).toBe(404);
+      expect(response.json(), `${method} ${url}`).toMatchObject({ code: "not_found" });
+      expect(await deniedCount(), `${method} ${url} logged`).toBe(before + 1);
+    }
+    // Nothing of Bruno's changed.
+    const { rows } = await db.query(
+      `SELECT p.name, p.status, s.status AS stay_status, s.guest_name, r.status AS run_status
+         FROM property p, stay s, import_run r WHERE p.id = $1 AND s.id = $2 AND r.id = $3`,
+      [ids.property, ids.stay, ids.run],
+    );
+    expect(rows).toEqual([
+      {
+        name: "Casa de Bruno",
+        status: "active",
+        stay_status: "active",
+        guest_name: "Huésped de Bruno",
+        run_status: "awaiting_confirmation",
+      },
+    ]);
+  });
+
+  it("gives a missing ID the same answer as a foreign one", async () => {
+    const swap = (url: string) =>
+      url.replace(/[0-9a-f-]{36}(?=[/?]|$)/g, (id) => (id === alice.workspaceId ? id : MISSING));
+    for (const [method, url, payload] of routes(alice.workspaceId)) {
+      const foreign = await call(method, url, payload);
+      const missing = await call(method, swap(url), payload);
+      expect(missing.statusCode, `${method} ${url}`).toBe(foreign.statusCode);
+      expect(missing.json(), `${method} ${url}`).toEqual(foreign.json());
+    }
+  });
+
+  it("shows only the caller's workspace in the calendar_feed_public view", async () => {
+    const requestDb = ctx.app.get<DbHandle>(REQUEST_DB_HANDLE);
+    const { rows } = await db.query<{ user_id: string }>(
+      `SELECT user_id FROM membership WHERE workspace_id = $1 AND role = 'owner'`,
+      [alice.workspaceId],
+    );
+    const aliceId = rows[0]!.user_id;
+    const own = await insertProperty(db, alice.workspaceId);
+    const ownFeed = await insertFeed(db, alice.workspaceId, own);
+    const visible = (workspaceId: string) =>
+      withRlsContext(requestDb.db, { userId: aliceId, workspaceId }, async (tx) => {
+        const result = await tx.execute<{ id: string; workspace_id: string }>(
+          sql`SELECT id, workspace_id FROM calendar_feed_public`,
+        );
+        return result.rows;
+      });
+    const inOwn = await visible(alice.workspaceId);
+    expect(inOwn.map((row) => row.id)).toContain(ownFeed);
+    expect(inOwn.every((row) => row.workspace_id === alice.workspaceId)).toBe(true);
+    // In a workspace she is not a member of, the view shows nothing at all.
+    expect(await visible(bruno.workspaceId)).toEqual([]);
   });
 });

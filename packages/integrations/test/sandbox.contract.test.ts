@@ -31,6 +31,8 @@ const SECRET_ROWS = [
   ["name", "address", "ical_url"],
   ["Casa Azul", "Calle 5, San José", "https://private.example.com/feed-9z8y.ics"],
 ];
+/** A parsed CSV file: its rows and their row numbers in the file, `#` rows left out. */
+const SECRET_CSV = { rows: SECRET_ROWS, rowNumbers: [3, 4] };
 const SECRETS = [FEED_URL, "secret-token-a1b2c3", OBJECT_KEY, UPLOAD_ID, "4821", "sunshine99"];
 const SECRET_CELLS = SECRET_ROWS.slice(1).flat();
 
@@ -290,13 +292,18 @@ describe("sandbox protocol", () => {
 
   it("limits recognized text and CSV rows", () => {
     expect(fileProcessResponseSchema.safeParse({ text: SECRET_TEXT }).success).toBe(true);
-    expect(fileProcessResponseSchema.safeParse({ rows: SECRET_ROWS }).success).toBe(true);
+    expect(fileProcessResponseSchema.safeParse(SECRET_CSV).success).toBe(true);
     expect(fileProcessResponseSchema.safeParse({ error: "too_many_rows" }).success).toBe(true);
     expect(
       fileProcessResponseSchema.safeParse({ text: "x".repeat(FILE_MAX_TEXT_LENGTH + 1) }).success,
     ).toBe(false);
     const rows = Array.from({ length: FILE_MAX_ROWS + 1 }, () => ["a"]);
-    expect(fileProcessResponseSchema.safeParse({ rows }).success).toBe(false);
+    const rowNumbers = rows.map((_, index) => index + 1);
+    expect(fileProcessResponseSchema.safeParse({ rows, rowNumbers }).success).toBe(false);
+    expect(fileProcessResponseSchema.safeParse({ rows: SECRET_ROWS }).success).toBe(false);
+    expect(
+      fileProcessResponseSchema.safeParse({ rows: SECRET_ROWS, rowNumbers: [1] }).success,
+    ).toBe(false);
     expect(fileProcessResponseSchema.safeParse({ rows: [[1, 2]] }).success).toBe(false);
     expect(fileProcessResponseSchema.safeParse({ error: "not_implemented" }).success).toBe(false);
   });
@@ -393,7 +400,7 @@ describe("InProcessSandbox (contract)", () => {
   it("passes each file response variant through", async () => {
     const cases: [FileProcessRequest, FileProcessResponse][] = [
       [SCREENSHOT, { text: SECRET_TEXT }],
-      [CSV, { rows: SECRET_ROWS }],
+      [CSV, SECRET_CSV],
       [SCREENSHOT, { error: "unsupported_type" }],
       [CSV, { error: "too_many_rows" }],
     ];
@@ -434,7 +441,7 @@ describe("InProcessSandbox (contract)", () => {
     const feed = inProcessSandbox(async () => leaky);
     expect(await feed.sandbox.readFeed(FEED_REQUEST)).toEqual({ error: "internal" });
 
-    const rowsForScreenshot = inProcessSandbox(undefined, async () => ({ rows: SECRET_ROWS }));
+    const rowsForScreenshot = inProcessSandbox(undefined, async () => SECRET_CSV);
     expect(await rowsForScreenshot.sandbox.processFile(SCREENSHOT)).toEqual({ error: "internal" });
     const textForCsv = inProcessSandbox(undefined, async () => ({ text: SECRET_TEXT }));
     expect(await textForCsv.sandbox.processFile(CSV)).toEqual({ error: "internal" });
@@ -444,10 +451,10 @@ describe("InProcessSandbox (contract)", () => {
   it("works with the default tracer", async () => {
     const sandbox = new InProcessSandbox({
       readFeed: async () => NOT_MODIFIED,
-      processFile: async () => ({ rows: SECRET_ROWS }),
+      processFile: async () => SECRET_CSV,
     });
     expect(await sandbox.readFeed(FEED_REQUEST)).toEqual(NOT_MODIFIED);
-    expect(await sandbox.processFile(CSV)).toEqual({ rows: SECRET_ROWS });
+    expect(await sandbox.processFile(CSV)).toEqual(SECRET_CSV);
   });
 });
 
@@ -508,7 +515,7 @@ describe("LambdaSandbox (contract)", () => {
   it("parses each file response variant and records its outcome", async () => {
     const cases: [FileProcessRequest, FileProcessResponse, string][] = [
       [SCREENSHOT, { text: SECRET_TEXT }, "ok"],
-      [CSV, { rows: SECRET_ROWS }, "ok"],
+      [CSV, SECRET_CSV, "ok"],
       [SCREENSHOT, { error: "unreadable" }, "unreadable"],
       [CSV, { error: "too_large" }, "too_large"],
       [CSV, { error: "not_found" }, "not_found"],
@@ -547,7 +554,7 @@ describe("LambdaSandbox (contract)", () => {
           },
         ],
       }),
-      ok({ rows: SECRET_ROWS }),
+      ok(SECRET_CSV),
       ok(null),
     ];
     for (const failure of failures) {

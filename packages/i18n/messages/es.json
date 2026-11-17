@@ -43,7 +43,8 @@
     "confirmation_mismatch": "El nombre que escribiste no coincide con el de la propiedad.",
     "feed_rejected": "No pudimos leer ese enlace de calendario. Revisa que sea un enlace de exportación iCal que empiece con https.",
     "invalid_credential": "Tu PMS no aceptó esa credencial. No guardamos nada.",
-    "extraction_limit_reached": "Ya usaste las importaciones de anuncios de hoy. Vuelve a intentarlo mañana."
+    "extraction_limit_reached": "Ya usaste las importaciones de anuncios de hoy. Vuelve a intentarlo mañana.",
+    "provider_unavailable": "Tu PMS no respondió. Inténtalo de nuevo en unos minutos."
   },
   "auth": {
     "signInCta": "Entrar o crear cuenta",
@@ -174,7 +175,11 @@
         "none": "Sin calendario",
         "ok": "Calendario conectado",
         "failing": "El calendario no se actualiza"
-      }
+      },
+      "toConfirm": "{count, plural, one {# propiedad importada está lista para confirmar.} other {# propiedades importadas están listas para confirmar.}}",
+      "confirmAll": "Confirmar todas",
+      "confirmed": "{count, plural, one {# propiedad confirmada.} other {# propiedades confirmadas.}}",
+      "notFoundInPms": "No está en tu PMS"
     },
     "limits": {
       "usage": "{used} de {limit} propiedades",
@@ -244,7 +249,13 @@
       "guests": "Máximo de huéspedes",
       "languages": "Idiomas de la guía",
       "nextStep": "Siguiente: armar la guía",
-      "nextStepSoon": "El armado de la guía llega en la próxima actualización."
+      "nextStepSoon": "El armado de la guía llega en la próxima actualización.",
+      "notFoundInPms": "Este anuncio ya no está en {provider}, así que sus estadías no se actualizan.",
+      "toConfirm": "Estos datos vienen de tu PMS. Revísalos y confírmalos.",
+      "confirm": "Confirmar datos",
+      "confirmed": "Datos confirmados.",
+      "stillMissing": "Todavía faltan algunos datos.",
+      "duplicate": "Duplicar"
     },
     "listing": {
       "title": "Pegar tu anuncio",
@@ -423,6 +434,225 @@
       "cancel": "Cancelar",
       "added": "Estadía agregada.",
       "saved": "Estadía guardada."
+    },
+    "pms": {
+      "title": "Importar desde tu PMS",
+      "provider": "Tu PMS",
+      "providers": {
+        "beds24": "Beds24",
+        "hostex": "Hostex"
+      },
+      "steps": {
+        "beds24": {
+          "title": "Consigue un código de invitación en Beds24",
+          "one": "En Beds24, abre Settings → Marketplace → API.",
+          "two": "Crea un código de invitación con acceso de solo lectura a propiedades, reservas y nombres de huéspedes (read:properties, read:bookings, read:bookings-personal).",
+          "three": "Copia el código y pégalo abajo. Sirve una sola vez, dentro de 24 horas.",
+          "link": "Abrir la página de API de Beds24"
+        },
+        "hostex": {
+          "title": "Consigue un token de acceso en Hostex",
+          "one": "En Hostex, abre Settings → OpenAPI. Necesita la edición Pro.",
+          "two": "Crea un token de acceso con el permiso de solo lectura.",
+          "three": "Copia el token y pégalo abajo.",
+          "link": "Abrir la configuración de OpenAPI de Hostex"
+        }
+      },
+      "readOnly": "Guidesk solo lee tus propiedades y reservas. Nunca cambia nada en tu PMS ni te pide tu contraseña.",
+      "credential": {
+        "beds24": "Código de invitación",
+        "hostex": "Token de acceso"
+      },
+      "connect": "Conectar",
+      "connecting": "Conectando…",
+      "invalid": {
+        "beds24": "Beds24 no aceptó ese código de invitación. Los códigos sirven una vez y vencen a las 24 horas: crea uno nuevo con los permisos de lectura. No guardamos nada.",
+        "hostex": "Hostex no aceptó ese token. Revisa que sea un token de solo lectura de una cuenta Pro. No guardamos nada."
+      },
+      "help": "Cómo conseguirlo",
+      "unavailable": "Tu PMS no respondió. Inténtalo de nuevo en unos minutos.",
+      "credentialFormat": "Pega el código o token completo.",
+      "noProviders": "La importación desde un PMS aún no está disponible. Puedes pegar tu anuncio o empezar desde cero.",
+      "loadingListings": "Trayendo tus anuncios…",
+      "noListings": "Tu PMS no tiene anuncios para importar.",
+      "chooseTitle": "Elige qué importar",
+      "chooseIntro": "A tu plan le caben {free} propiedades más de {limit}. Los anuncios ya importados se actualizan y no ocupan espacio.",
+      "alreadyImported": "Ya importado",
+      "overLimit": "Solo caben {free} propiedades nuevas en tu plan. El resto se omitirá.",
+      "import": "{count, plural, one {Importar # anuncio} other {Importar # anuncios}}",
+      "starting": "Iniciando la importación…"
+    },
+    "csv": {
+      "title": "Importar un archivo CSV",
+      "intro": "Descarga la plantilla, llénala en tu hoja de cálculo con una fila por propiedad y súbela. Revisamos cada fila antes de crear nada.",
+      "template": "Descargar la plantilla",
+      "templateHint": "Solo el nombre es obligatorio. Lo que falte lo completas después.",
+      "noCodes": "No escribas códigos de puertas, de cajas de llaves ni contraseñas en el archivo.",
+      "file": "Archivo CSV",
+      "fileHint": "CSV UTF-8, separado por comas o punto y coma, hasta 500 filas y 2 MB.",
+      "chooseFile": "Elegir archivo",
+      "chosen": "Archivo: {name}",
+      "check": "Revisar el archivo",
+      "checking": "Revisando el archivo…",
+      "tooLarge": "El archivo pesa más de 2 MB.",
+      "fileErrors": {
+        "too_large": "El archivo pesa más de 2 MB.",
+        "too_many_rows": "El archivo tiene más de 500 filas. Divídelo en varios archivos.",
+        "unsupported_type": "Ese archivo no es un CSV. En tu hoja de cálculo, usa Guardar como → CSV UTF-8.",
+        "unreadable": "No pudimos leer el archivo. Guárdalo de nuevo como CSV UTF-8 e inténtalo otra vez.",
+        "not_found": "No recibimos el archivo. Vuelve a subirlo.",
+        "missing_name_column": "Falta la columna Nombre. Usa la plantilla.",
+        "duplicate_column": "Una columna aparece dos veces. Usa la plantilla.",
+        "no_rows": "El archivo no tiene filas para crear.",
+        "timeout": "La revisión está tardando. Vuelve a intentarlo en un momento.",
+        "internal": "No pudimos revisar el archivo. Inténtalo de nuevo."
+      },
+      "review": {
+        "title": "Revisa el archivo",
+        "summary": "{valid, plural, one {# fila se puede crear} other {# filas se pueden crear}} · {invalid, plural, =0 {ninguna con errores} one {# con errores} other {# con errores}}",
+        "errorsTitle": "Filas con errores",
+        "errorsIntro": "Estas filas no se crearán. Corrígelas en el archivo de errores y súbelo después.",
+        "errorFile": "Descargar el archivo de errores",
+        "warningsTitle": "Avisos",
+        "warningsIntro": "Estas filas sí se crearán; revisa si es lo que quieres.",
+        "linkErrors": "Los enlaces de calendario con errores se omiten: la fila se crea sin calendario.",
+        "withoutLink": "Esta fila sí se crea, sin el enlace del calendario.",
+        "row": "Fila {row}",
+        "chooseTitle": "Elige qué filas crear",
+        "chooseIntro": "Tu plan permite {free, plural, one {# propiedad más} other {# propiedades más}} (límite de {limit}). Elige cuáles crear ahora.",
+        "overLimit": "Elige hasta {free}.",
+        "create": "{count, plural, one {Crear # propiedad} other {Crear # propiedades}}",
+        "creating": "Creando…",
+        "cancel": "Cancelar y subir otro archivo",
+        "cancelled": "Cancelaste este archivo. No se creó nada.",
+        "noneValid": "Ninguna fila se puede crear. Corrige el archivo y súbelo de nuevo.",
+        "limitReached": "Llegaste al límite de {limit} propiedades de tu plan."
+      },
+      "columns": {
+        "name": "Nombre",
+        "addressLine1": "Calle y número",
+        "addressUnit": "Unidad",
+        "city": "Ciudad",
+        "region": "Provincia o región",
+        "postalCode": "Código postal",
+        "country": "País",
+        "timeZone": "Zona horaria",
+        "checkInTime": "Hora de entrada",
+        "checkoutTime": "Hora de salida",
+        "maxGuests": "Máximo de huéspedes",
+        "guideLanguages": "Idiomas de la guía",
+        "calendarUrl": "Enlace del calendario (iCal)"
+      },
+      "reasons": {
+        "required": "falta este dato",
+        "too_long": "es demasiado largo",
+        "invalid_country": "país no reconocido",
+        "invalid_time_zone": "zona horaria no reconocida",
+        "invalid_time": "usa una hora como 15:00",
+        "invalid_guests": "usa un número entero del 1 al 50",
+        "invalid_language": "usa es, en o ambos",
+        "invalid_calendar_link": "el enlace debe empezar con https://",
+        "calendar_rejected": "no pudimos leer este calendario, agrégalo desde la propiedad",
+        "missing": "falta, la propiedad quedará con datos pendientes",
+        "duplicate_row": "repite la fila {row}",
+        "existing_property": "ya tienes una propiedad igual",
+        "time_zone_mismatch": "la zona horaria no es de ese país",
+        "other": "revisa este dato"
+      }
+    },
+    "duplicate": {
+      "title": "Copiar una propiedad",
+      "pickIntro": "Elige la propiedad que quieres copiar. Se copian los horarios, la capacidad, los idiomas y el contenido del anuncio.",
+      "pickEmpty": "Todavía no tienes propiedades para copiar.",
+      "excluded": "No se copian la dirección, los calendarios, las estadías, los códigos ni la conexión con el PMS.",
+      "from": "Copia de «{name}»",
+      "content": "Contenido que se copia: {kinds}.",
+      "noContent": "La propiedad original no tiene contenido del anuncio.",
+      "create": "Crear la copia",
+      "other": "Copiar otra propiedad"
+    },
+    "remove": {
+      "title": "Eliminar esta propiedad",
+      "intro": "Deja de contar para tu plan y sus calendarios dejan de actualizarse. Puedes restaurarla durante 30 días; después se borra con sus estadías, su contenido y sus códigos.",
+      "open": "Eliminar propiedad",
+      "checking": "Revisando estadías…",
+      "upcoming": "{count, plural, one {Tiene # estadía próxima:} other {Tiene # estadías próximas:}}",
+      "stay": "{checkIn} → {checkout} · {channel}",
+      "noUpcoming": "No tiene estadías próximas.",
+      "typeName": "Escribe «{name}» para confirmar",
+      "mismatch": "El nombre no coincide. Escríbelo tal como aparece.",
+      "confirm": "Eliminar",
+      "removing": "Eliminando…",
+      "cancel": "Cancelar"
+    },
+    "removed": {
+      "title": "Propiedades eliminadas",
+      "show": "Ver propiedades eliminadas",
+      "back": "Volver a las propiedades",
+      "intro": "Puedes restaurarlas durante 30 días si tu plan tiene espacio. Después se borran para siempre.",
+      "empty": "No tienes propiedades eliminadas.",
+      "daysLeft": "{days, plural, =0 {Se borra hoy} one {Se borra en # día} other {Se borra en # días}}",
+      "restore": "Restaurar",
+      "restoring": "Restaurando…",
+      "restored": "Restauraste «{name}».",
+      "limitReached": "Tu plan no tiene espacio. Elimina otra propiedad o escríbenos para ampliar el límite.",
+      "gone": "Ya pasaron los 30 días: esta propiedad no se puede restaurar.",
+      "banner": "Eliminaste esta propiedad. Se borra para siempre el {date}."
+    },
+    "imports": {
+      "loading": "Cargando la importación…",
+      "notAllowed": "Solo dueños y administradores pueden ver las importaciones.",
+      "back": "Todas las propiedades",
+      "title": "Importación desde {source}",
+      "sources": {
+        "beds24": "Beds24",
+        "hostex": "Hostex",
+        "csv": "un archivo CSV"
+      },
+      "progress": "Importando {processed} de {total}",
+      "finished": "La importación terminó. Revisa las propiedades que necesitan datos.",
+      "finishedFailed": "La importación se detuvo: vuelve a conectar tu PMS e inténtalo de nuevo.",
+      "counts": {
+        "created": "Listas para confirmar",
+        "needsDetails": "Necesitan datos",
+        "failed": "Fallaron",
+        "skipped": "Omitidas"
+      },
+      "outcomes": {
+        "pending": "En espera",
+        "created": "Creada",
+        "updated": "Actualizada",
+        "needs_details": "Necesita datos",
+        "failed": "Falló",
+        "skipped": "Omitida"
+      },
+      "reasons": {
+        "plan_limit": "Se alcanzó el límite de propiedades de tu plan.",
+        "reconnect_pms": "Tu PMS rechazó la conexión. Vuelve a conectarlo en Ajustes → Integraciones.",
+        "provider_error": "Tu PMS no respondió para este anuncio.",
+        "not_found_in_pms": "Este anuncio ya no está en tu PMS.",
+        "workspace_pending_deletion": "El espacio de trabajo se está eliminando.",
+        "invalid_row": "La fila tiene errores y no se creó.",
+        "not_selected": "No la elegiste para crear.",
+        "internal": "No pudimos crear esta fila. Vuelve a intentarlo con el archivo de errores."
+      },
+      "retry": "Intentar de nuevo",
+      "toProperties": "Ir a las propiedades",
+      "row": "Fila {row}",
+      "errorFile": "Descargar el archivo de errores"
+    },
+    "restricted": {
+      "title": "Códigos encontrados en tu PMS",
+      "intro": "Estos códigos estaban en los textos importados. Guidesk los guarda cifrados y los dejó fuera del contenido del anuncio. Los pondrás en los campos protegidos de la guía.",
+      "kinds": {
+        "door_code": "Código de puerta",
+        "gate_code": "Código de portón",
+        "lockbox_code": "Código de caja de llaves",
+        "alarm_code": "Código de alarma",
+        "wifi_password": "Contraseña de Wi-Fi",
+        "other": "Otro código"
+      },
+      "masked": "Oculto"
     }
   },
   "security": {
@@ -556,7 +786,8 @@
       "team": "Equipo",
       "account": "Tu cuenta",
       "security": "Seguridad",
-      "log": "Registro de seguridad"
+      "log": "Registro de seguridad",
+      "integrations": "Integraciones"
     },
     "workspace": {
       "title": "Workspace",
@@ -611,6 +842,36 @@
       "more": "Ver más",
       "noAccess": "Solo el dueño y los administradores ven el registro del workspace.",
       "unknownActor": "Sistema o cuenta eliminada"
+    },
+    "integrations": {
+      "title": "Integraciones",
+      "back": "Ajustes",
+      "loading": "Cargando integraciones…",
+      "notAllowed": "Solo dueños y administradores pueden gestionar las integraciones.",
+      "intro": "Tus conexiones con un PMS. Guidesk lee las reservas cada 3 horas y nunca escribe en tu PMS.",
+      "empty": "No hay ningún PMS conectado.",
+      "status": {
+        "active": "Conectado",
+        "failing": "Sin actualizar",
+        "disconnected": "Desconectado"
+      },
+      "lastRefresh": "Última actualización: {time}",
+      "neverRefreshed": "Aún sin actualizar",
+      "failingCredential": "Tu PMS rechazó la conexión. Vuelve a conectarlo.",
+      "failingProvider": "Tu PMS no responde. Guidesk sigue intentando.",
+      "refresh": "Actualizar ahora",
+      "refreshQueued": "Actualizando las reservas. Los cambios aparecen en un minuto.",
+      "refreshTooSoon": "Actualizaste hace poco. Inténtalo de nuevo en {minutes, plural, one {# minuto} other {# minutos}}.",
+      "importMore": "Importar más anuncios",
+      "reconnect": "Volver a conectar",
+      "disconnect": "Desconectar",
+      "disconnectConfirm": "¿Desconectar {provider}? Las reservas dejan de actualizarse. Las propiedades importadas se quedan.",
+      "disconnectYes": "Desconectar",
+      "cancel": "Cancelar",
+      "disconnected": "Desconectado. El token se borró en Guidesk y en tu PMS.",
+      "disconnectedDeleteToken": "Desconectado. Guidesk borró su copia del token; bórralo también en {provider}.",
+      "howToDelete": "Cómo borrarlo",
+      "connect": "Conectar un PMS"
     }
   }
 }

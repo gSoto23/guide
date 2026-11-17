@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  planPmsStays,
+  type PmsReservationInput,
+  type PmsStay,
   flagOverlaps,
   isUpcoming,
   markDuplicates,
@@ -174,5 +177,115 @@ describe("upcoming in the property's time zone (FR-005)", () => {
     expect(isUpcoming({ status: "cancelled", checkoutDate: "2027-02-01" }, "2027-01-10")).toBe(
       false,
     );
+  });
+});
+
+describe("applying a PMS read (FR-030, FR-034, FR-053)", () => {
+  const today = "2026-12-01";
+  const propertyByListing = new Map([
+    ["101:201", "prop-a"],
+    ["101:202", "prop-b"],
+  ]);
+  const reservation = (over: Partial<PmsReservationInput> = {}): PmsReservationInput => ({
+    externalUid: "bk-1",
+    listingExternalId: "101:201",
+    status: "active",
+    checkInDate: "2026-12-10",
+    checkoutDate: "2026-12-14",
+    guestCount: 3,
+    guestName: "Ana Prueba",
+    bookingReference: "bk-1",
+    channel: "Airbnb",
+    ...over,
+  });
+  const stored = (over: Partial<PmsStay> = {}): PmsStay => ({
+    id: "stay-1",
+    externalUid: "bk-1",
+    propertyId: "prop-a",
+    status: "active",
+    checkInDate: "2026-12-10",
+    checkoutDate: "2026-12-14",
+    guestCount: 3,
+    guestName: "Ana Prueba",
+    guestNameRemoved: false,
+    bookingReference: "bk-1",
+    channel: "Airbnb",
+    ...over,
+  });
+
+  it("creates stays for imported listings only, and skips past ones", () => {
+    const plan = planPmsStays({
+      today,
+      propertyByListing,
+      existing: [],
+      fullRead: true,
+      reservations: [
+        reservation(),
+        reservation({ externalUid: "bk-2", listingExternalId: "999:1" }),
+        reservation({ externalUid: "bk-3", checkInDate: "2026-11-01", checkoutDate: "2026-11-05" }),
+      ],
+    });
+    expect(plan.create).toEqual([
+      expect.objectContaining({
+        externalUid: "bk-1",
+        propertyId: "prop-a",
+        guestName: "Ana Prueba",
+      }),
+    ]);
+    expect(plan.update).toEqual([]);
+    expect(plan.cancel).toEqual([]);
+  });
+
+  it("applies changed and cancelled reservations, and cancels what a full read no longer has", () => {
+    const plan = planPmsStays({
+      today,
+      propertyByListing,
+      fullRead: true,
+      existing: [
+        stored(),
+        stored({ id: "stay-2", externalUid: "bk-2" }),
+        stored({ id: "stay-3", externalUid: "bk-3" }),
+      ],
+      reservations: [
+        reservation({ checkoutDate: "2026-12-15" }),
+        reservation({ externalUid: "bk-2", status: "cancelled" }),
+      ],
+    });
+    expect(plan.update).toEqual([
+      expect.objectContaining({ id: "stay-1", checkoutDate: "2026-12-15", status: "active" }),
+    ]);
+    expect(plan.cancel.sort()).toEqual(["stay-2", "stay-3"]);
+  });
+
+  it("only applies what an incremental read returns", () => {
+    const plan = planPmsStays({
+      today,
+      propertyByListing,
+      fullRead: false,
+      existing: [stored(), stored({ id: "stay-2", externalUid: "bk-2" })],
+      reservations: [reservation({ guestCount: 4 })],
+    });
+    expect(plan.update.map((change) => change.id)).toEqual(["stay-1"]);
+    expect(plan.cancel).toEqual([]);
+  });
+
+  it("never writes back a guest name removed on request, even when the PMS changes it", () => {
+    const plan = planPmsStays({
+      today,
+      propertyByListing,
+      fullRead: false,
+      existing: [stored({ guestName: null, guestNameRemoved: true })],
+      reservations: [reservation({ guestName: "Ana María Prueba" })],
+    });
+    expect(plan.update).toEqual([]);
+    const changed = planPmsStays({
+      today,
+      propertyByListing,
+      fullRead: false,
+      existing: [stored({ guestName: null, guestNameRemoved: true })],
+      reservations: [reservation({ guestName: "Ana María Prueba", guestCount: 5 })],
+    });
+    expect(changed.update).toHaveLength(1);
+    expect(changed.update[0]).not.toHaveProperty("guestName");
   });
 });

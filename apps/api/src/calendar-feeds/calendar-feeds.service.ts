@@ -345,7 +345,7 @@ export class CalendarFeedsService {
     }
     if (body.url !== undefined) {
       // The worker applies the new link's stays once this request has committed.
-      await this.jobs.send(
+      await this.jobs.sendNow(
         JOB_QUEUES.calendarRefresh,
         { feedId: feed.id, workspaceId } satisfies CalendarRefreshJob,
         { priority: REFRESH_NOW_PRIORITY, singletonKey: `feed:${feed.id}`, startAfter: 2 },
@@ -383,7 +383,8 @@ export class CalendarFeedsService {
 
   /** "Refresh now" for every feed of the property, once every 5 minutes (FR-023). */
   async refreshNow(caller: Caller, workspaceId: string, propertyId: string): Promise<void> {
-    await this.properties.load(caller, workspaceId, propertyId);
+    // A removed property's feeds are never read (AC-SEC-011).
+    await this.properties.loadActive(caller, workspaceId, propertyId);
     const tx = this.requestDb.current();
     const now = new Date();
     const [recent] = await tx
@@ -410,10 +411,11 @@ export class CalendarFeedsService {
       .where(eq(calendarFeed.propertyId, propertyId))
       .returning({ id: calendarFeed.id });
     for (const feed of feeds) {
-      await this.jobs.send(
+      // A scheduled refresh already waiting is moved forward instead (SC-006).
+      await this.jobs.sendNow(
         JOB_QUEUES.calendarRefresh,
         { feedId: feed.id, workspaceId } satisfies CalendarRefreshJob,
-        { priority: REFRESH_NOW_PRIORITY, singletonKey: `feed:${feed.id}` },
+        { priority: REFRESH_NOW_PRIORITY, singletonKey: `feed:${feed.id}`, startAfter: 2 },
       );
     }
   }

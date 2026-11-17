@@ -43,7 +43,8 @@
     "confirmation_mismatch": "The name you typed doesn't match the property's name.",
     "feed_rejected": "We couldn't read that calendar link. Check that it's an iCal export link that starts with https.",
     "invalid_credential": "Your PMS didn't accept that credential. Nothing was saved.",
-    "extraction_limit_reached": "You've used today's listing imports. Try again tomorrow."
+    "extraction_limit_reached": "You've used today's listing imports. Try again tomorrow.",
+    "provider_unavailable": "Your PMS didn't answer. Try again in a few minutes."
   },
   "auth": {
     "signInCta": "Sign in or create an account",
@@ -174,7 +175,11 @@
         "none": "No calendar",
         "ok": "Calendar connected",
         "failing": "Calendar not updating"
-      }
+      },
+      "toConfirm": "{count, plural, one {# imported property is ready to confirm.} other {# imported properties are ready to confirm.}}",
+      "confirmAll": "Confirm all",
+      "confirmed": "{count, plural, one {# property confirmed.} other {# properties confirmed.}}",
+      "notFoundInPms": "Not in your PMS"
     },
     "limits": {
       "usage": "{used} of {limit} properties",
@@ -244,7 +249,13 @@
       "guests": "Maximum guests",
       "languages": "Guide languages",
       "nextStep": "Next: build the guide",
-      "nextStepSoon": "The guide builder arrives in the next update."
+      "nextStepSoon": "The guide builder arrives in the next update.",
+      "notFoundInPms": "This listing is no longer in {provider}, so its stays aren't updated.",
+      "toConfirm": "These details came from your PMS. Check them and confirm.",
+      "confirm": "Confirm details",
+      "confirmed": "Details confirmed.",
+      "stillMissing": "Some details are still missing.",
+      "duplicate": "Duplicate"
     },
     "listing": {
       "title": "Paste your listing",
@@ -423,6 +434,225 @@
       "cancel": "Cancel",
       "added": "Stay added.",
       "saved": "Stay saved."
+    },
+    "pms": {
+      "title": "Import from your PMS",
+      "provider": "Your PMS",
+      "providers": {
+        "beds24": "Beds24",
+        "hostex": "Hostex"
+      },
+      "steps": {
+        "beds24": {
+          "title": "Get an invite code in Beds24",
+          "one": "In Beds24, open Settings → Marketplace → API.",
+          "two": "Create an invite code with read-only access to properties, bookings, and guest names (read:properties, read:bookings, read:bookings-personal).",
+          "three": "Copy the code and paste it below. It works once, within 24 hours.",
+          "link": "Open the Beds24 API page"
+        },
+        "hostex": {
+          "title": "Get an access token in Hostex",
+          "one": "In Hostex, open Settings → OpenAPI. It needs the Pro edition.",
+          "two": "Create an access token with the read-only scope.",
+          "three": "Copy the token and paste it below.",
+          "link": "Open Hostex OpenAPI settings"
+        }
+      },
+      "readOnly": "Guidesk only reads your properties and reservations. It never changes anything in your PMS and never asks for your password.",
+      "credential": {
+        "beds24": "Invite code",
+        "hostex": "Access token"
+      },
+      "connect": "Connect",
+      "connecting": "Connecting…",
+      "invalid": {
+        "beds24": "Beds24 didn't accept that invite code. Codes work once and expire after 24 hours: create a new one with the read scopes. Nothing was saved.",
+        "hostex": "Hostex didn't accept that token. Check that it's a read-only token from a Pro account. Nothing was saved."
+      },
+      "help": "How to get one",
+      "unavailable": "Your PMS didn't answer. Try again in a few minutes.",
+      "credentialFormat": "Paste the whole code or token.",
+      "noProviders": "PMS imports aren't available yet. You can paste your listing or start from scratch.",
+      "loadingListings": "Getting your listings…",
+      "noListings": "Your PMS has no listings to import.",
+      "chooseTitle": "Choose what to import",
+      "chooseIntro": "Your plan has room for {free} more of {limit} properties. Listings already imported are updated and don't use a slot.",
+      "alreadyImported": "Already imported",
+      "overLimit": "Only {free} new properties fit in your plan. The rest will be skipped.",
+      "import": "{count, plural, one {Import # listing} other {Import # listings}}",
+      "starting": "Starting the import…"
+    },
+    "csv": {
+      "title": "Import a CSV file",
+      "intro": "Download the template, fill it in your spreadsheet with one row per property, and upload it. We check every row before creating anything.",
+      "template": "Download the template",
+      "templateHint": "Only the name is required. You can fill in the rest later.",
+      "noCodes": "Don't type door codes, lockbox codes, or passwords in the file.",
+      "file": "CSV file",
+      "fileHint": "CSV UTF-8, separated by commas or semicolons, up to 500 rows and 2 MB.",
+      "chooseFile": "Choose a file",
+      "chosen": "File: {name}",
+      "check": "Check the file",
+      "checking": "Checking the file…",
+      "tooLarge": "The file is larger than 2 MB.",
+      "fileErrors": {
+        "too_large": "The file is larger than 2 MB.",
+        "too_many_rows": "The file has more than 500 rows. Split it into several files.",
+        "unsupported_type": "That file isn't a CSV. In your spreadsheet, use Save as → CSV UTF-8.",
+        "unreadable": "We couldn't read the file. Save it again as CSV UTF-8 and try again.",
+        "not_found": "We didn't receive the file. Upload it again.",
+        "missing_name_column": "The Name column is missing. Use the template.",
+        "duplicate_column": "A column appears twice. Use the template.",
+        "no_rows": "The file has no rows to create.",
+        "timeout": "Checking is taking a while. Try again in a moment.",
+        "internal": "We couldn't check the file. Try again."
+      },
+      "review": {
+        "title": "Review the file",
+        "summary": "{valid, plural, one {# row can be created} other {# rows can be created}} · {invalid, plural, =0 {none with errors} one {# with errors} other {# with errors}}",
+        "errorsTitle": "Rows with errors",
+        "errorsIntro": "These rows won't be created. Fix them in the error file and upload it later.",
+        "errorFile": "Download the error file",
+        "warningsTitle": "Warnings",
+        "warningsIntro": "These rows will be created; check that this is what you want.",
+        "linkErrors": "Calendar links with errors are left out: the row is created without a calendar.",
+        "withoutLink": "This row is still created, without the calendar link.",
+        "row": "Row {row}",
+        "chooseTitle": "Choose which rows to create",
+        "chooseIntro": "Your plan allows {free, plural, one {# more property} other {# more properties}} (limit of {limit}). Choose which to create now.",
+        "overLimit": "Choose up to {free}.",
+        "create": "{count, plural, one {Create # property} other {Create # properties}}",
+        "creating": "Creating…",
+        "cancel": "Cancel and upload another file",
+        "cancelled": "You cancelled this file. Nothing was created.",
+        "noneValid": "No row can be created. Fix the file and upload it again.",
+        "limitReached": "You've reached your plan's limit of {limit} properties."
+      },
+      "columns": {
+        "name": "Name",
+        "addressLine1": "Street and number",
+        "addressUnit": "Unit",
+        "city": "City",
+        "region": "State or region",
+        "postalCode": "Postal code",
+        "country": "Country",
+        "timeZone": "Time zone",
+        "checkInTime": "Check-in time",
+        "checkoutTime": "Checkout time",
+        "maxGuests": "Maximum guests",
+        "guideLanguages": "Guide languages",
+        "calendarUrl": "Calendar link (iCal)"
+      },
+      "reasons": {
+        "required": "this is required",
+        "too_long": "too long",
+        "invalid_country": "country not recognized",
+        "invalid_time_zone": "time zone not recognized",
+        "invalid_time": "use a time like 15:00",
+        "invalid_guests": "use a whole number from 1 to 50",
+        "invalid_language": "use en, es, or both",
+        "invalid_calendar_link": "the link must start with https://",
+        "calendar_rejected": "we couldn't read this calendar. Add it from the property",
+        "missing": "missing, so the property will need details",
+        "duplicate_row": "repeats row {row}",
+        "existing_property": "you already have a property like this",
+        "time_zone_mismatch": "the time zone isn't in that country",
+        "other": "check this value"
+      }
+    },
+    "duplicate": {
+      "title": "Copy a property",
+      "pickIntro": "Choose the property to copy. Its times, capacity, languages, and listing content are copied.",
+      "pickEmpty": "You don't have properties to copy yet.",
+      "excluded": "The address, calendars, stays, codes, and PMS connection are not copied.",
+      "from": "Copy of “{name}”",
+      "content": "Content that is copied: {kinds}.",
+      "noContent": "The original property has no listing content.",
+      "create": "Create the copy",
+      "other": "Copy another property"
+    },
+    "remove": {
+      "title": "Remove this property",
+      "intro": "It stops counting toward your plan, and its calendars stop updating. You can restore it for 30 days; after that it is deleted with its stays, content, and codes.",
+      "open": "Remove property",
+      "checking": "Checking stays…",
+      "upcoming": "{count, plural, one {It has # upcoming stay:} other {It has # upcoming stays:}}",
+      "stay": "{checkIn} → {checkout} · {channel}",
+      "noUpcoming": "It has no upcoming stays.",
+      "typeName": "Type “{name}” to confirm",
+      "mismatch": "The name doesn't match. Type it exactly as shown.",
+      "confirm": "Remove",
+      "removing": "Removing…",
+      "cancel": "Cancel"
+    },
+    "removed": {
+      "title": "Removed properties",
+      "show": "See removed properties",
+      "back": "Back to properties",
+      "intro": "You can restore them for 30 days if your plan has room. After that they are deleted for good.",
+      "empty": "You have no removed properties.",
+      "daysLeft": "{days, plural, =0 {Deleted today} one {Deleted in # day} other {Deleted in # days}}",
+      "restore": "Restore",
+      "restoring": "Restoring…",
+      "restored": "You restored “{name}”.",
+      "limitReached": "Your plan has no room. Remove another property or write to us to raise the limit.",
+      "gone": "The 30 days are over: this property can't be restored.",
+      "banner": "You removed this property. It is deleted for good on {date}."
+    },
+    "imports": {
+      "loading": "Loading the import…",
+      "notAllowed": "Only owners and admins can see imports.",
+      "back": "All properties",
+      "title": "Import from {source}",
+      "sources": {
+        "beds24": "Beds24",
+        "hostex": "Hostex",
+        "csv": "a CSV file"
+      },
+      "progress": "Importing {processed} of {total}",
+      "finished": "The import finished. Check the properties that need details.",
+      "finishedFailed": "The import stopped: reconnect your PMS and try again.",
+      "counts": {
+        "created": "Ready to confirm",
+        "needsDetails": "Need details",
+        "failed": "Failed",
+        "skipped": "Skipped"
+      },
+      "outcomes": {
+        "pending": "Waiting",
+        "created": "Created",
+        "updated": "Updated",
+        "needs_details": "Needs details",
+        "failed": "Failed",
+        "skipped": "Skipped"
+      },
+      "reasons": {
+        "plan_limit": "Your plan's property limit was reached.",
+        "reconnect_pms": "Your PMS refused the connection. Reconnect it in Settings → Integrations.",
+        "provider_error": "Your PMS didn't answer for this listing.",
+        "not_found_in_pms": "This listing is no longer in your PMS.",
+        "workspace_pending_deletion": "The workspace is being deleted.",
+        "invalid_row": "The row has errors and wasn't created.",
+        "not_selected": "You didn't choose it to be created.",
+        "internal": "We couldn't create this row. Try again with the error file."
+      },
+      "retry": "Try again",
+      "toProperties": "Go to properties",
+      "row": "Row {row}",
+      "errorFile": "Download the error file"
+    },
+    "restricted": {
+      "title": "Codes found in your PMS",
+      "intro": "These codes were in your imported texts. Guidesk stores them encrypted and left them out of the listing content. You'll place them in the guide's locked fields.",
+      "kinds": {
+        "door_code": "Door code",
+        "gate_code": "Gate code",
+        "lockbox_code": "Lockbox code",
+        "alarm_code": "Alarm code",
+        "wifi_password": "Wi-Fi password",
+        "other": "Other code"
+      },
+      "masked": "Hidden"
     }
   },
   "security": {
@@ -556,7 +786,8 @@
       "team": "Team",
       "account": "Your account",
       "security": "Security",
-      "log": "Security log"
+      "log": "Security log",
+      "integrations": "Integrations"
     },
     "workspace": {
       "title": "Workspace",
@@ -611,6 +842,36 @@
       "more": "Show more",
       "noAccess": "Only the owner and admins see the workspace log.",
       "unknownActor": "System or deleted account"
+    },
+    "integrations": {
+      "title": "Integrations",
+      "back": "Settings",
+      "loading": "Loading integrations…",
+      "notAllowed": "Only owners and admins can manage integrations.",
+      "intro": "Your PMS connections. Guidesk reads reservations every 3 hours and never writes to your PMS.",
+      "empty": "No PMS connected.",
+      "status": {
+        "active": "Connected",
+        "failing": "Not updating",
+        "disconnected": "Disconnected"
+      },
+      "lastRefresh": "Last refresh {time}",
+      "neverRefreshed": "Not refreshed yet",
+      "failingCredential": "Your PMS refused the connection. Reconnect it.",
+      "failingProvider": "Your PMS isn't answering. Guidesk keeps trying.",
+      "refresh": "Refresh now",
+      "refreshQueued": "Refreshing reservations. Changes appear in a minute.",
+      "refreshTooSoon": "You refreshed recently. Try again in {minutes, plural, one {# minute} other {# minutes}}.",
+      "importMore": "Import more listings",
+      "reconnect": "Reconnect",
+      "disconnect": "Disconnect",
+      "disconnectConfirm": "Disconnect {provider}? Reservations stop updating. Imported properties stay.",
+      "disconnectYes": "Disconnect",
+      "cancel": "Cancel",
+      "disconnected": "Disconnected. The token was deleted in Guidesk and at your PMS.",
+      "disconnectedDeleteToken": "Disconnected. Guidesk deleted its copy of the token; delete it in {provider} too.",
+      "howToDelete": "How to delete it",
+      "connect": "Connect a PMS"
     }
   }
 }

@@ -11,9 +11,11 @@ import { ConfigModule } from "./config/config.module.js";
 import { DatabaseModule } from "./database/database.module.js";
 import { EmailModule } from "./email/email.module.js";
 import { ExtractionsModule } from "./extractions/extractions.module.js";
+import { ImportRunsModule } from "./imports/import-runs.module.js";
 import { HealthController } from "./health/health.controller.js";
 import { IntegrationsModule } from "./integrations/integrations.module.js";
 import { ListingContentModule } from "./listing-content/listing-content.module.js";
+import { PmsModule } from "./pms/pms.module.js";
 import { PropertiesModule } from "./properties/properties.module.js";
 import { UploadsModule } from "./uploads/uploads.module.js";
 import { SecurityModule } from "./security/security.module.js";
@@ -36,6 +38,8 @@ import { TenancyModule } from "./tenancy/tenancy.module.js";
     CalendarFeedsModule,
     StaysModule,
     ExtractionsModule,
+    ImportRunsModule,
+    PmsModule,
   ],
   controllers: [HealthController],
   providers: [

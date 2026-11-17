@@ -226,7 +226,7 @@ at the boundary and never stored or logged (FR-030). Contract tests run against 
   - **Bookings:** `confirmed` and `new` become `active`; `cancelled` becomes `cancelled`;
     `request`, `inquiry`, and `black` (blocked) are skipped. The guest count is `numAdult` +
     `numChild`. The guest name is first and last name. The booking reference is the Beds24
-    booking ID. The channel comes from `referer`.
+    booking ID. The channel comes from the booking's `channel` (for example `airbnb` → "Airbnb"), falling back to `apiSource` (verified against the OpenAPI spec, 2026-11-16).
 - **Rate limits:** 100 credits per 5 minutes per Beds24 account, **shared with the host's other
   tools**. The adapter reads the credit headers (`X-FiveMinCreditLimit-Remaining` and the
   `x-five-min-limit-*` variant), never spends below 30 remaining credits, and waits for the reset
@@ -258,7 +258,9 @@ at the boundary and never stored or logged (FR-030). Contract tests run against 
   - **Reservations:** `accepted` becomes `active`; `cancelled`, `denied`, and `timeout` become
     `cancelled`; `wait_accept` and `wait_pay` are skipped until accepted. The guest count is
     `number_of_guests`, the guest name is `guest_name`, and the booking reference is
-    `reservation_code`. Dropped: phone, email, `guests[]`, remarks, custom fields, and
+    `reservation_code`. Each stay is identified by `stay_code`, because the stays of a multi-stay
+    reservation share one `reservation_code`; `booking_site` is the host's own direct-booking
+    site, so it maps to "Direct" (verified against the OpenAPI spec, 2026-11-16). Dropped: phone, email, `guests[]`, remarks, custom fields, and
     `check_in_details` (which holds lock codes).
 - **Rate limits:** generous (600 per minute per endpoint, 100,000 per day per account). Pages hold
   up to 100 items. There is no "updated since" filter, so each refresh reads reservations with
@@ -343,6 +345,11 @@ accounts.
 - **Timing:** SC-005 asks for 200 rows validated within 10 seconds, and the performance doc for
   500 rows within 30 seconds. Parsing is in-memory, so the budget goes to queue pickup and the
   sandbox call.
+- **As built:** the template's example row also starts with `#`, so it is never created. Files
+  that are not valid UTF-8 are read as Windows-1252, the encoding spreadsheets in Spanish still
+  write. The file processor returns each row's number in the file with its cells, so errors name
+  the row a spreadsheet shows. The worker test checks 200 rows, each with an encrypted calendar
+  link, against the 10-second budget.
 
 ## R11. Time zone suggestion without an outside service
 
@@ -433,3 +440,15 @@ accounts.
   - the GuardDuty plan enabled on the uploads bucket (R9).
 - **Unchanged:** OQ-03 (which PMS the design partners use) may add or remove a provider later; the
   port keeps that change contained.
+- **Production gates, status on 2026-11-17 (T129, founder):** none is closed yet. Each needs a
+  step outside the code; record the outcome here when it closes.
+
+  | Gate | Blocks | Status |
+  |---|---|---|
+  | Written confirmation from Beds24 that a customer's own invite code may be used without a partner agreement (OQ-26) | `PMS_BEDS24` in production | Open |
+  | Written confirmation from Hostex for a customer's own access token (OQ-26) | `PMS_HOSTEX` in production | Open |
+  | R3: a spot check with real host screenshots, after the 99.59% result on rendered samples (T057) | `EXTRACTION_SCREENSHOTS` in production | Open |
+  | Real Booking.com and Vrbo iCal exports added to the classification fixtures (R8) | Relying on the "may be a block" rules for those channels | Open |
+  | GuardDuty Malware Protection enabled on the uploads bucket (R9) | Screenshots and CSV import in production | Open |
+  | PMS fixtures replaced with recordings from test accounts: T082 started from synthetic fixtures | `PMS_BEDS24` and `PMS_HOSTEX` in production, and the latencies assumed in the performance tests | Open |
+  | The quickstart run on staging | Release | Open; it passed locally (tasks.md, Implementation notes) |

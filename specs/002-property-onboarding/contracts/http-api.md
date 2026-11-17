@@ -25,6 +25,7 @@ more properties (FR-048).
 | 422 | `feed_rejected` | The link is not HTTPS, resolves to a blocked address, redirects too often, is too large or slow, or is not iCal. Body: `{reason}` |
 | 422 | `invalid_credential` | The PMS rejected the credential; nothing is stored. Body: `{provider, helpUrl}` |
 | 429 | `extraction_limit_reached` | The daily extraction limit is used. Body: `{limit, resetsAt}` (FR-017) |
+| 502 | `provider_unavailable` | The PMS did not answer, or the worker did not answer a listing call within 15 s. Nothing is stored |
 
 ## Properties
 
@@ -37,10 +38,11 @@ more properties (FR-048).
 | `GET /properties/{propertyId}` | O A Ag | Core facts, setup status, source label, counts of feeds, stays, and restricted values. Agents get no feed or restricted-value details |
 | `PATCH /properties/{propertyId}` | O A | Edit core facts (FR-005). Imported properties record the field in `edited_facts`. Filling the last missing fact makes a manual, listing-text, or duplicate property `ready`, and a CSV or PMS property `to_confirm` ([data model §7](../data-model.md#7-state-machines)) |
 | `POST /properties/confirm` | O A | Body: `{propertyIds}`. Confirms the facts of imported properties in `to_confirm` (one or many from the list), moving them to `ready` (FR-004). Properties still missing facts are returned as `needs_details` |
+| `GET /properties/{propertyId}/restricted-values` | O A | Codes found in imported PMS text: `{items: [{id, kind, label, source, createdAt}]}`, never the value (FR-031). Agents get `404` |
 | `GET /properties/address-check?line1=&unit=&city=&country=` | O A | `{matches: [{propertyId, name}]}` for the dismissible duplicate warning (FR-007) |
-| `GET /properties/{propertyId}/duplicate-draft` | O A | Prefill for the confirmation step: copied facts and content, name "Copy of …", empty address (FR-043). Nothing is created until `POST /properties` |
-| `DELETE /properties/{propertyId}` | O A, SU | Body: `{typedName}`. Response lists upcoming stays to warn about when called with `?dryRun=true` (FR-044) |
-| `POST /properties/{propertyId}/restore` | O A | Within 30 days and with a free slot (FR-045) |
+| `GET /properties/{propertyId}/duplicate-draft?lang=es` | O A | Prefill for the confirmation step: copied facts (country and time zone included) and content, name "Copia de …" or "Copy of …", empty address (FR-043). Nothing is created until `POST /properties`, which copies the content itself. A removed property is `404` |
+| `DELETE /properties/{propertyId}` | O A, SU | Body: `{typedName}`. Returns `{removed, purgeAfter, upcomingStays}`. With `?dryRun=true` it only lists the upcoming stays to warn about, and needs no step-up (FR-044). A wrong name is `409 confirmation_mismatch` |
+| `POST /properties/{propertyId}/restore` | O A | Within 30 days and with a free slot (FR-045). Returns the property. Not removed: `409 conflict`; past the 30 days: `410 gone`; no slot: `409 plan_limit_reached` |
 
 ## Time zones
 
@@ -104,9 +106,9 @@ portal can tell the host what was removed without echoing the value (FR-012).
 |---|---|---|
 | `GET /imports/csv-template?lang=es` | O A | The template in the requested language: headers, one example row, and instructions (FR-037) |
 | `POST /imports/csv` | O A | Body: `{contentType, size}` (≤ 2 MB). Returns `{importRunId, upload: {uploadId, url, fields}}` |
-| `POST /imports/{importRunId}/validate` | O A | Called after the upload. `202`; the run moves to `awaiting_confirmation` with per-row results |
-| `POST /imports/{importRunId}/confirm` | O A | Body: `{rowNumbers?}` when the valid rows exceed the limit (US5 scenario 5). Creates the valid rows. `202` |
-| `POST /imports/{importRunId}/cancel` | O A | — |
+| `POST /imports/{importRunId}/validate` | O A | Called after the upload. `202`; the run moves to `awaiting_confirmation` with per-row results, or to `failed` with `errorCode` when the file cannot be used. A second call is `409` |
+| `POST /imports/{importRunId}/confirm` | O A | Body: `{rowNumbers?}` when the valid rows exceed the limit (US5 scenario 5). Creates the valid rows. `202` with the run. Without `rowNumbers` when they do not fit, or with more rows than fit or rows that cannot be created: `422 validation_failed` with `fields.rowNumbers` and `{free, limit}`. No free slot: `409 plan_limit_reached`. No row that can be created: `409 conflict`. Rows left out become `skipped` (`not_selected`), and every calendar link of a row that will not be created is set to null |
+| `POST /imports/{importRunId}/cancel` | O A | While `validating` or `awaiting_confirmation`; `409` after. Returns the `cancelled` run, with every calendar link of its rows set to null |
 
 ## Import runs (PMS and CSV)
 
@@ -116,7 +118,11 @@ portal can tell the host what was removed without echoing the value (FR-012).
 | `GET /imports/{importRunId}` | O A | Progress counts and status |
 | `GET /imports/{importRunId}/items?outcome=failed` | O A | Per-listing or per-row results with reasons |
 | `POST /imports/{importRunId}/items/{itemId}/retry` | O A | Retry one failed PMS listing (FR-032) |
-| `GET /imports/{importRunId}/error-file?lang=es` | O A | CSV of every row with an error, including created rows whose calendar link was rejected (FR-042), with row number, column, and reason; formula cells neutralized (FR-039, FR-041); calendar links left empty. Available for 7 days after the run finishes |
+| `GET /imports/{importRunId}/error-file?lang=es` | O A | CSV of every row with an error, including created rows whose calendar link was rejected (FR-042), with row number, column, and reason; formula cells neutralized (FR-039, FR-041); calendar links left empty. Available while the host decides and for 7 days after the run finishes; `410 gone` after. `404` for a PMS run |
+
+Runs carry `errorCode` (why a CSV file could not be used, else null). Items carry `selected`,
+`errors`, and `warnings` (`[{column?, code, row?}]`, empty for PMS listings), localized by the
+portal. The CSV routes answer agents with `404`, like the PMS routes (AC-SEC-001).
 
 ## Uploads
 

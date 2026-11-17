@@ -229,19 +229,23 @@ sequenceDiagram
     participant A as API
     participant W as Worker
     participant P as PMS API (e.g. Beds24)
-    participant AG as Agent (drafting)
 
-    H->>A: connect PMS (customer token or API key)
+    H->>A: connect PMS (customer token, after step-up)
+    A->>P: check the token (read-only)
     A->>A: encrypt and store the credential (INTEGRATION)
+    H->>A: choose the listings to import
     A->>W: enqueue import job (idempotency key)
     W->>P: list properties, listing content, upcoming reservations
     P-->>W: provider data
-    W->>W: map to the canonical model, encrypt sensitive fields, create PROPERTY and STAY rows
-    W->>AG: draft guide sections per property (template + shared sections, no sensitive values)
-    AG-->>W: drafts and completeness gaps
-    W->>H: notify "N guide drafts ready for review"
-    H->>A: review, fill gaps with the AI interview, publish
+    W->>W: map to the canonical model, move codes to restricted values, create PROPERTY and STAY rows
+    W->>H: notify "import finished" (portal banner and email)
+    H->>A: confirm the imported properties' facts
 ```
+
+Feature 002 ends here: the properties exist with their facts, listing content, and stays.
+Drafting guide sections from that content, with completeness gaps and the AI interview, belongs to
+spec 003 (the guide builder). After the import, the worker refreshes upcoming reservations
+read-only every 3 hours and on "Refresh now".
 
 Sensitive values go straight from the provider to encrypted fields and never reach the LLM. The
 same pipeline serves CSV imports, pasted text, and screenshots. Only the source step differs.

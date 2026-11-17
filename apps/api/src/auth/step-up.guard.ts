@@ -47,6 +47,20 @@ export class StepUpGuard implements CanActivate {
 }
 
 /**
+ * Step-up for a route whose `?dryRun=true` form only reads (FR-044): removing a property needs a
+ * recent sign-in, but listing what the removal would affect does not.
+ */
+@Injectable()
+export class StepUpUnlessDryRunGuard extends StepUpGuard {
+  override async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest<FastifyRequest>();
+    const query = request.query as { dryRun?: unknown } | undefined;
+    if (query?.dryRun === "true") return true;
+    return super.canActivate(context);
+  }
+}
+
+/**
  * Re-authentication with the strongest factor the user has (ASVS 5.0 V7.5.1, T103). Once they
  * have a passkey or an authenticator app, an email code alone doesn't count, as for factor
  * changes: someone with a stolen session and the inbox can't change the sign-in email.

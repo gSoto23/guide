@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { dirname, isAbsolute, join, resolve } from "node:path";
 import { z } from "zod";
 
 /**
@@ -130,7 +132,7 @@ export function loadIntegrationSettings(
     storage:
       parsed.STORAGE_MODE === "s3"
         ? { mode: "s3", bucket: parsed.UPLOADS_BUCKET as string }
-        : { mode: "local", dir: parsed.LOCAL_STORAGE_DIR ?? ".uploads" },
+        : { mode: "local", dir: resolveLocalDir(parsed.LOCAL_STORAGE_DIR ?? ".uploads") },
     sandbox:
       parsed.SANDBOX_MODE === "lambda"
         ? {
@@ -158,4 +160,21 @@ export function loadIntegrationSettings(
       extractionScreenshots: parsed.EXTRACTION_SCREENSHOTS,
     },
   };
+}
+
+/**
+ * A local folder setting as an absolute path. A relative one is read from the monorepo root (the
+ * folder with `pnpm-workspace.yaml`), not from the working directory: the API and the worker run
+ * in their own folders and must share the uploads folder. Outside the monorepo it is read from
+ * `from`.
+ */
+export function resolveLocalDir(dir: string, from: string = process.cwd()): string {
+  if (isAbsolute(dir)) return dir;
+  let current = resolve(from);
+  for (;;) {
+    if (existsSync(join(current, "pnpm-workspace.yaml"))) return resolve(current, dir);
+    const parent = dirname(current);
+    if (parent === current) return resolve(from, dir);
+    current = parent;
+  }
 }

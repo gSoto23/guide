@@ -41,6 +41,7 @@ const TITLES: Record<ProblemCode, string> = {
   feed_rejected: "Calendar link rejected",
   invalid_credential: "The PMS rejected the credential",
   extraction_limit_reached: "Daily extraction limit reached",
+  provider_unavailable: "The PMS did not answer",
 };
 
 const CODE_BY_STATUS: Record<number, ProblemCode> = {

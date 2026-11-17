@@ -20,7 +20,7 @@ const OPTION_PATHS = {
   listing: "/properties/new/listing",
   pms: "/properties/new/pms",
   csv: "/properties/new/csv",
-  duplicate: "/properties?duplicate=1",
+  duplicate: "/properties/new/duplicate",
   blank: "/properties/new/blank",
 } as const;
 

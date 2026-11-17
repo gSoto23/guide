@@ -694,7 +694,7 @@ edition), so that T082 records real responses (constitution IV).
 
 ### Tests for User Story 4 ⚠️ (write first, must fail)
 
-- [ ] T082 [P] [US4] Record fixtures from the Beds24 and Hostex test accounts into `packages/integrations/test/fixtures/beds24/` and `packages/integrations/test/fixtures/hostex/`. Scrub them before commit: names, contacts, and codes become synthetic values. Cases a test account cannot produce (a revoked token, the credit floor) may be synthetic, built from the documented response shapes, and are marked as such in the file name. The fixtures cover:
+- [X] T082 [P] [US4] Record fixtures from the Beds24 and Hostex test accounts into `packages/integrations/test/fixtures/beds24/` and `packages/integrations/test/fixtures/hostex/`. Scrub them before commit: names, contacts, and codes become synthetic values. Cases a test account cannot produce (a revoked token, the credit floor) may be synthetic, built from the documented response shapes, and are marked as such in the file name. The fixtures cover:
   - properties with several room types, texts in two languages, and known and unknown `featureCodes`;
   - bookings in every status, with guest email, phone, and notes;
   - house rules that contain "Door code 4821";
@@ -705,7 +705,8 @@ edition), so that T082 records real responses (constitution IV).
   - `check_in_details` with a lock code.
 
   If a test account is not available yet, start from synthetic fixtures and replace them with recordings before production (T129)
-- [ ] T083 [P] [US4] Contract tests for the Beds24 adapter in `packages/integrations/test/pms/beds24.contract.test.ts` (R7):
+  - **Done with synthetic fixtures (2026-11-16):** no test account yet, so the fixtures are built from the official OpenAPI specs (`fixtures/<provider>/*.synthetic.json`, served by `src/pms/<provider>/fixture-server.ts`). They live in `packages/integrations/fixtures/` rather than `test/fixtures/`, because fixture mode serves them at runtime too. T129 replaces them with scrubbed recordings.
+- [X] T083 [P] [US4] Contract tests for the Beds24 adapter in `packages/integrations/test/pms/beds24.contract.test.ts` (R7):
   - **Credential:**
     - the invite code is exchanged once for a refresh token;
     - access tokens are cached in memory only.
@@ -722,7 +723,7 @@ edition), so that T082 records real responses (constitution IV).
   - **Rate limits:** the adapter never goes below 30 remaining credits; it waits for the reset.
   - **Revoke:** `revoke` calls `DELETE /authentication/token`.
   - **Read-only:** every import and refresh request is a `GET` (AC-SEC-013)
-- [ ] T084 [P] [US4] Contract tests for the Hostex adapter in `packages/integrations/test/pms/hostex.contract.test.ts` (R7):
+- [X] T084 [P] [US4] Contract tests for the Hostex adapter in `packages/integrations/test/pms/hostex.contract.test.ts` (R7):
   - **Credential:** validation with `GET /accounts/me`, and handling of `error_code`.
   - **Properties:**
     - they map with their missing facts;
@@ -735,7 +736,7 @@ edition), so that T082 records real responses (constitution IV).
   - **Pagination.**
   - **Read-only:** only `GET` requests.
   - **Revoke:** `revoke` reports `providerRevoked: false`
-- [ ] T085 [P] [US4] Integration tests in `apps/api/test/integration/pms-connections.test.ts`:
+- [X] T085 [P] [US4] Integration tests in `apps/api/test/integration/pms-connections.test.ts`:
   - connecting without step-up → `step_up_required` (AC-SEC-007);
   - with 3 or more properties and no second factor → `mfa_enrollment_required`;
   - an invalid credential → `422 invalid_credential` with `{provider, helpUrl}`, and nothing stored;
@@ -749,7 +750,7 @@ edition), so that T082 records real responses (constitution IV).
     - with the worker unavailable (no answer within 15 s), the credential is still set to null, the status is `disconnected`, and the response is `{providerRevoked: false, instructionsUrl}`;
     - `integration.disconnected` is logged with `providerRevoked`;
     - properties keep their source label (FR-036)
-- [ ] T086 [P] [US4] Integration tests for the import in `apps/api/test/integration/pms-import.test.ts`, with the fixture adapters:
+- [X] T086 [P] [US4] Integration tests for the import in `apps/api/test/integration/pms-import.test.ts`, with the fixture adapters (as built: in `apps/worker/test/integration/pms-jobs.test.ts`, which runs the import job itself; the API side is in `pms-connections.test.ts`):
   - **Running the import:**
     - the selection is capped at the remaining limit;
     - the run answers `202` and continues in the background, with progress counts.
@@ -770,7 +771,7 @@ edition), so that T082 records real responses (constitution IV).
     - the same listing can be imported into two workspaces;
     - a member removed mid-import: the run finishes under the workspace, and that member then gets `404` for it.
   - **Events:** `import.started` and `import.finished` are logged, and `properties.import_finished` is queued
-- [ ] T087 [P] [US4] Worker tests in `apps/worker/test/pms-refresh.test.ts`:
+- [X] T087 [P] [US4] Worker tests in `apps/worker/test/pms-refresh.test.ts` (as built: `apps/worker/test/integration/pms-jobs.test.ts`):
   - **Scheduling:**
     - connections are refreshed every 3 hours;
     - "Refresh now" is allowed once every 5 minutes per connection.
@@ -783,7 +784,7 @@ edition), so that T082 records real responses (constitution IV).
     - a listing gone from the PMS gets `pms_status = not_found`, and its stays stop refreshing;
     - after 24 hours of failures, one `properties.pms_reconnect` email is queued.
   - **No request (AC-SEC-011):** a disconnected connection, or a removed property, makes no request
-- [ ] T088 [P] [US4] End-to-end test in `e2e/specs/properties-us4-pms.spec.ts` (quickstart 9, `PMS_MODE=fixtures`):
+- [X] T088 [P] [US4] End-to-end test in `e2e/specs/properties-us4-pms.spec.ts` (quickstart 9, `PMS_MODE=fixtures`):
   - step-up and connect;
   - unselect one listing and import;
   - the progress banner;
@@ -793,17 +794,18 @@ edition), so that T082 records real responses (constitution IV).
 
 ### Implementation for User Story 4
 
-- [ ] T089 [US4] Define `PmsPort` and its normalized types in `packages/integrations/src/pms/port.ts`: `validateCredential`, `listListings`, `getListing`, `listReservations`, and `revoke`. The types have no field for contact data
-- [ ] T090 [US4] Implement the Beds24 adapter in `packages/integrations/src/pms/beds24/`:
+- [X] T089 [US4] Define `PmsPort` and its normalized types in `packages/integrations/src/pms/port.ts`: `validateCredential`, `listListings`, `getListing`, `listReservations`, and `revoke`. The types have no field for contact data
+- [X] T090 [US4] Implement the Beds24 adapter in `packages/integrations/src/pms/beds24/`:
   - `client.ts`: the token exchange, the in-memory access token cache, and the credit-aware throttle;
   - `schemas.ts`: allowlist Zod schemas;
   - `mapping.ts`: the `featureCodes` amenity table, the status mapping, and channels from `referer`;
   - `adapter.ts`
-- [ ] T091 [P] [US4] Implement the Hostex adapter in `packages/integrations/src/pms/hostex/`:
+- [X] T091 [P] [US4] Implement the Hostex adapter in `packages/integrations/src/pms/hostex/`:
   - `client.ts`: the `Hostex-Access-Token` header, and `error_code` handling;
   - `schemas.ts`, `mapping.ts`, and `adapter.ts`
-- [ ] T092 [US4] Implement the fixture mode `PMS_MODE=fixtures` in `packages/integrations/src/pms/fixtures.ts`. It serves the recorded fixtures through the real adapters with an `undici` `MockAgent`, for development and end-to-end tests only
-- [ ] T093 [US4] Implement the PMS module in `apps/api/src/pms/`, with contracts in `packages/contracts/src/pms.ts`:
+- [X] T092 [US4] Implement the fixture mode `PMS_MODE=fixtures` in `packages/integrations/src/pms/fixtures.ts`. It serves the recorded fixtures through the real adapters with an `undici` `MockAgent`, for development and end-to-end tests only
+  - **As built:** the adapters take an injected `fetch`, and fixture mode passes one that routes by host to each provider's fixture server; it refuses any other host. Same effect as a `MockAgent`, without a global dispatcher.
+- [X] T093 [US4] Implement the PMS module in `apps/api/src/pms/`, with contracts in `packages/contracts/src/pms.ts`:
   - **`POST /pms-connections`:**
     - step-up and MFA guards, and the provider's flag;
     - validates the credential with the adapter;
@@ -822,13 +824,13 @@ edition), so that T082 records real responses (constitution IV).
     - then, whatever the result, sets the credential to null and the status to `disconnected` in one transaction;
     - when the token was not revoked (Hostex, a failure, or a timeout), responds `{providerRevoked: false, instructionsUrl}`;
     - logs `integration.disconnected` with `providerRevoked`
-- [ ] T094 [US4] Implement the import run endpoints shared with CSV, in `apps/api/src/imports/import-runs.controller.ts`:
+- [X] T094 [US4] Implement the import run endpoints shared with CSV, in `apps/api/src/imports/import-runs.controller.ts`:
   - `GET /imports?status=running`, `GET /imports/{id}`, and `GET …/items?outcome=`;
   - `POST …/items/{itemId}/retry`;
   - `POST /properties/confirm` in the properties module: it moves `to_confirm` properties to `ready`, and returns the incomplete ones as `needs_details` (FR-004).
 
   Contracts go in `packages/contracts/src/imports.ts`
-- [ ] T095 [US4] Implement the worker job `apps/worker/src/jobs/pms-import.ts` (`pms.import`):
+- [X] T095 [US4] Implement the worker job `apps/worker/src/jobs/pms-import.ts` (`pms.import`):
   - **Run:**
     - decrypts the credential;
     - processes items in order and updates the progress.
@@ -843,7 +845,7 @@ edition), so that T082 records real responses (constitution IV).
   - **Stays:** creates the upcoming stays, with checkout from today to 365 days ahead. A re-import never restores a guest name removed on request.
   - **Revoked credential:** the remaining items fail with `reconnect_pms`.
   - **End:** logs `import.finished`, sets `notified_at`, and queues `properties.import_finished`
-- [ ] T096 [US4] Implement the remaining PMS worker jobs:
+- [X] T096 [US4] Implement the remaining PMS worker jobs:
   - `apps/worker/src/jobs/pms-refresh.ts` (`pms.refresh`):
     - a cron every 15 minutes; connections due every 3 hours; a singleton per connection; high priority for "Refresh now";
     - Beds24 uses `modifiedFrom` plus a daily full pass; Hostex reads the full window;
@@ -858,7 +860,7 @@ edition), so that T082 records real responses (constitution IV).
   - no credential, code, or guest name.
 
   Add render tests in `packages/emails/test/properties.test.ts`
-- [ ] T098 [US4] Build the PMS import flow in `apps/portal/app/[locale]/(app)/properties/new/pms/page.tsx`:
+- [X] T098 [US4] Build the PMS import flow in `apps/portal/app/[locale]/(app)/properties/new/pms/page.tsx`:
   - `apps/portal/components/properties/pms-connect.tsx`:
     - the provider choice, from the enabled flags;
     - instructions, including the Beds24 link that pre-fills the read scopes;
@@ -866,19 +868,19 @@ edition), so that T082 records real responses (constitution IV).
     - the credential field;
     - help for `invalid_credential`;
   - `apps/portal/components/properties/pms-listing-select.tsx`: all listings selected, capped at the remaining limit, with already-imported listings marked
-- [ ] T099 [US4] Build the import progress views:
+- [X] T099 [US4] Build the import progress views:
   - the banner `apps/portal/components/properties/import-progress-banner.tsx` in `apps/portal/app/[locale]/(app)/layout.tsx` ("Importing 12 of 40");
   - the run page `apps/portal/app/[locale]/(app)/properties/imports/[importRunId]/page.tsx`, with per-item results, reasons, and retry
-- [ ] T100 [US4] Show imported properties in the list and detail:
+- [X] T100 [US4] Show imported properties in the list and detail:
   - `to_confirm` and `needs_details` badges with the missing facts;
   - "Confirm all";
   - the "not found in the PMS" flag;
   - the masked restricted values panel, `apps/portal/components/properties/restricted-values.tsx` (kind, label, and "••••"), hidden from agents
-- [ ] T101 [US4] Build the integrations settings page `apps/portal/app/[locale]/(app)/settings/integrations/page.tsx`:
+- [X] T101 [US4] Build the integrations settings page `apps/portal/app/[locale]/(app)/settings/integrations/page.tsx`:
   - connections with their status and last refresh;
   - "Refresh now" and reconnect;
   - disconnect, with instructions to delete the token at the provider whenever the response has `providerRevoked: false`
-- [ ] T102 [P] [US4] Add the US4 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`
+- [X] T102 [P] [US4] Add the US4 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`
 
 **Checkpoint**: US4 works with recorded fixtures: connection, import, refresh, and disconnect.
 
@@ -894,21 +896,21 @@ row and column. The error file is safe to open, and only the valid rows become p
 
 ### Tests for User Story 5 ⚠️ (write first, must fail)
 
-- [ ] T103 [P] [US5] Unit tests in `packages/domain/test/properties/csv.test.ts`:
+- [X] T103 [P] [US5] Unit tests in `packages/domain/test/properties/csv.test.ts`:
   - Spanish and English header aliases, matched without case or accents (FR-037);
   - every row is validated, with all its errors by row, column, and code (FR-039);
   - time zones are validated;
   - duplicate rows, and rows matching an existing property, are warnings (FR-040);
   - the calendar link column is checked for HTTPS syntax only;
   - `neutralizeCell` prefixes cells that start with `=`, `+`, `-`, `@`, tab, or carriage return with `'` (FR-041)
-- [ ] T104 [P] [US5] Sandbox tests in `apps/sandbox/test/csv.test.ts` (FR-038):
+- [X] T104 [P] [US5] Sandbox tests in `apps/sandbox/test/csv.test.ts` (FR-038):
   - UTF-8 with and without a byte-order mark;
   - comma or semicolon, detected from the header line;
   - accented characters;
   - `#` instruction lines are skipped;
   - more than 500 rows, or more than 2 MB, is rejected before parsing;
   - a binary file is rejected
-- [ ] T105 [P] [US5] Integration tests in `apps/api/test/integration/csv-import.test.ts`:
+- [X] T105 [P] [US5] Integration tests in `apps/api/test/integration/csv-import.test.ts` (as built: the API side there, with validated rows seeded as `csv.validate` leaves them; validation, creation, the CSV object's deletion, the calendar links, and SC-005 in `apps/worker/test/integration/csv-jobs.test.ts`, which runs the jobs with the sandbox's real parser):
   - the template in Spanish and in English, with headers, one example row, and instructions;
   - 25 rows with 2 invalid → per-row errors and `awaiting_confirmation`. Confirming creates 23 properties as `to_confirm`, and "Confirm all" makes them `ready`;
   - more valid rows than free slots → `rowNumbers` is required (US5 scenario 5);
@@ -920,24 +922,24 @@ row and column. The error file is safe to open, and only the valid rows become p
   - the CSV object is deleted after validation;
   - agents are refused;
   - 200 rows are validated within 10 seconds (SC-005)
-- [ ] T106 [P] [US5] End-to-end test in `e2e/specs/properties-us5-csv.spec.ts` (quickstart 10)
+- [X] T106 [P] [US5] End-to-end test in `e2e/specs/properties-us5-csv.spec.ts` (quickstart 10; as built on the Free plan, so the host chooses the 2 rows that fit, which also covers US5 scenario 5; the 23-row creation is covered by the worker test)
 
 ### Implementation for User Story 5
 
-- [ ] T107 [US5] Implement `packages/domain/src/properties/csv.ts`:
+- [X] T107 [US5] Implement `packages/domain/src/properties/csv.ts`:
   - the canonical columns, with Spanish and English aliases;
   - row validation, reusing `core-facts.ts` and `time-zones.ts`;
   - warnings;
   - `neutralizeCell`
-- [ ] T108 [US5] Add the CSV mode to the file processor in `apps/sandbox/src/file-processor/csv.ts`: `csv-parse`, byte-order mark handling, delimiter detection, and the size and row limits
-- [ ] T109 [US5] Implement the CSV endpoints in `apps/api/src/imports/csv.controller.ts`:
+- [X] T108 [US5] Add the CSV mode to the file processor in `apps/sandbox/src/file-processor/csv.ts`: `csv-parse`, byte-order mark handling, delimiter detection, and the size and row limits
+- [X] T109 [US5] Implement the CSV endpoints in `apps/api/src/imports/csv.controller.ts` (as built: `csv-imports.controller.ts` and `csv-imports.service.ts`):
   - `GET /imports/csv-template?lang=`: generated with `csv-stringify`, with the instructions as `#` lines (decision 4);
   - `POST /imports/csv`: creates the run and the presigned form, up to 2 MB;
   - `POST …/validate`: `202`, and queues `csv.validate`;
   - `POST …/confirm`: `rowNumbers` within the free slots, and queues `csv.import`;
   - `POST …/cancel`: also sets every `calendar_url_ciphertext` of the run's items to null;
   - `GET /imports/{id}/error-file?lang=`: every row with an error, including created rows whose calendar link was rejected; localized reasons, neutralized cells, and empty calendar links. Available for 7 days after the run finishes
-- [ ] T110 [US5] Implement the worker jobs in `apps/worker/src/jobs/csv.ts`:
+- [X] T110 [US5] Implement the worker jobs in `apps/worker/src/jobs/csv.ts`:
   - **`csv.validate`:**
     - parses the file through the sandbox and validates the rows;
     - stores each `import_item`, with `row_values` without the link and the link in `calendar_url_ciphertext`;
@@ -946,13 +948,22 @@ row and column. The error file is safe to open, and only the valid rows become p
     - creates the selected valid rows as `to_confirm` or `needs_details`, within the free slots;
     - then reads and saves each calendar link through the feed path, adding a column error when the link is rejected, and sets the item's `calendar_url_ciphertext` to null either way;
     - logs `import.finished`, and queues the email with the source "CSV"
-- [ ] T111 [US5] Build the CSV flow in `apps/portal/app/[locale]/(app)/properties/new/csv/page.tsx` with `apps/portal/components/properties/csv-import.tsx`, loading the preview on demand:
+- [X] T111 [US5] Build the CSV flow in `apps/portal/app/[locale]/(app)/properties/new/csv/page.tsx` with `apps/portal/components/properties/csv-import.tsx`, loading the preview on demand (as built: the preview is `csv-review.tsx`, loaded with `next/dynamic`; the run page shows each row's errors and the error file):
   - the template download in the host's language;
   - upload from a phone;
   - errors by row and column, and the error file download;
   - the choice of rows within the limit;
   - create or cancel
-- [ ] T112 [P] [US5] Add the US5 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`: column names and error reasons
+- [X] T112 [P] [US5] Add the US5 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`: column names and error reasons
+
+- **As built (US5):**
+  - **Row numbers:** the sandbox returns each row's number in the file with its cells (`rowNumbers` in the protocol), counting `#` rows and blank rows, so errors name the row a spreadsheet shows. The header is row 1 only when the file has no instruction rows.
+  - **Template:** the example row starts with `#` too, so a template uploaded unchanged creates nothing and takes no slot. Spanish uses semicolons and English commas, both with a byte-order mark and CRLF.
+  - **Encodings:** a file that is not valid UTF-8 is read as Windows-1252, which spreadsheets in Spanish still write; binary files (ZIP, so `.xlsx`, OLE, PDF, images, UTF-16) are `unsupported_type`.
+  - **Rows:** only a missing name, or an invalid value, blocks a row. Other missing facts are `missing` warnings, and the property is created needing details. The stored `row_values` are normalized (country code, `HH:MM`, zone, languages), so the import validates them again with the same result.
+  - **File errors:** a file that cannot be used fails the run, and `ImportRun.errorCode` gives the reason from `upload.reject_reason` (`too_large`, `too_many_rows`, `unsupported_type`, `unreadable`, `not_found`, `missing_name_column`, `duplicate_column`, `no_rows`).
+  - **Items:** `ImportItem` now carries `selected`, `errors`, and `warnings`. Rows not chosen are `skipped` with `not_selected`; invalid rows are `failed` with `invalid_row`. Confirming sets to null the calendar link of every row that will not be created.
+  - **Local storage:** `LOCAL_STORAGE_DIR` is read from the monorepo root when relative (`resolveLocalDir`), so the API and the worker share one uploads folder in development. Before, each read its own, and the worker could not find uploaded files.
 
 **Checkpoint**: US5 works: template, validation, error file, and creation of valid rows.
 
@@ -969,7 +980,7 @@ none of the excluded data. A removed property is restored.
 
 ### Tests for User Story 6 ⚠️ (write first, must fail)
 
-- [ ] T113 [P] [US6] Integration tests in `apps/api/test/integration/property-lifecycle.test.ts`:
+- [X] T113 [P] [US6] Integration tests in `apps/api/test/integration/property-lifecycle.test.ts`:
   - **Duplicate:**
     - `duplicate-draft` returns the facts without the address, the content, and the name "Copy of …";
     - it carries no feeds, stays, restricted values, or PMS link (FR-043);
@@ -987,23 +998,30 @@ none of the excluded data. A removed property is restored.
     - restore works within 30 days when a slot is free, and logs `property.restored`;
     - with no free slot → `409 plan_limit_reached`.
   - **Agents:** duplicate, remove, and restore are refused (AC-SEC-001)
-- [ ] T114 [P] [US6] Worker test in `apps/worker/test/purge-properties.test.ts`:
+- [X] T114 [P] [US6] Worker test in `apps/worker/test/purge-properties.test.ts` (as built: `apps/worker/test/integration/purge-properties.test.ts`, against the test database):
   - after `purge_after`, the property, its stays, content, feeds, and restricted values are deleted, and `property.purged` is logged;
   - before it, nothing is deleted
-- [ ] T115 [P] [US6] End-to-end test in `e2e/specs/properties-us6-lifecycle.spec.ts` (quickstart 11)
+- [X] T115 [P] [US6] End-to-end test in `e2e/specs/properties-us6-lifecycle.spec.ts` (quickstart 11)
 
 ### Implementation for User Story 6
 
-- [ ] T116 [US6] Implement `GET /properties/{id}/duplicate-draft` and `duplicateOf` handling in `apps/api/src/properties/`: copy the facts except the address, copy the content, and set `duplicated_from_id`
-- [ ] T117 [US6] Implement removal and restore in `apps/api/src/properties/`, and make feed and PMS refresh selection skip removed properties:
+- [X] T116 [US6] Implement `GET /properties/{id}/duplicate-draft` and `duplicateOf` handling in `apps/api/src/properties/`: copy the facts except the address, copy the content, and set `duplicated_from_id`
+- [X] T117 [US6] Implement removal and restore in `apps/api/src/properties/`, and make feed and PMS refresh selection skip removed properties (as built: the refresh selection already skipped them since US3 and US4; "Refresh now" on a removed property is now `404`):
   - `DELETE /properties/{id}`: the typed name, step-up, `dryRun`, `status = removed`, `purge_after` = +30 days, and `property.removed`;
   - `POST /properties/{id}/restore`: the slot check, and `property.restored`
-- [ ] T118 [US6] Implement the daily worker job `apps/worker/src/jobs/purge-properties.ts` (`properties.purge`)
-- [ ] T119 [US6] Build the duplicate and remove actions:
+- [X] T118 [US6] Implement the daily worker job `apps/worker/src/jobs/purge-properties.ts` (`properties.purge`)
+- [X] T119 [US6] Build the duplicate and remove actions (as built: the copy flow is `/properties/new/duplicate`, with a picker when no property is given; the removal section is loaded on demand on the property page; the removed list is `/properties?view=removed`):
   - the duplicate action opens the confirmation step with the draft;
   - the removal dialog `apps/portal/components/properties/remove-property-dialog.tsx`: typed name, upcoming stays warning, and step-up;
   - the list of removed properties, with restore and the days left
-- [ ] T120 [P] [US6] Add the US6 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`
+- [X] T120 [P] [US6] Add the US6 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`
+
+- **As built (US6):**
+  - **The copy:** it keeps the country and time zone with the other facts; the street line, unit, city, region, and postal code start empty. The draft's name is "Copia de …" or "Copy of …" by `?lang=`. `POST /properties` copies the content from the original on the server, labeled `duplicate` and unreviewed; `contentItems` are refused for a duplicate.
+  - **Removing:** `DELETE` with `?dryRun=true` needs no step-up, because it only reads; the removal itself does (`StepUpUnlessDryRunGuard`, after the role check). The typed name is compared without surrounding spaces. Upcoming stays are active ones with checkout from today in the property's time zone.
+  - **While removed:** editing and "Refresh now" answer `404`; a copy of a removed property is `404`. The property page shows the deletion date and "Restore".
+  - **Restoring:** `409 conflict` for a property that is not removed, `410 gone` after the 30 days, and `409 plan_limit_reached` with no free slot.
+  - **Agents:** duplicate, remove, dry run, and restore answer `403`, like the other property writes, and each refusal is logged.
 
 **Checkpoint**: All six stories work on their own.
 
@@ -1013,18 +1031,18 @@ none of the excluded data. A removed property is restored.
 
 **Purpose**: Retention, the security review, performance, accessibility, docs, and validation.
 
-- [ ] T121 Implement the worker job `apps/worker/src/jobs/retention.ts` (`retention.daily`), with a test in `apps/worker/test/retention-job.test.ts` (data model §6):
+- [X] T121 Implement the worker job `apps/worker/src/jobs/retention.ts` (`retention.daily`), with a test in `apps/worker/test/retention-job.test.ts` (data model §6; as built: `apps/worker/test/integration/retention.test.ts`, and CSV runs left in `validating` are cancelled too):
   - clears extraction `input_text` and `recognized_text` 7 days after the request;
   - sets `stay.guest_name` to null 12 months after `checkout_date` (pending OQ-35);
   - deletes expired `upload` rows and their objects;
   - cancels CSV runs left in `awaiting_confirmation` for more than 7 days;
   - sets `import_item.row_values` to null 7 days after the run finishes, and clears any `calendar_url_ciphertext` left on finished or cancelled runs
-- [ ] T122 [P] Write the security review sweep in `apps/api/test/integration/security-review-002.test.ts` (quickstart 12, SC-003):
+- [X] T122 [P] Write the security review sweep in `apps/api/test/integration/security-review-002.test.ts` (quickstart 12, SC-003; as built: the worker's jobs and spans in `apps/worker/test/integration/security-review-002.test.ts`, and the `404` across workspaces in T123):
   - run every flow with known secrets: a feed link, a PMS token, codes, guest names, and a guest email;
   - assert that none appears in API or worker logs, spans, Sentry events, responses, or emails;
   - assert the same `404` across workspaces on every new route (AC-SEC-009)
-- [ ] T123 [P] Extend `apps/api/test/integration/cross-tenant.test.ts` to the new routes and the `calendar_feed_public` view
-- [ ] T124 [P] Add the performance checks from the [Performance Budget](plan.md#performance-budget):
+- [X] T123 [P] Extend `apps/api/test/integration/cross-tenant.test.ts` to the new routes and the `calendar_feed_public` view
+- [X] T124 [P] Add the performance checks from the [Performance Budget](plan.md#performance-budget) (as built: `apps/api/test/integration/feed-save.perf.test.ts` and `refresh-now.test.ts`; the PMS import and the 500-row CSV in the worker, `pms-import.perf.test.ts` and `csv-jobs.test.ts`; the credential check in `packages/integrations/test/pms/latency.perf.test.ts`; extraction's 60-second limit was already in `extraction-job.test.ts`):
   - the property routes in `lighthouserc.json`;
   - `apps/portal/bundle-budget.json`: at most 150 KB of initial JavaScript per route, with `image-normalize` and the CSV preview loaded on demand;
   - `perf/k6/properties.js`: list, detail, stays, listing content, and import status, at p95 ≤ 300 ms;
@@ -1033,14 +1051,14 @@ none of the excluded data. A removed property is restored.
   - validating a PMS credential and listing the listings takes 15 s or less at p95, with the providers' recorded latency;
   - a 500-row CSV is validated within 30 seconds (R10);
   - "Refresh now" for a PMS connection is applied within 1 minute (SC-006)
-- [ ] T125 [P] Extend `e2e/specs/a11y.spec.ts` to the new screens: the list, the starting options, the listing flow, the confirmation step, calendars, stays, PMS import, CSV, and removal
-- [ ] T126 [P] Update the docs:
+- [X] T125 [P] Extend `e2e/specs/a11y.spec.ts` to the new screens: the list, the starting options, the listing flow, the confirmation step, calendars, stays, PMS import, CSV, and removal
+- [X] T126 [P] Update the docs:
   - SEC-09 in `docs/architecture/security.md`: "an isolated fetcher with no route to internal services" (R2);
   - the service table in `docs/architecture/adr/0009-mvp-hosting-and-transactional-email.md`: the uploads bucket, the KMS key, the sandbox functions, and GuardDuty Malware Protection;
   - FR-02.5 in `docs/product/prd.md`: replace "keep them in sync" with the read-only reservation refresh;
   - flow 5.4 in `docs/architecture/overview.md`: drafting the guide belongs to spec 003
-- [ ] T127 [P] Document the new commands in `README.md`: `pnpm tz:check`, the eval command, and the iCal fixture server
-- [ ] T128 Run the scenarios 1 to 12 of `specs/002-property-onboarding/quickstart.md` locally, and record the results under "Implementation notes" in `specs/002-property-onboarding/tasks.md`
+- [X] T127 [P] Document the new commands in `README.md`: `pnpm tz:check`, the eval command, and the iCal fixture server
+- [X] T128 Run the scenarios 1 to 12 of `specs/002-property-onboarding/quickstart.md` locally, and record the results under "Implementation notes" in `specs/002-property-onboarding/tasks.md`
 - [ ] T129 Close the production gates (founder) and record each outcome in R15 of `specs/002-property-onboarding/research.md`:
   - OQ-26: written confirmation from Beds24 and from Hostex, before `PMS_BEDS24` or `PMS_HOSTEX` is turned on;
   - the R3 gate (T057), before `EXTRACTION_SCREENSHOTS` is turned on;
@@ -1141,3 +1159,53 @@ Task: "Email template in packages/emails/src/properties/feed-failing.tsx"
 - [P] tasks touch different files and have no dependency on an unfinished task.
 - Commit after each task or logical group, and stop at any checkpoint to validate.
 - Leave the untracked " 2" duplicate files out of every commit.
+
+## Implementation notes
+
+### Quickstart run, locally (T128, 2026-11-17)
+
+Run on the local stack (Docker PostgreSQL and Mailpit, `pnpm dev`), with the iCal fixture server
+settings and both PMS flags turned on for the run only. Every scenario passed.
+
+| Scenario | How it was run | Result |
+|---|---|---|
+| 1. Blank property | `e2e/specs/properties-us1-blank.spec.ts` | Passed |
+| 2. Time zone choice | Same spec | Passed |
+| 3. Listing text with a code | `e2e/specs/properties-us2-listing.spec.ts`; the code never reached the model, a response, or a log (`security-review-002` tests) | Passed |
+| 4. URL only | `properties-us2-listing.spec.ts` | Passed |
+| 5. Screenshots | Not in the portal: `EXTRACTION_SCREENSHOTS` stays off until the R3 spot check with real host screenshots. The path is covered by the sandbox tests (type checks, re-encoding, recognition) and the extraction job tests with real recognition | Covered by tests; flag off |
+| 6. Extraction limit | `properties-us2-listing.spec.ts` and `extractions.test.ts` | Passed |
+| 7. Calendar feed | `e2e/specs/properties-us3-calendar.spec.ts`, with the fixture server's CA | Passed |
+| 8. Stays by hand | Same spec | Passed |
+| 9. PMS import with fixtures | `e2e/specs/properties-us4-pms.spec.ts`, Beds24 and Hostex, `PMS_MODE=fixtures` | Passed |
+| 10. CSV | `e2e/specs/properties-us5-csv.spec.ts` (25 rows, formula cell, blocked link) | Passed |
+| 11. Duplicate and remove | `e2e/specs/properties-us6-lifecycle.spec.ts` | Passed |
+| 12. Tenant isolation and logging | `cross-tenant.test.ts` (every new route, both workspace paths, and `calendar_feed_public`) and the two `security-review-002` sweeps | Passed |
+
+- **Whole end-to-end suite:** 19 of 19 tests passed. On a cold start of `pnpm dev`, sign-in
+  redirects can take longer than the 5-second URL wait while Next.js compiles routes; the first
+  run then fails at that step, and a second run passes. `us2-security` V7 failed once that way
+  inside the full run and passed on its own.
+- **Accessibility:** axe finds no WCAG 2.2 A or AA violation on any property screen
+  (`a11y.spec.ts`, light theme). Link contrast in the dark theme is a known gap, left to the
+  brand work.
+- **Performance, locally:**
+  - k6 on the property reads (`perf/k6/properties.js`, 8 virtual users): p95 109 ms, no failed
+    requests (budget 300 ms).
+  - Initial JavaScript: every route under 150 KB gzip; the listing page is the largest, at
+    149.0 KB.
+  - Saving a calendar link: p95 well under 12 s over 20 saves; a feed that answers after 12 s is
+    cut at the 10-second read limit.
+  - CSV validation: 200 rows within 10 s and 500 rows within 30 s, each row with an encrypted
+    calendar link.
+  - PMS import of 50 listings: within 10 minutes on a simulated clock, including a wait for
+    Beds24's credit window.
+  - PMS credential check and listing: within 15 s at an assumed 2 s per request.
+  - The provider latencies are assumptions until the fixtures are replaced with recordings
+    (T129).
+- **Found and fixed while polishing:**
+  - "Refresh now" could wait up to 10 minutes behind a scheduled refresh: the queues keep one
+    waiting job per feed or connection. It now moves that job forward (`JobQueueService.sendNow`).
+  - Import runs and PMS connections of another workspace answered `404` without logging the
+    attempt; they now log it like properties, feeds, and stays.
+- **Staging:** not run yet; it is one of the production gates (T129).

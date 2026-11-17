@@ -269,7 +269,7 @@ context that refreshes run in updates and cancels feed and PMS stays.
 |---|---|---|
 | `id` | uuid, PK | — |
 | `workspace_id`, `import_run_id` | uuid, FK (`ON DELETE CASCADE`) | — |
-| `row_number` | int, nullable | CSV row (header = row 1) |
+| `row_number` | int, nullable | CSV row as a spreadsheet numbers it: `#` and blank rows count, so the header is row 1 only in a file without instruction rows |
 | `external_id` | text, nullable | PMS listing ID |
 | `label` | text, ≤ 120 | Listing or row name |
 | `selected` | boolean | PMS selection, or CSV rows chosen within the limit |

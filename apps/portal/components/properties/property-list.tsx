@@ -3,7 +3,12 @@
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
-import type { PropertyLimits, PropertyList, PropertySummary } from "@guidesk/contracts";
+import type {
+  ConfirmPropertiesResult,
+  PropertyLimits,
+  PropertyList,
+  PropertySummary,
+} from "@guidesk/contracts";
 import { useWorkspace } from "@/lib/use-workspace";
 import { StartOptionsPanel } from "./start-options";
 
@@ -20,6 +25,9 @@ export function PropertyListView({ locale }: { locale: string }) {
   const [cursor, setCursor] = useState<string | null>(null);
   const [limits, setLimits] = useState<PropertyLimits | null>(null);
   const [failed, setFailed] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [version, setVersion] = useState(0);
 
   useEffect(() => {
     if (!workspace) return;
@@ -39,7 +47,7 @@ export function PropertyListView({ locale }: { locale: string }) {
         if (!controller.signal.aborted) setFailed(true);
       });
     return () => controller.abort();
-  }, [workspace, search]);
+  }, [workspace, search, version]);
 
   async function loadMore() {
     if (!workspace || !cursor) return;
@@ -54,7 +62,35 @@ export function PropertyListView({ locale }: { locale: string }) {
   if (!items || !limits) return <p className="muted">{t("loading")}</p>;
 
   if (items.length === 0 && !search) {
-    return <StartOptionsPanel locale={locale} title={t("firstTitle")} />;
+    return (
+      <>
+        <StartOptionsPanel locale={locale} title={t("firstTitle")} />
+        {workspace.canManage ? (
+          <p>
+            <Link href={`/${locale}/properties?view=removed`}>{t("removed.show")}</Link>
+          </p>
+        ) : null}
+      </>
+    );
+  }
+
+  // "Confirm all" (FR-004): imported properties whose facts are complete become ready.
+  const toConfirm = items.filter((item) => item.setupStatus === "to_confirm");
+  async function confirmAll() {
+    if (!workspace || toConfirm.length === 0) return;
+    setConfirming(true);
+    setNotice(null);
+    try {
+      const result = await workspace.api.post<ConfirmPropertiesResult>("/properties/confirm", {
+        propertyIds: toConfirm.map((item) => item.id),
+      });
+      setNotice(t("list.confirmed", { count: result.ready.length }));
+      setVersion((count) => count + 1);
+    } catch {
+      setNotice(t("list.loadFailed"));
+    } finally {
+      setConfirming(false);
+    }
   }
 
   const submit = (event: FormEvent) => {
@@ -76,6 +112,24 @@ export function PropertyListView({ locale }: { locale: string }) {
             {t("limits.reached", { limit: limits.limit })}
           </p>
         )
+      ) : null}
+      {workspace.canManage && toConfirm.length > 0 ? (
+        <div className="card">
+          <p>{t("list.toConfirm", { count: toConfirm.length })}</p>
+          <button
+            type="button"
+            className="button button-primary"
+            disabled={confirming}
+            onClick={() => void confirmAll()}
+          >
+            {t("list.confirmAll")}
+          </button>
+        </div>
+      ) : null}
+      {notice ? (
+        <p className="alert alert-info" role="status">
+          {notice}
+        </p>
       ) : null}
       <form role="search" onSubmit={submit}>
         <label>
@@ -103,7 +157,17 @@ export function PropertyListView({ locale }: { locale: string }) {
                   })}
                 </span>
                 <span className="badge">{t(`list.calendar.${item.calendarStatus}`)}</span>
+                {item.pmsStatus === "not_found" ? (
+                  <span className="badge badge-warning">{t("list.notFoundInPms")}</span>
+                ) : null}
               </span>
+              {item.setupStatus === "needs_details" && item.missingFacts.length > 0 ? (
+                <span className="muted property-missing">
+                  {t("detail.missing", {
+                    facts: item.missingFacts.map((fact) => t(`factNames.${fact}`)).join(", "),
+                  })}
+                </span>
+              ) : null}
             </Link>
           </li>
         ))}
@@ -112,6 +176,11 @@ export function PropertyListView({ locale }: { locale: string }) {
         <button type="button" className="button button-secondary" onClick={() => void loadMore()}>
           {t("list.loadMore")}
         </button>
+      ) : null}
+      {workspace.canManage ? (
+        <p>
+          <Link href={`/${locale}/properties?view=removed`}>{t("removed.show")}</Link>
+        </p>
       ) : null}
     </>
   );

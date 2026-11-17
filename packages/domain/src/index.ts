@@ -19,3 +19,4 @@ export * from "./properties/stays.js";
 export * from "./jobs.js";
 export * from "./properties/restricted-values.js";
 export * from "./properties/extraction.js";
+export * from "./properties/csv.js";

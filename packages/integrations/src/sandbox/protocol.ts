@@ -127,10 +127,17 @@ export const fileTextSchema = z.strictObject({
   text: z.string().max(FILE_MAX_TEXT_LENGTH),
 });
 
-/** Cells of a CSV file; the first row is the header (R10). */
-export const fileRowsSchema = z.strictObject({
-  rows: z.array(z.array(z.string())).max(FILE_MAX_ROWS),
-});
+/**
+ * Cells of a CSV file; the first row is the header (R10). `#` rows and blank rows are left out,
+ * and `rowNumbers` gives each row's number in the file, so errors name the row the host sees in
+ * a spreadsheet.
+ */
+export const fileRowsSchema = z
+  .strictObject({
+    rows: z.array(z.array(z.string())).max(FILE_MAX_ROWS),
+    rowNumbers: z.array(z.int().min(1)).max(FILE_MAX_ROWS),
+  })
+  .refine((file) => file.rows.length === file.rowNumbers.length);
 
 export const fileErrorSchema = z.strictObject({ error: fileErrorCodeSchema });
 

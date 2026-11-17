@@ -31,7 +31,8 @@ export type ProblemCode =
   | "confirmation_mismatch"
   | "feed_rejected"
   | "invalid_credential"
-  | "extraction_limit_reached";
+  | "extraction_limit_reached"
+  | "provider_unavailable";
 
 /**
  * Extra members of a problem body, such as `{limit, used}` or `{reason}`. Plain values only, and

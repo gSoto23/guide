@@ -166,3 +166,127 @@ export function todayIn(timeZone: string, now: Date = new Date()): string {
 export function isUpcoming(stay: { status: string; checkoutDate: string }, today: string): boolean {
   return stay.status === "active" && stay.checkoutDate >= today;
 }
+
+/** A reservation read from a PMS, already reduced to what Guidesk keeps (AC-SEC-012). */
+export interface PmsReservationInput {
+  externalUid: string;
+  listingExternalId: string;
+  status: "active" | "cancelled";
+  checkInDate: string;
+  checkoutDate: string;
+  guestCount: number | null;
+  guestName: string | null;
+  bookingReference: string | null;
+  channel: string;
+}
+
+/** A stay that came from this PMS connection before. */
+export interface PmsStay {
+  id: string;
+  externalUid: string;
+  propertyId: string;
+  status: "active" | "cancelled" | "hidden";
+  checkInDate: string;
+  checkoutDate: string;
+  guestCount: number | null;
+  guestName: string | null;
+  /** The guest's name was removed on request: it never comes back (FR-053). */
+  guestNameRemoved: boolean;
+  bookingReference: string | null;
+  channel: string;
+}
+
+export interface PmsStayChange {
+  checkInDate: string;
+  checkoutDate: string;
+  guestCount: number | null;
+  /** Undefined keeps the stored value: a name removed on request is never written again. */
+  guestName?: string | null;
+  bookingReference: string | null;
+  channel: string;
+}
+
+export interface PmsStayPlan {
+  create: (PmsStayChange & { externalUid: string; propertyId: string })[];
+  update: (PmsStayChange & { id: string; status: "active" })[];
+  /** IDs of stays cancelled in the PMS, or gone from a full read (FR-023, FR-034). */
+  cancel: string[];
+}
+
+/**
+ * What a PMS read changes in a connection's stays (FR-030, FR-034, FR-053). Reservations of
+ * listings that were not imported, and past ones, are ignored. A cancelled reservation cancels
+ * its stay. In a full read (every reservation with checkout in the window), upcoming stays the
+ * PMS no longer returns are cancelled; an incremental read (`modifiedSince`) only applies what it
+ * returns. Manual and feed stays are never part of `existing`, so a refresh cannot touch them.
+ */
+export function planPmsStays(input: {
+  today: string;
+  /** Imported listings of this connection: PMS listing ID → property. */
+  propertyByListing: ReadonlyMap<string, string>;
+  existing: readonly PmsStay[];
+  reservations: readonly PmsReservationInput[];
+  fullRead: boolean;
+}): PmsStayPlan {
+  const plan: PmsStayPlan = { create: [], update: [], cancel: [] };
+  const byUid = new Map(input.existing.map((stay) => [stay.externalUid, stay]));
+  const seen = new Set<string>();
+  for (const reservation of input.reservations) {
+    const propertyId = input.propertyByListing.get(reservation.listingExternalId);
+    if (!propertyId) continue;
+    if (reservation.checkoutDate <= reservation.checkInDate) continue;
+    seen.add(reservation.externalUid);
+    const current = byUid.get(reservation.externalUid);
+    if (reservation.status === "cancelled") {
+      if (current && current.status === "active") plan.cancel.push(current.id);
+      continue;
+    }
+    if (reservation.checkoutDate < input.today) continue;
+    const change: PmsStayChange = {
+      checkInDate: reservation.checkInDate,
+      checkoutDate: reservation.checkoutDate,
+      guestCount: reservation.guestCount,
+      bookingReference: reservation.bookingReference,
+      channel: reservation.channel.slice(0, 40) || "PMS",
+    };
+    if (!current) {
+      plan.create.push({
+        ...change,
+        guestName: reservation.guestName,
+        externalUid: reservation.externalUid,
+        propertyId,
+      });
+      continue;
+    }
+    const guestName = current.guestNameRemoved ? undefined : reservation.guestName;
+    const changed =
+      current.status !== "active" ||
+      current.checkInDate !== change.checkInDate ||
+      current.checkoutDate !== change.checkoutDate ||
+      current.guestCount !== change.guestCount ||
+      current.bookingReference !== change.bookingReference ||
+      current.channel !== change.channel ||
+      (guestName !== undefined && current.guestName !== guestName);
+    // A hidden stay stays hidden; PMS stays are never "may be a block", so this is rare.
+    if (changed && current.status !== "hidden") {
+      plan.update.push({
+        ...change,
+        ...(guestName !== undefined ? { guestName } : {}),
+        id: current.id,
+        status: "active",
+      });
+    }
+  }
+  if (input.fullRead) {
+    for (const stay of input.existing) {
+      if (
+        stay.status === "active" &&
+        stay.checkoutDate >= input.today &&
+        !seen.has(stay.externalUid)
+      ) {
+        plan.cancel.push(stay.id);
+      }
+    }
+  }
+  return plan;
+}

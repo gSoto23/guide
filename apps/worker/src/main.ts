@@ -12,6 +12,17 @@ import {
 } from "./jobs/calendar-refresh.js";
 import { createEmailHandler, EMAIL_QUEUE } from "./jobs/email.js";
 import { createExtractionHandler } from "./jobs/extraction.js";
+import { createPmsListingsHandler, createPmsRevokeHandler } from "./jobs/pms-calls.js";
+import { createCsvImportHandler, createCsvValidateHandler } from "./jobs/csv.js";
+import { createPropertiesPurgeHandler, PURGE_PROPERTIES_CRON } from "./jobs/purge-properties.js";
+import { createRetentionHandler, RETENTION_CRON } from "./jobs/retention.js";
+import { createPmsImportHandler } from "./jobs/pms-import.js";
+import {
+  createPmsRefreshHandler,
+  createPmsScheduler,
+  PMS_SCHEDULE_CRON,
+  PMS_SCHEDULE_QUEUE,
+} from "./jobs/pms-refresh.js";
 import {
   createExpireInvitationsHandler,
   EXPIRE_INVITATIONS_CRON,
@@ -108,6 +119,73 @@ async function main(): Promise<void> {
     await scheduleCalendars();
   });
   await boss.schedule(CALENDAR_SCHEDULE_QUEUE, CALENDAR_SCHEDULE_CRON, null, { tz: "UTC" });
+
+  // PMS imports, refreshes, and the API's calls (US4, research R7).
+  const pmsDeps = {
+    db: services.db.db,
+    decrypter: services.decrypter,
+    adapters: services.pms,
+  };
+  await createQueue(JOB_QUEUES.pmsImport);
+  await boss.work(
+    JOB_QUEUES.pmsImport,
+    createPmsImportHandler({
+      ...pmsDeps,
+      vault: services.vault,
+      queueEmail: services.queueEmail,
+      portalUrl: services.portalUrl,
+    }),
+  );
+  await createQueue(JOB_QUEUES.pmsRefresh);
+  await boss.work(
+    JOB_QUEUES.pmsRefresh,
+    createPmsRefreshHandler({
+      ...pmsDeps,
+      queueEmail: services.queueEmail,
+      portalUrl: services.portalUrl,
+    }),
+  );
+  await createQueue(JOB_QUEUES.pmsListings);
+  await boss.work(JOB_QUEUES.pmsListings, createPmsListingsHandler(pmsDeps));
+  await createQueue(JOB_QUEUES.pmsRevoke);
+  await boss.work(JOB_QUEUES.pmsRevoke, createPmsRevokeHandler(pmsDeps));
+  const schedulePms = createPmsScheduler({
+    db: services.db.db,
+    send: (queue, data, options) => boss.send(queue, data, options),
+  });
+  await createQueue(PMS_SCHEDULE_QUEUE);
+  await boss.work(PMS_SCHEDULE_QUEUE, async () => {
+    await schedulePms();
+  });
+  await boss.schedule(PMS_SCHEDULE_QUEUE, PMS_SCHEDULE_CRON, null, { tz: "UTC" });
+
+  // CSV validation and import (US5, research R10).
+  const csvDeps = {
+    db: services.db.db,
+    sandbox: services.sandbox,
+    vault: services.vault,
+    decrypter: services.decrypter,
+    fingerprint: services.feedFingerprint,
+    queueEmail: services.queueEmail,
+    portalUrl: services.portalUrl,
+  };
+  await createQueue(JOB_QUEUES.csvValidate);
+  await boss.work(JOB_QUEUES.csvValidate, createCsvValidateHandler(csvDeps));
+  await createQueue(JOB_QUEUES.csvImport);
+  await boss.work(JOB_QUEUES.csvImport, createCsvImportHandler(csvDeps));
+
+  // Removed properties are deleted 30 days after removal (US6, FR-045).
+  await createQueue(JOB_QUEUES.propertiesPurge);
+  await boss.work(JOB_QUEUES.propertiesPurge, createPropertiesPurgeHandler({ db: services.db.db }));
+  await boss.schedule(JOB_QUEUES.propertiesPurge, PURGE_PROPERTIES_CRON, null, { tz: "UTC" });
+
+  // Retention of extraction input, guest names, uploads, and CSV rows (data model §6).
+  await createQueue(JOB_QUEUES.retentionDaily);
+  await boss.work(
+    JOB_QUEUES.retentionDaily,
+    createRetentionHandler({ db: services.db.db, storage: services.storage }),
+  );
+  await boss.schedule(JOB_QUEUES.retentionDaily, RETENTION_CRON, null, { tz: "UTC" });
   console.warn("Guidesk worker started");
 
   const shutdown = async (signal: string): Promise<void> => {
