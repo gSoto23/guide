@@ -65,8 +65,7 @@ Technical approach:
 **Testing**: Vitest (unit, contract, integration with Testcontainers); recorded fixtures for
 Anthropic and Transcribe; sandbox fixture files (PDFs, MOV with location metadata, MP4, WebM);
 a spying fake `LlmPort` that records inputs; Playwright on a phone viewport with fake model and
-speech adapters; Mailpit; three new eval suites (`evals/guide-drafting`, `evals/interview`,
-`evals/translation`).
+speech adapters; Mailpit; one new eval package, `evals/guide`, with three suites (drafting, interview, translation).
 
 **Target Platform**: the portal (mobile-first PWA), the API and worker on ECS Fargate, and the
 `file-processor` sandbox Lambda, as in feature 002.
@@ -192,7 +191,7 @@ packages/
 ├── ui/src/guide-renderer/  # document renderer shared with spec 004
 ├── emails/src/guides/    # reveal-limit email (ES/EN)
 └── i18n/messages/        # guide strings, topic names, interview questions (ES/EN)
-evals/guide-drafting/, evals/interview/, evals/translation/   # new suites
+evals/guide/              # new: drafting, interview, and translation suites
 infra/                    # media bucket, file-processor write permission, Transcribe IAM
 e2e/specs/                # guide flows; e2e/fixtures/guide/
 perf/k6/guides.js
@@ -202,7 +201,7 @@ perf/k6/guides.js
 [architecture overview](../../docs/architecture/overview.md#8-repository-layout) and feature 002.
 New units: the guide domain folder, six API modules, six worker jobs, three sandbox modes, the
 speech port, the guide renderer in `packages/ui` (its first real component, reused by spec 004),
-and three eval suites.
+and the `evals/guide` package with three suites.
 
 ## Post-Design Constitution Re-check
 

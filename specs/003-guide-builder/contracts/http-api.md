@@ -59,6 +59,7 @@ properties. Agents calling a write route get `403 role_denied`, logged as `acces
 | `POST /items/{itemId}/approve` | O A | Body: `{revision}` (FR-005) |
 | `PUT /sections/{sectionId}/items/order` | O A | Body: `{revision, itemIds}` |
 | `POST /items/{itemId}/translations/{language}` | O A | Body: `{revision, action: translate_again \| keep \| mark_reviewed}` (FR-045, FR-046) |
+| `POST /items/{itemId}/move-to-locked-field` | O A, SU, MFA | Body: `{revision, language, blockIndex, kind, label?}`. Takes the code the warning found, stores it as a new locked field, and replaces it in the text with a `lockedField` node, in one transaction. The value never travels back in the response. Logs `restricted_value.added` (FR-023) |
 
 ## Locked fields
 

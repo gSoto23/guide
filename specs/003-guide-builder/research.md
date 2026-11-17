@@ -152,13 +152,13 @@ facts not checked first-hand against the provider's documentation on 2026-11-17 
   1,500 output tokens with medium effort, about $0.04–0.08; a 60-page manual about $0.15–0.30; a
   section translation about $0.01–0.02. A full guide built from a listing, a 25-answer interview,
   two manuals, and translations costs about $2–4 once.
-- **Evals (constitution V):** three new suites next to `evals/extraction/`, gated the same way
-  (they run in CI when the repository secret is present):
-  - `evals/guide-drafting/`: the 30 synthetic listings of the extraction suite → section placement
+- **Evals (constitution V):** one new package, `evals/guide`, next to `evals/extraction/`, with
+  three suites, gated the same way (they run in CI when the repository secret is present):
+  - `drafting`: the 30 synthetic listings of the extraction suite → section placement
     ≥ 90% and invented facts 0 (SC-002), plus injection cases.
-  - `evals/interview/`: 40 synthetic answers (20 Spanish, 20 English, half written as voice
+  - `interview`: 40 synthetic answers (20 Spanish, 20 English, half written as voice
     transcripts) → right section ≥ 90%, invented facts 0, no code in the output (SC-003).
-  - `evals/translation/`: 30 items with formatting, links, and locked-field tokens → tokens kept
+  - `translation`: 30 items with formatting, links, and locked-field tokens → tokens kept
     100%, nothing added or dropped, judged by rules plus a reference check.
 - **Rationale:** structured output keeps every call a draft generator with no side effects.
 - **Alternatives:** a cheaper model for translation is likely fine but needs the eval suite and
