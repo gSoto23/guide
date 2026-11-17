@@ -1,3 +1,5 @@
+import { loadIntegrationSettings, type IntegrationSettings } from "@guidesk/integrations";
+
 /** Worker configuration read from the environment (secrets come from Secrets Manager in AWS). */
 export interface WorkerConfig {
   databaseUrl: string;
@@ -8,6 +10,8 @@ export interface WorkerConfig {
     smtpPort: number;
     sesConfigurationSet: string | undefined;
   };
+  /** Feature 002 adapters: keys, storage, sandbox, AI, PMS, and flags (T006). */
+  integrations: IntegrationSettings;
 }
 
 /** Same rules as @guidesk/db databaseUrlFromParts; kept here so the worker stays dependency-light. */
@@ -49,5 +53,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): WorkerConfig {
       smtpPort: Number(env.SMTP_PORT ?? 1025),
       sesConfigurationSet: env.SES_CONFIGURATION_SET,
     },
+    integrations: loadIntegrationSettings(env, { production: env.NODE_ENV === "production" }),
   };
 }

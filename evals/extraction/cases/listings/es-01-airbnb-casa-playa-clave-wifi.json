@@ -1,0 +1,23 @@
+{
+  "id": "es-01-airbnb-casa-playa-clave-wifi",
+  "language": "es",
+  "text": "Casa Colibrí frente al mar en Bahía Lunaria\n\nAcerca de este espacio\nCasa de madera de dos plantas a pocos pasos de la arena, en el pueblo de Bahía Lunaria. Desde la terraza se ven los atardeceres y, por la mañana, pasan los pelícanos sobre el agua.\n\nEl espacio\nEn la planta alta hay dos habitaciones: una con cama matrimonial y otra con dos camas individuales. Abajo están la sala, el comedor y una cocina abierta con isla. El jardín tiene una ducha exterior para quitarse la arena.\n\nAcceso de los huéspedes\nLos huéspedes tienen la casa completa y el jardín.\n\nLo que ofrece este lugar\nWi-Fi\nCocina\nAire acondicionado\nEstacionamiento gratuito en las instalaciones\nDucha exterior\nHamacas\n\nRed Wi-Fi: CasaColibri\nClave del Wi-Fi: Tucan2027\n\nNormas de la casa\nLlegada: a partir de las 15:00\nSalida: antes de las 11:00\nMáximo 6 huéspedes\nNo se permiten fiestas ni eventos\nProhibido fumar\n",
+  "restricted": ["Tucan2027"],
+  "expected": {
+    "language": "es",
+    "title": "Casa Colibrí",
+    "description": ["casa de madera de dos plantas", "pasan los pelícanos"],
+    "houseRules": ["No se permiten fiestas ni eventos", "Prohibido fumar"],
+    "amenities": [
+      "Wi-Fi",
+      "Cocina",
+      "Aire acondicionado",
+      "Estacionamiento gratuito",
+      "Ducha exterior",
+      "Hamacas"
+    ],
+    "checkInTime": "15:00",
+    "checkoutTime": "11:00",
+    "maxGuests": 6
+  }
+}

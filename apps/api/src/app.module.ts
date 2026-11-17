@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { AccountModule } from "./account/account.module.js";
 import { AuthModule } from "./auth/auth.module.js";
+import { CalendarFeedsModule } from "./calendar-feeds/calendar-feeds.module.js";
 import { SessionGuard } from "./auth/session.guard.js";
 import { IdempotencyInterceptor } from "./common/idempotency.interceptor.js";
 import { ProblemFilter } from "./common/problem.filter.js";
@@ -10,7 +11,12 @@ import { ConfigModule } from "./config/config.module.js";
 import { DatabaseModule } from "./database/database.module.js";
 import { EmailModule } from "./email/email.module.js";
 import { HealthController } from "./health/health.controller.js";
+import { IntegrationsModule } from "./integrations/integrations.module.js";
+import { ListingContentModule } from "./listing-content/listing-content.module.js";
+import { PropertiesModule } from "./properties/properties.module.js";
+import { UploadsModule } from "./uploads/uploads.module.js";
 import { SecurityModule } from "./security/security.module.js";
+import { StaysModule } from "./stays/stays.module.js";
 import { TenancyModule } from "./tenancy/tenancy.module.js";
 
 @Module({
@@ -22,6 +28,12 @@ import { TenancyModule } from "./tenancy/tenancy.module.js";
     AuthModule,
     AccountModule,
     TenancyModule,
+    IntegrationsModule,
+    UploadsModule,
+    PropertiesModule,
+    ListingContentModule,
+    CalendarFeedsModule,
+    StaysModule,
   ],
   controllers: [HealthController],
   providers: [

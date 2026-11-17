@@ -1,0 +1,16 @@
+{
+  "id": "en-09-farmhouse-mixed-headings-lockbox",
+  "language": "en",
+  "text": "## Brambleford Farmhouse\n### a restored 1890s farmhouse on 12 acres\n\n**The place**\nStone walls, wide plank floors, and a wraparound porch looking over the orchard. The farmhouse has four bedrooms, two full baths, and a big farm kitchen with a six-burner range. Kids love the barn cats and the tire swing.\n\nAMENITIES:\n* Six-burner range\n* Wraparound porch\n* EV charger\n* High chair and crib\n* Board games\n\nRules:\n1. No events or weddings\n2. Please don't feed the barn cats\n3. No smoking anywhere on the farm\n\nThe details\nArrival: after 2:30 PM\nDeparture: before 11 AM\nAccommodates up to 10 guests.\nLockbox code: 7316 (by the side entrance)\n",
+  "restricted": ["7316"],
+  "expected": {
+    "language": "en",
+    "title": "Brambleford Farmhouse",
+    "description": ["stone walls", "looking over the orchard"],
+    "houseRules": ["No events or weddings", "No smoking anywhere on the farm"],
+    "amenities": ["Six-burner range", "EV charger", "High chair", "crib", "Board games"],
+    "checkInTime": "14:30",
+    "checkoutTime": "11:00",
+    "maxGuests": 10
+  }
+}

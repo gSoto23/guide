@@ -113,6 +113,20 @@
       "when": 1794722073348,
       "tag": "0015_security_review_us3_us5",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1794872109092,
+      "tag": "0016_property_onboarding",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1794872278323,
+      "tag": "0017_property_onboarding_rls",
+      "breakpoints": true
     }
   ]
 }

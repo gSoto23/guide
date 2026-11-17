@@ -1,0 +1,15 @@
+{
+  "id": "es-04-cabana-sin-horas-ni-capacidad",
+  "language": "es",
+  "text": "Cabaña Los Robles – Montaña y río en Valleverde\n\nCabaña de piedra y madera al final de un camino de tierra, rodeada de robles y con el río a cinco minutos caminando. Por la noche se ven todas las estrellas y en invierno la chimenea mantiene la casa caliente.\n\nDistribución\nDormitorio 1: una cama matrimonial\nDormitorio 2: cuatro camas individuales\nUn baño completo\n\nServicios\n- Chimenea\n- Cocina equipada\n- Parrilla\n- Agua caliente solar\n- Wi-Fi por satélite\n\nNormas\n- No se permite fumar dentro de la cabaña\n- Las mascotas deben ir con correa\n- Respetar el silencio después de las 22:00\n\nPrecio: $110 la noche, mínimo 2 noches.\nPara reservas escribe al +1 555 555 0164.\n",
+  "expected": {
+    "language": "es",
+    "title": "Cabaña Los Robles",
+    "description": ["cabaña de piedra y madera", "la chimenea mantiene la casa caliente"],
+    "houseRules": ["No se permite fumar dentro de la cabaña", "mascotas deben ir con correa"],
+    "amenities": ["Chimenea", "Cocina equipada", "Parrilla", "Agua caliente", "Wi-Fi"],
+    "checkInTime": null,
+    "checkoutTime": null,
+    "maxGuests": null
+  }
+}

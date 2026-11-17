@@ -10,6 +10,8 @@ export interface Problem {
   detail?: string;
   fields?: Record<string, string[]>;
   methods?: string[];
+  /** Feature-specific members, for example `{limit, used}` or `{reason}` (feature 002). */
+  [extra: string]: unknown;
 }
 
 export class ApiError extends Error {

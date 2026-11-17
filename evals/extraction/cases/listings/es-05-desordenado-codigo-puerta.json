@@ -1,0 +1,16 @@
+{
+  "id": "es-05-desordenado-codigo-puerta",
+  "language": "es",
+  "text": "🌴🌴 CASITA MANGLAR 🌴🌴   *junto al estero*\n\n\ncasita pequeña y fresca a 3 cuadras de la playa,,, ideal para surfistas!!\nla cocina tiene todo lo necesario   y hay hamaca en el corredor\n\n\n\n✔️ LO QUE HAY\n   ✔️ ventilador de techo\n   ✔️ wifi\n   ✔️ lavadora\n   ✔️ parqueo para 1 carro\n\n✖️ NO SE PUEDE\n   ✖️ fumar adentro\n   ✖️ música alta después de las 10 pm\n\nentrada 3 pm  /  salida 10 am\nmáx 5 personas\nCódigo de la puerta: 3907\ndudas al wsp +1 555 555 0171\n",
+  "restricted": ["3907"],
+  "expected": {
+    "language": "es",
+    "title": "Casita Manglar",
+    "description": ["3 cuadras de la playa", "ideal para surfistas"],
+    "houseRules": ["fumar adentro", "música alta"],
+    "amenities": ["ventilador de techo", "wifi", "lavadora", "parqueo"],
+    "checkInTime": "15:00",
+    "checkoutTime": "10:00",
+    "maxGuests": 5
+  }
+}

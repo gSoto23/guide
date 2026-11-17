@@ -1,0 +1,15 @@
+{
+  "id": "es-11-vinetas-hasta-4-huespedes",
+  "language": "es",
+  "text": "Casa Tortuga en Playa Serenata\n\n- Casita de playa con jardín, a 100 metros del mar\n- 2 habitaciones y 1 baño\n- Hasta 4 huéspedes\n- Check-in a partir de las 15:00\n- Check-out a las 11:00\n- Wi-Fi, ventiladores y cocina equipada\n- Parrilla en el jardín\n- Prohibido fumar\n- Se aceptan mascotas pequeñas\n- Precio: $75 por noche (limpieza incluida)\n",
+  "expected": {
+    "language": "es",
+    "title": "Casa Tortuga",
+    "description": ["casita de playa con jardín"],
+    "houseRules": ["Prohibido fumar", "Se aceptan mascotas pequeñas"],
+    "amenities": ["Wi-Fi", "ventiladores", "cocina equipada", "Parrilla"],
+    "checkInTime": "15:00",
+    "checkoutTime": "11:00",
+    "maxGuests": 4
+  }
+}

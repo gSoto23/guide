@@ -71,23 +71,23 @@ These refine the plan without adding scope. The contract and research were updat
 
 **Purpose**: New packages, dependencies, configuration, infrastructure, and CI.
 
-- [ ] T001 Add `evals/*` to the packages in `pnpm-workspace.yaml`. Record an `allowBuilds` decision for each new dependency that requests an install script (SEC-12)
-- [ ] T002 [P] Scaffold `apps/sandbox` (package `@guidesk/sandbox`):
+- [X] T001 Add `evals/*` to the packages in `pnpm-workspace.yaml`. Record an `allowBuilds` decision for each new dependency that requests an install script (SEC-12)
+- [X] T002 [P] Scaffold `apps/sandbox` (package `@guidesk/sandbox`):
   - `package.json`, `tsconfig.json`, `vitest.config.ts`, `eslint.config.js`;
   - empty handlers `src/feed-reader/handler.ts` and `src/file-processor/handler.ts`;
   - dependencies `undici`, `ipaddr.js`, `ical.js`, `sharp`, `tesseract.js`, `csv-parse`;
   - an ESLint `no-restricted-imports` rule that forbids `@guidesk/db`, `pg`, `pg-boss`, and `@guidesk/vault`. The sandbox never reaches the database (R2);
   - `src/observability.ts` (constitution VIII, R13): structured JSON logs with the request ID, error code, and duration only, and Sentry with the existing `beforeSend` allowlist. Inputs and outputs are never logged. Test it in `apps/sandbox/test/observability.test.ts`: an error raised while handling a feed link and recognized text leaves neither in the log line or the Sentry event
-- [ ] T003 [P] Scaffold `packages/vault` (`@guidesk/vault`) with two entry points in `package.json` `exports`:
+- [X] T003 [P] Scaffold `packages/vault` (`@guidesk/vault`) with two entry points in `package.json` `exports`:
   - `@guidesk/vault` for data keys and encryption;
   - `@guidesk/vault/decrypt` for decryption only (R5)
-- [ ] T004 [P] Scaffold `evals/extraction` (`@guidesk/evals-extraction`): `package.json`, `tsconfig.json`, the `cases/` folder, and a placeholder `src/run.ts`
-- [ ] T005 [P] Add dependencies:
+- [X] T004 [P] Scaffold `evals/extraction` (`@guidesk/evals-extraction`): `package.json`, `tsconfig.json`, the `cases/` folder, and a placeholder `src/run.ts`
+- [X] T005 [P] Add dependencies:
   - to `packages/integrations/package.json`: `@anthropic-ai/sdk`, `@aws-sdk/client-kms`, `@aws-sdk/client-s3`, `@aws-sdk/s3-presigned-post`, and `@aws-sdk/client-lambda`;
   - to `apps/api/package.json`: `csv-stringify`.
 
   Pin exact versions that respect the 3-day minimum release age
-- [ ] T006 Extend the configuration schemas in `apps/api/src/config/config.ts` and `apps/worker/src/config.ts`, and list the names (never values) in `.env.example`:
+- [X] T006 Extend the configuration schemas in `apps/api/src/config/config.ts` and `apps/worker/src/config.ts`, and list the names (never values) in `.env.example`:
   - keys: `KMS_MODE` (`aws|local`), `KMS_KEY_ID`, and `LOCAL_KMS_KEY` (32 bytes, base64);
   - storage: `STORAGE_MODE` (`s3|local`), `UPLOADS_BUCKET`, and `LOCAL_STORAGE_DIR`;
   - sandbox: `SANDBOX_MODE` (`lambda|in-process`), `SANDBOX_FEED_READER_FUNCTION`, `SANDBOX_FILE_PROCESSOR_FUNCTION`, `SANDBOX_TEST_ALLOW_HOST`, and `SANDBOX_TEST_CA_FILE`;
@@ -97,7 +97,7 @@ These refine the plan without adding scope. The contract and research were updat
   - flags `PMS_BEDS24`, `PMS_HOSTEX`, and `EXTRACTION_SCREENSHOTS`: booleans, default `false`.
 
   Production refuses `KMS_MODE=local`, `STORAGE_MODE=local`, `SANDBOX_MODE=in-process`, `LLM_MODE=fake`, `PMS_MODE=fixtures`, and any `SANDBOX_TEST_*` value (R2). Add unit tests in `apps/api/test/unit/config.test.ts` and `apps/worker/test/config.test.ts`
-- [ ] T007 [P] Add the infrastructure in SST (ADR-0009):
+- [X] T007 [P] Add the infrastructure in SST (ADR-0009):
   - `infra/keys.ts`: one customer-managed KMS key for restricted data, with yearly rotation. The key policy allows `GenerateDataKey` and `Decrypt` only to the API and worker task roles, and only with the `workspace_id` encryption-context key (`kms:EncryptionContextKeys` with `ForAnyValue:StringEquals`) (R5);
   - `infra/storage.ts`: the private uploads bucket:
     - SSE-KMS, public access blocked, and CORS for the portal origin only;
@@ -111,7 +111,7 @@ These refine the plan without adding scope. The contract and research were updat
     - the Sentry DSN is passed to both functions;
   - `infra/secrets.ts`: `AnthropicApiKey` and `FeedUrlPepper`;
   - `infra/services.ts`: link the key, the bucket, the functions, and the secrets to the API and worker, and grant `lambda:InvokeFunction` on the two functions
-- [ ] T008 [P] Extend `.github/workflows/ci.yml`:
+- [X] T008 [P] Extend `.github/workflows/ci.yml`:
   - build, lint, and test `apps/sandbox` and `packages/vault`;
   - run the time zone data check from T038;
   - add an `evals-extraction` job. It runs on every pull request with the `ANTHROPIC_API_KEY` repository secret, and blocks the merge on failure (constitution V). One run is 35 calls, about $1–2 (R6)
@@ -127,7 +127,7 @@ detector, limits, listing content, shared errors, and test helpers.
 
 ### Tests first ⚠️ (write first, must fail)
 
-- [ ] T009 [P] Integration test for RLS on all 11 new tables, run as `guidesk_app`, in `packages/db/test/integration/property-onboarding-rls.test.ts` (SEC-14, AC-SEC-009):
+- [X] T009 [P] Integration test for RLS on all 11 new tables, run as `guidesk_app`, in `packages/db/test/integration/property-onboarding-rls.test.ts` (SEC-14, AC-SEC-009):
   - a member of workspace A reads nothing of workspace B;
   - agents cannot insert or update any of these tables;
   - agents read calendar feeds only through `calendar_feed_public`;
@@ -136,14 +136,14 @@ detector, limits, listing content, shared errors, and test helpers.
   - for the request role, feed and PMS stays only allow the hide transition and guest name removal;
   - the system context used by refreshes can update and cancel feed and PMS stays;
   - inserting a property into a workspace pending deletion fails
-- [ ] T010 [P] Restricted-value detector tests (R4):
+- [X] T010 [P] Restricted-value detector tests (R4):
   - a corpus of at least 60 labeled Spanish and English snippets in `packages/domain/test/properties/restricted-values.corpus.ts`. It holds codes in many phrasings, and look-alikes that must survive: prices, phone numbers, street numbers, check-in times, room counts, and Wi-Fi network names;
   - `packages/domain/test/properties/restricted-values.test.ts`, asserting 100% recall on the corpus, the replacement markers, and the counts per kind
-- [ ] T011 [P] Unit tests for limits in `packages/domain/test/properties/limits.test.ts`:
+- [X] T011 [P] Unit tests for limits in `packages/domain/test/properties/limits.test.ts`:
   - the property limit is `property_limit`, or 2 when it is null;
   - the extraction limit is `max(10, 2 × property limit)`;
   - "Refresh now" is allowed once every 5 minutes
-- [ ] T012 [P] Vault tests in `packages/vault/test/vault.test.ts` (R5):
+- [X] T012 [P] Vault tests in `packages/vault/test/vault.test.ts` (R5):
   - encryption round trip;
   - a ciphertext copied to another row, column, or workspace fails to decrypt;
   - the stored format is `version || iv || ciphertext || tag`;
@@ -152,7 +152,7 @@ detector, limits, listing content, shared errors, and test helpers.
 
 ### Implementation
 
-- [ ] T013 Create the Drizzle schemas:
+- [X] T013 Create the Drizzle schemas:
   - files `packages/db/src/schema/properties.ts`, `extractions.ts`, `stays.ts`, `pms.ts`, `imports.ts`, and `keys.ts`, exported from `packages/db/src/schema/index.ts`;
   - generate `packages/db/migrations/0016_property_onboarding.sql`;
   - follow [data-model.md](data-model.md) for every column and foreign-key rule.
@@ -226,7 +226,7 @@ detector, limits, listing content, shared errors, and test helpers.
     - `outcome` enum `pending`, `created`, `updated`, `needs_details`, `failed`, `skipped`;
     - `row_values` stored "without the calendar link";
     - `calendar_url_ciphertext` bytea, nullable
-- [ ] T014 Write the custom migration `packages/db/migrations/0017_property_onboarding_rls.sql`:
+- [X] T014 Write the custom migration `packages/db/migrations/0017_property_onboarding_rls.sql`:
   - **All tables:** `ENABLE` and `FORCE ROW LEVEL SECURITY` on all 11 tables, plus the system policies for the owner connection, using the role helper from `0005_tenancy_rls.sql`.
   - **`property`:**
     - members read `active` rows; owners and admins also read `removed` rows;
@@ -243,36 +243,36 @@ detector, limits, listing content, shared errors, and test helpers.
   - **Other tables:** `pms_connection`, `import_run`, `import_item`, `upload`, `extraction_request`, `workspace_data_key`, and `restricted_value` are for owners and admins only.
   - **Column grants:** `guidesk_app` gets `INSERT` and `UPDATE`, but no `SELECT`, on `url_ciphertext`, `credential_ciphertext`, `value_ciphertext`, and `calendar_url_ciphertext`. API queries therefore name their columns.
   - **Check:** `pnpm lint:rls` passes
-- [ ] T015 [P] Extend the security event catalog in `packages/domain/src/security-events.ts` with the events in data model §5. Add `assertSafeMetadata` rules:
+- [X] T015 [P] Extend the security event catalog in `packages/domain/src/security-events.ts` with the events in data model §5. Add `assertSafeMetadata` rules:
   - feed events carry the channel only;
   - manual stay events and `stay.guest_name_removed` carry the stay ID and dates only, never guest names;
   - `integration.disconnected` carries `providerRevoked`;
   - import events carry counts only.
 
   Extend `packages/domain/test/security-events.test.ts`
-- [ ] T016 [P] Implement `packages/domain/src/properties/limits.ts`: `FREE_PLAN_PROPERTY_LIMIT = 2`, `propertyLimit`, `extractionLimit`, and `refreshAllowed`
-- [ ] T017 Implement the detector in `packages/domain/src/properties/restricted-values.ts` (R4):
+- [X] T016 [P] Implement `packages/domain/src/properties/limits.ts`: `FREE_PLAN_PROPERTY_LIMIT = 2`, `propertyLimit`, `extractionLimit`, and `refreshAllowed`
+- [X] T017 Implement the detector in `packages/domain/src/properties/restricted-values.ts` (R4):
   - Spanish and English keyword families: código, clave, contraseña, PIN, puerta, portón, caja de seguridad, alarma, Wi-Fi, red, door, gate, lockbox, keypad, alarm, password, passcode, and network;
   - a value is a nearby token of 4 to 12 characters (digits, or letters and digits), on the same line or after a colon;
   - Wi-Fi network names are kept and passwords are removed;
   - returns the redacted text with markers such as `[door code removed]`, the counts per kind, and, for PMS text, each match with its kind
-- [ ] T018 [P] Define `KeyManagementPort` in `packages/integrations/src/kms/port.ts`, with `generateDataKey(context)` and `decryptDataKey(wrapped, context)`:
+- [X] T018 [P] Define `KeyManagementPort` in `packages/integrations/src/kms/port.ts`, with `generateDataKey(context)` and `decryptDataKey(wrapped, context)`:
   - the AWS adapter in `aws-kms.adapter.ts`, with encryption context `{workspace_id}`;
   - `LocalKeyManagement` in `local.adapter.ts`, which wraps data keys with `LOCAL_KMS_KEY` and is for development and CI only;
   - a contract test in `packages/integrations/test/kms.contract.test.ts`: the local round trip, and the AWS adapter against recorded responses
-- [ ] T019 Implement `packages/vault` (R5):
+- [X] T019 Implement `packages/vault` (R5):
   - `src/data-keys.ts`: one active key per workspace in `workspace_data_key`, created with `GenerateDataKey`; only the wrapped copy is stored; unwrapped keys are cached for at most 5 minutes;
   - `src/encrypt.ts`: AES-256-GCM with a random 96-bit IV, and AAD `workspace_id|table|column|row_id`;
   - `src/decrypt.ts`: exported only from `@guidesk/vault/decrypt`
-- [ ] T020 Add an ESLint `no-restricted-imports` rule in `packages/config/` that allows `@guidesk/vault/decrypt` only under `apps/worker/src/` (R5). Check that `pnpm lint` fails on a test import from `apps/api`
-- [ ] T021 [P] Define `ObjectStoragePort` in `packages/integrations/src/storage/port.ts`, with `createPresignedPost({key, contentType, maxBytes})` (forms expire after 10 minutes), `get`, and `delete`:
+- [X] T020 Add an ESLint `no-restricted-imports` rule in `packages/config/` that allows `@guidesk/vault/decrypt` only under `apps/worker/src/` (R5). Check that `pnpm lint` fails on a test import from `apps/api`
+- [X] T021 [P] Define `ObjectStoragePort` in `packages/integrations/src/storage/port.ts`, with `createPresignedPost({key, contentType, maxBytes})` (forms expire after 10 minutes), `get`, and `delete`:
   - the S3 adapter fixes the key, the content type, and `content-length-range` in each form;
   - the local adapter targets a development-only route, `apps/api/src/uploads/local-upload.controller.ts`. That route is registered only when `STORAGE_MODE=local` and enforces the same key, type, size, and expiry with an HMAC-signed token;
   - a contract test in `packages/integrations/test/storage.contract.test.ts`
-- [ ] T022 Implement `UploadsService` in `apps/api/src/uploads/uploads.service.ts`:
+- [X] T022 Implement `UploadsService` in `apps/api/src/uploads/uploads.service.ts`:
   - it creates `upload` rows with `object_key` = `uploads/{workspace_id}/{upload_id}` (never derived from the file name), `expires_at` = +24 hours, and their presigned forms;
   - an integration test in `apps/api/test/integration/uploads.test.ts`: each form fixes the key, type, and size range, and expires after 10 minutes
-- [ ] T023 [P] Define `SandboxPort` in `packages/integrations/src/sandbox/port.ts` (R2):
+- [X] T023 [P] Define `SandboxPort` in `packages/integrations/src/sandbox/port.ts` (R2):
   - `readFeed({url, etag?, lastModified?})` returns `{entries: [{uid, start, end, kind}], etag, lastModified}` or `{error}`;
   - `processFile({objectKey, purpose})` returns `{text}`, `{rows}`, or `{error}`;
   - request and response Zod schemas are shared with `apps/sandbox/src/protocol.ts`;
@@ -280,38 +280,38 @@ detector, limits, listing content, shared errors, and test helpers.
   - every adapter call runs in an OpenTelemetry span with the function name, duration, and outcome code, never inputs or outputs (constitution VIII);
   - the in-process adapter receives the handler functions by injection, so `packages/integrations` does not depend on `apps/sandbox`;
   - a contract test in `packages/integrations/test/sandbox.contract.test.ts`
-- [ ] T024 Create `apps/api/src/properties/properties.module.ts` and `PropertyLimitService` in `apps/api/src/properties/property-limit.service.ts` (FR-047, R12):
+- [X] T024 Create `apps/api/src/properties/properties.module.ts` and `PropertyLimitService` in `apps/api/src/properties/property-limit.service.ts` (FR-047, R12):
   - `withCreationSlot(tx, workspaceId, count)` locks the workspace row (`SELECT … FOR UPDATE`);
   - it refuses a workspace pending deletion with `409 workspace_pending_deletion`;
   - it counts `active` properties, and refuses with `409 plan_limit_reached` and `{limit, used}`;
   - it returns the free slots for capped imports.
 
   Add an integration test in `apps/api/test/integration/property-limit.test.ts`: two parallel creations at `limit − 1` create exactly one property
-- [ ] T025 Replace `noPropertiesYet` with the real `PropertyCountProvider` in `apps/api/src/properties/property-count.provider.ts`, which counts `active` properties. Wire it in `apps/api/src/security/security.module.ts`.
+- [X] T025 Replace `noPropertiesYet` with the real `PropertyCountProvider` in `apps/api/src/properties/property-count.provider.ts`, which counts `active` properties. Wire it in `apps/api/src/security/security.module.ts`.
 
   Extend `apps/api/test/integration/mfa-threshold.test.ts`: the second-factor requirement applies at 3 active properties, and not at 2 active plus 1 removed (FR-048)
-- [ ] T026 [P] Add the feature-specific errors from [contracts/http-api.md](contracts/http-api.md#feature-specific-errors) to `apps/api/src/common/problem.ts`, and extend `apps/api/test/unit/problem.filter.test.ts`. The codes: `plan_limit_reached`, `workspace_pending_deletion`, `feed_limit_reached`, `duplicate_feed`, `refresh_too_soon`, `confirmation_mismatch`, `feed_rejected`, `invalid_credential`, and `extraction_limit_reached`
-- [ ] T027 [P] Create `JobQueueService` in `apps/api/src/jobs/job-queue.service.ts`:
+- [X] T026 [P] Add the feature-specific errors from [contracts/http-api.md](contracts/http-api.md#feature-specific-errors) to `apps/api/src/common/problem.ts`, and extend `apps/api/test/unit/problem.filter.test.ts`. The codes: `plan_limit_reached`, `workspace_pending_deletion`, `feed_limit_reached`, `duplicate_feed`, `refresh_too_soon`, `confirmation_mismatch`, `feed_rejected`, `invalid_credential`, and `extraction_limit_reached`
+- [X] T027 [P] Create `JobQueueService` in `apps/api/src/jobs/job-queue.service.ts`:
   - it moves the pg-boss client out of `apps/api/src/notifications/outbox.service.ts`;
   - `send(queue, data, options)` queues a job;
   - `call(queue, data, timeoutMs)` sends a job and waits for its output (decision 2);
   - a unit test with a fake queue in `apps/api/test/unit/job-queue.service.test.ts`
-- [ ] T028 Implement the listing content backend in `apps/api/src/listing-content/`, shared by US2, US4, and US6. Write its integration test first, in `apps/api/test/integration/listing-content.test.ts`.
+- [X] T028 Implement the listing content backend in `apps/api/src/listing-content/`, shared by US2, US4, and US6. Write its integration test first, in `apps/api/test/integration/listing-content.test.ts`.
   - `ListingContentService.upsertFromSource()` replaces a row only while it is `unreviewed` (FR-033).
   - `GET /properties/{id}/listing-content` is for owners, admins, and agents.
   - `PUT …/{kind}` sets `edited`. It runs the detector and refuses text that looks like a restricted value with `422` and a pointer to the guide's locked fields (FR-013).
   - `POST …/{kind}/approve` sets `approved`.
   - Zod contracts go in `packages/contracts/src/listing-content.ts`.
   - The test covers the source labels, edit, approve, the refused code, agent read-only access with the refusal logged, and the re-import rule
-- [ ] T029 [P] Add property test helpers in `apps/api/test/integration/property-helpers.ts`:
+- [X] T029 [P] Add property test helpers in `apps/api/test/integration/property-helpers.ts`:
   - seed a workspace with an owner, an admin, and an agent;
   - insert properties in each setup status, and feeds, stays, and PMS connections;
   - a log capture that fails the test when a given secret appears in API or worker output (used by AC-SEC-003 and AC-SEC-008)
-- [ ] T030 [P] Add a job span helper in `apps/worker/src/jobs/span.ts` (R13, constitution VIII):
+- [X] T030 [P] Add a job span helper in `apps/worker/src/jobs/span.ts` (R13, constitution VIII):
   - it wraps each job in an OpenTelemetry span with the workspace ID and counts;
   - it counts failures per provider and error code;
   - a unit test in `apps/worker/test/span.test.ts` checks that restricted keys never become attributes
-- [ ] T031 [P] Add the portal's shared pieces:
+- [X] T031 [P] Add the portal's shared pieces:
   - `apps/portal/lib/properties-api.ts`: a typed client over `apps/portal/lib/api.ts`;
   - `apps/portal/lib/use-online.ts`: offline, creation, imports, uploads, and feed changes are disabled with an explanation, and form drafts stay in `sessionStorage` until the connection returns (edge case);
   - a "Properties" entry in `apps/portal/components/app-header.tsx`;
@@ -331,30 +331,30 @@ fact, and sees it in the list. An agent of the same workspace views it but canno
 
 ### Tests for User Story 1 ⚠️ (write first, must fail)
 
-- [ ] T032 [P] [US1] Unit tests for core facts in `packages/domain/test/properties/core-facts.test.ts`:
+- [X] T032 [P] [US1] Unit tests for core facts in `packages/domain/test/properties/core-facts.test.ts`:
   - required facts: name, street line, city, country, time zone, check-in, checkout, maximum guests, and at least one language (FR-001);
   - `missingFacts`;
   - setup status: `ready` when confirmed with every fact, `needs_details` when a fact is missing, `to_confirm` for complete imports, and `ready` → `needs_details` when a required fact is cleared;
   - filling the last missing fact makes a manual, listing-text, or duplicate property `ready`, and a CSV or PMS property `to_confirm` (data model §7);
   - `address_key` normalization: case, accents, and spacing;
   - guide languages default to the workspace language first (FR-003)
-- [ ] T033 [P] [US1] Unit tests for time zone suggestion in `packages/domain/test/properties/time-zones.test.ts` (FR-002):
+- [X] T033 [P] [US1] Unit tests for time zone suggestion in `packages/domain/test/properties/time-zones.test.ts` (FR-002):
   - CR → `America/Costa_Rica`;
   - MX with "Cancún" or "cancun" → `America/Cancun`;
   - MX with "Ciudad Inventada" → no suggestion, and Mexico's zones as choices;
   - a zone outside the country → mismatch warning;
   - every zone in the data exists in `Intl.supportedValuesOf("timeZone")`
-- [ ] T034 [P] [US1] Unit tests for the order of starting options in `packages/domain/test/properties/start-options.test.ts` (FR-008):
+- [X] T034 [P] [US1] Unit tests for the order of starting options in `packages/domain/test/properties/start-options.test.ts` (FR-008):
   - path `individual` → listing text first;
   - PMS answer `beds24` or `hostex` with its flag on → PMS import first;
   - `manager` without a supported PMS → CSV first;
   - a PMS whose flag is off is never offered
-- [ ] T035 [P] [US1] Contract tests in `apps/api/test/contract/properties.contract.test.ts` for:
+- [X] T035 [P] [US1] Contract tests in `apps/api/test/contract/properties.contract.test.ts` for:
   - `GET /properties`, `GET /properties/limits`, and `GET /properties/start-options`;
   - `POST /properties`, and `GET` and `PATCH /properties/{id}`;
   - `GET /properties/address-check`;
   - `GET /time-zones` and `GET /time-zones/suggest`
-- [ ] T036 [P] [US1] Integration tests in `apps/api/test/integration/properties.test.ts`:
+- [X] T036 [P] [US1] Integration tests in `apps/api/test/integration/properties.test.ts`:
   - a blank creation is `ready`, listed with source `manual`, and found by name search;
   - a missing fact → `422` with field errors, and nothing created;
   - an admin changes the checkout time, and times come back in the property's zone;
@@ -365,7 +365,7 @@ fact, and sees it in the list. An agent of the same workspace views it but canno
   - a workspace pending deletion → `409 workspace_pending_deletion`;
   - a second property at the same address appears in `address-check`;
   - once the workspace has 3 active properties, an owner without a second factor gets `mfa_enrollment_required` on `POST /properties` (FR-048)
-- [ ] T037 [P] [US1] End-to-end test on a phone viewport in `e2e/specs/properties-us1-blank.spec.ts` (quickstart 1 and 2):
+- [X] T037 [P] [US1] End-to-end test on a phone viewport in `e2e/specs/properties-us1-blank.spec.ts` (quickstart 1 and 2):
   - blank creation with the suggested time zone;
   - choosing among Mexico's zones;
   - the agent's read-only view;
@@ -373,14 +373,14 @@ fact, and sees it in the list. An agent of the same workspace views it but canno
 
 ### Implementation for User Story 1
 
-- [ ] T038 [US1] Generate the time zone reference data (R11):
+- [X] T038 [US1] Generate the time zone reference data (R11):
   - a script `packages/domain/scripts/generate-time-zones.ts` that reads the IANA `zone1970.tab` and GeoNames `cities15000`. It downloads them into an ignored folder, and keeps cities only for countries with several zones;
   - output `packages/domain/src/properties/time-zone-data.ts`: country → zones, and accent-folded city names and alternate names → zone;
   - a `pnpm tz:check` script that fails when a zone is missing from `Intl.supportedValuesOf("timeZone")`;
   - the GeoNames CC BY 4.0 attribution in `NOTICE.md`
-- [ ] T039 [US1] Implement `packages/domain/src/properties/core-facts.ts` and `packages/domain/src/properties/time-zones.ts` (`suggestTimeZone(country, city)`, `zonesForCountry(country)`, `timeZoneMatchesCountry`)
-- [ ] T040 [P] [US1] Implement `packages/domain/src/properties/start-options.ts`, using `derivePath` and `PMS_OPTIONS` from feature 001
-- [ ] T041 [P] [US1] Write the Zod contracts in `packages/contracts/src/properties.ts` and `packages/contracts/src/time-zones.ts`:
+- [X] T039 [US1] Implement `packages/domain/src/properties/core-facts.ts` and `packages/domain/src/properties/time-zones.ts` (`suggestTimeZone(country, city)`, `zonesForCountry(country)`, `timeZoneMatchesCountry`)
+- [X] T040 [P] [US1] Implement `packages/domain/src/properties/start-options.ts`, using `derivePath` and `PMS_OPTIONS` from feature 001
+- [X] T041 [P] [US1] Write the Zod contracts in `packages/contracts/src/properties.ts` and `packages/contracts/src/time-zones.ts`:
   - core facts:
     - name 1–120;
     - street line 1–200;
@@ -392,7 +392,7 @@ fact, and sees it in the list. An agent of the same workspace views it but canno
     - an IANA zone;
   - list and detail responses, and limits;
   - start options, with `screenshotsEnabled` and the enabled PMS providers
-- [ ] T042 [US1] Implement `PropertiesService` and `PropertiesController` in `apps/api/src/properties/`:
+- [X] T042 [US1] Implement `PropertiesService` and `PropertiesController` in `apps/api/src/properties/`:
   - **List:** search by name, with a cursor.
   - **`limits`:** returns `{limit, used, extractionLimit, extractionsUsedToday}`.
   - **`start-options`:** paths not built yet are left out.
@@ -403,23 +403,23 @@ fact, and sees it in the list. An agent of the same workspace views it but canno
     - records `edited_facts` for imported properties (FR-033).
   - **`address-check`.**
   - **Guards:** writes need `properties.manage`. Creation honors `requiresMfa` through the existing step-up guard
-- [ ] T043 [P] [US1] Implement `apps/api/src/time-zones/time-zones.controller.ts` (`GET /time-zones` and `GET /time-zones/suggest`). It returns local names and current UTC offsets, and makes no outside call (FR-002)
-- [ ] T044 [US1] Build the core-facts confirmation step in `apps/portal/components/properties/core-facts-form.tsx`. Every creation path uses it:
+- [X] T043 [P] [US1] Implement `apps/api/src/time-zones/time-zones.controller.ts` (`GET /time-zones` and `GET /time-zones/suggest`). It returns local names and current UTC offsets, and makes no outside call (FR-002)
+- [X] T044 [US1] Build the core-facts confirmation step in `apps/portal/components/properties/core-facts-form.tsx`. Every creation path uses it:
   - required markers and clear messages;
   - the time zone suggestion, or the choice among the country's zones;
   - the mismatch warning;
   - the dismissible duplicate-address warning;
   - guide languages defaulting to the workspace language first;
   - offline drafts from T031
-- [ ] T045 [US1] Build the property list and the starting options:
+- [X] T045 [US1] Build the property list and the starting options:
   - the list in `apps/portal/app/[locale]/(app)/properties/page.tsx` with `apps/portal/components/properties/property-list.tsx`: name, setup status, source, and search. The empty state shows the starting options;
   - replace the handoff page `apps/portal/app/[locale]/(app)/properties/new/page.tsx` with the starting options (recommended first) and the blank flow;
   - point `apps/portal/components/first-property.tsx` there
-- [ ] T046 [US1] Build the property detail page `apps/portal/app/[locale]/(app)/properties/[propertyId]/page.tsx`, with the facts panel `apps/portal/components/properties/property-facts.tsx`:
+- [X] T046 [US1] Build the property detail page `apps/portal/app/[locale]/(app)/properties/[propertyId]/page.tsx`, with the facts panel `apps/portal/components/properties/property-facts.tsx`:
   - owners and admins can edit, and agents only read;
   - times are shown in the property's zone;
   - a "Next: build the guide" call to action, a placeholder until spec 003
-- [ ] T047 [P] [US1] Add the US1 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`: starting options, facts, time zone messages, the limit explanation, and offline notes
+- [X] T047 [P] [US1] Add the US1 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`: starting options, facts, time zone messages, the limit explanation, and offline notes
 
 **Checkpoint**: US1 works on its own: blank creation, editing, the list, and read-only agents.
 
@@ -437,17 +437,17 @@ reaches the AI.
 
 ### Tests for User Story 2 ⚠️ (write first, must fail)
 
-- [ ] T048 [P] [US2] Unit tests in `packages/domain/test/properties/extraction.test.ts`:
+- [X] T048 [P] [US2] Unit tests in `packages/domain/test/properties/extraction.test.ts`:
   - URL-only detection: `https://www.airbnb.com/rooms/123`, with surrounding spaces, or several URLs alone → true; text that includes a URL → false (FR-011);
   - the model output maps to content items and proposed facts, keeping the detected language (FR-019);
   - URLs in the output stay plain text, marked for review (AC-SEC-004);
   - the detector runs again on the output and drops items that look like restricted values (FR-013)
-- [ ] T049 [P] [US2] Contract tests for `AnthropicLlmAdapter` against recorded responses, in `packages/integrations/test/llm/anthropic.contract.test.ts`:
+- [X] T049 [P] [US2] Contract tests for `AnthropicLlmAdapter` against recorded responses, in `packages/integrations/test/llm/anthropic.contract.test.ts`:
   - each request uses `claude-opus-5-5`, `output_config.effort: "low"`, the structured output format, no tools, and the delimited listing block;
   - `stop_reason` `refusal` and `max_tokens` are handled as ADR-0005 says;
   - usage and cost are mapped;
   - a call is aborted at the deadline
-- [ ] T050 [P] [US2] Sandbox tests in `apps/sandbox/test/file-processor.test.ts`:
+- [X] T050 [P] [US2] Sandbox tests in `apps/sandbox/test/file-processor.test.ts`:
   - magic bytes accept JPEG, PNG, and WebP, and reject a ZIP or a script named `.png` (AC-SEC-005);
   - re-encoding strips EXIF and GPS data, and gives a grayscale PNG with its longest side at most 2,560 px;
   - the object is deleted after processing;
@@ -465,7 +465,7 @@ reaches the AI.
   - `POST /properties` with `extractionRequestId` stores the accepted items as `unreviewed`, with source `listing_text` or `screenshot`. It sets `property_id` and deletes the input text;
   - screenshots are refused while `EXTRACTION_SCREENSHOTS` is off;
   - agents are refused, and other workspaces get `404`
-- [ ] T052 [P] [US2] Build the eval suite in `evals/extraction/` (R6, SC-002, constitution V):
+- [X] T052 [P] [US2] Build the eval suite in `evals/extraction/` (R6, SC-002, constitution V):
   - 30 synthetic listings written for the suite (15 Spanish, 15 English), with expected fields, in `cases/listings/`;
   - 5 injection cases in `cases/injection/`;
   - a runner, `src/run.ts`, that calls the real adapter and scores field placement (at least 90%), invented facts (0), and injection resistance (5 of 5), then writes a report;
@@ -478,8 +478,8 @@ reaches the AI.
 
 ### Implementation for User Story 2
 
-- [ ] T054 [US2] Implement `packages/domain/src/properties/extraction.ts`: `isUrlOnly`, `toContentItems`, `toProposedFacts`, `markUrlsForReview`, and the output pass of the detector
-- [ ] T055 [US2] Implement the AI extraction in `packages/integrations/src/llm/`. Check every SDK call against the `claude-api` reference before writing it.
+- [X] T054 [US2] Implement `packages/domain/src/properties/extraction.ts`: `isUrlOnly`, `toContentItems`, `toProposedFacts`, `markUrlsForReview`, and the output pass of the detector
+- [X] T055 [US2] Implement the AI extraction in `packages/integrations/src/llm/`. Check every SDK call against the `claude-api` reference before writing it.
   - **`port.ts`:** `LlmPort.extractListing(redactedText, {signal})` returns `{result, usage, model}`.
   - **`extraction/prompt.ts` and `extraction/schema.ts`:**
     - every field is nullable: title, description, house rules, amenities, check-in and checkout times, maximum guests, and language;
@@ -489,7 +489,7 @@ reaches the AI.
     - checks `stop_reason`, with the refusal fallback from ADR-0005;
     - computes the cost from a price table, with values taken from Anthropic's pricing page at implementation time.
   - **`fake.adapter.ts`:** records its inputs for tests
-- [ ] T056 [US2] Define `TextRecognitionPort` in `packages/integrations/src/ocr/port.ts`, and implement the file processor in `apps/sandbox/src/file-processor/`:
+- [X] T056 [US2] Define `TextRecognitionPort` in `packages/integrations/src/ocr/port.ts`, and implement the file processor in `apps/sandbox/src/file-processor/`:
   - `images.ts`: magic-byte check and `sharp` re-encoding;
   - `ocr.ts`: `tesseract.js` with the bundled `spa` and `eng` data and no network access;
   - `handler.ts`: reads one object, processes it, deletes it, and returns the text or `{error: unsupported_type | too_large | unreadable}`
@@ -519,7 +519,7 @@ reaches the AI.
   - store the accepted items as `unreviewed` through `ListingContentService`;
   - set `extraction_request.property_id`;
   - clear `input_text` and `recognized_text`, and set `input_deleted_at`
-- [ ] T061 [P] [US2] Implement `apps/portal/lib/image-normalize.ts`, loaded on demand:
+- [X] T061 [P] [US2] Implement `apps/portal/lib/image-normalize.ts`, loaded on demand:
   - re-encodes each image to JPEG with the canvas API, with its longest side at most 2,560 px;
   - decodes HEIC where the browser can, and otherwise asks for a JPEG or PNG
 - [ ] T062 [US2] Build the listing flow in `apps/portal/app/[locale]/(app)/properties/new/listing/page.tsx`. It ends in the confirmation step, prefilled with the proposed facts.
@@ -558,12 +558,12 @@ rejected. A direct booking added by hand appears in the same list.
 
 ### Tests for User Story 3 ⚠️ (write first, must fail)
 
-- [ ] T065 [P] [US3] Build the iCal fixture server, `e2e/helpers/ical-server.ts`, with a script that creates its test certificate authority:
+- [X] T065 [P] [US3] Build the iCal fixture server, `e2e/helpers/ical-server.ts`, with a script that creates its test certificate authority:
   - HTTPS feeds with reservations, blocks, and unlabeled entries;
   - a feed that redirects to `127.0.0.1`, a slow feed, an oversized feed, and a feed whose content can be changed during a test.
 
   The API, worker, and end-to-end tests reuse it
-- [ ] T066 [P] [US3] Unit tests in `packages/domain/test/properties/feeds.test.ts`:
+- [X] T066 [P] [US3] Unit tests in `packages/domain/test/properties/feeds.test.ts`:
   - **Classification:**
     - reservation: "Reserved", "Reservado", or a summary with a booking reference;
     - block: "Not available", "Blocked", "No disponible", "Bloqueado", and "Airbnb (Not available)";
@@ -571,7 +571,7 @@ rejected. A direct booking added by hand appears in the same list.
   - **Channel detection** from the link's host: `airbnb.*`, `booking.com`, `vrbo.com`, or `other`.
   - **URL normalization** for the fingerprint.
   - **The display hint mask,** for example `airbnb.com/…/a1b2.ics`
-- [ ] T067 [P] [US3] Unit tests in `packages/domain/test/properties/stays.test.ts`:
+- [X] T067 [P] [US3] Unit tests in `packages/domain/test/properties/stays.test.ts`:
   - past entries are dropped;
   - entries missing from a successful read are marked `cancelled`;
   - hidden stays stay hidden;
@@ -580,7 +580,7 @@ rejected. A direct booking added by hand appears in the same list.
   - an unlabeled entry that matches a labeled reservation from another feed gets `duplicate_of_id`;
   - overlaps are flagged;
   - "upcoming" is computed in the property's zone
-- [ ] T068 [P] [US3] Sandbox tests in `apps/sandbox/test/feed-reader.test.ts`, with a fake DNS resolver (FR-026, AC-SEC-002):
+- [X] T068 [P] [US3] Sandbox tests in `apps/sandbox/test/feed-reader.test.ts`, with a fake DNS resolver (FR-026, AC-SEC-002):
   - `http://` is refused;
   - these addresses are refused: `169.254.169.254`, `127.0.0.1`, `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `100.64.0.0/10`, `::1`, `fc00::/7`, `fe80::/10`, and IPv4-mapped IPv6;
   - a public name that resolves to a private address is refused;
@@ -590,7 +590,7 @@ rejected. A direct booking added by hand appears in the same list.
   - reads stop at 2 MB and at 10 seconds;
   - a body that is not iCal → `not_ical`;
   - the output holds only `{uid, start, end, kind}`, with no summary, description, link, or phone digits (FR-022)
-- [ ] T069 [P] [US3] Integration tests in `apps/api/test/integration/calendar-feeds.test.ts`, with the fixture server:
+- [X] T069 [P] [US3] Integration tests in `apps/api/test/integration/calendar-feeds.test.ts`, with the fixture server:
   - saving a feed returns a preview of the upcoming stays. Blocks are not stays, and unlabeled entries have `mayBeBlock`;
   - `http://` links, `https://169.254.169.254/latest`, and a redirect to `127.0.0.1` → `422 feed_rejected`, with nothing stored (AC-SEC-002);
   - a 6th feed → `409 feed_limit_reached`; the same link twice → `409 duplicate_feed` with `reason: same_link`; a second Airbnb feed → `409 duplicate_feed` with `reason: same_channel`; two `other` feeds with different labels are allowed (FR-020);
@@ -599,7 +599,7 @@ rejected. A direct booking added by hand appears in the same list.
   - agents get `404` on feed routes, and each refusal is logged as `access.role_denied` (AC-SEC-001); they still see stays and the calendar status;
   - "Refresh now" twice within 5 minutes → `409 refresh_too_soon`;
   - `calendar_feed.added`, `calendar_feed.changed`, and `calendar_feed.removed` are logged with the channel only
-- [ ] T070 [P] [US3] Integration tests in `apps/api/test/integration/stays.test.ts`:
+- [X] T070 [P] [US3] Integration tests in `apps/api/test/integration/stays.test.ts`:
   - a manual stay gets the channel "Direct" and the property's times by default (FR-052);
   - an overlapping stay is flagged (FR-054);
   - manual stays can be edited and cancelled;
@@ -623,10 +623,10 @@ rejected. A direct booking added by hand appears in the same list.
 
 ### Implementation for User Story 3
 
-- [ ] T073 [US3] Implement in the domain:
+- [X] T073 [US3] Implement in the domain:
   - `packages/domain/src/properties/feeds.ts`: the classification table, channel detection, normalization, and the display hint;
   - `packages/domain/src/properties/stays.ts`: deduplication, overlaps, cancellations, and the upcoming filter
-- [ ] T074 [US3] Implement the feed reader in `apps/sandbox/src/feed-reader/` (R2, R8):
+- [X] T074 [US3] Implement the feed reader in `apps/sandbox/src/feed-reader/` (R2, R8):
   - `safe-fetch.ts`:
     - `undici` with a custom `lookup` and `ipaddr.js` range checks;
     - HTTPS only;
@@ -638,7 +638,7 @@ rejected. A direct booking added by hand appears in the same list.
   - `handler.ts`.
 
   `SANDBOX_TEST_ALLOW_HOST` and the test certificate authority are honored only outside production (T006)
-- [ ] T075 [US3] Implement the calendar feeds module in `apps/api/src/calendar-feeds/`, with contracts in `packages/contracts/src/calendar-feeds.ts`:
+- [X] T075 [US3] Implement the calendar feeds module in `apps/api/src/calendar-feeds/`, with contracts in `packages/contracts/src/calendar-feeds.ts`:
   - **`POST`:**
     - reads the link through `SandboxPort.readFeed` before saving anything (FR-021);
     - encrypts the link with the vault, with the AAD bound to the new row;
@@ -648,7 +648,7 @@ rejected. A direct booking added by hand appears in the same list.
   - **`PATCH`:** changes the channel label, or replaces the link, which is checked again.
   - **`DELETE`:** removes the feed and its future stays.
   - **`POST …/refresh`:** sets `manual_refresh_at` and queues a high-priority job
-- [ ] T076 [US3] Implement the stays module in `apps/api/src/stays/`, with contracts in `packages/contracts/src/stays.ts`:
+- [X] T076 [US3] Implement the stays module in `apps/api/src/stays/`, with contracts in `packages/contracts/src/stays.ts`:
   - `GET /properties/{id}/stays`: upcoming stays by default, with `possiblyOutdated` when the source feed or connection is failing;
   - `POST`: a manual stay, with the overlap flag (FR-052, FR-054);
   - `PATCH`: editing a manual stay, or hiding a stay;
@@ -658,7 +658,7 @@ rejected. A direct booking added by hand appears in the same list.
   - a cron every 15 minutes queues the feeds that are due, spread by feed ID, with a singleton key per feed;
   - the handler decrypts the link with `@guidesk/vault/decrypt`, reads it through `SandboxPort`, and applies `stays.ts`;
   - it records success or failure, and queues `properties.feed_failing` once after 24 hours of failures
-- [ ] T078 [P] [US3] Create the email template `properties.feed_failing` (ES/EN) in `packages/emails/src/properties/feed-failing.tsx`, as [contracts/emails.md](contracts/emails.md) describes. It carries no link and no guest name. Add a render test in `packages/emails/test/properties.test.ts`
+- [X] T078 [P] [US3] Create the email template `properties.feed_failing` (ES/EN) in `packages/emails/src/properties/feed-failing.tsx`, as [contracts/emails.md](contracts/emails.md) describes. It carries no link and no guest name. Add a render test in `packages/emails/test/properties.test.ts`
 - [ ] T079 [US3] Build the property's calendars and stays panels:
   - `apps/portal/components/properties/calendar-feeds.tsx`, hidden from agents:
     - add a link with its channel;
@@ -853,7 +853,7 @@ edition), so that T082 records real responses (constitution IV).
     - skips disconnected connections and removed properties;
   - `apps/worker/src/jobs/pms-listings.ts` (`pms.listings`);
   - `apps/worker/src/jobs/pms-revoke.ts` (`pms.revoke`)
-- [ ] T097 [P] [US4] Create the email templates `properties.import_finished` and `properties.pms_reconnect` (ES/EN) in `packages/emails/src/properties/`, as [contracts/emails.md](contracts/emails.md) describes:
+- [X] T097 [P] [US4] Create the email templates `properties.import_finished` and `properties.pms_reconnect` (ES/EN) in `packages/emails/src/properties/`, as [contracts/emails.md](contracts/emails.md) describes:
   - counts, the first five failure reasons, and the provider label;
   - no credential, code, or guest name.
 

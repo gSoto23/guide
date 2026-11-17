@@ -1,0 +1,15 @@
+{
+  "id": "en-15-minimal-garden-suite",
+  "language": "en",
+  "text": "Garden Suite Hollyfield\nQuiet suite at the back of a family house, ten minutes on foot from Hollyfield station, on a leafy street of brick houses.\n",
+  "expected": {
+    "language": "en",
+    "title": "Garden Suite Hollyfield",
+    "description": ["at the back of a family house", "leafy street of brick houses"],
+    "houseRules": null,
+    "amenities": null,
+    "checkInTime": null,
+    "checkoutTime": null,
+    "maxGuests": null
+  }
+}

@@ -5,7 +5,14 @@
  */
 import { isProduction } from "./config";
 import { database } from "./database";
-import { betterAuthSecret, edgeSharedSecret, googleClientId, googleClientSecret } from "./secrets";
+import {
+  anthropicApiKey,
+  betterAuthSecret,
+  edgeSharedSecret,
+  feedUrlPepper,
+  googleClientId,
+  googleClientSecret,
+} from "./secrets";
 
 function runtimeSecret(name: string, value: $util.Input<string>): $util.Output<string> {
   const secret = new aws.secretsmanager.Secret(`${name}Runtime`, {
@@ -19,6 +26,7 @@ function runtimeSecret(name: string, value: $util.Input<string>): $util.Output<s
 }
 
 export const databasePasswordArn = runtimeSecret("DatabasePassword", database.password);
+const feedUrlPepperArn = runtimeSecret("FeedUrlPepper", feedUrlPepper.value);
 
 /** Secrets only the API needs. */
 export const apiSecretArns = {
@@ -27,9 +35,12 @@ export const apiSecretArns = {
   GOOGLE_CLIENT_ID: runtimeSecret("GoogleClientId", googleClientId.value),
   GOOGLE_CLIENT_SECRET: runtimeSecret("GoogleClientSecret", googleClientSecret.value),
   EDGE_SHARED_SECRET: runtimeSecret("EdgeSharedSecret", edgeSharedSecret.value),
+  FEED_URL_PEPPER: feedUrlPepperArn,
 };
 
-/** The worker only needs the database. */
+/** The worker: the database, the feed-link pepper, and the Claude key for extraction. */
 export const workerSecretArns = {
   DATABASE_PASSWORD: databasePasswordArn,
+  FEED_URL_PEPPER: feedUrlPepperArn,
+  ANTHROPIC_API_KEY: runtimeSecret("AnthropicApiKey", anthropicApiKey.value),
 };

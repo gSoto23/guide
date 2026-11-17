@@ -279,6 +279,7 @@ context that refreshes run in updates and cancels feed and PMS stays.
 | `warnings` | jsonb | Duplicate rows or addresses (FR-040) |
 | `row_values` | jsonb, nullable | Validated CSV values **without** the calendar link. Set to null 7 days after the run finishes (§6) |
 | `calendar_url_ciphertext` | bytea, nullable | The CSV calendar link, encrypted at validation time. Set to null once the feed is saved or rejected, and when the run is cancelled (§6) |
+| `data_key_id` | uuid, nullable, FK → workspace_data_key | Key version used for `calendar_url_ciphertext` |
 | `property_id` | uuid, nullable | Result |
 
 The CSV file is deleted after validation. The error file is generated on request from

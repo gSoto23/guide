@@ -45,8 +45,12 @@ jobs:
       # Known-vulnerability scan of runtime dependencies; fails on high or critical (SEC-12).
       - run: pnpm audit --prod --audit-level high
       - run: pnpm format:check
+      # Lint, typecheck, test, and build run in every workspace package through Turborepo,
+      # including apps/sandbox and packages/vault (feature 002, T008).
       - run: pnpm lint
       - run: pnpm typecheck
+      # Every generated time zone exists in this Node.js runtime (research R11, T038).
+      - run: pnpm --filter @guidesk/domain tz:check
       # Applies migrations to the CI database and fails if a tenant table lacks forced RLS (T015).
       - run: pnpm lint:rls
       - run: pnpm test
@@ -81,4 +85,33 @@ jobs:
           name: lighthouse-reports
           path: .lighthouseci/
           include-hidden-files: true
+          retention-days: 14
+
+  # Listing extraction eval suite (research R6, constitution V). Runs on every pull request and
+  # blocks the merge when it fails (make it a required check in the branch protection rules).
+  # One run is 35 calls to Claude, about $1–2. Needs the ANTHROPIC_API_KEY repository secret,
+  # which pull requests from forks do not receive.
+  evals-extraction:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo run build --filter=@guidesk/evals-extraction^...
+      - run: pnpm --filter @guidesk/evals-extraction eval
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: extraction-eval-report
+          path: evals/extraction/report/
           retention-days: 14

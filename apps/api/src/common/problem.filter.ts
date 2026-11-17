@@ -33,6 +33,14 @@ const TITLES: Record<ProblemCode, string> = {
   owns_shared_workspace: "Owns a workspace with other members",
   email_in_use: "Email already in use",
   workspace_pending_deletion: "Workspace scheduled for deletion",
+  plan_limit_reached: "Property limit reached",
+  feed_limit_reached: "Calendar feed limit reached",
+  duplicate_feed: "Calendar feed already added",
+  refresh_too_soon: "Refreshed too recently",
+  confirmation_mismatch: "The typed name does not match",
+  feed_rejected: "Calendar link rejected",
+  invalid_credential: "The PMS rejected the credential",
+  extraction_limit_reached: "Daily extraction limit reached",
 };
 
 const CODE_BY_STATUS: Record<number, ProblemCode> = {
@@ -67,14 +75,17 @@ export function toProblem(exception: unknown): ProblemBody {
   }
   if (exception instanceof ApiProblem) {
     const status = exception.getStatus();
+    const { details, retryAfterSeconds: _retryAfter, ...extra } = exception.extra;
     return {
+      // Details first, so they can never replace the standard members.
+      ...details,
       type: `https://guidesk.app/problems/${exception.code}`,
       title: TITLES[exception.code],
       status,
       code: exception.code,
       // No detail when none was given, so every 404 has the same body (AC-SEC-004, T103).
       ...(exception.message !== exception.code ? { detail: exception.message } : {}),
-      ...exception.extra,
+      ...extra,
     };
   }
   if (exception instanceof HttpException) {
@@ -107,6 +118,9 @@ export class ProblemFilter implements ExceptionFilter {
       void this.recordDenial(host.switchToHttp().getRequest<FastifyRequest>());
     }
     const reply = host.switchToHttp().getResponse<FastifyReply>();
+    const retryAfter =
+      exception instanceof ApiProblem ? exception.extra.retryAfterSeconds : undefined;
+    if (retryAfter !== undefined) void reply.header("retry-after", String(Math.ceil(retryAfter)));
     void reply
       .status(problem.status)
       .header("content-type", "application/problem+json")

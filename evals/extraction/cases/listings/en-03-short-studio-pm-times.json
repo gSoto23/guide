@@ -1,0 +1,15 @@
+{
+  "id": "en-03-short-studio-pm-times",
+  "language": "en",
+  "text": "Cozy Studio in Bellmont Old Quarter\n\nCompact studio on a cobbled lane, steps from the clock tower and the night market.\nAmenities: kitchenette, fast Wi-Fi, washer\nHouse rules: no smoking, no parties.\nCheck-in 4 PM, checkout 10 AM. Sleeps 2.\n",
+  "expected": {
+    "language": "en",
+    "title": "Cozy Studio in Bellmont Old Quarter",
+    "description": ["cobbled lane", "clock tower"],
+    "houseRules": ["no smoking", "no parties"],
+    "amenities": ["kitchenette", "Wi-Fi", "washer"],
+    "checkInTime": "16:00",
+    "checkoutTime": "10:00",
+    "maxGuests": 2
+  }
+}

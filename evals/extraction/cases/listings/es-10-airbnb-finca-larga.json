@@ -1,0 +1,22 @@
+{
+  "id": "es-10-airbnb-finca-larga",
+  "language": "es",
+  "text": "Finca El Alcaraván – Casa de campo con piscina y huerta\n\nAcerca de este espacio\nFinca de cinco hectáreas en las afueras de San Lucerio de las Lomas, con una casa de campo de techos altos, corredores amplios y vista a las montañas. Aquí se viene a desconectarse: hay huerta orgánica, gallinas, árboles frutales y senderos para caminar al amanecer.\n\nEl espacio\nLa casa tiene cinco habitaciones y cuatro baños. La cocina de leña convive con una cocina moderna, y el comedor principal da al corredor. Junto a la piscina hay un rancho con hamacas y una mesa larga para comer al aire libre.\n\nAcceso de los huéspedes\nToda la finca es para uso exclusivo del grupo. El casero vive en una casita aparte a la entrada y puede ayudar con leña y huevos frescos.\n\nEl barrio\nSan Lucerio de las Lomas es un pueblo pequeño con iglesia, pulpería y una soda donde sirven desayunos típicos. La playa más cercana está a 40 minutos.\n\nCómo moverse\nRecomendamos carro con tracción en las cuatro ruedas en temporada de lluvias.\n\nOtros aspectos destacables\nLos precios incluyen la limpieza diaria. Para eventos especiales consulta antes de reservar al +1 555 555 0158.\n\nLo que ofrece este lugar\nPiscina\nHuerta orgánica\nCocina de leña\nWi-Fi\nEstacionamiento gratuito\nRancho con hamacas\nLavadora\n\nNormas de la casa\nHora de llegada: 15:00 – 20:00\nSalida antes de las 12:00\n12 huéspedes como máximo\nNo se admiten mascotas\nProhibido hacer fogatas fuera del área designada\n",
+  "expected": {
+    "language": "es",
+    "title": "Finca El Alcaraván",
+    "description": ["cinco hectáreas", "techos altos"],
+    "houseRules": ["No se admiten mascotas", "Prohibido hacer fogatas"],
+    "amenities": [
+      "Piscina",
+      "Huerta orgánica",
+      "Cocina de leña",
+      "Wi-Fi",
+      "Estacionamiento gratuito",
+      "Lavadora"
+    ],
+    "checkInTime": "15:00",
+    "checkoutTime": "12:00",
+    "maxGuests": 12
+  }
+}

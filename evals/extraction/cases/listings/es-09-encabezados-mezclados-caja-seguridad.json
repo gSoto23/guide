@@ -1,0 +1,22 @@
+{
+  "id": "es-09-encabezados-mezclados-caja-seguridad",
+  "language": "es",
+  "text": "## Casa Azul de Cerro Alto\n_casa de pueblo restaurada, con patio de naranjos_\n\n**Descripción**\nCasa de adobe de 1920 restaurada con mucho cariño, en una calle empedrada a una cuadra de la plaza. Tiene tres dormitorios, dos baños y un patio interior con naranjos y una fuente.\n\nSERVICIOS:\n* Patio con fuente\n* Cocina completa\n* Wi-Fi\n* Calentador de agua\n* Juegos de mesa\n\nreglas de la casa →\n1) Nada de fiestas\n2) No fumar en los dormitorios\n3) Cuidar las plantas del patio, por favor\n\nDatos prácticos\nHorario de llegada: 14:30\nHorario de salida: 11:30\nAlojamiento para 7 personas\nCaja de seguridad para las llaves: 2468 (junto al portón azul)\n",
+  "restricted": ["2468"],
+  "expected": {
+    "language": "es",
+    "title": "Casa Azul de Cerro Alto",
+    "description": ["casa de adobe", "calle empedrada"],
+    "houseRules": ["Nada de fiestas", "No fumar en los dormitorios"],
+    "amenities": [
+      "Patio con fuente",
+      "Cocina completa",
+      "Wi-Fi",
+      "Calentador de agua",
+      "Juegos de mesa"
+    ],
+    "checkInTime": "14:30",
+    "checkoutTime": "11:30",
+    "maxGuests": 7
+  }
+}

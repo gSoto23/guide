@@ -2,12 +2,16 @@
   "name": "@guidesk/testing",
   "version": "0.0.0",
   "private": true,
-  "description": "Shared test helpers: disposable PostgreSQL with migrations applied (T029).",
+  "description": "Shared test helpers: disposable PostgreSQL with migrations applied (T029), and the local iCal fixture server (feature 002 T065).",
   "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./ical-server": {
+      "types": "./dist/ical-server.d.ts",
+      "default": "./dist/ical-server.js"
     }
   },
   "files": [

@@ -35,7 +35,15 @@
     "target_mfa_required": "That person must add a passkey or an authenticator app first.",
     "owns_shared_workspace": "First transfer ownership of, or delete, the workspaces you share with others.",
     "email_in_use": "Another Guidesk account already uses that email.",
-    "workspace_pending_deletion": "This workspace is scheduled for deletion. Restore it first."
+    "workspace_pending_deletion": "This workspace is scheduled for deletion. Restore it first.",
+    "plan_limit_reached": "You've reached your property limit. Remove a property, or contact us to raise the limit.",
+    "feed_limit_reached": "This property already has 5 calendars.",
+    "duplicate_feed": "That calendar is already connected, or this property already has a calendar for that channel.",
+    "refresh_too_soon": "You refreshed a few minutes ago. Try again shortly.",
+    "confirmation_mismatch": "The name you typed doesn't match the property's name.",
+    "feed_rejected": "We couldn't read that calendar link. Check that it's an iCal export link that starts with https.",
+    "invalid_credential": "Your PMS didn't accept that credential. Nothing was saved.",
+    "extraction_limit_reached": "You've used today's listing imports. Try again tomorrow."
   },
   "auth": {
     "signInCta": "Sign in or create an account",
@@ -125,9 +133,118 @@
       "manual": {
         "title": "Start from scratch",
         "body": "Enter the basics and complete the guide step by step."
+      },
+      "duplicate": {
+        "title": "Copy a property",
+        "body": "Start from one of your properties, without its address, calendars, or codes."
       }
     },
-    "comingSoon": "Property creation arrives with the next feature (002)."
+    "setupStatus": {
+      "needs_details": "Needs details",
+      "to_confirm": "To confirm",
+      "ready": "Ready for the guide"
+    },
+    "source": {
+      "manual": "Created by hand",
+      "listing_text": "From your listing",
+      "screenshot": "From your listing",
+      "csv": "From a CSV file",
+      "pms": "From {provider}",
+      "duplicate": "Copied"
+    },
+    "providers": {
+      "beds24": "Beds24",
+      "hostex": "Hostex"
+    },
+    "offline": {
+      "notice": "You're offline. Creating properties, imports, uploads, and calendar changes are paused until you're back online.",
+      "draftSaved": "Your draft is saved on this device until you're back online.",
+      "actionDisabled": "Available when you're back online"
+    },
+    "list": {
+      "title": "Properties",
+      "add": "Add property",
+      "searchLabel": "Search by name",
+      "empty": "You don't have any properties yet.",
+      "noMatches": "No property matches “{query}”.",
+      "loadMore": "Show more",
+      "loadFailed": "We couldn't load your properties. Try again.",
+      "calendar": {
+        "none": "No calendar",
+        "ok": "Calendar connected",
+        "failing": "Calendar not updating"
+      }
+    },
+    "limits": {
+      "usage": "{used} of {limit} properties",
+      "reached": "You've reached your plan's limit of {limit} properties. Remove a property, or contact us to raise the limit."
+    },
+    "start": {
+      "title": "Add a property",
+      "recommended": "Recommended",
+      "notAllowed": "Only owners and admins can add properties."
+    },
+    "facts": {
+      "title": "Confirm the property's details",
+      "intro": "Fields marked with * are required.",
+      "name": "Property name",
+      "addressLine1": "Street and number",
+      "addressUnit": "Unit, floor, or apartment",
+      "city": "City",
+      "region": "State or province",
+      "postalCode": "Postal code",
+      "country": "Country",
+      "countryPlaceholder": "Choose a country",
+      "timeZone": "Time zone",
+      "timeZonePlaceholder": "Choose a time zone",
+      "timeZoneSuggested": "Suggested from the country and city. You can change it.",
+      "timeZoneChoose": "This country has several time zones. Choose the property's.",
+      "timeZoneMismatch": "This time zone isn't one of the selected country's. Check it.",
+      "checkInTime": "Check-in time",
+      "checkoutTime": "Checkout time",
+      "timesNote": "Times are in the property's time zone.",
+      "maxGuests": "Maximum guests",
+      "guideLanguages": "Guide languages",
+      "languages": {
+        "es": "Spanish",
+        "en": "English"
+      },
+      "save": "Save property",
+      "saving": "Saving…",
+      "duplicateAddress": "You already have a property at this address: {names}.",
+      "duplicateAddressDismiss": "It's a different property"
+    },
+    "factNames": {
+      "name": "name",
+      "addressLine1": "street",
+      "city": "city",
+      "country": "country",
+      "timeZone": "time zone",
+      "checkInTime": "check-in time",
+      "checkoutTime": "checkout time",
+      "maxGuests": "maximum guests",
+      "guideLanguages": "guide languages"
+    },
+    "detail": {
+      "back": "All properties",
+      "facts": "Details",
+      "edit": "Edit details",
+      "cancel": "Cancel",
+      "save": "Save changes",
+      "saved": "Changes saved.",
+      "readOnly": "You can view this property. Owners and admins can change it.",
+      "source": "Source",
+      "status": "Setup status",
+      "missing": "Missing: {facts}",
+      "notSet": "Not set",
+      "address": "Address",
+      "times": "Check-in and checkout",
+      "timesValue": "Check-in {checkIn} · Checkout {checkout} ({zone})",
+      "guests": "Maximum guests",
+      "languages": "Guide languages",
+      "nextStep": "Next: build the guide",
+      "nextStepSoon": "The guide builder arrives in the next update."
+    }
   },
   "security": {
     "loading": "Loading…",
@@ -243,6 +360,7 @@
     "createSubmit": "Create",
     "switchFailed": "We couldn't switch workspaces. Try again.",
     "nav": {
+      "properties": "Properties",
       "team": "Team",
       "security": "Security",
       "home": "Home",

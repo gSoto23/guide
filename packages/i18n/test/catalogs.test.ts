@@ -34,6 +34,16 @@ describe("message catalogs (constitution, Principle IX)", () => {
       "validation_failed",
       "rate_limited",
       "internal_error",
+      // Feature 002 (contracts/http-api.md, Feature-specific errors).
+      "plan_limit_reached",
+      "workspace_pending_deletion",
+      "feed_limit_reached",
+      "duplicate_feed",
+      "refresh_too_soon",
+      "confirmation_mismatch",
+      "feed_rejected",
+      "invalid_credential",
+      "extraction_limit_reached",
     ];
     const errorKeys = keys(load("es")).filter((k) => k.startsWith("errors."));
     for (const code of codes) expect(errorKeys).toContain(`errors.${code}`);

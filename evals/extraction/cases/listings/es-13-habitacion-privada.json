@@ -1,0 +1,15 @@
+{
+  "id": "es-13-habitacion-privada",
+  "language": "es",
+  "text": "Habitación privada en piso compartido – Barrio de la Estación\n\nHabitación individual con balcón en un piso amplio que comparto con mi gato. Tienes tu propio baño y acceso a la cocina y al salón. El piso está a cinco minutos de la estación de tren y de la calle de los mercados.\n\nLo que incluye la habitación\n- Baño privado\n- Escritorio\n- Wi-Fi\n- Calefacción\n- Toallas y ropa de cama\n\nNormas\n- No se permiten visitas\n- Silencio a partir de las 23:00\n- Hay un gato en casa: no apto para alérgicos\n\nEntrada a partir de las 18:00\nSalida a las 10:30\nMáximo 1 huésped\n",
+  "expected": {
+    "language": "es",
+    "title": "Habitación privada en piso compartido",
+    "description": ["comparto con mi gato", "cinco minutos de la estación de tren"],
+    "houseRules": ["No se permiten visitas", "Silencio a partir de las 23:00"],
+    "amenities": ["Baño privado", "Escritorio", "Wi-Fi", "Calefacción", "Toallas"],
+    "checkInTime": "18:00",
+    "checkoutTime": "10:30",
+    "maxGuests": 1
+  }
+}

@@ -1,0 +1,393 @@
+import { Inject, Injectable } from "@nestjs/common";
+import { and, desc, eq, ilike, lt, or, sql, type SQL } from "drizzle-orm";
+import type {
+  AddressCheck,
+  AddressCheckQuery,
+  CreatePropertyBody,
+  ListPropertiesQuery,
+  PropertyDetail,
+  PropertyLimits,
+  PropertyList,
+  PropertySummary,
+  StartOptions,
+  UpdatePropertyBody,
+} from "@guidesk/contracts";
+import {
+  countActiveProperties,
+  onboardingProfile,
+  property,
+  calendarFeed,
+  restrictedValue,
+  stay,
+  workspace,
+  type DbHandle,
+} from "@guidesk/db";
+import {
+  derivePath,
+  extractionLimit,
+  extractionLimitKey,
+  initialSetupStatus,
+  isKnownTimeZone,
+  missingFacts,
+  normalizeAddressKey,
+  orderStartOptions,
+  propertyLimit,
+  setupStatusAfterEdit,
+  type CoreFacts,
+  type PmsOption,
+  type Role,
+  type StartOption,
+  type SupportedPms,
+} from "@guidesk/domain";
+import { ApiProblem } from "../common/problem.js";
+import { API_CONFIG, type ApiConfig } from "../config/config.js";
+import { DB_HANDLE } from "../database/database.module.js";
+import { RequestDb } from "../database/request-db.js";
+import { CrossTenantService } from "../tenancy/cross-tenant.js";
+import { PropertyLimitService } from "./property-limit.service.js";
+import { toDetail, toSummary, toTimeOfDay, type PropertyRow } from "./property-mapper.js";
+
+/**
+ * Creation paths built so far; `start-options` leaves out the others (T042). Each user story adds
+ * its path here when it lands.
+ */
+export const AVAILABLE_START_OPTIONS: readonly StartOption[] = ["blank"];
+
+const CORE_FACT_KEYS = [
+  "name",
+  "addressLine1",
+  "addressUnit",
+  "city",
+  "region",
+  "postalCode",
+  "country",
+  "timeZone",
+  "checkInTime",
+  "checkoutTime",
+  "maxGuests",
+  "guideLanguages",
+] as const;
+
+/** Feeds of the property, read through the view every member may use (FR-006, FR-025). */
+const calendarStatusSql = sql<PropertySummary["calendarStatus"]>`(
+  SELECT CASE WHEN count(*) = 0 THEN 'none' WHEN bool_or(f.status = 'failing') THEN 'failing' ELSE 'ok' END
+  FROM calendar_feed_public f WHERE f.property_id = ${property.id}
+)`;
+
+interface Caller {
+  userId: string;
+  role: Role;
+}
+
+function encodeCursor(row: { createdAt: Date; id: string }): string {
+  return Buffer.from(JSON.stringify([row.createdAt.toISOString(), row.id])).toString("base64url");
+}
+
+function decodeCursor(cursor: string): { createdAt: Date; id: string } {
+  try {
+    const [createdAt, id] = JSON.parse(Buffer.from(cursor, "base64url").toString("utf8")) as [
+      string,
+      string,
+    ];
+    const date = new Date(createdAt);
+    if (Number.isNaN(date.getTime()) || typeof id !== "string") throw new Error("bad cursor");
+    return { createdAt: date, id };
+  } catch {
+    throw new ApiProblem(422, "validation_failed", "Invalid cursor.", {
+      fields: { cursor: ["Invalid"] },
+    });
+  }
+}
+
+function escapeLike(value: string): string {
+  return value.replace(/[\\%_]/g, (match) => `\\${match}`);
+}
+
+function assertKnownTimeZone(zone: string | null | undefined): void {
+  if (zone && !isKnownTimeZone(zone)) {
+    throw new ApiProblem(422, "validation_failed", "Unknown time zone.", {
+      fields: { timeZone: ["Choose a time zone from the list"] },
+    });
+  }
+}
+
+/** Properties: list, limits, start options, create, read, edit, address check (US1, T042). */
+@Injectable()
+export class PropertiesService {
+  constructor(
+    private readonly requestDb: RequestDb,
+    private readonly limits: PropertyLimitService,
+    private readonly crossTenant: CrossTenantService,
+    @Inject(DB_HANDLE) private readonly handle: DbHandle,
+    @Inject(API_CONFIG) private readonly config: ApiConfig,
+  ) {}
+
+  async list(
+    caller: Caller,
+    workspaceId: string,
+    query: ListPropertiesQuery,
+  ): Promise<PropertyList> {
+    if (query.status === "removed" && caller.role === "agent") {
+      throw new ApiProblem(403, "forbidden", "Your role does not allow this action.");
+    }
+    const conditions: SQL[] = [
+      eq(property.workspaceId, workspaceId),
+      eq(property.status, query.status),
+    ];
+    if (query.query) conditions.push(ilike(property.name, `%${escapeLike(query.query)}%`));
+    if (query.cursor) {
+      const cursor = decodeCursor(query.cursor);
+      const after = or(
+        lt(property.createdAt, cursor.createdAt),
+        and(eq(property.createdAt, cursor.createdAt), lt(property.id, cursor.id)),
+      );
+      if (after) conditions.push(after);
+    }
+    const rows = await this.requestDb
+      .current()
+      .select({
+        id: property.id,
+        name: property.name,
+        setupStatus: property.setupStatus,
+        missingFacts: property.missingFacts,
+        source: property.source,
+        sourceProvider: property.sourceProvider,
+        pmsStatus: property.pmsStatus,
+        status: property.status,
+        createdAt: property.createdAt,
+        purgeAfter: property.purgeAfter,
+        calendarStatus: calendarStatusSql,
+      })
+      .from(property)
+      .where(and(...conditions))
+      .orderBy(desc(property.createdAt), desc(property.id))
+      .limit(query.limit + 1);
+    const page = rows.slice(0, query.limit);
+    const last = page.at(-1);
+    return {
+      items: page.map((row) => toSummary(row, row.calendarStatus)),
+      nextCursor: rows.length > query.limit && last ? encodeCursor(last) : null,
+    };
+  }
+
+  async limitsOf(workspaceId: string): Promise<PropertyLimits> {
+    const tx = this.requestDb.current();
+    const [row] = await tx
+      .select({ propertyLimit: workspace.propertyLimit })
+      .from(workspace)
+      .where(eq(workspace.id, workspaceId))
+      .limit(1);
+    const limit = propertyLimit(row?.propertyLimit);
+    const used = await countActiveProperties(tx, workspaceId);
+    // The rate-limit table is system-only (feature 001 migration 0008).
+    const counted = await this.handle.db.execute<{ count: number }>(
+      sql`SELECT coalesce(sum(count), 0)::int AS count FROM rate_limit_bucket WHERE key = ${extractionLimitKey(workspaceId, new Date())}`,
+    );
+    return {
+      limit,
+      used,
+      extractionLimit: extractionLimit(limit),
+      extractionsUsedToday: Number(counted.rows[0]?.count ?? 0),
+    };
+  }
+
+  async startOptions(caller: Caller, workspaceId: string): Promise<StartOptions> {
+    const tx = this.requestDb.current();
+    const [answers] = await tx
+      .select({ propertiesBucket: onboardingProfile.propertiesBucket, pms: onboardingProfile.pms })
+      .from(onboardingProfile)
+      .where(eq(onboardingProfile.userId, caller.userId))
+      .limit(1);
+    const flags = this.config.integrations.flags;
+    const enabledProviders: SupportedPms[] = [
+      ...(flags.pmsBeds24 ? (["beds24"] as const) : []),
+      ...(flags.pmsHostex ? (["hostex"] as const) : []),
+    ];
+    const options = orderStartOptions({
+      path: derivePath({
+        propertiesBucket: answers?.propertiesBucket ?? null,
+        pms: (answers?.pms as PmsOption | null) ?? null,
+      }),
+      pms: (answers?.pms as PmsOption | null) ?? null,
+      enabledProviders,
+      hasProperties: (await countActiveProperties(tx, workspaceId)) > 0,
+      available: AVAILABLE_START_OPTIONS,
+    });
+    return {
+      options,
+      screenshotsEnabled: flags.extractionScreenshots,
+      pmsProviders: AVAILABLE_START_OPTIONS.includes("pms") ? enabledProviders : [],
+    };
+  }
+
+  /** Blank creation from the confirmation step (US1). Other sources arrive with their stories. */
+  async create(
+    caller: Caller,
+    workspaceId: string,
+    body: CreatePropertyBody,
+  ): Promise<PropertyDetail> {
+    if (body.source !== "manual") {
+      throw new ApiProblem(422, "validation_failed", "This creation path is not available yet.", {
+        fields: { source: ["Not available"] },
+      });
+    }
+    assertKnownTimeZone(body.timeZone);
+    const tx = this.requestDb.current();
+    await this.limits.withCreationSlot(tx, workspaceId, 1);
+    const facts = factsOf(body);
+    const [row] = await tx
+      .insert(property)
+      .values({
+        workspaceId,
+        name: body.name,
+        addressLine1: body.addressLine1,
+        addressUnit: body.addressUnit ?? null,
+        city: body.city,
+        region: body.region ?? null,
+        postalCode: body.postalCode ?? null,
+        country: body.country,
+        timeZone: body.timeZone,
+        checkInTime: body.checkInTime,
+        checkoutTime: body.checkoutTime,
+        maxGuests: body.maxGuests,
+        guideLanguages: body.guideLanguages,
+        addressKey: normalizeAddressKey(facts),
+        setupStatus: initialSetupStatus(body.source, facts),
+        missingFacts: missingFacts(facts),
+        source: body.source,
+        createdBy: caller.userId,
+      })
+      .returning();
+    return this.detail(caller, row!);
+  }
+
+  async get(caller: Caller, workspaceId: string, propertyId: string): Promise<PropertyDetail> {
+    return this.detail(caller, await this.load(caller, workspaceId, propertyId));
+  }
+
+  async update(
+    caller: Caller,
+    workspaceId: string,
+    propertyId: string,
+    body: UpdatePropertyBody,
+  ): Promise<PropertyDetail> {
+    const current = await this.load(caller, workspaceId, propertyId);
+    assertKnownTimeZone(body.timeZone);
+    const facts: CoreFacts = { ...factsOf(current), ...body };
+    const changed = CORE_FACT_KEYS.filter(
+      (key) => key in body && !sameFact(currentFact(current, key), body[key]),
+    );
+    const imported = current.source === "csv" || current.source === "pms";
+    const editedFacts = imported
+      ? [...new Set([...current.editedFacts, ...changed])].sort()
+      : current.editedFacts;
+    const [row] = await this.requestDb
+      .current()
+      .update(property)
+      .set({
+        ...body,
+        addressKey: normalizeAddressKey(facts),
+        setupStatus: setupStatusAfterEdit(current.setupStatus, current.source, facts),
+        missingFacts: missingFacts(facts),
+        editedFacts,
+      })
+      .where(and(eq(property.id, propertyId), eq(property.workspaceId, workspaceId)))
+      .returning();
+    if (!row)
+      throw await this.crossTenant.notFound(caller.userId, workspaceId, "property", propertyId);
+    return this.detail(caller, row);
+  }
+
+  async addressCheck(workspaceId: string, query: AddressCheckQuery): Promise<AddressCheck> {
+    const key = normalizeAddressKey({
+      addressLine1: query.line1,
+      addressUnit: query.unit ?? null,
+      city: query.city,
+      country: query.country,
+    });
+    if (!key) return { matches: [] };
+    const rows = await this.requestDb
+      .current()
+      .select({ propertyId: property.id, name: property.name })
+      .from(property)
+      .where(
+        and(
+          eq(property.workspaceId, workspaceId),
+          eq(property.status, "active"),
+          eq(property.addressKey, key),
+        ),
+      )
+      .orderBy(property.createdAt);
+    return { matches: rows };
+  }
+
+  /** A property the caller can see in this workspace, or the same 404 for anything else. */
+  async load(caller: Caller, workspaceId: string, propertyId: string): Promise<PropertyRow> {
+    const [row] = await this.requestDb
+      .current()
+      .select()
+      .from(property)
+      .where(and(eq(property.id, propertyId), eq(property.workspaceId, workspaceId)))
+      .limit(1);
+    if (!row)
+      throw await this.crossTenant.notFound(caller.userId, workspaceId, "property", propertyId);
+    return row;
+  }
+
+  private async detail(caller: Caller, row: PropertyRow): Promise<PropertyDetail> {
+    const tx = this.requestDb.current();
+    const manager = caller.role === "owner" || caller.role === "admin";
+    const [stays] = await tx
+      .select({ count: sql<number>`count(*)::int` })
+      .from(stay)
+      .where(eq(stay.propertyId, row.id));
+    const [status] = await tx
+      .select({ value: calendarStatusSql })
+      .from(property)
+      .where(eq(property.id, row.id));
+    let feeds: number | null = null;
+    let restrictedValues: number | null = null;
+    if (manager) {
+      const [feedCount] = await tx
+        .select({ count: sql<number>`count(${calendarFeed.id})::int` })
+        .from(calendarFeed)
+        .where(eq(calendarFeed.propertyId, row.id));
+      const [valueCount] = await tx
+        .select({ count: sql<number>`count(${restrictedValue.id})::int` })
+        .from(restrictedValue)
+        .where(eq(restrictedValue.propertyId, row.id));
+      feeds = feedCount?.count ?? 0;
+      restrictedValues = valueCount?.count ?? 0;
+    }
+    return toDetail(row, status?.value ?? "none", {
+      stays: stays?.count ?? 0,
+      feeds,
+      restrictedValues,
+    });
+  }
+}
+
+function factsOf(source: CoreFacts | PropertyRow): Required<CoreFacts> {
+  return {
+    name: source.name ?? null,
+    addressLine1: source.addressLine1 ?? null,
+    addressUnit: source.addressUnit ?? null,
+    city: source.city ?? null,
+    region: source.region ?? null,
+    postalCode: source.postalCode ?? null,
+    country: source.country ?? null,
+    timeZone: source.timeZone ?? null,
+    checkInTime: toTimeOfDay(source.checkInTime ?? null),
+    checkoutTime: toTimeOfDay(source.checkoutTime ?? null),
+    maxGuests: source.maxGuests ?? null,
+    guideLanguages: source.guideLanguages ?? null,
+  };
+}
+
+function currentFact(row: PropertyRow, key: (typeof CORE_FACT_KEYS)[number]): unknown {
+  return factsOf(row)[key];
+}
+
+function sameFact(a: unknown, b: unknown): boolean {
+  return JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+}

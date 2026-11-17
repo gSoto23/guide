@@ -2,12 +2,16 @@
   "name": "@guidesk/observability",
   "version": "0.0.0",
   "private": true,
-  "description": "OpenTelemetry and Sentry setup with allowlist-based scrubbing (T025, SEC-06).",
+  "description": "OpenTelemetry and Sentry setup with allowlist-based scrubbing (T025, SEC-06). The ./scrub entry has no runtime dependencies, for the sandbox functions.",
   "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./scrub": {
+      "types": "./dist/scrub.d.ts",
+      "default": "./dist/scrub.js"
     }
   },
   "files": [

@@ -1,0 +1,16 @@
+{
+  "id": "es-12-loft-codigo-porton",
+  "language": "es",
+  "text": "Loft Industrial La Fábrica\n\nLoft de doble altura dentro de una antigua fábrica de textiles, con ladrillo visto, ventanales de hierro y una cama en el entrepiso. Está en el barrio de Los Telares, lleno de talleres de artistas, cafés y una cervecería artesanal.\n\nServicios: Wi-Fi de fibra, aire acondicionado, cocina completa, lavadora, escritorio.\n\nNormas: no fumar, no mascotas, no fiestas.\n\nLlegada a partir de las 17 h. Salida antes de las 10.\nClave del portón principal: 8152\n",
+  "restricted": ["8152"],
+  "expected": {
+    "language": "es",
+    "title": "Loft Industrial La Fábrica",
+    "description": ["antigua fábrica de textiles", "ladrillo visto"],
+    "houseRules": ["no fumar", "no mascotas", "no fiestas"],
+    "amenities": ["Wi-Fi", "aire acondicionado", "cocina completa", "lavadora", "escritorio"],
+    "checkInTime": "17:00",
+    "checkoutTime": "10:00",
+    "maxGuests": null
+  }
+}

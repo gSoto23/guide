@@ -1,16 +1,13 @@
-import { Suspense } from "react";
 import { setRequestLocale } from "next-intl/server";
-import { FirstProperty } from "@/components/first-property";
+import { StartOptionsPanel } from "@/components/properties/start-options";
 
-/** Handoff to feature 002 (property onboarding), T045. */
+/** "Add property": the starting options, the recommended one first (FR-008, T045). */
 export default async function NewPropertyPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
   return (
     <main>
-      <Suspense>
-        <FirstProperty locale={locale} />
-      </Suspense>
+      <StartOptionsPanel locale={locale} />
     </main>
   );
 }

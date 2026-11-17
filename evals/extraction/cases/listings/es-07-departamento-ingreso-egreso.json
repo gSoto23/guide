@@ -1,0 +1,15 @@
+{
+  "id": "es-07-departamento-ingreso-egreso",
+  "language": "es",
+  "text": "Departamento luminoso en Barrio Arboleda\n\nDepartamento de un ambiente con balcón a la calle, en un edificio de los años 60 con portero. A dos cuadras hay cafés, una heladería y la estación de subte Plaza Arboleda.\n\nComodidades\nWi-Fi\nCalefacción central\nLavarropas\nRopa de cama y toallas\nCafetera de cápsulas\n\nReglas\nNo se permite fumar en el departamento.\nNo se aceptan mascotas.\nSilencio entre las 22 y las 8 h.\n\nIngreso: desde las 13:00\nEgreso: hasta las 10:00\nCapacidad: 3 personas\n",
+  "expected": {
+    "language": "es",
+    "title": "Departamento luminoso en Barrio Arboleda",
+    "description": ["un ambiente con balcón", "estación de subte"],
+    "houseRules": ["No se permite fumar en el departamento", "No se aceptan mascotas"],
+    "amenities": ["Wi-Fi", "Calefacción central", "Lavarropas", "Ropa de cama", "Cafetera"],
+    "checkInTime": "13:00",
+    "checkoutTime": "10:00",
+    "maxGuests": 3
+  }
+}

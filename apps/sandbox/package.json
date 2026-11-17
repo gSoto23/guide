@@ -1,0 +1,49 @@
+{
+  "name": "@guidesk/sandbox",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Isolated Lambda handlers for untrusted content: the feed reader and the file processor (research R2). They never reach the database.",
+  "type": "module",
+  "exports": {
+    "./feed-reader": {
+      "types": "./dist/feed-reader/handler.d.ts",
+      "default": "./dist/feed-reader/handler.js"
+    },
+    "./file-processor": {
+      "types": "./dist/file-processor/handler.d.ts",
+      "default": "./dist/file-processor/handler.js"
+    },
+    "./in-process": {
+      "types": "./dist/in-process.d.ts",
+      "default": "./dist/in-process.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "3.1169.0",
+    "@guidesk/domain": "workspace:*",
+    "@guidesk/integrations": "workspace:*",
+    "@guidesk/observability": "workspace:*",
+    "@sentry/node": "^11.12.0",
+    "@tesseract.js-data/eng": "1.0.0",
+    "@tesseract.js-data/spa": "1.0.0",
+    "csv-parse": "7.0.3",
+    "ical.js": "2.2.1",
+    "ipaddr.js": "2.5.0",
+    "sharp": "0.35.5",
+    "tesseract.js": "7.0.0",
+    "undici": "8.12.4",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@guidesk/config": "workspace:*"
+  }
+}

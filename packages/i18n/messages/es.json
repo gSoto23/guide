@@ -35,7 +35,15 @@
     "target_mfa_required": "La persona debe agregar primero una passkey o una app de autenticación.",
     "owns_shared_workspace": "Primero transfiere la propiedad o elimina los workspaces que compartes con otras personas.",
     "email_in_use": "Otra cuenta de Guidesk ya usa ese email.",
-    "workspace_pending_deletion": "Este workspace se va a eliminar. Restáuralo primero."
+    "workspace_pending_deletion": "Este workspace se va a eliminar. Restáuralo primero.",
+    "plan_limit_reached": "Llegaste al límite de propiedades. Quita una propiedad o escríbenos para ampliar el límite.",
+    "feed_limit_reached": "Esta propiedad ya tiene 5 calendarios.",
+    "duplicate_feed": "Ese calendario ya está conectado, o esta propiedad ya tiene un calendario de ese canal.",
+    "refresh_too_soon": "Actualizaste hace unos minutos. Vuelve a intentarlo en un rato.",
+    "confirmation_mismatch": "El nombre que escribiste no coincide con el de la propiedad.",
+    "feed_rejected": "No pudimos leer ese enlace de calendario. Revisa que sea un enlace de exportación iCal que empiece con https.",
+    "invalid_credential": "Tu PMS no aceptó esa credencial. No guardamos nada.",
+    "extraction_limit_reached": "Ya usaste las importaciones de anuncios de hoy. Vuelve a intentarlo mañana."
   },
   "auth": {
     "signInCta": "Entrar o crear cuenta",
@@ -125,9 +133,118 @@
       "manual": {
         "title": "Empezar desde cero",
         "body": "Escribe los datos básicos y completa la guía paso a paso."
+      },
+      "duplicate": {
+        "title": "Copiar una propiedad",
+        "body": "Parte de una de tus propiedades, sin su dirección, calendarios ni códigos."
       }
     },
-    "comingSoon": "La creación de propiedades llega con la próxima función (002)."
+    "setupStatus": {
+      "needs_details": "Faltan datos",
+      "to_confirm": "Por confirmar",
+      "ready": "Lista para la guía"
+    },
+    "source": {
+      "manual": "Creada a mano",
+      "listing_text": "De tu anuncio",
+      "screenshot": "De tu anuncio",
+      "csv": "De un archivo CSV",
+      "pms": "De {provider}",
+      "duplicate": "Copia"
+    },
+    "providers": {
+      "beds24": "Beds24",
+      "hostex": "Hostex"
+    },
+    "offline": {
+      "notice": "Sin conexión. Crear propiedades, importar, subir archivos y cambiar calendarios queda en pausa hasta que vuelvas a estar en línea.",
+      "draftSaved": "Tu borrador queda guardado en este dispositivo hasta que vuelvas a estar en línea.",
+      "actionDisabled": "Disponible cuando vuelvas a estar en línea"
+    },
+    "list": {
+      "title": "Propiedades",
+      "add": "Agregar propiedad",
+      "searchLabel": "Buscar por nombre",
+      "empty": "Todavía no tienes propiedades.",
+      "noMatches": "Ninguna propiedad coincide con “{query}”.",
+      "loadMore": "Ver más",
+      "loadFailed": "No pudimos cargar tus propiedades. Inténtalo de nuevo.",
+      "calendar": {
+        "none": "Sin calendario",
+        "ok": "Calendario conectado",
+        "failing": "El calendario no se actualiza"
+      }
+    },
+    "limits": {
+      "usage": "{used} de {limit} propiedades",
+      "reached": "Llegaste al límite de {limit} propiedades de tu plan. Quita una propiedad o escríbenos para ampliar el límite."
+    },
+    "start": {
+      "title": "Agregar una propiedad",
+      "recommended": "Recomendado",
+      "notAllowed": "Solo dueños y administradores pueden agregar propiedades."
+    },
+    "facts": {
+      "title": "Confirma los datos de la propiedad",
+      "intro": "Los campos con * son obligatorios.",
+      "name": "Nombre de la propiedad",
+      "addressLine1": "Calle y número",
+      "addressUnit": "Unidad, piso o apartamento",
+      "city": "Ciudad",
+      "region": "Estado o provincia",
+      "postalCode": "Código postal",
+      "country": "País",
+      "countryPlaceholder": "Elige un país",
+      "timeZone": "Zona horaria",
+      "timeZonePlaceholder": "Elige una zona horaria",
+      "timeZoneSuggested": "Sugerida según el país y la ciudad. Puedes cambiarla.",
+      "timeZoneChoose": "Este país tiene varias zonas horarias. Elige la de la propiedad.",
+      "timeZoneMismatch": "Esta zona horaria no es del país elegido. Revísala.",
+      "checkInTime": "Hora de entrada",
+      "checkoutTime": "Hora de salida",
+      "timesNote": "Las horas están en la zona horaria de la propiedad.",
+      "maxGuests": "Máximo de huéspedes",
+      "guideLanguages": "Idiomas de la guía",
+      "languages": {
+        "es": "Español",
+        "en": "Inglés"
+      },
+      "save": "Guardar propiedad",
+      "saving": "Guardando…",
+      "duplicateAddress": "Ya tienes una propiedad en esta dirección: {names}.",
+      "duplicateAddressDismiss": "Es otra propiedad"
+    },
+    "factNames": {
+      "name": "nombre",
+      "addressLine1": "calle",
+      "city": "ciudad",
+      "country": "país",
+      "timeZone": "zona horaria",
+      "checkInTime": "hora de entrada",
+      "checkoutTime": "hora de salida",
+      "maxGuests": "máximo de huéspedes",
+      "guideLanguages": "idiomas de la guía"
+    },
+    "detail": {
+      "back": "Todas las propiedades",
+      "facts": "Datos",
+      "edit": "Editar datos",
+      "cancel": "Cancelar",
+      "save": "Guardar cambios",
+      "saved": "Cambios guardados.",
+      "readOnly": "Puedes ver esta propiedad. Los dueños y administradores pueden cambiarla.",
+      "source": "Origen",
+      "status": "Estado",
+      "missing": "Falta: {facts}",
+      "notSet": "Sin definir",
+      "address": "Dirección",
+      "times": "Entrada y salida",
+      "timesValue": "Entrada {checkIn} · Salida {checkout} ({zone})",
+      "guests": "Máximo de huéspedes",
+      "languages": "Idiomas de la guía",
+      "nextStep": "Siguiente: armar la guía",
+      "nextStepSoon": "El armado de la guía llega en la próxima actualización."
+    }
   },
   "security": {
     "loading": "Cargando…",
@@ -243,6 +360,7 @@
     "createSubmit": "Crear",
     "switchFailed": "No pudimos cambiar de workspace. Inténtalo de nuevo.",
     "nav": {
+      "properties": "Propiedades",
       "team": "Equipo",
       "security": "Seguridad",
       "home": "Inicio",

@@ -1,0 +1,22 @@
+{
+  "id": "es-06-villa-precios-telefono",
+  "language": "es",
+  "text": "Villa Los Almendros\n\nVilla de cuatro dormitorios en lo alto del Cerro Azulejo, con piscina privada, jardín tropical y vista al golfo. La casa principal tiene una cocina amplia, comedor para doce personas y una terraza techada con hamacas. A 15 minutos en carro del pueblo y de la playa.\n\nCapacidad: hasta 10 huéspedes\n\nEquipamiento\nPiscina privada · Wi-Fi · Aire acondicionado en los dormitorios · Rancho con parrilla · Estacionamiento para 3 carros · Lavadora\n\nTarifas\nTemporada alta: $350 por noche\nTemporada baja: $260 por noche\nDepósito de garantía: $400 (reembolsable)\nLimpieza final: $80\n\nNormas de la casa\nCheck-in: a partir de las 16:00\nCheck-out: hasta las 10:00\nNo se permiten fiestas ni música a alto volumen\nProhibido fumar dentro de la casa\n\nDirección: Camino Viejo al Cerro Azulejo, km 4\nTeléfono y WhatsApp: +1 (555) 555-0126\n",
+  "expected": {
+    "language": "es",
+    "title": "Villa Los Almendros",
+    "description": ["jardín tropical", "vista al golfo"],
+    "houseRules": ["No se permiten fiestas", "Prohibido fumar dentro de la casa"],
+    "amenities": [
+      "Piscina privada",
+      "Wi-Fi",
+      "Aire acondicionado",
+      "Rancho con parrilla",
+      "Estacionamiento",
+      "Lavadora"
+    ],
+    "checkInTime": "16:00",
+    "checkoutTime": "10:00",
+    "maxGuests": 10
+  }
+}

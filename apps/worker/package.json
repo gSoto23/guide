@@ -12,9 +12,14 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@guidesk/db": "workspace:*",
+    "@guidesk/domain": "workspace:*",
     "@guidesk/emails": "workspace:*",
     "@guidesk/integrations": "workspace:*",
     "@guidesk/observability": "workspace:*",
+    "@guidesk/sandbox": "workspace:*",
+    "@guidesk/vault": "workspace:*",
+    "@opentelemetry/api": "^1.10.0",
     "pg-boss": "^12.38.2"
   },
   "devDependencies": {

@@ -1,0 +1,15 @@
+{
+  "id": "es-15-minimo-bungalow",
+  "language": "es",
+  "text": "Bungalow Marejada\nBungalow de madera a 50 metros de la playa de Isla Tortuguita, rodeado de almendros de playa y palmeras.\n",
+  "expected": {
+    "language": "es",
+    "title": "Bungalow Marejada",
+    "description": ["50 metros de la playa", "almendros de playa"],
+    "houseRules": null,
+    "amenities": null,
+    "checkInTime": null,
+    "checkoutTime": null,
+    "maxGuests": null
+  }
+}
