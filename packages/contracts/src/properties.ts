@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { contentItemInputSchema } from "./listing-content.js";
+import { contentItemInputSchema, listingContentKindSchema } from "./listing-content.js";
 import {
   GUIDE_LANGUAGE_VALUES,
   PMS_PROVIDER_VALUES,
@@ -214,3 +214,59 @@ export type RestrictedValue = z.infer<typeof restrictedValueSchema>;
 
 export const restrictedValueListSchema = z.object({ items: z.array(restrictedValueSchema) });
 export type RestrictedValueList = z.infer<typeof restrictedValueListSchema>;
+
+// --- Duplicate, remove, and restore (US6, FR-043 to FR-045) ---
+
+/** `GET /properties/{id}/duplicate-draft?lang=`: the language of the "Copy of …" name. */
+export const duplicateDraftQuerySchema = z
+  .object({ lang: z.enum(["es", "en"]).default("es") })
+  .strict();
+
+/**
+ * The confirmation step's prefill for a duplicate (FR-043): the facts without the address, and
+ * the listing content. Feeds, stays, codes, and the PMS link are never part of it. Nothing is
+ * created until `POST /properties` with `source: "duplicate"` and `duplicateOf`.
+ */
+export const duplicateDraftSchema = z.object({
+  duplicateOf: z.uuid(),
+  sourceName: z.string(),
+  name: z.string(),
+  country: z.string().nullable(),
+  timeZone: z.string().nullable(),
+  checkInTime: timeOfDaySchema.nullable(),
+  checkoutTime: timeOfDaySchema.nullable(),
+  maxGuests: z.number().int().nullable(),
+  guideLanguages: z.array(guideLanguageSchema),
+  content: z.array(
+    z.object({
+      kind: listingContentKindSchema,
+      body: z.string().nullable(),
+      items: z.array(z.string()).nullable(),
+      language: z.string().nullable(),
+    }),
+  ),
+});
+export type DuplicateDraft = z.infer<typeof duplicateDraftSchema>;
+
+/** `DELETE /properties/{id}?dryRun=true` lists the upcoming stays without removing anything. */
+export const removePropertyQuerySchema = z
+  .object({ dryRun: z.enum(["true", "false"]).default("false") })
+  .strict();
+
+/** The name typed to confirm (FR-044); not needed for a dry run. */
+export const removePropertySchema = z
+  .object({ typedName: z.string().max(200).optional() })
+  .strict()
+  .optional();
+export type RemovePropertyBody = z.infer<typeof removePropertySchema>;
+
+export const propertyRemovalSchema = z.object({
+  removed: z.boolean(),
+  /** When the property is deleted permanently; null for a dry run. */
+  purgeAfter: z.iso.datetime().nullable(),
+  /** Stays with checkout from today, to warn about before removing (FR-044). */
+  upcomingStays: z.array(
+    z.object({ checkInDate: z.iso.date(), checkoutDate: z.iso.date(), channel: z.string() }),
+  ),
+});
+export type PropertyRemoval = z.infer<typeof propertyRemovalSchema>;

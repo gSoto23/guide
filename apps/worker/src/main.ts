@@ -14,6 +14,7 @@ import { createEmailHandler, EMAIL_QUEUE } from "./jobs/email.js";
 import { createExtractionHandler } from "./jobs/extraction.js";
 import { createPmsListingsHandler, createPmsRevokeHandler } from "./jobs/pms-calls.js";
 import { createCsvImportHandler, createCsvValidateHandler } from "./jobs/csv.js";
+import { createPropertiesPurgeHandler, PURGE_PROPERTIES_CRON } from "./jobs/purge-properties.js";
 import { createPmsImportHandler } from "./jobs/pms-import.js";
 import {
   createPmsRefreshHandler,
@@ -171,6 +172,11 @@ async function main(): Promise<void> {
   await boss.work(JOB_QUEUES.csvValidate, createCsvValidateHandler(csvDeps));
   await createQueue(JOB_QUEUES.csvImport);
   await boss.work(JOB_QUEUES.csvImport, createCsvImportHandler(csvDeps));
+
+  // Removed properties are deleted 30 days after removal (US6, FR-045).
+  await createQueue(JOB_QUEUES.propertiesPurge);
+  await boss.work(JOB_QUEUES.propertiesPurge, createPropertiesPurgeHandler({ db: services.db.db }));
+  await boss.schedule(JOB_QUEUES.propertiesPurge, PURGE_PROPERTIES_CRON, null, { tz: "UTC" });
   console.warn("Guidesk worker started");
 
   const shutdown = async (signal: string): Promise<void> => {

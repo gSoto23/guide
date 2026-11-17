@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { ConfirmPropertiesResult, PropertyDetail } from "@guidesk/contracts";
-import { problemOf } from "@/lib/properties-api";
+import { problemNumber, problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
 import { CoreFactsForm, type CoreFactsBody } from "./core-facts-form";
 
@@ -19,6 +19,10 @@ const CalendarFeeds = dynamic(() => import("./calendar-feeds").then((m) => m.Cal
 const StaysList = dynamic(() => import("./stays-list").then((m) => m.StaysList), { ssr: false });
 const RestrictedValues = dynamic(
   () => import("./restricted-values").then((m) => m.RestrictedValues),
+  { ssr: false },
+);
+const RemovePropertyDialog = dynamic(
+  () => import("./remove-property-dialog").then((m) => m.RemovePropertyDialog),
   { ssr: false },
 );
 
@@ -35,6 +39,7 @@ export function PropertyFacts({ locale, propertyId }: { locale: string; property
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>();
   const [message, setMessage] = useState<{ kind: "info" | "error"; text: string } | null>(null);
   const [staysVersion, setStaysVersion] = useState(0);
+  const [removing, setRemoving] = useState(false);
 
   useEffect(() => {
     if (!workspace) return;
@@ -94,6 +99,30 @@ export function PropertyFacts({ locale, propertyId }: { locale: string; property
     }
   }
 
+  /** Restores a removed property within 30 days, if the plan has room (FR-045). */
+  async function restore() {
+    setMessage(null);
+    try {
+      const restored = await workspace!.api.post<PropertyDetail>(
+        `/properties/${propertyId}/restore`,
+      );
+      setProperty(restored);
+      setMessage({ kind: "info", text: t("removed.restored", { name: restored.name }) });
+    } catch (error) {
+      const problem = problemOf(error);
+      setMessage({
+        kind: "error",
+        text:
+          problem?.code === "plan_limit_reached"
+            ? t("removed.limitReached", { limit: problemNumber(problem, "limit") ?? 2 })
+            : problem?.code === "gone"
+              ? t("removed.gone")
+              : errors("internal_error"),
+      });
+    }
+  }
+
+  const removed = property.status === "removed";
   const notSet = t("detail.notSet");
   const missing = property.missingFacts.map((fact) => t(`factNames.${fact}`)).join(", ");
   const address = [
@@ -126,7 +155,25 @@ export function PropertyFacts({ locale, propertyId }: { locale: string; property
           })}
         </span>
       </p>
-      {missing ? (
+      {removed ? (
+        <div className="card">
+          <p>
+            {t("removed.banner", {
+              date: property.purgeAfter
+                ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(
+                    new Date(property.purgeAfter),
+                  )
+                : "",
+            })}
+          </p>
+          {workspace.canManage ? (
+            <button type="button" className="button button-primary" onClick={() => void restore()}>
+              {t("removed.restore")}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+      {missing && !removed ? (
         <p className="alert alert-info">{t("detail.missing", { facts: missing })}</p>
       ) : null}
       {property.pmsStatus === "not_found" ? (
@@ -136,7 +183,7 @@ export function PropertyFacts({ locale, propertyId }: { locale: string; property
           })}
         </p>
       ) : null}
-      {property.setupStatus === "to_confirm" && workspace.canManage ? (
+      {property.setupStatus === "to_confirm" && workspace.canManage && !removed ? (
         <div className="card">
           <p>{t("detail.toConfirm")}</p>
           <button type="button" className="button button-primary" onClick={() => void confirm()}>
@@ -208,24 +255,32 @@ export function PropertyFacts({ locale, propertyId }: { locale: string; property
                 .join(", ")}
             </dd>
           </dl>
-          {workspace.canManage ? (
-            <button
-              type="button"
-              className="button button-secondary"
-              onClick={() => setEditing(true)}
-            >
-              {t("detail.edit")}
-            </button>
-          ) : (
+          {workspace.canManage && !removed ? (
+            <div className="actions">
+              <button
+                type="button"
+                className="button button-secondary"
+                onClick={() => setEditing(true)}
+              >
+                {t("detail.edit")}
+              </button>
+              <Link
+                className="button button-secondary"
+                href={`/${locale}/properties/new/duplicate?from=${encodeURIComponent(propertyId)}`}
+              >
+                {t("detail.duplicate")}
+              </Link>
+            </div>
+          ) : !workspace.canManage ? (
             <p className="muted">{t("detail.readOnly")}</p>
-          )}
+          ) : null}
         </>
       )}
       <ListingContent propertyId={propertyId} sourceProvider={property.sourceProvider} />
       {workspace.canManage && property.counts.restrictedValues ? (
         <RestrictedValues propertyId={propertyId} />
       ) : null}
-      {workspace.canManage ? (
+      {workspace.canManage && !removed ? (
         <CalendarFeeds
           propertyId={propertyId}
           onStaysChanged={() => setStaysVersion((version) => version + 1)}
@@ -242,6 +297,23 @@ export function PropertyFacts({ locale, propertyId }: { locale: string; property
         <strong>{t("detail.nextStep")}</strong>
         <p className="muted">{t("detail.nextStepSoon")}</p>
       </div>
+      {workspace.canManage && !removed ? (
+        removing ? (
+          <RemovePropertyDialog
+            locale={locale}
+            api={workspace.api}
+            propertyId={propertyId}
+            name={property.name}
+            onCancel={() => setRemoving(false)}
+          />
+        ) : (
+          <p>
+            <button type="button" className="button-link" onClick={() => setRemoving(true)}>
+              {t("remove.open")}
+            </button>
+          </p>
+        )
+      ) : null}
     </>
   );
 }

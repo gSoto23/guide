@@ -40,9 +40,9 @@ more properties (FR-048).
 | `POST /properties/confirm` | O A | Body: `{propertyIds}`. Confirms the facts of imported properties in `to_confirm` (one or many from the list), moving them to `ready` (FR-004). Properties still missing facts are returned as `needs_details` |
 | `GET /properties/{propertyId}/restricted-values` | O A | Codes found in imported PMS text: `{items: [{id, kind, label, source, createdAt}]}`, never the value (FR-031). Agents get `404` |
 | `GET /properties/address-check?line1=&unit=&city=&country=` | O A | `{matches: [{propertyId, name}]}` for the dismissible duplicate warning (FR-007) |
-| `GET /properties/{propertyId}/duplicate-draft` | O A | Prefill for the confirmation step: copied facts and content, name "Copy of …", empty address (FR-043). Nothing is created until `POST /properties` |
-| `DELETE /properties/{propertyId}` | O A, SU | Body: `{typedName}`. Response lists upcoming stays to warn about when called with `?dryRun=true` (FR-044) |
-| `POST /properties/{propertyId}/restore` | O A | Within 30 days and with a free slot (FR-045) |
+| `GET /properties/{propertyId}/duplicate-draft?lang=es` | O A | Prefill for the confirmation step: copied facts (country and time zone included) and content, name "Copia de …" or "Copy of …", empty address (FR-043). Nothing is created until `POST /properties`, which copies the content itself. A removed property is `404` |
+| `DELETE /properties/{propertyId}` | O A, SU | Body: `{typedName}`. Returns `{removed, purgeAfter, upcomingStays}`. With `?dryRun=true` it only lists the upcoming stays to warn about, and needs no step-up (FR-044). A wrong name is `409 confirmation_mismatch` |
+| `POST /properties/{propertyId}/restore` | O A | Within 30 days and with a free slot (FR-045). Returns the property. Not removed: `409 conflict`; past the 30 days: `410 gone`; no slot: `409 plan_limit_reached` |
 
 ## Time zones
 

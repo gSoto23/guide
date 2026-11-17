@@ -1,14 +1,29 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { and, desc, eq, ilike, inArray, lt, or, sql, type SQL } from "drizzle-orm";
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  gte,
+  ilike,
+  inArray,
+  isNull,
+  lt,
+  or,
+  sql,
+  type SQL,
+} from "drizzle-orm";
 import type {
   AddressCheck,
   AddressCheckQuery,
   ConfirmPropertiesResult,
   CreatePropertyBody,
+  DuplicateDraft,
   ListPropertiesQuery,
   PropertyDetail,
   PropertyLimits,
   PropertyList,
+  PropertyRemoval,
   PropertySummary,
   RestrictedValueList,
   StartOptions,
@@ -17,6 +32,8 @@ import type {
 import {
   countActiveProperties,
   extractionRequest,
+  LISTING_CONTENT_KINDS,
+  listingContent,
   onboardingProfile,
   upsertListingContent,
   property,
@@ -39,6 +56,7 @@ import {
   orderStartOptions,
   propertyLimit,
   setupStatusAfterEdit,
+  todayIn,
   type CoreFacts,
   type PmsOption,
   type Role,
@@ -49,6 +67,7 @@ import { ApiProblem } from "../common/problem.js";
 import { API_CONFIG, type ApiConfig } from "../config/config.js";
 import { DB_HANDLE } from "../database/database.module.js";
 import { RequestDb } from "../database/request-db.js";
+import { SecurityLogService } from "../security-log/security-log.service.js";
 import { CrossTenantService } from "../tenancy/cross-tenant.js";
 import { PropertyLimitService } from "./property-limit.service.js";
 import { toDetail, toSummary, toTimeOfDay, type PropertyRow } from "./property-mapper.js";
@@ -57,7 +76,23 @@ import { toDetail, toSummary, toTimeOfDay, type PropertyRow } from "./property-m
  * Creation paths built so far; `start-options` leaves out the others (T042). Each user story adds
  * its path here when it lands.
  */
-export const AVAILABLE_START_OPTIONS: readonly StartOption[] = ["listing", "pms", "csv", "blank"];
+export const AVAILABLE_START_OPTIONS: readonly StartOption[] = [
+  "listing",
+  "pms",
+  "csv",
+  "duplicate",
+  "blank",
+];
+
+/** A removed property can be restored for 30 days, then it is purged (FR-045). */
+const RESTORE_WINDOW_MS = 30 * 86_400_000;
+
+const COPY_OF = { es: "Copia de", en: "Copy of" } as const;
+
+/** The typed name matches the property's name, ignoring spaces around it (FR-044). */
+function sameName(typed: string | undefined, name: string): boolean {
+  return (typed ?? "").normalize("NFC").trim() === name.normalize("NFC").trim();
+}
 
 const CORE_FACT_KEYS = [
   "name",
@@ -124,6 +159,7 @@ export class PropertiesService {
     private readonly requestDb: RequestDb,
     private readonly limits: PropertyLimitService,
     private readonly crossTenant: CrossTenantService,
+    private readonly securityLog: SecurityLogService,
     @Inject(DB_HANDLE) private readonly handle: DbHandle,
     @Inject(API_CONFIG) private readonly config: ApiConfig,
   ) {}
@@ -227,25 +263,35 @@ export class PropertiesService {
   }
 
   /**
-   * Creation from the confirmation step (FR-004): blank (US1), or listing text with the content
-   * items the host accepted from an extraction (US2, T060). Duplicates arrive with US6.
+   * Creation from the confirmation step (FR-004): blank (US1), listing text with the content
+   * items the host accepted from an extraction (US2, T060), or a duplicate (US6, T116), whose
+   * content is copied from the source property here, never taken from the request.
    */
   async create(
     caller: Caller,
     workspaceId: string,
     body: CreatePropertyBody,
   ): Promise<PropertyDetail> {
-    if (body.source === "duplicate") {
-      throw new ApiProblem(422, "validation_failed", "This creation path is not available yet.", {
-        fields: { source: ["Not available"] },
-      });
-    }
     assertKnownTimeZone(body.timeZone);
     const tx = this.requestDb.current();
     const extraction =
       body.source === "listing_text"
         ? await this.acceptedExtraction(caller, workspaceId, body)
         : null;
+    let original: PropertyRow | null = null;
+    if (body.source === "duplicate") {
+      if (body.contentItems?.length) {
+        throw new ApiProblem(
+          422,
+          "validation_failed",
+          "A copy takes its content from the original.",
+          {
+            fields: { contentItems: ["Not accepted for a duplicate"] },
+          },
+        );
+      }
+      original = await this.loadActive(caller, workspaceId, body.duplicateOf!);
+    }
     await this.limits.withCreationSlot(tx, workspaceId, 1);
     const facts = factsOf(body);
     const [row] = await tx
@@ -268,9 +314,24 @@ export class PropertiesService {
         setupStatus: initialSetupStatus(body.source, facts),
         missingFacts: missingFacts(facts),
         source: body.source,
+        duplicatedFromId: original?.id ?? null,
         createdBy: caller.userId,
       })
       .returning();
+    if (original) {
+      // The listing content, labeled as copied until the host edits or approves it (FR-043).
+      for (const item of await this.contentOf(original.id)) {
+        await upsertListingContent(tx, {
+          workspaceId,
+          propertyId: row!.id,
+          kind: item.kind,
+          body: item.body,
+          items: item.items,
+          language: item.language,
+          source: "duplicate",
+        });
+      }
+    }
     if (extraction) {
       // Content keeps its source label until the host edits or approves it (FR-018).
       const source = extraction.inputText ? "listing_text" : "screenshot";
@@ -352,7 +413,7 @@ export class PropertiesService {
     propertyId: string,
     body: UpdatePropertyBody,
   ): Promise<PropertyDetail> {
-    const current = await this.load(caller, workspaceId, propertyId);
+    const current = await this.loadActive(caller, workspaceId, propertyId);
     assertKnownTimeZone(body.timeZone);
     const facts: CoreFacts = { ...factsOf(current), ...body };
     const changed = CORE_FACT_KEYS.filter(
@@ -467,6 +528,137 @@ export class PropertiesService {
         createdAt: row.createdAt.toISOString(),
       })),
     };
+  }
+
+  /**
+   * The confirmation step's prefill for a copy (FR-043, T116): facts without the address, and the
+   * listing content. Feeds, stays, codes, and the PMS link stay with the original.
+   */
+  async duplicateDraft(
+    caller: Caller,
+    workspaceId: string,
+    propertyId: string,
+    language: "es" | "en",
+  ): Promise<DuplicateDraft> {
+    const original = await this.loadActive(caller, workspaceId, propertyId);
+    return {
+      duplicateOf: original.id,
+      sourceName: original.name,
+      name: `${COPY_OF[language]} ${original.name}`.slice(0, 120),
+      country: original.country,
+      timeZone: original.timeZone,
+      checkInTime: toTimeOfDay(original.checkInTime),
+      checkoutTime: toTimeOfDay(original.checkoutTime),
+      maxGuests: original.maxGuests,
+      guideLanguages: original.guideLanguages,
+      content: await this.contentOf(original.id),
+    };
+  }
+
+  /** Listing content in the order the property page shows it. */
+  private async contentOf(propertyId: string) {
+    const rows = await this.requestDb
+      .current()
+      .select({
+        kind: listingContent.kind,
+        body: listingContent.body,
+        items: listingContent.items,
+        language: listingContent.language,
+      })
+      .from(listingContent)
+      .where(eq(listingContent.propertyId, propertyId));
+    return rows.sort(
+      (a, b) => LISTING_CONTENT_KINDS.indexOf(a.kind) - LISTING_CONTENT_KINDS.indexOf(b.kind),
+    );
+  }
+
+  /**
+   * Removes a property for 30 days (FR-044, FR-045, T117), after the typed name and a recent
+   * sign-in. With `dryRun`, it only lists the upcoming stays to warn about. A removed property
+   * does not count toward the limit, and its feeds and PMS refreshes stop.
+   */
+  async remove(
+    caller: Caller,
+    workspaceId: string,
+    propertyId: string,
+    input: { typedName?: string; dryRun: boolean },
+  ): Promise<PropertyRemoval> {
+    const row = await this.loadActive(caller, workspaceId, propertyId);
+    const tx = this.requestDb.current();
+    const now = new Date();
+    const upcomingStays = await tx
+      .select({
+        checkInDate: stay.checkInDate,
+        checkoutDate: stay.checkoutDate,
+        channel: stay.channel,
+      })
+      .from(stay)
+      .where(
+        and(
+          eq(stay.propertyId, propertyId),
+          eq(stay.status, "active"),
+          isNull(stay.duplicateOfId),
+          gte(stay.checkoutDate, todayIn(row.timeZone ?? "UTC", now)),
+        ),
+      )
+      .orderBy(asc(stay.checkInDate), asc(stay.checkoutDate));
+    if (input.dryRun) return { removed: false, purgeAfter: null, upcomingStays };
+    if (!sameName(input.typedName, row.name)) {
+      throw new ApiProblem(409, "confirmation_mismatch");
+    }
+    const purgeAfter = new Date(now.getTime() + RESTORE_WINDOW_MS);
+    const [removed] = await tx
+      .update(property)
+      .set({ status: "removed", removedAt: now, removedBy: caller.userId, purgeAfter })
+      .where(and(eq(property.id, propertyId), eq(property.status, "active")))
+      .returning({ id: property.id });
+    if (!removed) throw new ApiProblem(404, "not_found");
+    await this.securityLog.record({
+      type: "property.removed",
+      outcome: "success",
+      actorUserId: caller.userId,
+      workspaceId,
+      targetType: "property",
+      targetId: propertyId,
+      metadata: {},
+    });
+    return { removed: true, purgeAfter: purgeAfter.toISOString(), upcomingStays };
+  }
+
+  /** Restores a removed property within 30 days, when the plan has a free slot (FR-045, T117). */
+  async restore(caller: Caller, workspaceId: string, propertyId: string): Promise<PropertyDetail> {
+    const current = await this.load(caller, workspaceId, propertyId);
+    if (current.status !== "removed") {
+      throw new ApiProblem(409, "conflict", "This property is not removed.");
+    }
+    if (current.purgeAfter && current.purgeAfter.getTime() <= Date.now()) {
+      throw new ApiProblem(410, "gone", "This property can no longer be restored.");
+    }
+    const tx = this.requestDb.current();
+    await this.limits.withCreationSlot(tx, workspaceId, 1);
+    const [row] = await tx
+      .update(property)
+      .set({ status: "active", removedAt: null, removedBy: null, purgeAfter: null })
+      .where(and(eq(property.id, propertyId), eq(property.status, "removed")))
+      .returning();
+    if (!row) throw new ApiProblem(409, "conflict", "This property is not removed.");
+    await this.securityLog.record({
+      type: "property.restored",
+      outcome: "success",
+      actorUserId: caller.userId,
+      workspaceId,
+      targetType: "property",
+      targetId: propertyId,
+      metadata: {},
+    });
+    return this.detail(caller, row);
+  }
+
+  /** An active property of this workspace; a removed one is `404`, like one that does not exist. */
+  async loadActive(caller: Caller, workspaceId: string, propertyId: string): Promise<PropertyRow> {
+    const row = await this.load(caller, workspaceId, propertyId);
+    if (row.status !== "active") throw new ApiProblem(404, "not_found");
+    return row;
   }
 
   async load(caller: Caller, workspaceId: string, propertyId: string): Promise<PropertyRow> {

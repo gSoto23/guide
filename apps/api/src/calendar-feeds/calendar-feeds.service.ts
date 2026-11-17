@@ -383,7 +383,8 @@ export class CalendarFeedsService {
 
   /** "Refresh now" for every feed of the property, once every 5 minutes (FR-023). */
   async refreshNow(caller: Caller, workspaceId: string, propertyId: string): Promise<void> {
-    await this.properties.load(caller, workspaceId, propertyId);
+    // A removed property's feeds are never read (AC-SEC-011).
+    await this.properties.loadActive(caller, workspaceId, propertyId);
     const tx = this.requestDb.current();
     const now = new Date();
     const [recent] = await tx

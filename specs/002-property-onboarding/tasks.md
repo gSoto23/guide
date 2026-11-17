@@ -980,7 +980,7 @@ none of the excluded data. A removed property is restored.
 
 ### Tests for User Story 6 ⚠️ (write first, must fail)
 
-- [ ] T113 [P] [US6] Integration tests in `apps/api/test/integration/property-lifecycle.test.ts`:
+- [X] T113 [P] [US6] Integration tests in `apps/api/test/integration/property-lifecycle.test.ts`:
   - **Duplicate:**
     - `duplicate-draft` returns the facts without the address, the content, and the name "Copy of …";
     - it carries no feeds, stays, restricted values, or PMS link (FR-043);
@@ -998,23 +998,30 @@ none of the excluded data. A removed property is restored.
     - restore works within 30 days when a slot is free, and logs `property.restored`;
     - with no free slot → `409 plan_limit_reached`.
   - **Agents:** duplicate, remove, and restore are refused (AC-SEC-001)
-- [ ] T114 [P] [US6] Worker test in `apps/worker/test/purge-properties.test.ts`:
+- [X] T114 [P] [US6] Worker test in `apps/worker/test/purge-properties.test.ts` (as built: `apps/worker/test/integration/purge-properties.test.ts`, against the test database):
   - after `purge_after`, the property, its stays, content, feeds, and restricted values are deleted, and `property.purged` is logged;
   - before it, nothing is deleted
-- [ ] T115 [P] [US6] End-to-end test in `e2e/specs/properties-us6-lifecycle.spec.ts` (quickstart 11)
+- [X] T115 [P] [US6] End-to-end test in `e2e/specs/properties-us6-lifecycle.spec.ts` (quickstart 11)
 
 ### Implementation for User Story 6
 
-- [ ] T116 [US6] Implement `GET /properties/{id}/duplicate-draft` and `duplicateOf` handling in `apps/api/src/properties/`: copy the facts except the address, copy the content, and set `duplicated_from_id`
-- [ ] T117 [US6] Implement removal and restore in `apps/api/src/properties/`, and make feed and PMS refresh selection skip removed properties:
+- [X] T116 [US6] Implement `GET /properties/{id}/duplicate-draft` and `duplicateOf` handling in `apps/api/src/properties/`: copy the facts except the address, copy the content, and set `duplicated_from_id`
+- [X] T117 [US6] Implement removal and restore in `apps/api/src/properties/`, and make feed and PMS refresh selection skip removed properties (as built: the refresh selection already skipped them since US3 and US4; "Refresh now" on a removed property is now `404`):
   - `DELETE /properties/{id}`: the typed name, step-up, `dryRun`, `status = removed`, `purge_after` = +30 days, and `property.removed`;
   - `POST /properties/{id}/restore`: the slot check, and `property.restored`
-- [ ] T118 [US6] Implement the daily worker job `apps/worker/src/jobs/purge-properties.ts` (`properties.purge`)
-- [ ] T119 [US6] Build the duplicate and remove actions:
+- [X] T118 [US6] Implement the daily worker job `apps/worker/src/jobs/purge-properties.ts` (`properties.purge`)
+- [X] T119 [US6] Build the duplicate and remove actions (as built: the copy flow is `/properties/new/duplicate`, with a picker when no property is given; the removal section is loaded on demand on the property page; the removed list is `/properties?view=removed`):
   - the duplicate action opens the confirmation step with the draft;
   - the removal dialog `apps/portal/components/properties/remove-property-dialog.tsx`: typed name, upcoming stays warning, and step-up;
   - the list of removed properties, with restore and the days left
-- [ ] T120 [P] [US6] Add the US6 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`
+- [X] T120 [P] [US6] Add the US6 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`
+
+- **As built (US6):**
+  - **The copy:** it keeps the country and time zone with the other facts; the street line, unit, city, region, and postal code start empty. The draft's name is "Copia de …" or "Copy of …" by `?lang=`. `POST /properties` copies the content from the original on the server, labeled `duplicate` and unreviewed; `contentItems` are refused for a duplicate.
+  - **Removing:** `DELETE` with `?dryRun=true` needs no step-up, because it only reads; the removal itself does (`StepUpUnlessDryRunGuard`, after the role check). The typed name is compared without surrounding spaces. Upcoming stays are active ones with checkout from today in the property's time zone.
+  - **While removed:** editing and "Refresh now" answer `404`; a copy of a removed property is `404`. The property page shows the deletion date and "Restore".
+  - **Restoring:** `409 conflict` for a property that is not removed, `410 gone` after the 30 days, and `409 plan_limit_reached` with no free slot.
+  - **Agents:** duplicate, remove, dry run, and restore answer `403`, like the other property writes, and each refusal is logged.
 
 **Checkpoint**: All six stories work on their own.
 

@@ -62,7 +62,16 @@ export function PropertyListView({ locale }: { locale: string }) {
   if (!items || !limits) return <p className="muted">{t("loading")}</p>;
 
   if (items.length === 0 && !search) {
-    return <StartOptionsPanel locale={locale} title={t("firstTitle")} />;
+    return (
+      <>
+        <StartOptionsPanel locale={locale} title={t("firstTitle")} />
+        {workspace.canManage ? (
+          <p>
+            <Link href={`/${locale}/properties?view=removed`}>{t("removed.show")}</Link>
+          </p>
+        ) : null}
+      </>
+    );
   }
 
   // "Confirm all" (FR-004): imported properties whose facts are complete become ready.
@@ -167,6 +176,11 @@ export function PropertyListView({ locale }: { locale: string }) {
         <button type="button" className="button button-secondary" onClick={() => void loadMore()}>
           {t("list.loadMore")}
         </button>
+      ) : null}
+      {workspace.canManage ? (
+        <p>
+          <Link href={`/${locale}/properties?view=removed`}>{t("removed.show")}</Link>
+        </p>
       ) : null}
     </>
   );

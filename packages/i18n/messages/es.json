@@ -254,7 +254,8 @@
       "toConfirm": "Estos datos vienen de tu PMS. Revísalos y confírmalos.",
       "confirm": "Confirmar datos",
       "confirmed": "Datos confirmados.",
-      "stillMissing": "Todavía faltan algunos datos."
+      "stillMissing": "Todavía faltan algunos datos.",
+      "duplicate": "Duplicar"
     },
     "listing": {
       "title": "Pegar tu anuncio",
@@ -558,6 +559,45 @@
         "time_zone_mismatch": "la zona horaria no es de ese país",
         "other": "revisa este dato"
       }
+    },
+    "duplicate": {
+      "title": "Copiar una propiedad",
+      "pickIntro": "Elige la propiedad que quieres copiar. Se copian los horarios, la capacidad, los idiomas y el contenido del anuncio.",
+      "pickEmpty": "Todavía no tienes propiedades para copiar.",
+      "excluded": "No se copian la dirección, los calendarios, las estadías, los códigos ni la conexión con el PMS.",
+      "from": "Copia de «{name}»",
+      "content": "Contenido que se copia: {kinds}.",
+      "noContent": "La propiedad original no tiene contenido del anuncio.",
+      "create": "Crear la copia",
+      "other": "Copiar otra propiedad"
+    },
+    "remove": {
+      "title": "Eliminar esta propiedad",
+      "intro": "Deja de contar para tu plan y sus calendarios dejan de actualizarse. Puedes restaurarla durante 30 días; después se borra con sus estadías, su contenido y sus códigos.",
+      "open": "Eliminar propiedad",
+      "checking": "Revisando estadías…",
+      "upcoming": "{count, plural, one {Tiene # estadía próxima:} other {Tiene # estadías próximas:}}",
+      "stay": "{checkIn} → {checkout} · {channel}",
+      "noUpcoming": "No tiene estadías próximas.",
+      "typeName": "Escribe «{name}» para confirmar",
+      "mismatch": "El nombre no coincide. Escríbelo tal como aparece.",
+      "confirm": "Eliminar",
+      "removing": "Eliminando…",
+      "cancel": "Cancelar"
+    },
+    "removed": {
+      "title": "Propiedades eliminadas",
+      "show": "Ver propiedades eliminadas",
+      "back": "Volver a las propiedades",
+      "intro": "Puedes restaurarlas durante 30 días si tu plan tiene espacio. Después se borran para siempre.",
+      "empty": "No tienes propiedades eliminadas.",
+      "daysLeft": "{days, plural, =0 {Se borra hoy} one {Se borra en # día} other {Se borra en # días}}",
+      "restore": "Restaurar",
+      "restoring": "Restaurando…",
+      "restored": "Restauraste «{name}».",
+      "limitReached": "Tu plan no tiene espacio. Elimina otra propiedad o escríbenos para ampliar el límite.",
+      "gone": "Ya pasaron los 30 días: esta propiedad no se puede restaurar.",
+      "banner": "Eliminaste esta propiedad. Se borra para siempre el {date}."
     },
     "imports": {
       "loading": "Cargando la importación…",

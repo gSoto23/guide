@@ -254,7 +254,8 @@
       "toConfirm": "These details came from your PMS. Check them and confirm.",
       "confirm": "Confirm details",
       "confirmed": "Details confirmed.",
-      "stillMissing": "Some details are still missing."
+      "stillMissing": "Some details are still missing.",
+      "duplicate": "Duplicate"
     },
     "listing": {
       "title": "Paste your listing",
@@ -558,6 +559,45 @@
         "time_zone_mismatch": "the time zone isn't in that country",
         "other": "check this value"
       }
+    },
+    "duplicate": {
+      "title": "Copy a property",
+      "pickIntro": "Choose the property to copy. Its times, capacity, languages, and listing content are copied.",
+      "pickEmpty": "You don't have properties to copy yet.",
+      "excluded": "The address, calendars, stays, codes, and PMS connection are not copied.",
+      "from": "Copy of “{name}”",
+      "content": "Content that is copied: {kinds}.",
+      "noContent": "The original property has no listing content.",
+      "create": "Create the copy",
+      "other": "Copy another property"
+    },
+    "remove": {
+      "title": "Remove this property",
+      "intro": "It stops counting toward your plan, and its calendars stop updating. You can restore it for 30 days; after that it is deleted with its stays, content, and codes.",
+      "open": "Remove property",
+      "checking": "Checking stays…",
+      "upcoming": "{count, plural, one {It has # upcoming stay:} other {It has # upcoming stays:}}",
+      "stay": "{checkIn} → {checkout} · {channel}",
+      "noUpcoming": "It has no upcoming stays.",
+      "typeName": "Type “{name}” to confirm",
+      "mismatch": "The name doesn't match. Type it exactly as shown.",
+      "confirm": "Remove",
+      "removing": "Removing…",
+      "cancel": "Cancel"
+    },
+    "removed": {
+      "title": "Removed properties",
+      "show": "See removed properties",
+      "back": "Back to properties",
+      "intro": "You can restore them for 30 days if your plan has room. After that they are deleted for good.",
+      "empty": "You have no removed properties.",
+      "daysLeft": "{days, plural, =0 {Deleted today} one {Deleted in # day} other {Deleted in # days}}",
+      "restore": "Restore",
+      "restoring": "Restoring…",
+      "restored": "You restored “{name}”.",
+      "limitReached": "Your plan has no room. Remove another property or write to us to raise the limit.",
+      "gone": "The 30 days are over: this property can't be restored.",
+      "banner": "You removed this property. It is deleted for good on {date}."
     },
     "imports": {
       "loading": "Loading the import…",
