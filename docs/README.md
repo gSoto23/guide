@@ -19,7 +19,8 @@
 | | [Principles and IA](ux/principles-and-ia.md) | Design principles, sitemaps, mobile navigation, what each role sees |
 | | [User flows](ux/user-flows.md) | Nine end-to-end flows with key states |
 | | [Screen inventory](ux/screens.md) | Every screen by surface, persona, and phase |
-| | [Design system](ux/design-system.md) | Provisional tokens, typography, components, accessibility, i18n |
+| | [Design system](ux/design-system.md) | Color tokens, typography, components, accessibility, i18n |
+| | [Brand guide](brand/README.md) | Logo, palette, type, icons, imagery, and usage rules |
 | | [Wireframes](ux/wireframes.html) | Low-fidelity mobile wireframes of 12 key screens |
 | **Presentation** | [Project overview](presentation/project-overview.md) | Guidesk in plain language for investors, partners, and pilot hosts |
 | | [Budget](presentation/budget.md) | Development and operating costs per scenario, with sources |

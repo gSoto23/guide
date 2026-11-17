@@ -1,85 +1,118 @@
-# Design System Foundations (Provisional)
+# Design System Foundations
 
-> **Status:** Draft v0.1, **provisional** · **Owner:** Founder · **Last updated:** 2026-11-14 ·
-> **Related:** [UX index](README.md) · [Principles and IA](principles-and-ia.md) · [Screens](screens.md) · [Wireframes](wireframes.html) · [Performance](../architecture/performance.md) · [ADR-0004 stack](../architecture/adr/0004-typescript-monorepo-stack.md)
+> **Status:** v1.0, brand decided · **Owner:** Founder · **Last updated:** 2026-11-17 ·
+> **Related:** [Brand guide](../brand/README.md) · [UX index](README.md) · [Principles and IA](principles-and-ia.md) · [Screens](screens.md) · [Wireframes](wireframes.html) · [Performance](../architecture/performance.md) · [ADR-0004 stack](../architecture/adr/0004-typescript-monorepo-stack.md)
 
-The visual brand is not decided (OQ-11). Everything here is a **working foundation**: tokens,
-type, spacing, components, and rules that make the MVP accessible, bilingual, and fast. Names
-and structure should survive the brand work; the color values and the logo will change. The
-portal uses Tailwind CSS and shadcn/ui (ADR-0004), so the tokens below are written as CSS custom
-properties that map onto Tailwind's theme.
+The visual identity was decided on 2026-11-17: direction "Bienvenida" (terracota, sol, arena,
+carbón), described in the [brand guide](../brand/README.md). This document turns it into
+tokens, type, spacing, components, and rules that make the product accessible, bilingual, and
+fast. The portal uses Tailwind CSS and shadcn/ui (ADR-0004), so the tokens are CSS custom
+properties that map onto Tailwind's theme. The values live in `apps/portal/app/globals.css`;
+[`docs/brand/build/tokens.py`](../brand/build/tokens.py) holds the same values and recomputes
+every contrast pair below.
 
 ## 1. Scope
 
-| Fixed by recorded decisions | Provisional (brand work may change it) |
+| Fixed by recorded decisions | Still open |
 |---|---|
-| System font stack, no web fonts in the guide ([performance §2](../architecture/performance.md#2-guest-guide-delivery)) | Color values and the primary hue |
-| WCAG 2.2 AA contrast and target sizes (NFR-07) | Corner radius and elevation style |
-| Spanish and English with equal quality (NFR-06) | Illustration and photo style |
-| ≤ 100 KB initial JavaScript per guide route; chat loads on tap | Logo, wordmark, and app icon |
-| Disclosure on every offer (PC-07); visible lock on restricted fields (SEC-01 to SEC-04) | Exact microcopy (legal review, OQ-35, may change disclosure wording) |
+| System font stack, no web fonts in the guide ([performance §2](../architecture/performance.md#2-guest-guide-delivery)) | Trademark search and domain for the name (OQ-11) |
+| WCAG 2.2 AA contrast and target sizes (NFR-07) | Exact microcopy (legal review, OQ-35, may change disclosure wording) |
+| Spanish and English with equal quality (NFR-06) | Host branding on Pro and Business guides (how far a host can recolor the guide) |
+| ≤ 100 KB initial JavaScript per guide route; chat loads on tap | |
+| Disclosure on every offer (PC-07); visible lock on restricted fields (SEC-01 to SEC-04) | |
+| Brand palette, logo, app icon, radius, and elevation ([brand guide](../brand/README.md), 2026-11-17) | |
 
 ## 2. Color
 
-Semantic tokens only: components never use raw hex values. The primary hue is a deep teal as a
-neutral placeholder. Contrast ratios below were computed with the WCAG 2.x relative-luminance
-formula.
+Semantic tokens only: components never use raw hex values. Contrast ratios were computed with
+the WCAG 2.x relative-luminance formula by `docs/brand/build/tokens.py`, which fails if any pair
+drops below its minimum. Text needs 4.5:1; borders of controls, focus rings, and meaningful
+icons need 3:1.
 
 ### 2.1 Light theme
 
 | Token | Value | Use | Contrast | Passes |
 |---|---|---|---|---|
-| `--color-bg` | `#FFFFFF` | Page background | — | — |
-| `--color-surface` | `#F4F6F7` | Cards, tiles, sheets | — | — |
-| `--color-text` | `#1B1F24` | Body text | 16.6:1 on bg · 15.3:1 on surface | AA, AAA |
-| `--color-text-muted` | `#505A64` | Secondary text, captions | 7.0:1 on bg · 6.5:1 on surface | AA, AAA |
-| `--color-primary` | `#0B6466` | Links, primary text accents | 6.9:1 on bg · 6.4:1 on surface | AA |
-| `--color-on-primary` | `#FFFFFF` | Text on primary buttons | 6.9:1 on primary | AA |
-| `--color-primary-strong` | `#084C4E` | Pressed and hover | 9.8:1 with white text | AA, AAA |
-| `--color-border-strong` | `#7A8691` | Input and control borders | 3.7:1 on bg | AA non-text (3:1) |
-| `--color-border` | `#D5DBE0` | Decorative dividers only | 1.4:1 | Not for controls |
-| `--color-focus` | `#1E5BD6` | Focus ring, 2 px with 2 px offset | 6.0:1 on bg | AA non-text |
-| `--color-danger` | `#B3261E` | Errors, destructive actions | 6.5:1 on bg · 5.7:1 on danger-bg | AA |
-| `--color-danger-bg` | `#FDECEA` | Error banners, emergency card | — | — |
-| `--color-warning` | `#7A4D00` | Warning text | 6.7:1 on warning-bg | AA |
-| `--color-warning-bg` | `#FFF4E0` | Warning banners | — | — |
-| `--color-success` | `#1B6E3A` | Success text | 5.6:1 on success-bg | AA |
+| `--color-bg` | `#FFFCF8` (cal) | Page background | — | — |
+| `--color-surface` | `#F7F1EA` (arena) | Cards, tiles, sheets | — | — |
+| `--color-text` | `#2B211C` (carbón) | Body text | 15.36:1 on bg · 14.00:1 on surface | AA, AAA |
+| `--color-text-muted` | `#66574D` | Secondary text, captions | 6.76:1 on bg · 6.17:1 on surface | AA |
+| `--color-primary` | `#B4452A` (terracota) | Links, primary buttons, brand accents in text | 5.37:1 on bg · 4.90:1 on surface | AA |
+| `--color-on-primary` | `#FFFFFF` | Text on primary buttons | 5.49:1 on primary | AA |
+| `--color-link` | `#8E3420` | Links, always underlined; visited links keep it | 7.71:1 on bg · 7.03:1 on surface · ≥ 6.61:1 on every banner background | AA (AAA on bg and surface) |
+| `--color-primary-strong` | `#8E3420` | Hover and pressed | 7.89:1 with on-primary | AA, AAA |
+| `--color-accent` | `#F5BC4C` (sol) | Decoration only: illustrations, highlights, the logo's door | 1.85:1 on white: **never text or meaningful icons** | — |
+| `--color-border-strong` | `#8C7B70` | Input and control borders | 3.96:1 on bg · 3.61:1 on surface | AA non-text |
+| `--color-border` | `#E6DCD1` | Decorative dividers only | — | Not for controls |
+| `--color-focus` | `#1E5BD6` | Focus ring, 2 px with 2 px offset | 5.83:1 on bg · 5.32:1 on surface | AA non-text |
+| `--color-danger` | `#A0153E` | Errors, destructive actions | 7.69:1 on bg · 7.01:1 on surface · 6.84:1 on danger-bg | AA |
+| `--color-on-danger` | `#FFFFFF` | Text on destructive buttons | 7.86:1 on danger | AA, AAA |
+| `--color-danger-bg` | `#FCEBEF` | Error banners, emergency card | — | — |
+| `--color-warning` | `#7A4D00` | Warning text | 6.61:1 on warning-bg | AA |
+| `--color-warning-bg` | `#FFF3DC` | Warning banners | — | — |
+| `--color-success` | `#1B6E3A` | Success text | 5.59:1 on success-bg · 6.15:1 on bg | AA |
 | `--color-success-bg` | `#E7F5EC` | Success banners, "Paid" | — | — |
-| `--color-info` | `#1F5AA6` | Info text | 6.0:1 on info-bg | AA |
+| `--color-info` | `#1F5AA6` | Info text, warning badges | 5.95:1 on info-bg · 6.68:1 on bg | AA |
 | `--color-info-bg` | `#E8F0FB` | Info banners, holding replies | — | — |
-| `--color-disclosure` | `#3A444E` | Disclosure text | 8.8:1 on disclosure-bg | AA, AAA |
-| `--color-disclosure-bg` | `#EEF1F4` | Disclosure pill | — | — |
+| `--color-disclosure` | `#4A3F38` | Disclosure text | 8.55:1 on disclosure-bg | AA, AAA |
+| `--color-disclosure-bg` | `#F1EAE2` | Disclosure pill | — | — |
 
 ### 2.2 Dark theme
 
-Follows `prefers-color-scheme`, with no script and no flash of the wrong theme.
+Follows `prefers-color-scheme`, with no script and no flash of the wrong theme. Every token is
+redefined, so no light value leaks into dark mode.
 
 | Token | Value | Contrast | Passes |
 |---|---|---|---|
-| `--color-bg` | `#121417` | — | — |
-| `--color-surface` | `#1C2024` | — | — |
-| `--color-text` | `#E8ECEF` | 15.5:1 on bg · 13.8:1 on surface | AA, AAA |
-| `--color-text-muted` | `#A9B3BC` | 8.7:1 on bg · 7.7:1 on surface | AA, AAA |
-| `--color-primary` | `#5CC8C4` | 9.2:1 on bg | AA, AAA |
-| `--color-on-primary` | `#0B1A1A` | 8.9:1 on primary | AA, AAA |
-| `--color-border-strong` | `#6B7680` | 4.0:1 on bg | AA non-text |
-| `--color-focus` | `#8AB4F8` | 8.8:1 on bg | AA non-text |
-| `--color-danger` | `#F2817A` | 7.2:1 on bg | AA |
-| `--color-warning` | `#F0B357` | 9.9:1 on bg | AA |
-| `--color-success` | `#6FCF97` | 9.7:1 on bg | AA |
-| `--color-info` | `#8AB4F8` | 8.8:1 on bg | AA |
-| `--color-disclosure` | `#C9D1D8` on `#262B30` | 9.2:1 | AA, AAA |
+| `--color-bg` | `#17120F` (noche) | — | — |
+| `--color-surface` | `#221B17` | — | — |
+| `--color-text` | `#F3ECE6` | 15.89:1 on bg · 14.51:1 on surface | AA, AAA |
+| `--color-text-muted` | `#BFB1A6` | 8.90:1 on bg · 8.13:1 on surface | AA, AAA |
+| `--color-primary` | `#F0906F` (terracota claro) | 7.90:1 on bg · 7.21:1 on surface | AA, AAA |
+| `--color-on-primary` | `#2A0F06` | 7.63:1 on primary · 10.05:1 on primary-strong | AA, AAA |
+| `--color-primary-strong` | `#F6B29A` | (hover and pressed: lighter in dark mode) | — |
+| `--color-link` | `#F0906F` | 7.90:1 on bg · 7.21:1 on surface · ≥ 5.76:1 on every banner background | AA |
+| `--color-accent` | `#F5BC4C` | Decoration only | — |
+| `--color-border` | `#3A302A` | Decorative dividers only | — |
+| `--color-border-strong` | `#8A7A6F` | 4.51:1 on bg · 4.12:1 on surface | AA non-text |
+| `--color-focus` | `#8AB4F8` | 8.82:1 on bg · 8.05:1 on surface | AA non-text |
+| `--color-danger` | `#FF9BB5` | 9.39:1 on bg · 8.57:1 on surface · 7.82:1 on danger-bg | AA, AAA |
+| `--color-on-danger` | `#2B0A12` | 9.19:1 on danger | AA, AAA |
+| `--color-danger-bg` | `#3B1A22` | — | — |
+| `--color-warning` | `#F0B357` on `#3A2C12` | 7.29:1 | AA, AAA |
+| `--color-success` | `#6FCF97` on `#16301F` | 7.48:1 (9.78:1 on bg) | AA, AAA |
+| `--color-info` | `#8AB4F8` on `#18263D` | 7.20:1 (8.82:1 on bg) | AA, AAA |
+| `--color-disclosure` | `#DDD2C9` on `#2E2621` | 9.99:1 | AA, AAA |
 
 ### 2.3 Color rules
 
 - **Never color alone.** Every status pairs color with text and, where useful, an icon: "Locked",
   "Paid", "Emergency" (WCAG 1.4.1).
+- **Sol is decoration.** The accent never carries text, meaning, or focus.
+- **Danger is not the primary.** Danger is crimson (rose in dark mode), terracota is orange-red,
+  and the two differ in lightness too (1.43:1 light, 1.19:1 dark), so a destructive button
+  never looks like the primary one. Both always have a text label.
+- **Text on a filled color uses its `on-` token:** `--color-on-primary` on primary,
+  `--color-on-danger` on danger. Never hard-code white: it fails on the light dark-mode fills.
+- **Links are underlined.** `--color-link` differs from body text by only about 2:1, so the
+  underline is what marks a link (WCAG 1.4.1). Never remove it from links in running text.
 - **Disclosure is neutral.** Disclosures use the neutral disclosure tokens, not warning colors.
   They inform; they do not alarm.
 - **Emergency is the only red surface in the guide.** Errors use red text and a red border, so
   the emergency card stays distinct.
-- **Focus rings sit on the page background,** thanks to the 2 px offset, so they keep 3:1 contrast
-  even around primary buttons.
+- **Focus rings are blue on purpose,** to stand out from terracota buttons, and sit on the page
+  background thanks to the 2 px offset, so they keep 3:1 contrast around any button.
+
+### 2.4 Token audit of the portal (2026-11-17)
+
+Hard-coded values found in `apps/portal/app/globals.css` while applying the tokens:
+
+| Rule | Was | Now | Status |
+|---|---|---|---|
+| `.button-danger` | `color: #ffffff` (about 2:1 on the dark-mode danger fill) | `var(--color-on-danger)` | Fixed 2026-11-17 |
+| No `a` rule | Browser default blue and purple links | `a { color: var(--color-link) }`, visited included | Fixed 2026-11-17 |
+| `.switcher-menu` | `box-shadow: 0 8px 24px rgb(0 0 0 / 0.15)` | Should use `var(--shadow-sheet)` | Open (cosmetic) |
+| `.switcher-option` | `border-radius: 8px` | Should use `var(--radius-sm)` | Open (same value) |
 
 ## 3. Typography
 
@@ -106,6 +139,10 @@ Follows `prefers-color-scheme`, with no script and no flash of the wrong theme.
 **Weights:** 400 (body), 600 (labels, titles), 700 (codes and key numbers). **Line length:** at
 most about 70 characters (guide content column max 40rem).
 
+**Brand faces outside the product:** the wordmark is outlined in the logo files (no font needed),
+and marketing headlines may use Fraunces SemiBold (SIL Open Font License 1.1). Neither is ever
+loaded by the portal or the guest guide ([brand guide §4](../brand/README.md#4-typography)).
+
 ## 4. Spacing, layout, and shape
 
 | Token | Value | Use |
@@ -125,8 +162,11 @@ most about 70 characters (guide content column max 40rem).
   scrolling (WCAG 1.4.10).
 - **Tap targets:** at least 44 × 44 CSS px, above WCAG 2.2's 24 px minimum, because guests use
   the guide one-handed at the door.
-- **Shape (provisional):** radius 8 px (inputs, chips), 12 px (cards, sheets), full (pills,
-  avatars). Elevation is a 1 px border plus a light shadow only for sheets and dialogs.
+- **Shape:** `--radius-sm` 8 px (inputs, chips), `--radius-md` 12 px (cards, buttons),
+  `--radius-lg` 16 px (sheets, dialogs), `--radius-full` (pills, avatars). The soft corners echo
+  the logo's bubble.
+- **Elevation:** flat. A 1 px border separates surfaces; only sheets and dialogs get
+  `--shadow-sheet` (warm and light in light mode, deeper in dark mode).
 - **Safe areas:** fixed bars respect device safe areas (notches, home indicator).
 
 ## 5. Core components
@@ -273,61 +313,87 @@ From the [performance architecture](../architecture/performance.md) (guide: LCP 
 - **Compliance in the words.** Templates and drafts contain no links before booking and no
   off-platform payment requests (PC-05, PC-06).
 
-## 10. Tokens as code (starting point)
+## 10. Tokens as code
+
+The portal's `apps/portal/app/globals.css` holds these exact values; change both together, then
+run `python3 docs/brand/build/tokens.py` to recheck every contrast pair.
 
 ```css
 :root {
-  --color-bg: #FFFFFF;
-  --color-surface: #F4F6F7;
-  --color-text: #1B1F24;
-  --color-text-muted: #505A64;
-  --color-primary: #0B6466;
-  --color-primary-strong: #084C4E;
-  --color-on-primary: #FFFFFF;
-  --color-border: #D5DBE0;
-  --color-border-strong: #7A8691;
-  --color-focus: #1E5BD6;
-  --color-danger: #B3261E;
-  --color-danger-bg: #FDECEA;
-  --color-warning: #7A4D00;
-  --color-warning-bg: #FFF4E0;
-  --color-success: #1B6E3A;
-  --color-success-bg: #E7F5EC;
-  --color-info: #1F5AA6;
-  --color-info-bg: #E8F0FB;
-  --color-disclosure: #3A444E;
-  --color-disclosure-bg: #EEF1F4;
+  --color-bg: #fffcf8;
+  --color-surface: #f7f1ea;
+  --color-text: #2b211c;
+  --color-text-muted: #66574d;
+  --color-primary: #b4452a;
+  --color-primary-strong: #8e3420;
+  --color-on-primary: #ffffff;
+  --color-link: #8e3420;
+  --color-accent: #f5bc4c;
+  --color-border: #e6dcd1;
+  --color-border-strong: #8c7b70;
+  --color-focus: #1e5bd6;
+  --color-danger: #a0153e;
+  --color-on-danger: #ffffff;
+  --color-danger-bg: #fcebef;
+  --color-warning: #7a4d00;
+  --color-warning-bg: #fff3dc;
+  --color-success: #1b6e3a;
+  --color-success-bg: #e7f5ec;
+  --color-info: #1f5aa6;
+  --color-info-bg: #e8f0fb;
+  --color-disclosure: #4a3f38;
+  --color-disclosure-bg: #f1eae2;
+  --font-sans:
+    system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-mono:
+    ui-monospace, "SF Mono", Menlo, Consolas, "Roboto Mono", "Liberation Mono", monospace;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
   --radius-sm: 8px;
   --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
   --tap-min: 44px;
+  --shadow-sheet: 0 8px 24px rgb(43 33 28 / 0.16);
+  --radius: var(--radius-md);
+  --space: var(--space-4);
+  font-family: var(--font-sans);
+  color-scheme: light dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg: #121417;
-    --color-surface: #1C2024;
-    --color-text: #E8ECEF;
-    --color-text-muted: #A9B3BC;
-    --color-primary: #5CC8C4;
-    --color-primary-strong: #7FD8D4;
-    --color-on-primary: #0B1A1A;
-    --color-border: #2E343A;
-    --color-border-strong: #6B7680;
-    --color-focus: #8AB4F8;
-    --color-danger: #F2817A;
-    --color-danger-bg: #3A1D1B;
-    --color-warning: #F0B357;
-    --color-warning-bg: #3A2C12;
-    --color-success: #6FCF97;
-    --color-success-bg: #16301F;
-    --color-info: #8AB4F8;
-    --color-info-bg: #18263D;
-    --color-disclosure: #C9D1D8;
-    --color-disclosure-bg: #262B30;
+    --color-bg: #17120f;
+    --color-surface: #221b17;
+    --color-text: #f3ece6;
+    --color-text-muted: #bfb1a6;
+    --color-primary: #f0906f;
+    --color-primary-strong: #f6b29a;
+    --color-on-primary: #2a0f06;
+    --color-link: #f0906f;
+    --color-accent: #f5bc4c;
+    --color-border: #3a302a;
+    --color-border-strong: #8a7a6f;
+    --color-focus: #8ab4f8;
+    --color-danger: #ff9bb5;
+    --color-on-danger: #2b0a12;
+    --color-danger-bg: #3b1a22;
+    --color-warning: #f0b357;
+    --color-warning-bg: #3a2c12;
+    --color-success: #6fcf97;
+    --color-success-bg: #16301f;
+    --color-info: #8ab4f8;
+    --color-info-bg: #18263d;
+    --color-disclosure: #ddd2c9;
+    --color-disclosure-bg: #2e2621;
+    --shadow-sheet: 0 8px 24px rgb(0 0 0 / 0.5);
   }
 }
 ```
 
-Dark-theme banner pairs were checked too: danger 6.0:1, warning 7.3:1, success 7.5:1, and info
-7.2:1 on their `--color-*-bg` tokens, and `--color-on-primary` on `--color-primary-strong` is
-10.8:1. Re-check every pair when the brand palette replaces these values.
+`--radius` and `--space` are aliases kept for the existing portal rules.
