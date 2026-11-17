@@ -694,7 +694,7 @@ edition), so that T082 records real responses (constitution IV).
 
 ### Tests for User Story 4 ⚠️ (write first, must fail)
 
-- [ ] T082 [P] [US4] Record fixtures from the Beds24 and Hostex test accounts into `packages/integrations/test/fixtures/beds24/` and `packages/integrations/test/fixtures/hostex/`. Scrub them before commit: names, contacts, and codes become synthetic values. Cases a test account cannot produce (a revoked token, the credit floor) may be synthetic, built from the documented response shapes, and are marked as such in the file name. The fixtures cover:
+- [X] T082 [P] [US4] Record fixtures from the Beds24 and Hostex test accounts into `packages/integrations/test/fixtures/beds24/` and `packages/integrations/test/fixtures/hostex/`. Scrub them before commit: names, contacts, and codes become synthetic values. Cases a test account cannot produce (a revoked token, the credit floor) may be synthetic, built from the documented response shapes, and are marked as such in the file name. The fixtures cover:
   - properties with several room types, texts in two languages, and known and unknown `featureCodes`;
   - bookings in every status, with guest email, phone, and notes;
   - house rules that contain "Door code 4821";
@@ -705,7 +705,8 @@ edition), so that T082 records real responses (constitution IV).
   - `check_in_details` with a lock code.
 
   If a test account is not available yet, start from synthetic fixtures and replace them with recordings before production (T129)
-- [ ] T083 [P] [US4] Contract tests for the Beds24 adapter in `packages/integrations/test/pms/beds24.contract.test.ts` (R7):
+  - **Done with synthetic fixtures (2026-11-16):** no test account yet, so the fixtures are built from the official OpenAPI specs (`fixtures/<provider>/*.synthetic.json`, served by `src/pms/<provider>/fixture-server.ts`). They live in `packages/integrations/fixtures/` rather than `test/fixtures/`, because fixture mode serves them at runtime too. T129 replaces them with scrubbed recordings.
+- [X] T083 [P] [US4] Contract tests for the Beds24 adapter in `packages/integrations/test/pms/beds24.contract.test.ts` (R7):
   - **Credential:**
     - the invite code is exchanged once for a refresh token;
     - access tokens are cached in memory only.
@@ -722,7 +723,7 @@ edition), so that T082 records real responses (constitution IV).
   - **Rate limits:** the adapter never goes below 30 remaining credits; it waits for the reset.
   - **Revoke:** `revoke` calls `DELETE /authentication/token`.
   - **Read-only:** every import and refresh request is a `GET` (AC-SEC-013)
-- [ ] T084 [P] [US4] Contract tests for the Hostex adapter in `packages/integrations/test/pms/hostex.contract.test.ts` (R7):
+- [X] T084 [P] [US4] Contract tests for the Hostex adapter in `packages/integrations/test/pms/hostex.contract.test.ts` (R7):
   - **Credential:** validation with `GET /accounts/me`, and handling of `error_code`.
   - **Properties:**
     - they map with their missing facts;
@@ -735,7 +736,7 @@ edition), so that T082 records real responses (constitution IV).
   - **Pagination.**
   - **Read-only:** only `GET` requests.
   - **Revoke:** `revoke` reports `providerRevoked: false`
-- [ ] T085 [P] [US4] Integration tests in `apps/api/test/integration/pms-connections.test.ts`:
+- [X] T085 [P] [US4] Integration tests in `apps/api/test/integration/pms-connections.test.ts`:
   - connecting without step-up → `step_up_required` (AC-SEC-007);
   - with 3 or more properties and no second factor → `mfa_enrollment_required`;
   - an invalid credential → `422 invalid_credential` with `{provider, helpUrl}`, and nothing stored;
@@ -749,7 +750,7 @@ edition), so that T082 records real responses (constitution IV).
     - with the worker unavailable (no answer within 15 s), the credential is still set to null, the status is `disconnected`, and the response is `{providerRevoked: false, instructionsUrl}`;
     - `integration.disconnected` is logged with `providerRevoked`;
     - properties keep their source label (FR-036)
-- [ ] T086 [P] [US4] Integration tests for the import in `apps/api/test/integration/pms-import.test.ts`, with the fixture adapters:
+- [X] T086 [P] [US4] Integration tests for the import in `apps/api/test/integration/pms-import.test.ts`, with the fixture adapters (as built: in `apps/worker/test/integration/pms-jobs.test.ts`, which runs the import job itself; the API side is in `pms-connections.test.ts`):
   - **Running the import:**
     - the selection is capped at the remaining limit;
     - the run answers `202` and continues in the background, with progress counts.
@@ -770,7 +771,7 @@ edition), so that T082 records real responses (constitution IV).
     - the same listing can be imported into two workspaces;
     - a member removed mid-import: the run finishes under the workspace, and that member then gets `404` for it.
   - **Events:** `import.started` and `import.finished` are logged, and `properties.import_finished` is queued
-- [ ] T087 [P] [US4] Worker tests in `apps/worker/test/pms-refresh.test.ts`:
+- [X] T087 [P] [US4] Worker tests in `apps/worker/test/pms-refresh.test.ts` (as built: `apps/worker/test/integration/pms-jobs.test.ts`):
   - **Scheduling:**
     - connections are refreshed every 3 hours;
     - "Refresh now" is allowed once every 5 minutes per connection.
@@ -783,7 +784,7 @@ edition), so that T082 records real responses (constitution IV).
     - a listing gone from the PMS gets `pms_status = not_found`, and its stays stop refreshing;
     - after 24 hours of failures, one `properties.pms_reconnect` email is queued.
   - **No request (AC-SEC-011):** a disconnected connection, or a removed property, makes no request
-- [ ] T088 [P] [US4] End-to-end test in `e2e/specs/properties-us4-pms.spec.ts` (quickstart 9, `PMS_MODE=fixtures`):
+- [X] T088 [P] [US4] End-to-end test in `e2e/specs/properties-us4-pms.spec.ts` (quickstart 9, `PMS_MODE=fixtures`):
   - step-up and connect;
   - unselect one listing and import;
   - the progress banner;
@@ -793,17 +794,18 @@ edition), so that T082 records real responses (constitution IV).
 
 ### Implementation for User Story 4
 
-- [ ] T089 [US4] Define `PmsPort` and its normalized types in `packages/integrations/src/pms/port.ts`: `validateCredential`, `listListings`, `getListing`, `listReservations`, and `revoke`. The types have no field for contact data
-- [ ] T090 [US4] Implement the Beds24 adapter in `packages/integrations/src/pms/beds24/`:
+- [X] T089 [US4] Define `PmsPort` and its normalized types in `packages/integrations/src/pms/port.ts`: `validateCredential`, `listListings`, `getListing`, `listReservations`, and `revoke`. The types have no field for contact data
+- [X] T090 [US4] Implement the Beds24 adapter in `packages/integrations/src/pms/beds24/`:
   - `client.ts`: the token exchange, the in-memory access token cache, and the credit-aware throttle;
   - `schemas.ts`: allowlist Zod schemas;
   - `mapping.ts`: the `featureCodes` amenity table, the status mapping, and channels from `referer`;
   - `adapter.ts`
-- [ ] T091 [P] [US4] Implement the Hostex adapter in `packages/integrations/src/pms/hostex/`:
+- [X] T091 [P] [US4] Implement the Hostex adapter in `packages/integrations/src/pms/hostex/`:
   - `client.ts`: the `Hostex-Access-Token` header, and `error_code` handling;
   - `schemas.ts`, `mapping.ts`, and `adapter.ts`
-- [ ] T092 [US4] Implement the fixture mode `PMS_MODE=fixtures` in `packages/integrations/src/pms/fixtures.ts`. It serves the recorded fixtures through the real adapters with an `undici` `MockAgent`, for development and end-to-end tests only
-- [ ] T093 [US4] Implement the PMS module in `apps/api/src/pms/`, with contracts in `packages/contracts/src/pms.ts`:
+- [X] T092 [US4] Implement the fixture mode `PMS_MODE=fixtures` in `packages/integrations/src/pms/fixtures.ts`. It serves the recorded fixtures through the real adapters with an `undici` `MockAgent`, for development and end-to-end tests only
+  - **As built:** the adapters take an injected `fetch`, and fixture mode passes one that routes by host to each provider's fixture server; it refuses any other host. Same effect as a `MockAgent`, without a global dispatcher.
+- [X] T093 [US4] Implement the PMS module in `apps/api/src/pms/`, with contracts in `packages/contracts/src/pms.ts`:
   - **`POST /pms-connections`:**
     - step-up and MFA guards, and the provider's flag;
     - validates the credential with the adapter;
@@ -822,13 +824,13 @@ edition), so that T082 records real responses (constitution IV).
     - then, whatever the result, sets the credential to null and the status to `disconnected` in one transaction;
     - when the token was not revoked (Hostex, a failure, or a timeout), responds `{providerRevoked: false, instructionsUrl}`;
     - logs `integration.disconnected` with `providerRevoked`
-- [ ] T094 [US4] Implement the import run endpoints shared with CSV, in `apps/api/src/imports/import-runs.controller.ts`:
+- [X] T094 [US4] Implement the import run endpoints shared with CSV, in `apps/api/src/imports/import-runs.controller.ts`:
   - `GET /imports?status=running`, `GET /imports/{id}`, and `GET …/items?outcome=`;
   - `POST …/items/{itemId}/retry`;
   - `POST /properties/confirm` in the properties module: it moves `to_confirm` properties to `ready`, and returns the incomplete ones as `needs_details` (FR-004).
 
   Contracts go in `packages/contracts/src/imports.ts`
-- [ ] T095 [US4] Implement the worker job `apps/worker/src/jobs/pms-import.ts` (`pms.import`):
+- [X] T095 [US4] Implement the worker job `apps/worker/src/jobs/pms-import.ts` (`pms.import`):
   - **Run:**
     - decrypts the credential;
     - processes items in order and updates the progress.
@@ -843,7 +845,7 @@ edition), so that T082 records real responses (constitution IV).
   - **Stays:** creates the upcoming stays, with checkout from today to 365 days ahead. A re-import never restores a guest name removed on request.
   - **Revoked credential:** the remaining items fail with `reconnect_pms`.
   - **End:** logs `import.finished`, sets `notified_at`, and queues `properties.import_finished`
-- [ ] T096 [US4] Implement the remaining PMS worker jobs:
+- [X] T096 [US4] Implement the remaining PMS worker jobs:
   - `apps/worker/src/jobs/pms-refresh.ts` (`pms.refresh`):
     - a cron every 15 minutes; connections due every 3 hours; a singleton per connection; high priority for "Refresh now";
     - Beds24 uses `modifiedFrom` plus a daily full pass; Hostex reads the full window;
@@ -858,7 +860,7 @@ edition), so that T082 records real responses (constitution IV).
   - no credential, code, or guest name.
 
   Add render tests in `packages/emails/test/properties.test.ts`
-- [ ] T098 [US4] Build the PMS import flow in `apps/portal/app/[locale]/(app)/properties/new/pms/page.tsx`:
+- [X] T098 [US4] Build the PMS import flow in `apps/portal/app/[locale]/(app)/properties/new/pms/page.tsx`:
   - `apps/portal/components/properties/pms-connect.tsx`:
     - the provider choice, from the enabled flags;
     - instructions, including the Beds24 link that pre-fills the read scopes;
@@ -866,19 +868,19 @@ edition), so that T082 records real responses (constitution IV).
     - the credential field;
     - help for `invalid_credential`;
   - `apps/portal/components/properties/pms-listing-select.tsx`: all listings selected, capped at the remaining limit, with already-imported listings marked
-- [ ] T099 [US4] Build the import progress views:
+- [X] T099 [US4] Build the import progress views:
   - the banner `apps/portal/components/properties/import-progress-banner.tsx` in `apps/portal/app/[locale]/(app)/layout.tsx` ("Importing 12 of 40");
   - the run page `apps/portal/app/[locale]/(app)/properties/imports/[importRunId]/page.tsx`, with per-item results, reasons, and retry
-- [ ] T100 [US4] Show imported properties in the list and detail:
+- [X] T100 [US4] Show imported properties in the list and detail:
   - `to_confirm` and `needs_details` badges with the missing facts;
   - "Confirm all";
   - the "not found in the PMS" flag;
   - the masked restricted values panel, `apps/portal/components/properties/restricted-values.tsx` (kind, label, and "••••"), hidden from agents
-- [ ] T101 [US4] Build the integrations settings page `apps/portal/app/[locale]/(app)/settings/integrations/page.tsx`:
+- [X] T101 [US4] Build the integrations settings page `apps/portal/app/[locale]/(app)/settings/integrations/page.tsx`:
   - connections with their status and last refresh;
   - "Refresh now" and reconnect;
   - disconnect, with instructions to delete the token at the provider whenever the response has `providerRevoked: false`
-- [ ] T102 [P] [US4] Add the US4 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`
+- [X] T102 [P] [US4] Add the US4 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`
 
 **Checkpoint**: US4 works with recorded fixtures: connection, import, refresh, and disconnect.
 

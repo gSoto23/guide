@@ -12,6 +12,8 @@ import { API_CONFIG, type ApiConfig } from "../config/config.js";
 
 export interface SendOptions {
   retryLimit?: number;
+  /** Seconds between retries. */
+  retryDelay?: number;
   retryBackoff?: boolean;
   /** Higher runs first, for example "Refresh now" ahead of scheduled refreshes. */
   priority?: number;

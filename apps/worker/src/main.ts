@@ -12,6 +12,14 @@ import {
 } from "./jobs/calendar-refresh.js";
 import { createEmailHandler, EMAIL_QUEUE } from "./jobs/email.js";
 import { createExtractionHandler } from "./jobs/extraction.js";
+import { createPmsListingsHandler, createPmsRevokeHandler } from "./jobs/pms-calls.js";
+import { createPmsImportHandler } from "./jobs/pms-import.js";
+import {
+  createPmsRefreshHandler,
+  createPmsScheduler,
+  PMS_SCHEDULE_CRON,
+  PMS_SCHEDULE_QUEUE,
+} from "./jobs/pms-refresh.js";
 import {
   createExpireInvitationsHandler,
   EXPIRE_INVITATIONS_CRON,
@@ -108,6 +116,45 @@ async function main(): Promise<void> {
     await scheduleCalendars();
   });
   await boss.schedule(CALENDAR_SCHEDULE_QUEUE, CALENDAR_SCHEDULE_CRON, null, { tz: "UTC" });
+
+  // PMS imports, refreshes, and the API's calls (US4, research R7).
+  const pmsDeps = {
+    db: services.db.db,
+    decrypter: services.decrypter,
+    adapters: services.pms,
+  };
+  await createQueue(JOB_QUEUES.pmsImport);
+  await boss.work(
+    JOB_QUEUES.pmsImport,
+    createPmsImportHandler({
+      ...pmsDeps,
+      vault: services.vault,
+      queueEmail: services.queueEmail,
+      portalUrl: services.portalUrl,
+    }),
+  );
+  await createQueue(JOB_QUEUES.pmsRefresh);
+  await boss.work(
+    JOB_QUEUES.pmsRefresh,
+    createPmsRefreshHandler({
+      ...pmsDeps,
+      queueEmail: services.queueEmail,
+      portalUrl: services.portalUrl,
+    }),
+  );
+  await createQueue(JOB_QUEUES.pmsListings);
+  await boss.work(JOB_QUEUES.pmsListings, createPmsListingsHandler(pmsDeps));
+  await createQueue(JOB_QUEUES.pmsRevoke);
+  await boss.work(JOB_QUEUES.pmsRevoke, createPmsRevokeHandler(pmsDeps));
+  const schedulePms = createPmsScheduler({
+    db: services.db.db,
+    send: (queue, data, options) => boss.send(queue, data, options),
+  });
+  await createQueue(PMS_SCHEDULE_QUEUE);
+  await boss.work(PMS_SCHEDULE_QUEUE, async () => {
+    await schedulePms();
+  });
+  await boss.schedule(PMS_SCHEDULE_QUEUE, PMS_SCHEDULE_CRON, null, { tz: "UTC" });
   console.warn("Guidesk worker started");
 
   const shutdown = async (signal: string): Promise<void> => {

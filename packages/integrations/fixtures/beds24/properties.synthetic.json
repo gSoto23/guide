@@ -1,0 +1,224 @@
+{
+  "note": "Synthetic GET /properties?includeTexts=all&includeAllRooms=true response, built from the Beds24 API V2 OpenAPI shapes (T082). Every name, contact, and code is made up. Values marked SECRET are ones the adapter must never read (templates, unit notes, directions, custom questions, contact data). T129 replaces this file with a scrubbed recording.",
+  "response": {
+    "success": true,
+    "type": "property",
+    "count": 3,
+    "pages": { "nextPageExists": false, "nextPageLink": null },
+    "data": [
+      {
+        "account": { "ownerId": 40123, "unitStatuses": [] },
+        "id": 210001,
+        "name": "Casa Colibrí",
+        "propertyType": "house",
+        "currency": "USD",
+        "address": "200 m norte de Playa Sámara",
+        "city": "Sámara",
+        "state": "Guanacaste",
+        "country": "CR",
+        "postcode": "50205",
+        "latitude": 9.8818,
+        "longitude": -85.5277,
+        "phone": "+1 555-0140",
+        "mobile": "+1 555-0141",
+        "fax": "",
+        "email": "anfitriona.colibri@example.com",
+        "web": "https://casa-colibri.example.com",
+        "contactFirstName": "Ana",
+        "contactLastName": "Anfitriona",
+        "checkInStart": "15:00",
+        "checkInEnd": "21:00",
+        "checkOutEnd": "11:00",
+        "offerType": "perRoom",
+        "permit": "PERMIT-SECRET 2026-0042",
+        "templates": {
+          "template1": "TEMPLATE-SECRET: lockbox 7731 at the main door",
+          "template2": "TEMPLATE-SECRET: Wi-Fi details are on the fridge",
+          "template3": "",
+          "template4": "",
+          "template5": "",
+          "template6": "",
+          "template7": "",
+          "template8": ""
+        },
+        "bookingRules": { "bookingType": "autoConfirmed", "bookingCutOffHour": 18 },
+        "featureCodes": [
+          ["WIFI", "AIR_CONDITIONING"],
+          ["KITCHEN", "POOL_PRIVATE", "WIDGET_X"],
+          ["SMOKE_DETECTOR", "CO_DETECTOR", "PARKING"]
+        ],
+        "texts": [
+          {
+            "language": "en",
+            "headline": "Casa Colibrí, steps from Sámara beach",
+            "propertyDescription": "A bright two-storey house with a private pool and a tropical garden, a five-minute walk from Playa Sámara.",
+            "propertyDescription1": "Ideal for families and small groups.",
+            "propertyDescription2": "",
+            "houseRules": "Quiet hours from 22:00 to 07:00. No parties. Door code 4821 opens the side gate; please keep it closed.",
+            "directions": "DIRECTIONS-SECRET: the spare key is under the blue flowerpot.",
+            "locationDescription": "Sámara is a quiet beach town on the Nicoya Peninsula.",
+            "generalPolicy": "Payment on arrival.",
+            "cancellationPolicy": "Free cancellation up to 7 days before arrival.",
+            "customQuestion1": "CUSTOM-QUESTION-SECRET: which gate PIN do you prefer?",
+            "upsellItemName1": "Airport transfer"
+          },
+          {
+            "language": "es",
+            "headline": "Casa Colibrí, a pasos de la playa de Sámara",
+            "propertyDescription": "Una casa luminosa de dos pisos con piscina privada y jardín tropical, a cinco minutos caminando de Playa Sámara.",
+            "houseRules": "Horas de silencio de 22:00 a 07:00. No se permiten fiestas. El código de la puerta lateral se envía antes de la llegada.",
+            "directions": "DIRECTIONS-SECRET: la llave de repuesto está bajo la maceta azul.",
+            "customQuestion1": "CUSTOM-QUESTION-SECRET: ¿qué PIN prefiere para el portón?"
+          }
+        ],
+        "roomTypes": [
+          {
+            "id": 410001,
+            "propertyId": 210001,
+            "name": "Casa completa",
+            "roomType": "double",
+            "qty": 1,
+            "minPrice": 120,
+            "maxPeople": 6,
+            "maxAdult": 6,
+            "maxChildren": 4,
+            "templates": {
+              "template1": "ROOM-TEMPLATE-SECRET: safe code 5521",
+              "template2": ""
+            },
+            "units": [
+              {
+                "id": 1,
+                "name": "Casa",
+                "statusText": "",
+                "statusColor": "",
+                "note": "UNIT-NOTE-SECRET: spare key 3390 in the laundry room"
+              }
+            ],
+            "featureCodes": [
+              ["HOT_TUB", "WIFI", "BED_KING"],
+              ["WASHER", "DRYER"]
+            ],
+            "texts": [
+              {
+                "language": "en",
+                "displayName": "Whole house",
+                "roomDescription": "Three bedrooms, two bathrooms, and a covered terrace with hammocks.",
+                "auxiliary": "AUXILIARY-SECRET: alarm code 1290",
+                "contentHeadline": "The whole house",
+                "contentDescription": "Sleeps six."
+              },
+              {
+                "language": "es",
+                "displayName": "Casa completa",
+                "roomDescription": "Tres habitaciones, dos baños y una terraza techada con hamacas.",
+                "auxiliary": "AUXILIARY-SECRET: código de alarma 1290"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "account": { "ownerId": 40123, "unitStatuses": [] },
+        "id": 210002,
+        "name": "Hotel Las Olas",
+        "propertyType": "boutiqueHotel",
+        "currency": "USD",
+        "address": "Avenida Central 45",
+        "city": "Tamarindo",
+        "state": "Guanacaste",
+        "country": "cr",
+        "postcode": "50309",
+        "latitude": 10.2993,
+        "longitude": -85.8371,
+        "phone": "+1 555-0150",
+        "email": "reservas.lasolas@example.com",
+        "contactFirstName": "Carlos",
+        "contactLastName": "Contacto",
+        "checkInStart": "14:00",
+        "checkInEnd": "22:00",
+        "checkOutEnd": "12:00",
+        "templates": {
+          "template1": "TEMPLATE-SECRET: staff door 6402"
+        },
+        "featureCodes": [
+          ["WIFI", "INTERNET"],
+          ["PARKING", "GYM", "ELEVATOR", "POOL"]
+        ],
+        "texts": [
+          {
+            "language": "en",
+            "headline": "Hotel Las Olas",
+            "propertyDescription": "A boutique hotel two blocks from Tamarindo beach, with a rooftop pool.",
+            "houseRules": "Check-in at reception. The pool is open from 08:00 to 20:00.",
+            "directions": "DIRECTIONS-SECRET: night entrance code 0819."
+          }
+        ],
+        "roomTypes": [
+          {
+            "id": 410002,
+            "propertyId": 210002,
+            "name": "Suite Vista al Mar",
+            "roomType": "suite",
+            "qty": 4,
+            "maxPeople": 2,
+            "units": [
+              { "id": 1, "name": "201", "note": "UNIT-NOTE-SECRET: minibar key 4410" },
+              { "id": 2, "name": "202", "note": "" }
+            ],
+            "featureCodes": [["WATER_VIEW", "BALCONY", "TV"]],
+            "texts": [
+              {
+                "language": "en",
+                "displayName": "Sea-view suite",
+                "roomDescription": "Sea-view suite with a king bed and a private balcony."
+              }
+            ]
+          },
+          {
+            "id": 410003,
+            "propertyId": 210002,
+            "name": "Habitación Jardín",
+            "roomType": "double",
+            "qty": 6,
+            "maxPeople": "3",
+            "featureCodes": [["GARDEN", "MICROWAVE", "wifi"]],
+            "texts": [
+              {
+                "language": "en",
+                "roomDescription": "Ground-floor room opening onto the garden."
+              },
+              {
+                "language": "es",
+                "roomDescription": "Habitación en planta baja con salida al jardín."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "account": { "ownerId": 40123, "unitStatuses": [] },
+        "id": 210003,
+        "name": "Cabina Prueba",
+        "propertyType": "cabin",
+        "address": "",
+        "city": "Nosara",
+        "state": "",
+        "country": "Costa Rica",
+        "postcode": null,
+        "checkInStart": "24:00",
+        "checkOutEnd": "10:30",
+        "texts": [],
+        "roomTypes": [
+          {
+            "id": 410004,
+            "propertyId": 210003,
+            "name": "Cabina",
+            "qty": 1,
+            "maxPeople": 99
+          }
+        ]
+      }
+    ]
+  }
+}

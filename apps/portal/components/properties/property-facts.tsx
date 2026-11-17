@@ -4,7 +4,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import type { PropertyDetail } from "@guidesk/contracts";
+import type { ConfirmPropertiesResult, PropertyDetail } from "@guidesk/contracts";
 import { problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
 import { CoreFactsForm, type CoreFactsBody } from "./core-facts-form";
@@ -17,6 +17,10 @@ const CalendarFeeds = dynamic(() => import("./calendar-feeds").then((m) => m.Cal
   ssr: false,
 });
 const StaysList = dynamic(() => import("./stays-list").then((m) => m.StaysList), { ssr: false });
+const RestrictedValues = dynamic(
+  () => import("./restricted-values").then((m) => m.RestrictedValues),
+  { ssr: false },
+);
 
 /**
  * A property's page (FR-005, T046): its facts in the property's time zone, editable by owners
@@ -73,6 +77,23 @@ export function PropertyFacts({ locale, propertyId }: { locale: string; property
     }
   }
 
+  async function confirm() {
+    setMessage(null);
+    try {
+      const result = await workspace!.api.post<ConfirmPropertiesResult>("/properties/confirm", {
+        propertyIds: [propertyId],
+      });
+      const updated = await workspace!.api.get<PropertyDetail>(`/properties/${propertyId}`);
+      setProperty(updated);
+      setMessage({
+        kind: "info",
+        text: result.ready.includes(propertyId) ? t("detail.confirmed") : t("detail.stillMissing"),
+      });
+    } catch {
+      setMessage({ kind: "error", text: errors("internal_error") });
+    }
+  }
+
   const notSet = t("detail.notSet");
   const missing = property.missingFacts.map((fact) => t(`factNames.${fact}`)).join(", ");
   const address = [
@@ -107,6 +128,21 @@ export function PropertyFacts({ locale, propertyId }: { locale: string; property
       </p>
       {missing ? (
         <p className="alert alert-info">{t("detail.missing", { facts: missing })}</p>
+      ) : null}
+      {property.pmsStatus === "not_found" ? (
+        <p className="alert alert-info">
+          {t("detail.notFoundInPms", {
+            provider: property.sourceProvider ? t(`providers.${property.sourceProvider}`) : "PMS",
+          })}
+        </p>
+      ) : null}
+      {property.setupStatus === "to_confirm" && workspace.canManage ? (
+        <div className="card">
+          <p>{t("detail.toConfirm")}</p>
+          <button type="button" className="button button-primary" onClick={() => void confirm()}>
+            {t("detail.confirm")}
+          </button>
+        </div>
       ) : null}
       {message ? (
         <p
@@ -186,6 +222,9 @@ export function PropertyFacts({ locale, propertyId }: { locale: string; property
         </>
       )}
       <ListingContent propertyId={propertyId} sourceProvider={property.sourceProvider} />
+      {workspace.canManage && property.counts.restrictedValues ? (
+        <RestrictedValues propertyId={propertyId} />
+      ) : null}
       {workspace.canManage ? (
         <CalendarFeeds
           propertyId={propertyId}

@@ -43,7 +43,8 @@
     "confirmation_mismatch": "El nombre que escribiste no coincide con el de la propiedad.",
     "feed_rejected": "No pudimos leer ese enlace de calendario. Revisa que sea un enlace de exportación iCal que empiece con https.",
     "invalid_credential": "Tu PMS no aceptó esa credencial. No guardamos nada.",
-    "extraction_limit_reached": "Ya usaste las importaciones de anuncios de hoy. Vuelve a intentarlo mañana."
+    "extraction_limit_reached": "Ya usaste las importaciones de anuncios de hoy. Vuelve a intentarlo mañana.",
+    "provider_unavailable": "Tu PMS no respondió. Inténtalo de nuevo en unos minutos."
   },
   "auth": {
     "signInCta": "Entrar o crear cuenta",
@@ -174,7 +175,11 @@
         "none": "Sin calendario",
         "ok": "Calendario conectado",
         "failing": "El calendario no se actualiza"
-      }
+      },
+      "toConfirm": "{count, plural, one {# propiedad importada está lista para confirmar.} other {# propiedades importadas están listas para confirmar.}}",
+      "confirmAll": "Confirmar todas",
+      "confirmed": "{count, plural, one {# propiedad confirmada.} other {# propiedades confirmadas.}}",
+      "notFoundInPms": "No está en tu PMS"
     },
     "limits": {
       "usage": "{used} de {limit} propiedades",
@@ -244,7 +249,12 @@
       "guests": "Máximo de huéspedes",
       "languages": "Idiomas de la guía",
       "nextStep": "Siguiente: armar la guía",
-      "nextStepSoon": "El armado de la guía llega en la próxima actualización."
+      "nextStepSoon": "El armado de la guía llega en la próxima actualización.",
+      "notFoundInPms": "Este anuncio ya no está en {provider}, así que sus estadías no se actualizan.",
+      "toConfirm": "Estos datos vienen de tu PMS. Revísalos y confírmalos.",
+      "confirm": "Confirmar datos",
+      "confirmed": "Datos confirmados.",
+      "stillMissing": "Todavía faltan algunos datos."
     },
     "listing": {
       "title": "Pegar tu anuncio",
@@ -423,6 +433,103 @@
       "cancel": "Cancelar",
       "added": "Estadía agregada.",
       "saved": "Estadía guardada."
+    },
+    "pms": {
+      "title": "Importar desde tu PMS",
+      "provider": "Tu PMS",
+      "providers": {
+        "beds24": "Beds24",
+        "hostex": "Hostex"
+      },
+      "steps": {
+        "beds24": {
+          "title": "Consigue un código de invitación en Beds24",
+          "one": "En Beds24, abre Settings → Marketplace → API.",
+          "two": "Crea un código de invitación con acceso de solo lectura a propiedades, reservas y nombres de huéspedes (read:properties, read:bookings, read:bookings-personal).",
+          "three": "Copia el código y pégalo abajo. Sirve una sola vez, dentro de 24 horas.",
+          "link": "Abrir la página de API de Beds24"
+        },
+        "hostex": {
+          "title": "Consigue un token de acceso en Hostex",
+          "one": "En Hostex, abre Settings → OpenAPI. Necesita la edición Pro.",
+          "two": "Crea un token de acceso con el permiso de solo lectura.",
+          "three": "Copia el token y pégalo abajo.",
+          "link": "Abrir la configuración de OpenAPI de Hostex"
+        }
+      },
+      "readOnly": "Guidesk solo lee tus propiedades y reservas. Nunca cambia nada en tu PMS ni te pide tu contraseña.",
+      "credential": {
+        "beds24": "Código de invitación",
+        "hostex": "Token de acceso"
+      },
+      "connect": "Conectar",
+      "connecting": "Conectando…",
+      "invalid": {
+        "beds24": "Beds24 no aceptó ese código de invitación. Los códigos sirven una vez y vencen a las 24 horas: crea uno nuevo con los permisos de lectura. No guardamos nada.",
+        "hostex": "Hostex no aceptó ese token. Revisa que sea un token de solo lectura de una cuenta Pro. No guardamos nada."
+      },
+      "help": "Cómo conseguirlo",
+      "unavailable": "Tu PMS no respondió. Inténtalo de nuevo en unos minutos.",
+      "credentialFormat": "Pega el código o token completo.",
+      "noProviders": "La importación desde un PMS aún no está disponible. Puedes pegar tu anuncio o empezar desde cero.",
+      "loadingListings": "Trayendo tus anuncios…",
+      "noListings": "Tu PMS no tiene anuncios para importar.",
+      "chooseTitle": "Elige qué importar",
+      "chooseIntro": "A tu plan le caben {free} propiedades más de {limit}. Los anuncios ya importados se actualizan y no ocupan espacio.",
+      "alreadyImported": "Ya importado",
+      "overLimit": "Solo caben {free} propiedades nuevas en tu plan. El resto se omitirá.",
+      "import": "{count, plural, one {Importar # anuncio} other {Importar # anuncios}}",
+      "starting": "Iniciando la importación…"
+    },
+    "imports": {
+      "loading": "Cargando la importación…",
+      "notAllowed": "Solo dueños y administradores pueden ver las importaciones.",
+      "back": "Todas las propiedades",
+      "title": "Importación desde {source}",
+      "sources": {
+        "beds24": "Beds24",
+        "hostex": "Hostex",
+        "csv": "un archivo CSV"
+      },
+      "progress": "Importando {processed} de {total}",
+      "finished": "La importación terminó. Revisa las propiedades que necesitan datos.",
+      "finishedFailed": "La importación se detuvo: vuelve a conectar tu PMS e inténtalo de nuevo.",
+      "counts": {
+        "created": "Listas para confirmar",
+        "needsDetails": "Necesitan datos",
+        "failed": "Fallaron",
+        "skipped": "Omitidas"
+      },
+      "outcomes": {
+        "pending": "En espera",
+        "created": "Creada",
+        "updated": "Actualizada",
+        "needs_details": "Necesita datos",
+        "failed": "Falló",
+        "skipped": "Omitida"
+      },
+      "reasons": {
+        "plan_limit": "Se alcanzó el límite de propiedades de tu plan.",
+        "reconnect_pms": "Tu PMS rechazó la conexión. Vuelve a conectarlo en Ajustes → Integraciones.",
+        "provider_error": "Tu PMS no respondió para este anuncio.",
+        "not_found_in_pms": "Este anuncio ya no está en tu PMS.",
+        "workspace_pending_deletion": "El espacio de trabajo se está eliminando."
+      },
+      "retry": "Intentar de nuevo",
+      "toProperties": "Ir a las propiedades"
+    },
+    "restricted": {
+      "title": "Códigos encontrados en tu PMS",
+      "intro": "Estos códigos estaban en los textos importados. Guidesk los guarda cifrados y los dejó fuera del contenido del anuncio. Los pondrás en los campos protegidos de la guía.",
+      "kinds": {
+        "door_code": "Código de puerta",
+        "gate_code": "Código de portón",
+        "lockbox_code": "Código de caja de llaves",
+        "alarm_code": "Código de alarma",
+        "wifi_password": "Contraseña de Wi-Fi",
+        "other": "Otro código"
+      },
+      "masked": "Oculto"
     }
   },
   "security": {
@@ -556,7 +663,8 @@
       "team": "Equipo",
       "account": "Tu cuenta",
       "security": "Seguridad",
-      "log": "Registro de seguridad"
+      "log": "Registro de seguridad",
+      "integrations": "Integraciones"
     },
     "workspace": {
       "title": "Workspace",
@@ -611,6 +719,36 @@
       "more": "Ver más",
       "noAccess": "Solo el dueño y los administradores ven el registro del workspace.",
       "unknownActor": "Sistema o cuenta eliminada"
+    },
+    "integrations": {
+      "title": "Integraciones",
+      "back": "Ajustes",
+      "loading": "Cargando integraciones…",
+      "notAllowed": "Solo dueños y administradores pueden gestionar las integraciones.",
+      "intro": "Tus conexiones con un PMS. Guidesk lee las reservas cada 3 horas y nunca escribe en tu PMS.",
+      "empty": "No hay ningún PMS conectado.",
+      "status": {
+        "active": "Conectado",
+        "failing": "Sin actualizar",
+        "disconnected": "Desconectado"
+      },
+      "lastRefresh": "Última actualización: {time}",
+      "neverRefreshed": "Aún sin actualizar",
+      "failingCredential": "Tu PMS rechazó la conexión. Vuelve a conectarlo.",
+      "failingProvider": "Tu PMS no responde. Guidesk sigue intentando.",
+      "refresh": "Actualizar ahora",
+      "refreshQueued": "Actualizando las reservas. Los cambios aparecen en un minuto.",
+      "refreshTooSoon": "Actualizaste hace poco. Inténtalo de nuevo en {minutes, plural, one {# minuto} other {# minutos}}.",
+      "importMore": "Importar más anuncios",
+      "reconnect": "Volver a conectar",
+      "disconnect": "Desconectar",
+      "disconnectConfirm": "¿Desconectar {provider}? Las reservas dejan de actualizarse. Las propiedades importadas se quedan.",
+      "disconnectYes": "Desconectar",
+      "cancel": "Cancelar",
+      "disconnected": "Desconectado. El token se borró en Guidesk y en tu PMS.",
+      "disconnectedDeleteToken": "Desconectado. Guidesk borró su copia del token; bórralo también en {provider}.",
+      "howToDelete": "Cómo borrarlo",
+      "connect": "Conectar un PMS"
     }
   }
 }

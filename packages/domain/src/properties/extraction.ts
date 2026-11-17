@@ -80,18 +80,26 @@ const LIMITS = { title: 120, body: 20_000, items: 200, item: 120 } as const;
 
 const MARKERS = Object.values(REDACTION_MARKERS);
 
-/** A line the model copied with a "[door code removed]" marker: it was about a code. */
+/** A line with a "[door code removed]" marker was about a code. */
 function hasMarker(line: string): boolean {
   return MARKERS.some((marker) => line.includes(marker));
 }
 
-/** Trims, drops lines that carry a redaction marker, and caps the length. */
-function text(value: string | null, max: number): string | null {
-  const kept = (value ?? "")
+/**
+ * Drops every line that carries a redaction marker, so listing content never shows where a code
+ * was (FR-013, FR-031). Used on the model's output and on imported PMS text after redaction.
+ */
+export function removeRedactedLines(value: string): string {
+  return value
     .split("\n")
     .filter((line) => !hasMarker(line))
     .join("\n")
     .trim();
+}
+
+/** Trims, drops lines that carry a redaction marker, and caps the length. */
+function text(value: string | null, max: number): string | null {
+  const kept = removeRedactedLines(value ?? "");
   return kept ? kept.slice(0, max) : null;
 }
 

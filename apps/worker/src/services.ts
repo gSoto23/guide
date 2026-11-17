@@ -2,6 +2,7 @@ import { createDb, type DbHandle } from "@guidesk/db";
 import {
   AnthropicLlmAdapter,
   createKeyManagement,
+  createPmsAdapters,
   FakeLlmAdapter,
   InProcessSandbox,
   LambdaSandbox,
@@ -11,6 +12,8 @@ import {
   type KeyManagementPort,
   type LlmPort,
   type ObjectStoragePort,
+  type PmsPort,
+  type PmsProvider,
   type SandboxPort,
 } from "@guidesk/integrations";
 import {
@@ -37,6 +40,8 @@ export interface WorkerServices {
   sandbox: SandboxPort;
   storage: ObjectStoragePort;
   llm: LlmPort;
+  /** PMS adapters; recorded fixtures outside production (T092). */
+  pms: Record<PmsProvider, PmsPort>;
   portalUrl: string;
   /** Queues a rendered email for the email job (retries with backoff). */
   queueEmail: (message: EmailMessage) => Promise<void>;
@@ -104,6 +109,7 @@ export function createWorkerServices(
     sandbox,
     storage,
     llm: createLlm(config),
+    pms: createPmsAdapters({ mode: config.integrations.pms.mode }),
     portalUrl: config.portalUrl,
     queueEmail,
     close: async () => {

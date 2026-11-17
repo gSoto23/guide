@@ -198,3 +198,19 @@ export const confirmPropertiesResultSchema = z.object({
   ),
 });
 export type ConfirmPropertiesResult = z.infer<typeof confirmPropertiesResultSchema>;
+
+/**
+ * A code found in imported PMS text (FR-031), as owners and admins see it: its kind and label,
+ * never the value. Revealing it belongs to the guide builder (spec 003).
+ */
+export const restrictedValueSchema = z.object({
+  id: z.uuid(),
+  kind: z.enum(["door_code", "gate_code", "lockbox_code", "alarm_code", "wifi_password", "other"]),
+  label: z.string().nullable(),
+  source: z.literal("pms"),
+  createdAt: z.iso.datetime(),
+});
+export type RestrictedValue = z.infer<typeof restrictedValueSchema>;
+
+export const restrictedValueListSchema = z.object({ items: z.array(restrictedValueSchema) });
+export type RestrictedValueList = z.infer<typeof restrictedValueListSchema>;

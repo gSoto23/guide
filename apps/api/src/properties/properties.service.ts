@@ -1,14 +1,16 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { and, desc, eq, ilike, lt, or, sql, type SQL } from "drizzle-orm";
+import { and, desc, eq, ilike, inArray, lt, or, sql, type SQL } from "drizzle-orm";
 import type {
   AddressCheck,
   AddressCheckQuery,
+  ConfirmPropertiesResult,
   CreatePropertyBody,
   ListPropertiesQuery,
   PropertyDetail,
   PropertyLimits,
   PropertyList,
   PropertySummary,
+  RestrictedValueList,
   StartOptions,
   UpdatePropertyBody,
 } from "@guidesk/contracts";
@@ -25,6 +27,7 @@ import {
   type DbHandle,
 } from "@guidesk/db";
 import {
+  confirmedSetupStatus,
   containsRestrictedValue,
   derivePath,
   extractionLimit,
@@ -54,7 +57,7 @@ import { toDetail, toSummary, toTimeOfDay, type PropertyRow } from "./property-m
  * Creation paths built so far; `start-options` leaves out the others (T042). Each user story adds
  * its path here when it lands.
  */
-export const AVAILABLE_START_OPTIONS: readonly StartOption[] = ["listing", "blank"];
+export const AVAILABLE_START_OPTIONS: readonly StartOption[] = ["listing", "pms", "blank"];
 
 const CORE_FACT_KEYS = [
   "name",
@@ -400,6 +403,72 @@ export class PropertiesService {
   }
 
   /** A property the caller can see in this workspace, or the same 404 for anything else. */
+  /**
+   * "Confirm all" (FR-004, T094): imported properties in `to_confirm` become `ready`; any still
+   * missing a fact are returned as `needs_details`. Other properties are left as they are.
+   */
+  async confirm(
+    workspaceId: string,
+    propertyIds: readonly string[],
+  ): Promise<ConfirmPropertiesResult> {
+    const tx = this.requestDb.current();
+    const rows = await tx
+      .select()
+      .from(property)
+      .where(
+        and(
+          eq(property.workspaceId, workspaceId),
+          eq(property.status, "active"),
+          inArray(property.id, [...new Set(propertyIds)]),
+        ),
+      );
+    const result: ConfirmPropertiesResult = { ready: [], needsDetails: [] };
+    for (const row of rows) {
+      const status =
+        row.setupStatus === "to_confirm" ? confirmedSetupStatus(factsOf(row)) : row.setupStatus;
+      if (row.setupStatus === "to_confirm") {
+        await tx
+          .update(property)
+          .set({ setupStatus: status, missingFacts: missingFacts(factsOf(row)) })
+          .where(eq(property.id, row.id));
+      }
+      if (status === "ready") result.ready.push(row.id);
+      else if (status === "needs_details") {
+        result.needsDetails.push({ propertyId: row.id, missingFacts: missingFacts(factsOf(row)) });
+      }
+    }
+    return result;
+  }
+
+  /** Codes found in imported PMS text, masked: kind and label only (FR-031, T100). */
+  async restrictedValues(
+    caller: Caller,
+    workspaceId: string,
+    propertyId: string,
+  ): Promise<RestrictedValueList> {
+    await this.load(caller, workspaceId, propertyId);
+    const rows = await this.requestDb
+      .current()
+      .select({
+        id: restrictedValue.id,
+        kind: restrictedValue.kind,
+        label: restrictedValue.label,
+        createdAt: restrictedValue.createdAt,
+      })
+      .from(restrictedValue)
+      .where(eq(restrictedValue.propertyId, propertyId))
+      .orderBy(restrictedValue.createdAt);
+    return {
+      items: rows.map((row) => ({
+        id: row.id,
+        kind: row.kind,
+        label: row.label,
+        source: "pms" as const,
+        createdAt: row.createdAt.toISOString(),
+      })),
+    };
+  }
+
   async load(caller: Caller, workspaceId: string, propertyId: string): Promise<PropertyRow> {
     const [row] = await this.requestDb
       .current()

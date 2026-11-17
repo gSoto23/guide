@@ -442,7 +442,8 @@ textarea {
   line-height: 1.5;
 }
 
-input[type="checkbox"] {
+input[type="checkbox"],
+input[type="radio"] {
   width: auto;
   min-height: 0;
 }
@@ -464,6 +465,13 @@ input[type="checkbox"] {
 .checkbox input {
   width: 20px;
   height: 20px;
+  margin: 0;
+  flex: none;
+}
+
+.choice-list .checkbox {
+  margin: 0;
+  min-height: 44px;
 }
 
 .screenshots {
@@ -593,4 +601,50 @@ input[type="checkbox"] {
 
 .confirm p {
   margin: 0;
+}
+
+/* PMS import (US4). */
+.import-banner {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 8px var(--space);
+  background: var(--color-info-bg);
+  color: var(--color-info);
+  font-weight: 600;
+}
+
+.import-banner a {
+  color: inherit;
+}
+
+.choice-list {
+  list-style: none;
+  border: 0;
+  padding: 0;
+  margin: var(--space) 0;
+  display: grid;
+  gap: 4px;
+}
+
+.choice-list .badge {
+  margin-left: 8px;
+}
+
+.steps {
+  padding-left: 1.25rem;
+}
+
+.property-missing {
+  display: block;
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+.restricted-list {
+  list-style: none;
+  padding: 0;
+}
+
+.restricted-list li {
+  display: contents;
 }

@@ -1,0 +1,1497 @@
+{
+  "request_id": "RT-synthetic-reservations-0001",
+  "error_code": 200,
+  "error_msg": "Done.",
+  "data": {
+    "reservations": [
+      {
+        "reservation_code": "0-SYN0001-colibri",
+        "stay_code": "0-SYN0001-colibri",
+        "channel_id": "SYN-CH-0001",
+        "property_id": 910001,
+        "channel_type": "airbnb",
+        "listing_id": "880000101",
+        "check_in_date": "@date(+3)",
+        "check_out_date": "@date(+7)",
+        "number_of_guests": 2,
+        "number_of_adults": 2,
+        "number_of_children": 0,
+        "number_of_infants": 0,
+        "number_of_pets": 0,
+        "status": "accepted",
+        "guest_name": "  Ana Prueba ",
+        "guest_phone": "+1 202-555-0101",
+        "guest_email": "guest01.synthetic@example.com",
+        "cancelled_at": null,
+        "booked_at": "@datetime(-59)",
+        "created_at": "@datetime(-59)",
+        "creator": "Synthetic fixture",
+        "rates": {
+          "total_rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "total_commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "tax": null,
+          "details": [
+            {
+              "type": "ACCOMMODATION",
+              "description": "Nightly rate",
+              "currency": "USD",
+              "amount": 480
+            }
+          ]
+        },
+        "payment": {
+          "currency": "USD",
+          "total_amount": 480,
+          "received_amount": 480,
+          "balance_amount": 0,
+          "status": "received"
+        },
+        "check_in_details": {
+          "arrival_at": {
+            "hour": 16,
+            "minute": 0
+          },
+          "departure_at": null,
+          "lock_code": "4821",
+          "lock_code_visible_after": "14:00",
+          "deposit": 100,
+          "deposit_details": null,
+          "id_required": "required",
+          "check_in_guide_url": "https://guide.example.com/checkin/syn-0001"
+        },
+        "remarks": "Synthetic host remark 01: late arrival, prefers ground floor",
+        "channel_remarks": "Synthetic channel remark 01: celebrating an anniversary",
+        "conversation_id": "conv-syn-0001",
+        "tags": ["VIP"],
+        "custom_channel": null,
+        "guests": [
+          {
+            "id": 11,
+            "name": "Ana Prueba",
+            "phone": "+1 202-555-0101",
+            "email": "guest01.synthetic@example.com",
+            "id_type": "passport",
+            "id_number": "SYNPASS0001",
+            "gender": null,
+            "country": "CR",
+            "birthday": null,
+            "is_booker": true,
+            "id_images": []
+          },
+          {
+            "id": 12,
+            "name": "Beto Ejemplo",
+            "phone": "+1 202-555-0150",
+            "email": "beto.ejemplo@example.com",
+            "id_type": "passport",
+            "id_number": "SYNPASS0150",
+            "gender": null,
+            "country": "CR",
+            "birthday": null,
+            "is_booker": false,
+            "id_images": []
+          }
+        ],
+        "custom_fields": {
+          "parking_plate": "SYN-001",
+          "gate_note": "Synthetic gate note 01"
+        },
+        "in_reservation_box": false,
+        "additional_fees": [],
+        "checkin_guide_images": [],
+        "channel_details": {
+          "airbnb": {
+            "cancellation_policy_category": "flexible"
+          }
+        }
+      },
+      {
+        "reservation_code": "0-SYN0002-colibri",
+        "stay_code": "0-SYN0002-colibri",
+        "channel_id": "SYN-CH-0002",
+        "property_id": 910001,
+        "channel_type": "booking.com",
+        "listing_id": "5550101-77001",
+        "check_in_date": "@date(+10)",
+        "check_out_date": "@date(+14)",
+        "number_of_guests": 3,
+        "number_of_adults": 3,
+        "number_of_children": 0,
+        "number_of_infants": 0,
+        "number_of_pets": 0,
+        "status": "cancelled",
+        "guest_name": "Carla Ficticia",
+        "guest_phone": "+1 202-555-0102",
+        "guest_email": "guest02.synthetic@example.com",
+        "cancelled_at": "@datetime(-2)",
+        "booked_at": "@datetime(-58)",
+        "created_at": "@datetime(-58)",
+        "creator": "Synthetic fixture",
+        "rates": {
+          "total_rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "total_commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "tax": null,
+          "details": [
+            {
+              "type": "ACCOMMODATION",
+              "description": "Nightly rate",
+              "currency": "USD",
+              "amount": 480
+            }
+          ]
+        },
+        "payment": {
+          "currency": "USD",
+          "total_amount": 480,
+          "received_amount": 480,
+          "balance_amount": 0,
+          "status": "received"
+        },
+        "check_in_details": {
+          "arrival_at": {
+            "hour": 16,
+            "minute": 0
+          },
+          "departure_at": null,
+          "lock_code": null,
+          "lock_code_visible_after": "14:00",
+          "deposit": 0,
+          "deposit_details": null,
+          "id_required": "not_required",
+          "check_in_guide_url": "https://guide.example.com/checkin/syn-0002"
+        },
+        "remarks": "Synthetic host remark 02: late arrival, prefers ground floor",
+        "channel_remarks": "Synthetic channel remark 02: celebrating an anniversary",
+        "conversation_id": "conv-syn-0002",
+        "tags": [],
+        "custom_channel": null,
+        "guests": [
+          {
+            "id": 21,
+            "name": "Carla Ficticia",
+            "phone": "+1 202-555-0102",
+            "email": "guest02.synthetic@example.com",
+            "id_type": "passport",
+            "id_number": "SYNPASS0002",
+            "gender": null,
+            "country": "CR",
+            "birthday": null,
+            "is_booker": true,
+            "id_images": []
+          }
+        ],
+        "custom_fields": {
+          "parking_plate": "SYN-002",
+          "gate_note": "Synthetic gate note 02"
+        },
+        "in_reservation_box": false,
+        "additional_fees": [],
+        "checkin_guide_images": [],
+        "channel_details": null
+      },
+      {
+        "reservation_code": "0-SYN0003-colibri",
+        "stay_code": "0-SYN0003-colibri",
+        "channel_id": "SYN-CH-0003",
+        "property_id": 910001,
+        "channel_type": "airbnb",
+        "listing_id": "880000101",
+        "check_in_date": "@date(+20)",
+        "check_out_date": "@date(+22)",
+        "number_of_guests": 1,
+        "number_of_adults": 1,
+        "number_of_children": 0,
+        "number_of_infants": 0,
+        "number_of_pets": 0,
+        "status": "denied",
+        "guest_name": "Diego Muestra",
+        "guest_phone": "+1 202-555-0103",
+        "guest_email": "guest03.synthetic@example.com",
+        "cancelled_at": null,
+        "booked_at": "@datetime(-57)",
+        "created_at": "@datetime(-57)",
+        "creator": "Synthetic fixture",
+        "rates": {
+          "total_rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "total_commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "tax": null,
+          "details": [
+            {
+              "type": "ACCOMMODATION",
+              "description": "Nightly rate",
+              "currency": "USD",
+              "amount": 480
+            }
+          ]
+        },
+        "payment": {
+          "currency": "USD",
+          "total_amount": 480,
+          "received_amount": 480,
+          "balance_amount": 0,
+          "status": "received"
+        },
+        "check_in_details": {
+          "arrival_at": {
+            "hour": 16,
+            "minute": 0
+          },
+          "departure_at": null,
+          "lock_code": null,
+          "lock_code_visible_after": "14:00",
+          "deposit": 0,
+          "deposit_details": null,
+          "id_required": "not_required",
+          "check_in_guide_url": "https://guide.example.com/checkin/syn-0003"
+        },
+        "remarks": "Synthetic host remark 03: late arrival, prefers ground floor",
+        "channel_remarks": "Synthetic channel remark 03: celebrating an anniversary",
+        "conversation_id": "conv-syn-0003",
+        "tags": [],
+        "custom_channel": null,
+        "guests": [
+          {
+            "id": 31,
+            "name": "Diego Muestra",
+            "phone": "+1 202-555-0103",
+            "email": "guest03.synthetic@example.com",
+            "id_type": "passport",
+            "id_number": "SYNPASS0003",
+            "gender": null,
+            "country": "CR",
+            "birthday": null,
+            "is_booker": true,
+            "id_images": []
+          }
+        ],
+        "custom_fields": {
+          "parking_plate": "SYN-003",
+          "gate_note": "Synthetic gate note 03"
+        },
+        "in_reservation_box": false,
+        "additional_fees": [],
+        "checkin_guide_images": [],
+        "channel_details": {
+          "airbnb": {
+            "cancellation_policy_category": "flexible"
+          }
+        }
+      },
+      {
+        "reservation_code": "0-SYN0004-colibri",
+        "stay_code": "0-SYN0004-colibri",
+        "channel_id": "SYN-CH-0004",
+        "property_id": 910001,
+        "channel_type": "airbnb",
+        "listing_id": "880000101",
+        "check_in_date": "@date(+25)",
+        "check_out_date": "@date(+27)",
+        "number_of_guests": 2,
+        "number_of_adults": 2,
+        "number_of_children": 0,
+        "number_of_infants": 0,
+        "number_of_pets": 0,
+        "status": "timeout",
+        "guest_name": "Elena Prueba",
+        "guest_phone": "+1 202-555-0104",
+        "guest_email": "guest04.synthetic@example.com",
+        "cancelled_at": null,
+        "booked_at": "@datetime(-56)",
+        "created_at": "@datetime(-56)",
+        "creator": "Synthetic fixture",
+        "rates": {
+          "total_rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "total_commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "tax": null,
+          "details": [
+            {
+              "type": "ACCOMMODATION",
+              "description": "Nightly rate",
+              "currency": "USD",
+              "amount": 480
+            }
+          ]
+        },
+        "payment": {
+          "currency": "USD",
+          "total_amount": 480,
+          "received_amount": 480,
+          "balance_amount": 0,
+          "status": "received"
+        },
+        "check_in_details": {
+          "arrival_at": {
+            "hour": 16,
+            "minute": 0
+          },
+          "departure_at": null,
+          "lock_code": null,
+          "lock_code_visible_after": "14:00",
+          "deposit": 0,
+          "deposit_details": null,
+          "id_required": "not_required",
+          "check_in_guide_url": "https://guide.example.com/checkin/syn-0004"
+        },
+        "remarks": "Synthetic host remark 04: late arrival, prefers ground floor",
+        "channel_remarks": "Synthetic channel remark 04: celebrating an anniversary",
+        "conversation_id": "conv-syn-0004",
+        "tags": [],
+        "custom_channel": null,
+        "guests": [
+          {
+            "id": 41,
+            "name": "Elena Prueba",
+            "phone": "+1 202-555-0104",
+            "email": "guest04.synthetic@example.com",
+            "id_type": "passport",
+            "id_number": "SYNPASS0004",
+            "gender": null,
+            "country": "CR",
+            "birthday": null,
+            "is_booker": true,
+            "id_images": []
+          }
+        ],
+        "custom_fields": {
+          "parking_plate": "SYN-004",
+          "gate_note": "Synthetic gate note 04"
+        },
+        "in_reservation_box": false,
+        "additional_fees": [],
+        "checkin_guide_images": [],
+        "channel_details": {
+          "airbnb": {
+            "cancellation_policy_category": "flexible"
+          }
+        }
+      },
+      {
+        "reservation_code": "0-SYN0005-colibri",
+        "stay_code": "0-SYN0005-colibri",
+        "channel_id": "SYN-CH-0005",
+        "property_id": 910001,
+        "channel_type": "airbnb",
+        "listing_id": "880000101",
+        "check_in_date": "@date(+30)",
+        "check_out_date": "@date(+33)",
+        "number_of_guests": 2,
+        "number_of_adults": 2,
+        "number_of_children": 0,
+        "number_of_infants": 0,
+        "number_of_pets": 0,
+        "status": "wait_accept",
+        "guest_name": "Fabio Ejemplo",
+        "guest_phone": "+1 202-555-0105",
+        "guest_email": "guest05.synthetic@example.com",
+        "cancelled_at": null,
+        "booked_at": "@datetime(-55)",
+        "created_at": "@datetime(-55)",
+        "creator": "Synthetic fixture",
+        "rates": {
+          "total_rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "total_commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "tax": null,
+          "details": [
+            {
+              "type": "ACCOMMODATION",
+              "description": "Nightly rate",
+              "currency": "USD",
+              "amount": 480
+            }
+          ]
+        },
+        "payment": {
+          "currency": "USD",
+          "total_amount": 480,
+          "received_amount": 480,
+          "balance_amount": 0,
+          "status": "received"
+        },
+        "check_in_details": {
+          "arrival_at": {
+            "hour": 16,
+            "minute": 0
+          },
+          "departure_at": null,
+          "lock_code": null,
+          "lock_code_visible_after": "14:00",
+          "deposit": 0,
+          "deposit_details": null,
+          "id_required": "not_required",
+          "check_in_guide_url": "https://guide.example.com/checkin/syn-0005"
+        },
+        "remarks": "Synthetic host remark 05: late arrival, prefers ground floor",
+        "channel_remarks": "Synthetic channel remark 05: celebrating an anniversary",
+        "conversation_id": "conv-syn-0005",
+        "tags": [],
+        "custom_channel": null,
+        "guests": [
+          {
+            "id": 51,
+            "name": "Fabio Ejemplo",
+            "phone": "+1 202-555-0105",
+            "email": "guest05.synthetic@example.com",
+            "id_type": "passport",
+            "id_number": "SYNPASS0005",
+            "gender": null,
+            "country": "CR",
+            "birthday": null,
+            "is_booker": true,
+            "id_images": []
+          }
+        ],
+        "custom_fields": {
+          "parking_plate": "SYN-005",
+          "gate_note": "Synthetic gate note 05"
+        },
+        "in_reservation_box": false,
+        "additional_fees": [],
+        "checkin_guide_images": [],
+        "channel_details": {
+          "airbnb": {
+            "cancellation_policy_category": "flexible"
+          }
+        }
+      },
+      {
+        "reservation_code": "0-SYN0006-colibri",
+        "stay_code": "0-SYN0006-colibri",
+        "channel_id": "SYN-CH-0006",
+        "property_id": 910001,
+        "channel_type": "booking_site",
+        "listing_id": "site-syn-0101",
+        "check_in_date": "@date(+35)",
+        "check_out_date": "@date(+38)",
+        "number_of_guests": 2,
+        "number_of_adults": 2,
+        "number_of_children": 0,
+        "number_of_infants": 0,
+        "number_of_pets": 0,
+        "status": "wait_pay",
+        "guest_name": "Gina Prueba",
+        "guest_phone": "+1 202-555-0106",
+        "guest_email": "guest06.synthetic@example.com",
+        "cancelled_at": null,
+        "booked_at": "@datetime(-54)",
+        "created_at": "@datetime(-54)",
+        "creator": "Synthetic fixture",
+        "rates": {
+          "total_rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "total_commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "tax": null,
+          "details": [
+            {
+              "type": "ACCOMMODATION",
+              "description": "Nightly rate",
+              "currency": "USD",
+              "amount": 480
+            }
+          ]
+        },
+        "payment": {
+          "currency": "USD",
+          "total_amount": 480,
+          "received_amount": 480,
+          "balance_amount": 0,
+          "status": "received"
+        },
+        "check_in_details": {
+          "arrival_at": {
+            "hour": 16,
+            "minute": 0
+          },
+          "departure_at": null,
+          "lock_code": null,
+          "lock_code_visible_after": "14:00",
+          "deposit": 0,
+          "deposit_details": null,
+          "id_required": "not_required",
+          "check_in_guide_url": "https://guide.example.com/checkin/syn-0006"
+        },
+        "remarks": "Synthetic host remark 06: late arrival, prefers ground floor",
+        "channel_remarks": "Synthetic channel remark 06: celebrating an anniversary",
+        "conversation_id": "conv-syn-0006",
+        "tags": [],
+        "custom_channel": null,
+        "guests": [
+          {
+            "id": 61,
+            "name": "Gina Prueba",
+            "phone": "+1 202-555-0106",
+            "email": "guest06.synthetic@example.com",
+            "id_type": "passport",
+            "id_number": "SYNPASS0006",
+            "gender": null,
+            "country": "CR",
+            "birthday": null,
+            "is_booker": true,
+            "id_images": []
+          }
+        ],
+        "custom_fields": {
+          "parking_plate": "SYN-006",
+          "gate_note": "Synthetic gate note 06"
+        },
+        "in_reservation_box": false,
+        "additional_fees": [],
+        "checkin_guide_images": [],
+        "channel_details": null
+      },
+      {
+        "reservation_code": "0-SYN0007-colibri",
+        "stay_code": "0-SYN0007-colibri",
+        "channel_id": "SYN-CH-0007",
+        "property_id": 910001,
+        "channel_type": "airbnb",
+        "listing_id": "880000101",
+        "check_in_date": "@date(-12)",
+        "check_out_date": "@date(-8)",
+        "number_of_guests": 2,
+        "number_of_adults": 2,
+        "number_of_children": 0,
+        "number_of_infants": 0,
+        "number_of_pets": 0,
+        "status": "accepted",
+        "guest_name": "Hugo Pasado",
+        "guest_phone": "+1 202-555-0107",
+        "guest_email": "guest07.synthetic@example.com",
+        "cancelled_at": null,
+        "booked_at": "@datetime(-53)",
+        "created_at": "@datetime(-53)",
+        "creator": "Synthetic fixture",
+        "rates": {
+          "total_rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "total_commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "tax": null,
+          "details": [
+            {
+              "type": "ACCOMMODATION",
+              "description": "Nightly rate",
+              "currency": "USD",
+              "amount": 480
+            }
+          ]
+        },
+        "payment": {
+          "currency": "USD",
+          "total_amount": 480,
+          "received_amount": 480,
+          "balance_amount": 0,
+          "status": "received"
+        },
+        "check_in_details": {
+          "arrival_at": {
+            "hour": 16,
+            "minute": 0
+          },
+          "departure_at": null,
+          "lock_code": null,
+          "lock_code_visible_after": "14:00",
+          "deposit": 0,
+          "deposit_details": null,
+          "id_required": "not_required",
+          "check_in_guide_url": "https://guide.example.com/checkin/syn-0007"
+        },
+        "remarks": "Synthetic host remark 07: late arrival, prefers ground floor",
+        "channel_remarks": "Synthetic channel remark 07: celebrating an anniversary",
+        "conversation_id": "conv-syn-0007",
+        "tags": [],
+        "custom_channel": null,
+        "guests": [
+          {
+            "id": 71,
+            "name": "Hugo Pasado",
+            "phone": "+1 202-555-0107",
+            "email": "guest07.synthetic@example.com",
+            "id_type": "passport",
+            "id_number": "SYNPASS0007",
+            "gender": null,
+            "country": "CR",
+            "birthday": null,
+            "is_booker": true,
+            "id_images": []
+          }
+        ],
+        "custom_fields": {
+          "parking_plate": "SYN-007",
+          "gate_note": "Synthetic gate note 07"
+        },
+        "in_reservation_box": false,
+        "additional_fees": [],
+        "checkin_guide_images": [],
+        "channel_details": {
+          "airbnb": {
+            "cancellation_policy_category": "flexible"
+          }
+        }
+      },
+      {
+        "reservation_code": "5-SYN0008-escazu",
+        "stay_code": "5-SYN0008-escazu",
+        "channel_id": "SYN-CH-0008",
+        "property_id": 910002,
+        "channel_type": "hostex_direct",
+        "listing_id": "",
+        "check_in_date": "@date(+5)",
+        "check_out_date": "@date(+9)",
+        "number_of_adults": 2,
+        "number_of_children": 0,
+        "number_of_infants": 0,
+        "number_of_pets": 0,
+        "status": "accepted",
+        "guest_name": null,
+        "guest_phone": "+1 202-555-0108",
+        "guest_email": "guest08.synthetic@example.com",
+        "cancelled_at": null,
+        "booked_at": "@datetime(-52)",
+        "created_at": "@datetime(-52)",
+        "creator": "Synthetic fixture",
+        "rates": {
+          "total_rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "total_commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "tax": null,
+          "details": [
+            {
+              "type": "ACCOMMODATION",
+              "description": "Nightly rate",
+              "currency": "USD",
+              "amount": 480
+            }
+          ]
+        },
+        "payment": {
+          "currency": "USD",
+          "total_amount": 480,
+          "received_amount": 480,
+          "balance_amount": 0,
+          "status": "received"
+        },
+        "check_in_details": {
+          "arrival_at": {
+            "hour": 16,
+            "minute": 0
+          },
+          "departure_at": null,
+          "lock_code": null,
+          "lock_code_visible_after": "14:00",
+          "deposit": 0,
+          "deposit_details": null,
+          "id_required": "not_required",
+          "check_in_guide_url": "https://guide.example.com/checkin/syn-0008"
+        },
+        "remarks": "Synthetic host remark 08: late arrival, prefers ground floor",
+        "channel_remarks": "Synthetic channel remark 08: celebrating an anniversary",
+        "conversation_id": "conv-syn-0008",
+        "tags": [],
+        "custom_channel": {
+          "id": 3,
+          "name": "Instagram"
+        },
+        "guests": [],
+        "custom_fields": null,
+        "in_reservation_box": false,
+        "additional_fees": [],
+        "checkin_guide_images": [],
+        "channel_details": null
+      },
+      {
+        "reservation_code": "0-SYN0009-familia",
+        "stay_code": "0-SYN0009_1-familia",
+        "channel_id": "SYN-CH-0009",
+        "property_id": 910001,
+        "channel_type": "booking.com",
+        "listing_id": "5550101-77001",
+        "check_in_date": "@date(+40)",
+        "check_out_date": "@date(+44)",
+        "number_of_guests": 4,
+        "number_of_adults": 4,
+        "number_of_children": 0,
+        "number_of_infants": 0,
+        "number_of_pets": 0,
+        "status": "accepted",
+        "guest_name": "Irene Familia",
+        "guest_phone": "+1 202-555-0109",
+        "guest_email": "guest09.synthetic@example.com",
+        "cancelled_at": null,
+        "booked_at": "@datetime(-51)",
+        "created_at": "@datetime(-51)",
+        "creator": "Synthetic fixture",
+        "rates": {
+          "total_rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "total_commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "tax": null,
+          "details": [
+            {
+              "type": "ACCOMMODATION",
+              "description": "Nightly rate",
+              "currency": "USD",
+              "amount": 480
+            }
+          ]
+        },
+        "payment": {
+          "currency": "USD",
+          "total_amount": 480,
+          "received_amount": 480,
+          "balance_amount": 0,
+          "status": "received"
+        },
+        "check_in_details": {
+          "arrival_at": {
+            "hour": 16,
+            "minute": 0
+          },
+          "departure_at": null,
+          "lock_code": null,
+          "lock_code_visible_after": "14:00",
+          "deposit": 0,
+          "deposit_details": null,
+          "id_required": "not_required",
+          "check_in_guide_url": "https://guide.example.com/checkin/syn-0009"
+        },
+        "remarks": "Synthetic host remark 09: late arrival, prefers ground floor",
+        "channel_remarks": "Synthetic channel remark 09: celebrating an anniversary",
+        "conversation_id": "conv-syn-0009",
+        "tags": [],
+        "custom_channel": null,
+        "guests": [
+          {
+            "id": 91,
+            "name": "Irene Familia",
+            "phone": "+1 202-555-0109",
+            "email": "guest09.synthetic@example.com",
+            "id_type": "passport",
+            "id_number": "SYNPASS0009",
+            "gender": null,
+            "country": "CR",
+            "birthday": null,
+            "is_booker": true,
+            "id_images": []
+          }
+        ],
+        "custom_fields": {
+          "parking_plate": "SYN-009",
+          "gate_note": "Synthetic gate note 09"
+        },
+        "in_reservation_box": false,
+        "additional_fees": [],
+        "checkin_guide_images": [],
+        "channel_details": null
+      },
+      {
+        "reservation_code": "0-SYN0009-familia",
+        "stay_code": "0-SYN0009_2-familia",
+        "channel_id": "SYN-CH-0010",
+        "property_id": 910002,
+        "channel_type": "booking.com",
+        "listing_id": "5550102-77002",
+        "check_in_date": "@date(+40)",
+        "check_out_date": "@date(+44)",
+        "number_of_guests": 3,
+        "number_of_adults": 3,
+        "number_of_children": 0,
+        "number_of_infants": 0,
+        "number_of_pets": 0,
+        "status": "accepted",
+        "guest_name": "Irene Familia",
+        "guest_phone": "+1 202-555-0110",
+        "guest_email": "guest10.synthetic@example.com",
+        "cancelled_at": null,
+        "booked_at": "@datetime(-50)",
+        "created_at": "@datetime(-50)",
+        "creator": "Synthetic fixture",
+        "rates": {
+          "total_rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "total_commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "tax": null,
+          "details": [
+            {
+              "type": "ACCOMMODATION",
+              "description": "Nightly rate",
+              "currency": "USD",
+              "amount": 480
+            }
+          ]
+        },
+        "payment": {
+          "currency": "USD",
+          "total_amount": 480,
+          "received_amount": 480,
+          "balance_amount": 0,
+          "status": "received"
+        },
+        "check_in_details": {
+          "arrival_at": {
+            "hour": 16,
+            "minute": 0
+          },
+          "departure_at": null,
+          "lock_code": null,
+          "lock_code_visible_after": "14:00",
+          "deposit": 0,
+          "deposit_details": null,
+          "id_required": "not_required",
+          "check_in_guide_url": "https://guide.example.com/checkin/syn-0010"
+        },
+        "remarks": "Synthetic host remark 10: late arrival, prefers ground floor",
+        "channel_remarks": "Synthetic channel remark 10: celebrating an anniversary",
+        "conversation_id": "conv-syn-0010",
+        "tags": [],
+        "custom_channel": null,
+        "guests": [
+          {
+            "id": 101,
+            "name": "Irene Familia",
+            "phone": "+1 202-555-0110",
+            "email": "guest10.synthetic@example.com",
+            "id_type": "passport",
+            "id_number": "SYNPASS0010",
+            "gender": null,
+            "country": "CR",
+            "birthday": null,
+            "is_booker": true,
+            "id_images": []
+          }
+        ],
+        "custom_fields": {
+          "parking_plate": "SYN-010",
+          "gate_note": "Synthetic gate note 10"
+        },
+        "in_reservation_box": false,
+        "additional_fees": [],
+        "checkin_guide_images": [],
+        "channel_details": null
+      },
+      {
+        "reservation_code": "0-SYN0011-escazu",
+        "stay_code": "0-SYN0011-escazu",
+        "channel_id": "SYN-CH-0011",
+        "property_id": 910002,
+        "channel_type": "vrbo",
+        "listing_id": "vrbo-syn-0102",
+        "check_in_date": "@date(+15)",
+        "check_out_date": "@date(+18)",
+        "number_of_guests": 2,
+        "number_of_adults": 2,
+        "number_of_children": 0,
+        "number_of_infants": 0,
+        "number_of_pets": 0,
+        "status": "accepted",
+        "guest_name": "Julio Muestra",
+        "guest_phone": "+1 202-555-0111",
+        "guest_email": "guest11.synthetic@example.com",
+        "cancelled_at": null,
+        "booked_at": "@datetime(-49)",
+        "created_at": "@datetime(-49)",
+        "creator": "Synthetic fixture",
+        "rates": {
+          "total_rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "total_commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "tax": null,
+          "details": [
+            {
+              "type": "ACCOMMODATION",
+              "description": "Nightly rate",
+              "currency": "USD",
+              "amount": 480
+            }
+          ]
+        },
+        "payment": {
+          "currency": "USD",
+          "total_amount": 480,
+          "received_amount": 480,
+          "balance_amount": 0,
+          "status": "received"
+        },
+        "check_in_details": {
+          "arrival_at": {
+            "hour": 16,
+            "minute": 0
+          },
+          "departure_at": null,
+          "lock_code": null,
+          "lock_code_visible_after": "14:00",
+          "deposit": 0,
+          "deposit_details": null,
+          "id_required": "not_required",
+          "check_in_guide_url": "https://guide.example.com/checkin/syn-0011"
+        },
+        "remarks": "Synthetic host remark 11: late arrival, prefers ground floor",
+        "channel_remarks": "Synthetic channel remark 11: celebrating an anniversary",
+        "conversation_id": "conv-syn-0011",
+        "tags": [],
+        "custom_channel": null,
+        "guests": [
+          {
+            "id": 111,
+            "name": "Julio Muestra",
+            "phone": "+1 202-555-0111",
+            "email": "guest11.synthetic@example.com",
+            "id_type": "passport",
+            "id_number": "SYNPASS0011",
+            "gender": null,
+            "country": "CR",
+            "birthday": null,
+            "is_booker": true,
+            "id_images": []
+          }
+        ],
+        "custom_fields": {
+          "parking_plate": "SYN-011",
+          "gate_note": "Synthetic gate note 11"
+        },
+        "in_reservation_box": false,
+        "additional_fees": [],
+        "checkin_guide_images": [],
+        "channel_details": null
+      },
+      {
+        "reservation_code": "0-SYN0012-escazu",
+        "stay_code": "0-SYN0012-escazu",
+        "channel_id": "SYN-CH-0012",
+        "property_id": 910002,
+        "channel_type": "booking_site",
+        "listing_id": "site-syn-0102",
+        "check_in_date": "@date(+50)",
+        "check_out_date": "@date(+52)",
+        "number_of_guests": 1,
+        "number_of_adults": 1,
+        "number_of_children": 0,
+        "number_of_infants": 0,
+        "number_of_pets": 0,
+        "status": "accepted",
+        "guest_name": "Karla Directa",
+        "guest_phone": "+1 202-555-0112",
+        "guest_email": "guest12.synthetic@example.com",
+        "cancelled_at": null,
+        "booked_at": "@datetime(-48)",
+        "created_at": "@datetime(-48)",
+        "creator": "Synthetic fixture",
+        "rates": {
+          "total_rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "total_commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "tax": null,
+          "details": [
+            {
+              "type": "ACCOMMODATION",
+              "description": "Nightly rate",
+              "currency": "USD",
+              "amount": 480
+            }
+          ]
+        },
+        "payment": {
+          "currency": "USD",
+          "total_amount": 480,
+          "received_amount": 480,
+          "balance_amount": 0,
+          "status": "received"
+        },
+        "check_in_details": {
+          "arrival_at": {
+            "hour": 16,
+            "minute": 0
+          },
+          "departure_at": null,
+          "lock_code": null,
+          "lock_code_visible_after": "14:00",
+          "deposit": 0,
+          "deposit_details": null,
+          "id_required": "not_required",
+          "check_in_guide_url": "https://guide.example.com/checkin/syn-0012"
+        },
+        "remarks": "Synthetic host remark 12: late arrival, prefers ground floor",
+        "channel_remarks": "Synthetic channel remark 12: celebrating an anniversary",
+        "conversation_id": "conv-syn-0012",
+        "tags": [],
+        "custom_channel": null,
+        "guests": [
+          {
+            "id": 121,
+            "name": "Karla Directa",
+            "phone": "+1 202-555-0112",
+            "email": "guest12.synthetic@example.com",
+            "id_type": "passport",
+            "id_number": "SYNPASS0012",
+            "gender": null,
+            "country": "CR",
+            "birthday": null,
+            "is_booker": true,
+            "id_images": []
+          }
+        ],
+        "custom_fields": {
+          "parking_plate": "SYN-012",
+          "gate_note": "Synthetic gate note 12"
+        },
+        "in_reservation_box": false,
+        "additional_fees": [],
+        "checkin_guide_images": [],
+        "channel_details": null
+      },
+      {
+        "reservation_code": "0-SYN0013-nosara",
+        "stay_code": "0-SYN0013-nosara",
+        "channel_id": "SYN-CH-0013",
+        "property_id": 910003,
+        "channel_type": "expedia",
+        "listing_id": "exp-syn-0103",
+        "check_in_date": "@date(+60)",
+        "check_out_date": "@date(+65)",
+        "number_of_guests": 5,
+        "number_of_adults": 5,
+        "number_of_children": 0,
+        "number_of_infants": 0,
+        "number_of_pets": 0,
+        "status": "accepted",
+        "guest_name": "Luis Ejemplo",
+        "guest_phone": "+1 202-555-0113",
+        "guest_email": "guest13.synthetic@example.com",
+        "cancelled_at": null,
+        "booked_at": "@datetime(-47)",
+        "created_at": "@datetime(-47)",
+        "creator": "Synthetic fixture",
+        "rates": {
+          "total_rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "total_commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "tax": null,
+          "details": [
+            {
+              "type": "ACCOMMODATION",
+              "description": "Nightly rate",
+              "currency": "USD",
+              "amount": 480
+            }
+          ]
+        },
+        "payment": {
+          "currency": "USD",
+          "total_amount": 480,
+          "received_amount": 480,
+          "balance_amount": 0,
+          "status": "received"
+        },
+        "check_in_details": {
+          "arrival_at": {
+            "hour": 16,
+            "minute": 0
+          },
+          "departure_at": null,
+          "lock_code": null,
+          "lock_code_visible_after": "14:00",
+          "deposit": 0,
+          "deposit_details": null,
+          "id_required": "not_required",
+          "check_in_guide_url": "https://guide.example.com/checkin/syn-0013"
+        },
+        "remarks": "Synthetic host remark 13: late arrival, prefers ground floor",
+        "channel_remarks": "Synthetic channel remark 13: celebrating an anniversary",
+        "conversation_id": "conv-syn-0013",
+        "tags": [],
+        "custom_channel": null,
+        "guests": [
+          {
+            "id": 131,
+            "name": "Luis Ejemplo",
+            "phone": "+1 202-555-0113",
+            "email": "guest13.synthetic@example.com",
+            "id_type": "passport",
+            "id_number": "SYNPASS0013",
+            "gender": null,
+            "country": "CR",
+            "birthday": null,
+            "is_booker": true,
+            "id_images": []
+          }
+        ],
+        "custom_fields": {
+          "parking_plate": "SYN-013",
+          "gate_note": "Synthetic gate note 13"
+        },
+        "in_reservation_box": false,
+        "additional_fees": [],
+        "checkin_guide_images": [],
+        "channel_details": null
+      },
+      {
+        "reservation_code": "0-SYN0014-nosara",
+        "stay_code": "0-SYN0014-nosara",
+        "channel_id": "SYN-CH-0014",
+        "property_id": 910003,
+        "channel_type": "trip.com",
+        "listing_id": "trip-syn-0103",
+        "check_in_date": "@date(+70)",
+        "check_out_date": "@date(+73)",
+        "number_of_guests": 2,
+        "number_of_adults": 2,
+        "number_of_children": 0,
+        "number_of_infants": 0,
+        "number_of_pets": 0,
+        "status": "cancelled",
+        "guest_name": "Marta Prueba",
+        "guest_phone": "+1 202-555-0114",
+        "guest_email": "guest14.synthetic@example.com",
+        "cancelled_at": "@datetime(-2)",
+        "booked_at": "@datetime(-46)",
+        "created_at": "@datetime(-46)",
+        "creator": "Synthetic fixture",
+        "rates": {
+          "total_rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "total_commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "tax": null,
+          "details": [
+            {
+              "type": "ACCOMMODATION",
+              "description": "Nightly rate",
+              "currency": "USD",
+              "amount": 480
+            }
+          ]
+        },
+        "payment": {
+          "currency": "USD",
+          "total_amount": 480,
+          "received_amount": 480,
+          "balance_amount": 0,
+          "status": "received"
+        },
+        "check_in_details": {
+          "arrival_at": {
+            "hour": 16,
+            "minute": 0
+          },
+          "departure_at": null,
+          "lock_code": null,
+          "lock_code_visible_after": "14:00",
+          "deposit": 0,
+          "deposit_details": null,
+          "id_required": "not_required",
+          "check_in_guide_url": "https://guide.example.com/checkin/syn-0014"
+        },
+        "remarks": "Synthetic host remark 14: late arrival, prefers ground floor",
+        "channel_remarks": "Synthetic channel remark 14: celebrating an anniversary",
+        "conversation_id": "conv-syn-0014",
+        "tags": [],
+        "custom_channel": null,
+        "guests": [
+          {
+            "id": 141,
+            "name": "Marta Prueba",
+            "phone": "+1 202-555-0114",
+            "email": "guest14.synthetic@example.com",
+            "id_type": "passport",
+            "id_number": "SYNPASS0014",
+            "gender": null,
+            "country": "CR",
+            "birthday": null,
+            "is_booker": true,
+            "id_images": []
+          }
+        ],
+        "custom_fields": {
+          "parking_plate": "SYN-014",
+          "gate_note": "Synthetic gate note 14"
+        },
+        "in_reservation_box": false,
+        "additional_fees": [],
+        "checkin_guide_images": [],
+        "channel_details": null
+      },
+      {
+        "reservation_code": "0-SYN0015-nosara",
+        "stay_code": "0-SYN0015-nosara",
+        "channel_id": "SYN-CH-0015",
+        "property_id": 910003,
+        "channel_type": "agoda",
+        "listing_id": "agoda-syn-0103",
+        "check_in_date": "@date(+80)",
+        "check_out_date": "@date(+84)",
+        "number_of_guests": 2,
+        "number_of_adults": 2,
+        "number_of_children": 0,
+        "number_of_infants": 0,
+        "number_of_pets": 0,
+        "status": "accepted",
+        "guest_name": "Nora Ficticia",
+        "guest_phone": "+1 202-555-0115",
+        "guest_email": "guest15.synthetic@example.com",
+        "cancelled_at": null,
+        "booked_at": "@datetime(-45)",
+        "created_at": "@datetime(-45)",
+        "creator": "Synthetic fixture",
+        "rates": {
+          "total_rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "total_commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "rate": {
+            "currency": "USD",
+            "amount": 480
+          },
+          "commission": {
+            "currency": "USD",
+            "amount": 72
+          },
+          "tax": null,
+          "details": [
+            {
+              "type": "ACCOMMODATION",
+              "description": "Nightly rate",
+              "currency": "USD",
+              "amount": 480
+            }
+          ]
+        },
+        "payment": {
+          "currency": "USD",
+          "total_amount": 480,
+          "received_amount": 480,
+          "balance_amount": 0,
+          "status": "received"
+        },
+        "check_in_details": {
+          "arrival_at": {
+            "hour": 16,
+            "minute": 0
+          },
+          "departure_at": null,
+          "lock_code": null,
+          "lock_code_visible_after": "14:00",
+          "deposit": 0,
+          "deposit_details": null,
+          "id_required": "not_required",
+          "check_in_guide_url": "https://guide.example.com/checkin/syn-0015"
+        },
+        "remarks": "Synthetic host remark 15: late arrival, prefers ground floor",
+        "channel_remarks": "Synthetic channel remark 15: celebrating an anniversary",
+        "conversation_id": "conv-syn-0015",
+        "tags": [],
+        "custom_channel": null,
+        "guests": [
+          {
+            "id": 151,
+            "name": "Nora Ficticia",
+            "phone": "+1 202-555-0115",
+            "email": "guest15.synthetic@example.com",
+            "id_type": "passport",
+            "id_number": "SYNPASS0015",
+            "gender": null,
+            "country": "CR",
+            "birthday": null,
+            "is_booker": true,
+            "id_images": []
+          }
+        ],
+        "custom_fields": {
+          "parking_plate": "SYN-015",
+          "gate_note": "Synthetic gate note 15"
+        },
+        "in_reservation_box": false,
+        "additional_fees": [],
+        "checkin_guide_images": [],
+        "channel_details": null
+      }
+    ]
+  }
+}

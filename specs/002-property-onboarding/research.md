@@ -226,7 +226,7 @@ at the boundary and never stored or logged (FR-030). Contract tests run against 
   - **Bookings:** `confirmed` and `new` become `active`; `cancelled` becomes `cancelled`;
     `request`, `inquiry`, and `black` (blocked) are skipped. The guest count is `numAdult` +
     `numChild`. The guest name is first and last name. The booking reference is the Beds24
-    booking ID. The channel comes from `referer`.
+    booking ID. The channel comes from the booking's `channel` (for example `airbnb` → "Airbnb"), falling back to `apiSource` (verified against the OpenAPI spec, 2026-11-16).
 - **Rate limits:** 100 credits per 5 minutes per Beds24 account, **shared with the host's other
   tools**. The adapter reads the credit headers (`X-FiveMinCreditLimit-Remaining` and the
   `x-five-min-limit-*` variant), never spends below 30 remaining credits, and waits for the reset
@@ -258,7 +258,9 @@ at the boundary and never stored or logged (FR-030). Contract tests run against 
   - **Reservations:** `accepted` becomes `active`; `cancelled`, `denied`, and `timeout` become
     `cancelled`; `wait_accept` and `wait_pay` are skipped until accepted. The guest count is
     `number_of_guests`, the guest name is `guest_name`, and the booking reference is
-    `reservation_code`. Dropped: phone, email, `guests[]`, remarks, custom fields, and
+    `reservation_code`. Each stay is identified by `stay_code`, because the stays of a multi-stay
+    reservation share one `reservation_code`; `booking_site` is the host's own direct-booking
+    site, so it maps to "Direct" (verified against the OpenAPI spec, 2026-11-16). Dropped: phone, email, `guests[]`, remarks, custom fields, and
     `check_in_details` (which holds lock codes).
 - **Rate limits:** generous (600 per minute per endpoint, 100,000 per day per account). Pages hold
   up to 100 items. There is no "updated since" filter, so each refresh reads reservations with

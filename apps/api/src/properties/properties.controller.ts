@@ -2,16 +2,20 @@ import { Body, Controller, Get, HttpCode, Param, Patch, Post, Query, Req } from 
 import type { FastifyRequest } from "fastify";
 import {
   addressCheckQuerySchema,
+  confirmPropertiesSchema,
   createPropertySchema,
   listPropertiesQuerySchema,
   updatePropertySchema,
   type AddressCheck,
   type AddressCheckQuery,
+  type ConfirmPropertiesBody,
+  type ConfirmPropertiesResult,
   type CreatePropertyBody,
   type ListPropertiesQuery,
   type PropertyDetail,
   type PropertyLimits,
   type PropertyList,
+  type RestrictedValueList,
   type StartOptions,
   type UpdatePropertyBody,
 } from "@guidesk/contracts";
@@ -76,6 +80,28 @@ export class PropertiesController {
     @Body(new ZodValidationPipe(createPropertySchema)) body: CreatePropertyBody,
   ): Promise<PropertyDetail> {
     return this.properties.create(callerOf(request), workspaceId, body);
+  }
+
+  /** "Confirm all" for imported properties in `to_confirm` (FR-004, T094). */
+  @Post("confirm")
+  @HttpCode(200)
+  @WorkspaceAction({ capability: "properties.manage" })
+  confirm(
+    @Param("workspaceId") workspaceId: string,
+    @Body(new ZodValidationPipe(confirmPropertiesSchema)) body: ConfirmPropertiesBody,
+  ): Promise<ConfirmPropertiesResult> {
+    return this.properties.confirm(workspaceId, body.propertyIds);
+  }
+
+  /** Codes found in imported text, masked (FR-031, T100); agents get 404. */
+  @Get(":propertyId/restricted-values")
+  @WorkspaceAction({ capability: "properties.manage", deniedAs: "not_found" })
+  restrictedValues(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+  ): Promise<RestrictedValueList> {
+    return this.properties.restrictedValues(callerOf(request), workspaceId, propertyId);
   }
 
   @Get(":propertyId")
