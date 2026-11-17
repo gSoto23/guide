@@ -1,0 +1,34 @@
+{
+  "name": "@guidesk/vault",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Envelope encryption for restricted data over KeyManagementPort (research R5, SEC-06). Decryption has its own entry point, which only the worker may import.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./decrypt": {
+      "types": "./dist/decrypt.d.ts",
+      "default": "./dist/decrypt.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@guidesk/db": "workspace:*",
+    "@guidesk/integrations": "workspace:*",
+    "drizzle-orm": "^0.45.4"
+  },
+  "devDependencies": {
+    "@guidesk/config": "workspace:*"
+  }
+}

@@ -1,4 +1,6 @@
 import "reflect-metadata";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { Controller, Get, HttpCode, Param, Post, Req } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import type { NestFastifyApplication } from "@nestjs/platform-fastify";
@@ -62,7 +64,7 @@ export class CapturingEmailAdapter implements EmailAdapter {
 export const PORTAL_URL = "http://localhost:3000";
 
 export interface TestAppOptions {
-  /** Properties per workspace for the MFA threshold (feature 002 provides real counts). */
+  /** A fixed property count for the MFA threshold; omit it to count real active properties. */
   propertyCount?: number;
 }
 
@@ -77,18 +79,27 @@ export async function createTestApp(
     BETTER_AUTH_SECRET: "test-secret-".padEnd(48, "x"),
     PORTAL_URL,
     EMAIL_TRANSPORT: "smtp",
+    // Feature 002 (T006): test-only key material, never used outside tests.
+    LOCAL_KMS_KEY: Buffer.alloc(32, 11).toString("base64"),
+    FEED_URL_PEPPER: "test-pepper-".padEnd(48, "x"),
+    LOCAL_STORAGE_DIR: join(tmpdir(), "guidesk-api-test-uploads"),
     ...extraEnv,
   });
   const email = new CapturingEmailAdapter();
-  const moduleRef = await Test.createTestingModule({
+  let builder = Test.createTestingModule({
     imports: [AppModule],
     controllers: [ProbeController, SensitiveProbeController],
   })
     .overrideProvider(EMAIL_ADAPTER)
-    .useValue(email)
-    .overrideProvider(PROPERTY_COUNT)
-    .useValue({ countProperties: async () => options.propertyCount ?? 0 })
-    .compile();
+    .useValue(email);
+  // A fixed count when the test asks for one; otherwise the real count of active properties.
+  if (options.propertyCount !== undefined) {
+    const count = options.propertyCount;
+    builder = builder
+      .overrideProvider(PROPERTY_COUNT)
+      .useValue({ countProperties: async () => count });
+  }
+  const moduleRef = await builder.compile();
 
   const app = moduleRef.createNestApplication<NestFastifyApplication>(
     createFastifyAdapter({ NODE_ENV: "test" }),

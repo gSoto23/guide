@@ -1,0 +1,24 @@
+{
+  "id": "en-11-airbnb-family-home-long",
+  "language": "en",
+  "text": "Larkspur Bay Family Home – 5 min Walk to the Beach\n\nAbout this space\nBring the whole family to this bright, two-story home in a quiet cul-de-sac of Larkspur Bay. The beach, the boardwalk, and the ice cream shops are a five-minute walk away, and there is a playground at the end of the street.\n\nThe space\nUpstairs you will find three bedrooms. The main bedroom has a king bed and its own bathroom. The second bedroom has a queen bed, and the bunk room has two sets of bunk beds for the kids. Downstairs, the open kitchen flows into a living room with a sectional sofa and a big smart TV. Sliding glass doors open onto a screened porch and a backyard with a gas grill and a picnic table.\n\nGuest access\nYou will have the entire house, the backyard, and the garage for beach gear. Bikes and boogie boards are free to use.\n\nThe neighborhood\nThe cul-de-sac is quiet and safe for scooters. The nearest grocery store is 1 mile away, and the farmers market runs on Sunday mornings.\n\nGetting around\nYou won't need the car much. Bikes are the easiest way to get to town.\n\nOther things to note\nWe live nearby and can help with anything during your stay. Call or text us at (555) 555-0182.\nAddress: 47 Seagrass Court, Larkspur Bay\n\nWhat this place offers\nKitchen\nWifi\nDedicated workspace\nFree parking on premises\nWasher\nDryer\nAir conditioning\nCrib\nBikes\nBackyard\n\nHouse rules\nCheck-in: 4:00 PM - 9:00 PM\nCheckout: 10:00 AM\n8 guests maximum\nNo parties or events\nNo smoking\nQuiet hours: 10:00 PM - 8:00 AM\n",
+  "expected": {
+    "language": "en",
+    "title": "Larkspur Bay Family Home",
+    "description": ["quiet cul-de-sac", "bunk room", "screened porch"],
+    "houseRules": ["No parties or events", "No smoking"],
+    "amenities": [
+      "Kitchen",
+      "Wifi",
+      "Dedicated workspace",
+      "Free parking",
+      "Washer",
+      "Dryer",
+      "Air conditioning",
+      "Crib"
+    ],
+    "checkInTime": "16:00",
+    "checkoutTime": "10:00",
+    "maxGuests": 8
+  }
+}

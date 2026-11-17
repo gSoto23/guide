@@ -1,0 +1,15 @@
+{
+  "id": "en-02-booking-harbor-apartment",
+  "language": "en",
+  "text": "Harborview Apartments Larkspur Bay\n\nLocated 300 m from Larkspur Bay Beach, Harborview Apartments offers air-conditioned accommodation with a balcony and free WiFi. The apartment features 1 bedroom, a living room with a sofa bed, and a kitchen with a dishwasher and an oven. Guests can enjoy the sea view from the terrace.\n\nProperty highlights\nPerfect for a 4-night stay!\nTop location: highly rated by recent guests (9.1)\n\nMost popular facilities\nFree WiFi\nNon-smoking rooms\nAir conditioning\nBalcony\nFree parking\n\nPrices\nApartment with Sea View: US$128 per night\nTaxes and charges: US$19\n\nHouse rules\nCheck-in: From 14:00 to 20:00\nCheck-out: Until 10:00\nCancellation/prepayment: Policies vary according to apartment type.\nChildren & beds: Children of all ages are welcome.\nMaximum occupancy: 4 guests\nPets: Pets are not allowed.\nParties: Parties/events are not allowed.\nQuiet hours: Guests must be quiet between 22:00 and 08:00.\n",
+  "expected": {
+    "language": "en",
+    "title": "Harborview Apartments Larkspur Bay",
+    "description": ["300 m from Larkspur Bay Beach", "sea view from the terrace"],
+    "houseRules": ["Pets are not allowed", "Parties/events are not allowed"],
+    "amenities": ["Free WiFi", "Air conditioning", "Balcony", "Free parking"],
+    "checkInTime": "14:00",
+    "checkoutTime": "10:00",
+    "maxGuests": 4
+  }
+}

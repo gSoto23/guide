@@ -15,7 +15,7 @@ export class SecurityLogService {
   constructor(@Inject(DB_HANDLE) private readonly handle: DbHandle) {}
 
   async record(event: SecurityEventInput): Promise<void> {
-    assertSafeMetadata(event.metadata);
+    assertSafeMetadata(event.metadata, event.type);
     try {
       await this.handle.db.insert(securityEvent).values({
         type: event.type,

@@ -116,7 +116,8 @@ label {
 }
 
 input,
-select {
+select,
+textarea {
   width: 100%;
   min-height: 48px;
   padding: 10px 12px;
@@ -396,4 +397,246 @@ legend {
   clip: rect(0 0 0 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* Feature 002: property onboarding. */
+.field-error {
+  display: block;
+  color: var(--color-danger);
+  font-size: 0.875rem;
+}
+
+.field-warning {
+  display: block;
+  color: var(--color-info);
+  font-size: 0.875rem;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space);
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-strong);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.badge-ready {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.badge-warning {
+  border-color: var(--color-info);
+  color: var(--color-info);
+}
+
+.property-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--space) 0;
+  display: grid;
+  gap: calc(var(--space) / 2);
+}
+
+.property-row {
+  display: block;
+  padding: var(--space);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: inherit;
+  text-decoration: none;
+}
+
+.property-row:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.property-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.facts-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px var(--space);
+  margin: var(--space) 0;
+}
+
+.facts-list dt {
+  color: var(--color-text-muted);
+}
+
+.facts-list dd {
+  margin: 0;
+}
+
+/* Listing extraction and listing content (US2). */
+textarea {
+  min-height: 0;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+input[type="checkbox"] {
+  width: auto;
+  min-height: 0;
+}
+
+.field-hint {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+}
+
+.checkbox input {
+  width: 20px;
+  height: 20px;
+}
+
+.screenshots {
+  border: 0;
+  padding: 0;
+  margin: var(--space) 0 0;
+}
+
+.screenshots legend {
+  font-weight: 600;
+  padding: 0;
+}
+
+.file-list {
+  list-style: none;
+  padding: 0;
+  margin: calc(var(--space) / 2) 0 0;
+  display: grid;
+  gap: 6px;
+}
+
+.file-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+
+.file-list .button-link {
+  width: auto;
+  min-height: 44px;
+  margin: 0 0 0 auto;
+}
+
+.file-name {
+  overflow-wrap: anywhere;
+}
+
+.file-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--space) / 2);
+}
+
+.file-button:focus-within {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.working {
+  padding: var(--space);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.content-item {
+  margin: var(--space) 0;
+  padding: var(--space);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.content-item-dropped {
+  opacity: 0.6;
+}
+
+.content-item-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.content-item-head h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.content-body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.amenities {
+  padding-left: 1.25rem;
+}
+
+.content-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--space) / 2);
+}
+
+/* Calendars and stays (US3). */
+.feed-hint {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  overflow-wrap: anywhere;
+}
+
+.stay-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.stay-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+.stay-actions .button-link,
+.content-item > .button-link,
+.alert .button-link {
+  min-height: 44px;
+  margin-top: 4px;
+  padding: 0;
+}
+
+.confirm {
+  margin-top: calc(var(--space) / 2);
+  padding: calc(var(--space) / 2) var(--space);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.confirm p {
+  margin: 0;
 }

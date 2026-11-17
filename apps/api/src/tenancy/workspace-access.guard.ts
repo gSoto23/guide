@@ -19,6 +19,7 @@ import { SecurityLogService } from "../security-log/security-log.service.js";
 
 const CAPABILITY = "guidesk:capability";
 const ALLOW_PENDING = "guidesk:allowPendingDeletion";
+const DENIED_AS = "guidesk:deniedAs";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 declare module "fastify" {
@@ -95,6 +96,11 @@ export class WorkspaceAccessGuard implements CanActivate {
         targetId: workspaceId,
         metadata: { capability, role: row.role },
       });
+      // Feed and connection routes answer agents 404, so their existence is not revealed
+      // (feature 002 contracts: cross-cutting guarantees). The refusal is still logged.
+      if (this.reflector.get<string | undefined>(DENIED_AS, context.getHandler()) === "not_found") {
+        throw new ApiProblem(404, "not_found");
+      }
       throw new ApiProblem(403, "forbidden", "Your role does not allow this action.");
     }
     return true;
@@ -109,6 +115,8 @@ export interface WorkspaceActionOptions {
   mfa?: boolean;
   /** The route also works while the workspace is pending deletion (owner only: read, restore). */
   allowPendingDeletion?: boolean;
+  /** Answer a role refusal with 404 instead of 403 (feed and PMS connection routes). */
+  deniedAs?: "not_found";
 }
 
 /**
@@ -119,6 +127,7 @@ export function WorkspaceAction(options: WorkspaceActionOptions = {}) {
   return applyDecorators(
     SetMetadata(CAPABILITY, options.capability),
     SetMetadata(ALLOW_PENDING, options.allowPendingDeletion ?? false),
+    SetMetadata(DENIED_AS, options.deniedAs),
     UseGuards(
       WorkspaceAccessGuard,
       ...(options.stepUp ? [StepUpGuard] : []),

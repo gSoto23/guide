@@ -1,0 +1,15 @@
+{
+  "id": "en-10-tiny-house-no-guest-count",
+  "language": "en",
+  "text": "The Acorn Tiny House\n\nA 220-square-foot tiny house on wheels, parked in a meadow at the edge of Fernwick. It has a sleeping loft with a queen mattress, a pull-out sofa bed downstairs, a composting toilet, and a deck for stargazing.\n\nAmenities\n- Propane heater\n- Two-burner stove\n- Outdoor fire pit\n- Wi-Fi\n\nHouse rules\n- No pets\n- No smoking anywhere on the property\n- Campfires only in the fire pit\n\nCheck-in: 4:00 PM\nCheck-out: 11:00 AM\nNightly rate: $75 + $25 cleaning fee\n",
+  "expected": {
+    "language": "en",
+    "title": "The Acorn Tiny House",
+    "description": ["sleeping loft", "deck for stargazing"],
+    "houseRules": ["No pets", "Campfires only in the fire pit"],
+    "amenities": ["Propane heater", "Two-burner stove", "fire pit", "Wi-Fi"],
+    "checkInTime": "16:00",
+    "checkoutTime": "11:00",
+    "maxGuests": null
+  }
+}

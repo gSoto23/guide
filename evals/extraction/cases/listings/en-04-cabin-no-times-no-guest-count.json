@@ -1,0 +1,15 @@
+{
+  "id": "en-04-cabin-no-times-no-guest-count",
+  "language": "en",
+  "text": "Juniper Ridge Cabin – Quiet Woods near Maple Hollow\n\nTucked at the end of a gravel road, this log cabin backs onto a forest trail system and a small creek. Read by the fire, hike straight from the porch, or drive 15 minutes into Maple Hollow for groceries and the Saturday farmers market.\n\nSleeping arrangements\nBedroom 1: king bed\nBedroom 2: two twin beds\n\nAmenities\n- Fireplace\n- Full kitchen\n- Wi-Fi (satellite, can be slow)\n- Charcoal grill\n- Washer and dryer\n\nRules\n- No smoking inside the cabin\n- Leash pets on the trails\n- Quiet hours after 10 PM\n\nCheck-in is flexible, just send us your arrival time.\nRate: $140/night, 2-night minimum. Cleaning fee $60.\nAddress: 1180 Juniper Ridge Road, Maple Hollow\n",
+  "expected": {
+    "language": "en",
+    "title": "Juniper Ridge Cabin",
+    "description": ["log cabin", "small creek"],
+    "houseRules": ["No smoking inside the cabin", "Quiet hours after 10 PM"],
+    "amenities": ["Fireplace", "Full kitchen", "Wi-Fi", "Charcoal grill", "Washer"],
+    "checkInTime": null,
+    "checkoutTime": null,
+    "maxGuests": null
+  }
+}

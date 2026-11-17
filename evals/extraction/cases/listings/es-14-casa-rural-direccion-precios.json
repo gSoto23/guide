@@ -1,0 +1,15 @@
+{
+  "id": "es-14-casa-rural-direccion-precios",
+  "language": "es",
+  "text": "Casa Rural El Molino de Valdeniebla\n\nAntiguo molino harinero convertido en casa rural, junto al arroyo y rodeado de huertas. Conserva la piedra original y las vigas de madera, y tiene un salón con chimenea y una bodega para catas.\n\nCapacidad: 8 personas en 4 habitaciones dobles.\n\nEquipamiento\n- Chimenea\n- Bodega\n- Barbacoa\n- Calefacción\n- Cuna bajo petición\n\nNormas\n- No se admiten despedidas de soltero\n- Las mascotas pagan un suplemento\n\nPrecio: 180 € por noche (mínimo 2 noches), 1.100 € la semana.\nFianza: 300 € a la llegada.\nReservas: +1 555 555 0193\nDirección: Calle del Molino 27, Valdeniebla\n",
+  "expected": {
+    "language": "es",
+    "title": "Casa Rural El Molino",
+    "description": ["antiguo molino harinero", "vigas de madera"],
+    "houseRules": ["No se admiten despedidas de soltero", "mascotas pagan un suplemento"],
+    "amenities": ["Chimenea", "Bodega", "Barbacoa", "Calefacción", "Cuna"],
+    "checkInTime": null,
+    "checkoutTime": null,
+    "maxGuests": 8
+  }
+}

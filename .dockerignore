@@ -12,3 +12,6 @@ specs
 .specify
 .claude
 *.log
+.uploads
+**/.tz-sources
+evals/extraction/report

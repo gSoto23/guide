@@ -11,3 +11,7 @@ specs/
 .claude/
 *.md
 *.html
+.uploads/
+.tz-sources/
+evals/extraction/report/
+packages/domain/src/properties/time-zone-data.ts

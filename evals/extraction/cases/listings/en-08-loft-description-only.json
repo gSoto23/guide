@@ -1,0 +1,15 @@
+{
+  "id": "en-08-loft-description-only",
+  "language": "en",
+  "text": "Sunlit Loft above Bakery Row\n\nA bright one-room loft above a quiet street of bakeries in the town of Wrenford. Big arched windows face east, so mornings are full of light and the smell of fresh bread. Walk to the river path, the Thursday market, and the old tram stop in a few minutes.\n\nUp to 3 guests. $89 per night, weekly discounts available.\n",
+  "expected": {
+    "language": "en",
+    "title": "Sunlit Loft above Bakery Row",
+    "description": ["big arched windows", "smell of fresh bread"],
+    "houseRules": null,
+    "amenities": null,
+    "checkInTime": null,
+    "checkoutTime": null,
+    "maxGuests": 3
+  }
+}

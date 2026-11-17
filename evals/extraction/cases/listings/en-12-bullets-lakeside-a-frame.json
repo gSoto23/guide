@@ -1,0 +1,15 @@
+{
+  "id": "en-12-bullets-lakeside-a-frame",
+  "language": "en",
+  "text": "Lakeside A-Frame at Loon Point\n\n• Classic 1970s A-frame right on the shore of Loon Lake, with a private dock\n• 3 bedrooms, 2 baths, loft with reading nook\n• Sleeps 7\n• Check-in 3 PM / Check-out 11 AM\n• Kayaks, canoe, and life jackets included\n• Fire pit and gas grill\n• Wi-Fi and a smart TV\n• No smoking\n• No fireworks\n• Dogs welcome, max 2\n• $210/night, $95 cleaning\n",
+  "expected": {
+    "language": "en",
+    "title": "Lakeside A-Frame at Loon Point",
+    "description": ["shore of Loon Lake"],
+    "houseRules": ["No smoking", "No fireworks"],
+    "amenities": ["Kayaks", "canoe", "life jackets", "Fire pit", "gas grill", "Wi-Fi", "smart TV"],
+    "checkInTime": "15:00",
+    "checkoutTime": "11:00",
+    "maxGuests": 7
+  }
+}

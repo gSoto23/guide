@@ -38,4 +38,33 @@ describe("toProblem (T021)", () => {
       code: "internal_error",
     });
   });
+
+  it.each([
+    [409, "plan_limit_reached", { limit: 2, used: 2 }],
+    [409, "workspace_pending_deletion", undefined],
+    [409, "feed_limit_reached", undefined],
+    [409, "duplicate_feed", { reason: "same_channel" }],
+    [409, "refresh_too_soon", { retryAfterSeconds: 120 }],
+    [409, "confirmation_mismatch", undefined],
+    [422, "feed_rejected", { reason: "blocked_address" }],
+    [422, "invalid_credential", { provider: "beds24", helpUrl: "https://example.test/help" }],
+    [429, "extraction_limit_reached", { limit: 10, resetsAt: "2026-11-17T00:00:00.000Z" }],
+  ] as const)(
+    "renders the feature 002 error %s %s with its body (T026)",
+    (status, code, details) => {
+      const problem = toProblem(
+        new ApiProblem(status, code, undefined, details ? { details } : {}),
+      );
+      expect(problem).toMatchObject({ status, code, ...details });
+      expect(problem.title).toBeTruthy();
+      expect(problem.type).toBe(`https://guidesk.app/problems/${code}`);
+    },
+  );
+
+  it("never lets details replace the standard members", () => {
+    const problem = toProblem(
+      new ApiProblem(409, "duplicate_feed", undefined, { details: { code: "x", status: 200 } }),
+    );
+    expect(problem).toMatchObject({ status: 409, code: "duplicate_feed" });
+  });
 });
