@@ -4,7 +4,7 @@
 > **Related:** [PRD](../product/prd.md) · [Personas](../product/personas.md) · [Platform policies](../research/platform-policies.md) · [Security](../architecture/security.md) · [Performance](../architecture/performance.md) · [Spec 001](../../specs/001-workspace-accounts/spec.md)
 
 The UX documentation turns the PRD, the platform policies, and the security and performance
-constraints into principles, structure, flows, screens, and a provisional visual foundation.
+constraints into principles, structure, flows, screens, and the visual foundation.
 It does not change any product, policy, or security decision. Feature specs remain the source of
 truth for behavior; when a spec and these documents disagree, the spec wins and these documents
 are updated.
@@ -16,14 +16,15 @@ are updated.
 | [Principles and IA](principles-and-ia.md) | Design principles, sitemaps for the guest guide and the host portal, the mobile navigation model, what each role sees |
 | [User flows](user-flows.md) | Nine end-to-end flows with diagrams, narratives, and key states (empty, loading, error, offline, locked, limit) |
 | [Screen inventory](screens.md) | Every screen with its purpose, content, actions, states, persona, and phase |
-| [Design system](design-system.md) | Provisional color tokens with contrast ratios, typography, spacing, components, accessibility rules, internationalization, and performance constraints |
+| [Design system](design-system.md) | Brand color tokens with contrast ratios, typography, spacing, components, accessibility rules, internationalization, and performance constraints |
+| [Brand guide](../brand/README.md) | Logo, palette, type, icons, imagery, and usage rules (decided 2026-11-17) |
 | [Wireframes](wireframes.html) | Twelve low-fidelity mobile wireframes in one self-contained HTML file (open it in a browser) |
 
 ## What is provisional
 
-- **The visual brand (OQ-11).** Colors, the primary hue, radius, the logo, and the product name in
-  the wireframes are placeholders. The token names and the accessibility rules should survive the
-  brand work; the values will change.
+- **The wireframes' look.** The visual brand was decided on 2026-11-17 ([brand guide](../brand/README.md));
+  the wireframes still show the earlier placeholder colors and no logo. The name itself waits on
+  the trademark search and the domain (OQ-11).
 - **The guest verification screen (OQ-20).** The wireframes assume a short code shared in the
   booking thread. Spec 004 decides the method.
 - **Offline arrival steps (OQ-28).** The default design never stores codes offline; a "Save until

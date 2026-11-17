@@ -26,7 +26,7 @@ relevant spec as `[NEEDS CLARIFICATION]` items.
 | OQ-08 | Do hosts receive a share of affiliate commissions (tours, reservations) as an incentive? | P1 | F09, business model | Open |
 | OQ-09 | Who absorbs payment processing fees on add-ons: the guest (service fee), the host, or Guidesk? | P1 | F13 (MVP, month 4) | Open |
 | OQ-10 | Pricing: Free-plan caps (properties, AI replies) and the Pro price point | P1 | F11 | Hypothesis in the [business model](product/business-model.md); validate in the pilot |
-| OQ-11 | Brand: trademark search and domain availability for "Guidesk" in the target markets; visual identity | P1 | Public launch | Open |
+| OQ-11 | Brand: trademark search and domain availability for "Guidesk" in the target markets; visual identity | P1 | Public launch | Open. Visual identity answered 2026-11-17 ([brand guide](brand/README.md)); trademark search and domain still open. |
 
 ## Technical
 
