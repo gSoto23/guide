@@ -437,7 +437,7 @@ importers:
         version: link:../../packages/config
 
   packages/config:
-    dependencies:
+    devDependencies:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.14.0(supports-color@7.2.0))
