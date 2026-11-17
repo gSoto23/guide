@@ -1,6 +1,10 @@
+import { loadIntegrationSettings, type IntegrationSettings } from "@guidesk/integrations";
+
 /** Worker configuration read from the environment (secrets come from Secrets Manager in AWS). */
 export interface WorkerConfig {
   databaseUrl: string;
+  /** The portal's public origin, for links in emails (feature 002). */
+  portalUrl: string;
   email: {
     transport: "smtp" | "ses";
     from: string;
@@ -8,6 +12,8 @@ export interface WorkerConfig {
     smtpPort: number;
     sesConfigurationSet: string | undefined;
   };
+  /** Feature 002 adapters: keys, storage, sandbox, AI, PMS, and flags (T006). */
+  integrations: IntegrationSettings;
 }
 
 /** Same rules as @guidesk/db databaseUrlFromParts; kept here so the worker stays dependency-light. */
@@ -42,6 +48,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): WorkerConfig {
   const transport = env.EMAIL_TRANSPORT === "ses" ? "ses" : "smtp";
   return {
     databaseUrl,
+    portalUrl: (env.PORTAL_URL ?? "http://localhost:3000").replace(/\/$/, ""),
     email: {
       transport,
       from: env.EMAIL_FROM ?? "no-reply@guidesk.local",
@@ -49,5 +56,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): WorkerConfig {
       smtpPort: Number(env.SMTP_PORT ?? 1025),
       sesConfigurationSet: env.SES_CONFIGURATION_SET,
     },
+    integrations: loadIntegrationSettings(env, { production: env.NODE_ENV === "production" }),
   };
 }

@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, inject, it } from "vitest";
 import { signIn, totpCode, uniqueEmail } from "./helpers.js";
+import { systemQuery } from "./helpers.js";
 import { createTestApp, PORTAL_URL, updateCookies } from "./test-app.js";
 
 let ctx: Awaited<ReturnType<typeof createTestApp>>;
@@ -88,5 +89,54 @@ describe("MFA above the property threshold (T050, FR-009, AC-SEC-005)", () => {
     const foreignWorkspace = await workspaceOf(other);
     const response = await call("POST", `/api/probe/workspaces/${foreignWorkspace}/mfa`, cookie);
     expect(response.statusCode).toBe(404);
+  });
+});
+
+describe("MFA threshold with the real property count (T025, FR-048)", () => {
+  let real: Awaited<ReturnType<typeof createTestApp>>;
+  let db: ReturnType<typeof systemQuery>;
+
+  beforeAll(async () => {
+    real = await createTestApp(inject("databaseUrl"));
+    db = systemQuery(inject("databaseUrl"));
+  });
+
+  afterAll(async () => {
+    await db.close();
+    await real.app.close();
+  });
+
+  async function addProperty(workspaceId: string, status: "active" | "removed") {
+    await db.query(
+      `INSERT INTO property (workspace_id, name, guide_languages, setup_status, source, status, removed_at, purge_after)
+       VALUES ($1, 'Casa', '{es}', 'needs_details', 'manual', $2,
+         CASE WHEN $2 = 'removed' THEN now() END, CASE WHEN $2 = 'removed' THEN now() + interval '30 days' END)`,
+      [workspaceId, status],
+    );
+  }
+
+  it("applies at 3 active properties, and not at 2 active plus 1 removed", async () => {
+    const cookie = await signIn(real, uniqueEmail("mfa-real"));
+    const me = (
+      await real.fastify.inject({ method: "GET", url: "/api/v1/me", headers: { cookie } })
+    ).json() as { lastWorkspaceId: string };
+    const workspaceId = me.lastWorkspaceId;
+    const probe = () =>
+      real.fastify.inject({
+        method: "POST",
+        url: `/api/probe/workspaces/${workspaceId}/mfa`,
+        headers: { origin: PORTAL_URL, cookie, "content-type": "application/json" },
+        payload: {},
+      });
+
+    await addProperty(workspaceId, "active");
+    await addProperty(workspaceId, "active");
+    await addProperty(workspaceId, "removed");
+    expect((await probe()).statusCode).toBe(200);
+
+    await addProperty(workspaceId, "active");
+    const blocked = await probe();
+    expect(blocked.statusCode).toBe(403);
+    expect(blocked.json()).toMatchObject({ code: "mfa_enrollment_required" });
   });
 });

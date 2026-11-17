@@ -29,3 +29,10 @@ playwright-report/
 
 # Lighthouse CI reports (T100)
 .lighthouseci/
+
+# Feature 002: local uploads, downloaded time zone sources, eval reports, and the test-only
+# certificate authority of the iCal fixture server
+.uploads/
+.tz-sources/
+evals/extraction/report/
+e2e/.certs/

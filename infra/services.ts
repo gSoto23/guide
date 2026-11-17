@@ -5,9 +5,12 @@
 import { stageConfig } from "./config";
 import { database } from "./database";
 import { email } from "./email";
+import { restrictedDataKey, restrictedDataKeyPolicy } from "./keys";
 import { vpc } from "./network";
 import { portalUrl } from "./router";
 import { apiSecretArns, workerSecretArns } from "./runtime-secrets";
+import { feedReader, fileProcessor } from "./sandbox";
+import { uploads } from "./storage";
 
 const cluster = new sst.aws.Cluster("Cluster", { vpc });
 
@@ -27,6 +30,39 @@ const databaseEnvironment = {
 const emailEnvironment = {
   EMAIL_TRANSPORT: email ? "ses" : "smtp",
   ...(stageConfig.emailSender ? { EMAIL_FROM: stageConfig.emailSender } : {}),
+};
+
+/**
+ * Feature 002 adapters (T006, T007): the restricted-data key, the uploads bucket, the sandbox
+ * functions, the PMS providers, and the feature flags. Secrets arrive through `ssm`.
+ */
+const integrationEnvironment = {
+  KMS_MODE: "aws",
+  KMS_KEY_ID: restrictedDataKey.arn,
+  STORAGE_MODE: "s3",
+  UPLOADS_BUCKET: uploads.name,
+  SANDBOX_MODE: "lambda",
+  SANDBOX_FEED_READER_FUNCTION: feedReader.name,
+  SANDBOX_FILE_PROCESSOR_FUNCTION: fileProcessor.name,
+  PMS_MODE: "live",
+  ...stageConfig.flags,
+};
+
+const observabilityEnvironment: Record<string, string> = stageConfig.sentryDsn
+  ? { SENTRY_DSN: stageConfig.sentryDsn }
+  : {};
+
+/** Data keys only, and only with a workspace_id encryption context (research R5). */
+const dataKeyPermission = {
+  actions: ["kms:GenerateDataKey", "kms:Decrypt"],
+  resources: [restrictedDataKey.arn],
+  conditions: [
+    {
+      test: "ForAnyValue:StringEquals",
+      variable: "kms:EncryptionContextKeys",
+      values: ["workspace_id"],
+    },
+  ],
 };
 
 const apiListener = stageConfig.apiDomain
@@ -49,8 +85,17 @@ export const api = new sst.aws.Service("Api", {
     TRUSTED_PROXY_HOPS: "2",
     ...databaseEnvironment,
     ...emailEnvironment,
+    ...integrationEnvironment,
+    ...observabilityEnvironment,
   },
   ssm: apiSecretArns,
+  permissions: [
+    dataKeyPermission,
+    // The API signs presigned POST forms for uploads (research R9).
+    { actions: ["s3:PutObject"], resources: [$interpolate`${uploads.arn}/uploads/*`] },
+    // Saving a calendar link reads it through the feed reader first (FR-021).
+    { actions: ["lambda:InvokeFunction"], resources: [feedReader.arn] },
+  ],
   loadBalancer: {
     ...(stageConfig.apiDomain ? { domain: stageConfig.apiDomain } : {}),
     rules: [apiListener],
@@ -72,11 +117,27 @@ export const worker = new sst.aws.Service("Worker", {
   link: linked,
   environment: {
     NODE_ENV: "production",
+    PORTAL_URL: portalUrl,
     ...databaseEnvironment,
     ...emailEnvironment,
+    ...integrationEnvironment,
+    ...observabilityEnvironment,
+    LLM_MODE: "anthropic",
   },
   ssm: workerSecretArns,
+  permissions: [
+    dataKeyPermission,
+    // Retention and rejected uploads (data model §6).
+    { actions: ["s3:DeleteObject"], resources: [$interpolate`${uploads.arn}/uploads/*`] },
+    { actions: ["lambda:InvokeFunction"], resources: [feedReader.arn, fileProcessor.arn] },
+  ],
   dev: {
     command: "pnpm --filter @guidesk/worker dev",
   },
+});
+
+// Only the API and worker task roles may use the restricted-data key (research R5).
+new aws.kms.KeyPolicy("RestrictedDataKeyPolicy", {
+  keyId: restrictedDataKey.id,
+  policy: restrictedDataKeyPolicy([api.nodes.taskRole.arn, worker.nodes.taskRole.arn]),
 });

@@ -9,15 +9,23 @@
     "start": "node --enable-source-maps dist/main.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint src test",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:integration": "vitest run -c vitest.integration.config.ts"
   },
   "dependencies": {
+    "@guidesk/db": "workspace:*",
+    "@guidesk/domain": "workspace:*",
     "@guidesk/emails": "workspace:*",
     "@guidesk/integrations": "workspace:*",
     "@guidesk/observability": "workspace:*",
+    "@guidesk/sandbox": "workspace:*",
+    "@guidesk/vault": "workspace:*",
+    "@opentelemetry/api": "^1.10.0",
+    "drizzle-orm": "^0.45.4",
     "pg-boss": "^12.38.2"
   },
   "devDependencies": {
-    "@guidesk/config": "workspace:*"
+    "@guidesk/config": "workspace:*",
+    "@guidesk/testing": "workspace:*"
   }
 }

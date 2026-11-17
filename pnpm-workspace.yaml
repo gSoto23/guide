@@ -1,6 +1,7 @@
 packages:
   - apps/*
   - packages/*
+  - evals/*
   - e2e
 
 # Supply-chain controls (SEC-12).
@@ -12,6 +13,8 @@ allowBuilds:
   esbuild: false
   protobufjs: false
   ssh2: false
+  # Feature 002 (T001): only a funding message (opencollective-postinstall). Not needed.
+  tesseract.js: false
 
 # Wait 3 days (in minutes) before installing a newly published version.
 minimumReleaseAge: 4320

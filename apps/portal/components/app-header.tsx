@@ -16,7 +16,7 @@ export function AppHeader({ locale }: { locale: string }) {
     <header className="app-header">
       <WorkspaceSwitcher me={me} onChanged={context.refresh} />
       <nav aria-label="Guidesk">
-        <Link href={`/${locale}/properties/new`}>{t("nav.home")}</Link>
+        <Link href={`/${locale}/properties`}>{t("nav.properties")}</Link>
         <Link href={`/${locale}/settings/members`}>{t("nav.team")}</Link>
         <Link href={`/${locale}/settings`}>{t("nav.settings")}</Link>
       </nav>

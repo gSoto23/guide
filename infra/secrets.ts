@@ -8,4 +8,16 @@ export const googleClientSecret = new sst.Secret("GoogleClientSecret");
 /** Shared secret that only requests coming through CloudFront carry (research R7). */
 export const edgeSharedSecret = new sst.Secret("EdgeSharedSecret");
 
-export const allSecrets = [betterAuthSecret, googleClientId, googleClientSecret, edgeSharedSecret];
+/** Claude API key for listing extraction (feature 002, research R6). Only the worker uses it. */
+export const anthropicApiKey = new sst.Secret("AnthropicApiKey");
+/** Secret for calendar-link fingerprints, at least 32 characters (feature 002, T006). */
+export const feedUrlPepper = new sst.Secret("FeedUrlPepper");
+
+export const allSecrets = [
+  betterAuthSecret,
+  googleClientId,
+  googleClientSecret,
+  edgeSharedSecret,
+  anthropicApiKey,
+  feedUrlPepper,
+];

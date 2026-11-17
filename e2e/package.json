@@ -11,6 +11,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
     "@guidesk/config": "workspace:*",
+    "@guidesk/testing": "workspace:*",
     "@playwright/test": "^1.65.0"
   }
 }

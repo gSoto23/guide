@@ -1,12 +1,32 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { and, eq, ne } from "drizzle-orm";
-import { invitation, membership, type DbHandle } from "@guidesk/db";
+import {
+  calendarFeed,
+  extractionRequest,
+  importRun,
+  invitation,
+  membership,
+  pmsConnection,
+  property,
+  stay,
+  type DbHandle,
+} from "@guidesk/db";
 import { ApiProblem } from "../common/problem.js";
 import { DB_HANDLE } from "../database/database.module.js";
 import { SecurityLogService } from "../security-log/security-log.service.js";
 
 /** Workspace-owned resources a route can name by ID. */
-const TABLES = { invitation, membership } as const;
+const TABLES = {
+  invitation,
+  membership,
+  // Feature 002 (AC-SEC-009).
+  property,
+  calendar_feed: calendarFeed,
+  stay,
+  pms_connection: pmsConnection,
+  import_run: importRun,
+  extraction_request: extractionRequest,
+} as const;
 export type TenantResource = keyof typeof TABLES;
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

@@ -17,7 +17,9 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint src test",
-    "test": "vitest run"
+    "test": "vitest run",
+    "tz:generate": "node scripts/generate-time-zones.ts",
+    "tz:check": "node scripts/check-time-zones.ts"
   },
   "devDependencies": {
     "@guidesk/config": "workspace:*"

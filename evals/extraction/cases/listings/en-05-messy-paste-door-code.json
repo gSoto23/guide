@@ -1,0 +1,16 @@
+{
+  "id": "en-05-messy-paste-door-code",
+  "language": "en",
+  "text": "~~~ SUNSET SHACK @ Pelican Point ~~~   ☀️🌊\n\n\ncute lil beach shack!!   right on the sand, 2 min to the taco stand and the surf rental\n     perfect for couples or a small family\n\n\n\nWHAT U GET\n » outdoor shower\n » beach chairs + umbrella\n » AC in the bedroom\n » wifi\n » bbq\n\nRULES!!\n » no glass on the beach\n » no parties\n » pets ok (ask first)\n\ncheck in 3pm // check out 11am\nmax 5 ppl\nDoor code: 4821 (changes every stay)\nquestions? text (555) 555-0147\n",
+  "restricted": ["4821"],
+  "expected": {
+    "language": "en",
+    "title": "Sunset Shack",
+    "description": ["right on the sand", "taco stand"],
+    "houseRules": ["no glass on the beach", "no parties"],
+    "amenities": ["outdoor shower", "beach chairs", "wifi", "bbq"],
+    "checkInTime": "15:00",
+    "checkoutTime": "11:00",
+    "maxGuests": 5
+  }
+}

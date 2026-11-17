@@ -1,0 +1,22 @@
+{
+  "id": "en-06-booking-villa-prices-sleeps",
+  "language": "en",
+  "text": "Villa Solana\n\nSet on a hillside above the harbor town of Port Ambrell, Villa Solana is a whitewashed villa with a private infinity pool and a shaded pergola. The villa has 4 bedrooms and 3 bathrooms, a fully equipped kitchen, and a large living room that opens onto the terrace.\n\nSleeps 8\n\nFacilities\nPrivate pool · Free WiFi · Air conditioning · Barbecue facilities · Free private parking · Dishwasher\n\nPrices and fees\n€320 per night (minimum 5 nights in July and August)\nRefundable security deposit: €500, returned within 7 days\nFinal cleaning: €90\n\nHouse rules\nCheck-in: from 16:00\nCheck-out: by 10:30\nSmoking is not allowed indoors.\nNo parties or events.\nContact the owner: +1 (555) 555-0119\n",
+  "expected": {
+    "language": "en",
+    "title": "Villa Solana",
+    "description": ["private infinity pool", "shaded pergola"],
+    "houseRules": ["Smoking is not allowed indoors", "No parties or events"],
+    "amenities": [
+      "Private pool",
+      "Free WiFi",
+      "Air conditioning",
+      "Barbecue",
+      "Free private parking",
+      "Dishwasher"
+    ],
+    "checkInTime": "16:00",
+    "checkoutTime": "10:30",
+    "maxGuests": 8
+  }
+}

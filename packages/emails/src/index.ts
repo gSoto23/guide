@@ -7,3 +7,4 @@ export * from "./team/invitations.js";
 export * from "./notice.js";
 export * from "./team/lifecycle.js";
 export * from "./account/lifecycle.js";
+export * from "./properties/notices.js";

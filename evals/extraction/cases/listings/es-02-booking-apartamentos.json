@@ -1,0 +1,15 @@
+{
+  "id": "es-02-booking-apartamentos",
+  "language": "es",
+  "text": "Apartamentos Brisa Azul\n\nApartamentos Brisa Azul está a 200 metros de la playa de Puerto Lucerna y ofrece alojamiento con balcón, aire acondicionado y wifi gratis. El apartamento tiene 1 dormitorio, una sala de estar con sofá cama y una cocina con microondas y nevera. Hay una panadería y una parada de autobús en la misma calle.\n\nLo más destacado del alojamiento\nUbicación excelente: muy bien valorada por clientes recientes (9,0)\nPerfecto para una estancia de 3 noches\n\nServicios más populares\nWiFi gratis\nAire acondicionado\nBalcón\nAscensor\nAdmite mascotas: no\n\nTarifas\nApartamento con balcón: 95 € por noche\nTasa turística: 2 € por persona y noche\n\nNormas de la casa\nEntrada: De 14:00 a 22:00\nSalida: Hasta las 11:00\nNiños: Se admiten niños de todas las edades.\nCapacidad máxima: 4 personas\nMascotas: No se admiten mascotas.\nFiestas: No se permiten fiestas ni eventos.\n",
+  "expected": {
+    "language": "es",
+    "title": "Apartamentos Brisa Azul",
+    "description": ["200 metros de la playa", "sofá cama"],
+    "houseRules": ["No se admiten mascotas", "No se permiten fiestas"],
+    "amenities": ["WiFi gratis", "Aire acondicionado", "Balcón", "Ascensor"],
+    "checkInTime": "14:00",
+    "checkoutTime": "11:00",
+    "maxGuests": 4
+  }
+}

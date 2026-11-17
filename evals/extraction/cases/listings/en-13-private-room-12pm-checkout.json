@@ -1,0 +1,15 @@
+{
+  "id": "en-13-private-room-12pm-checkout",
+  "language": "en",
+  "text": "Private Room in a Victorian Townhouse – Quillfield\n\nA calm, private bedroom on the second floor of our Victorian townhouse in the Quillfield arts district. You get your own bathroom across the hall and a desk by the bay window. We (two teachers and a very polite greyhound) live downstairs.\n\nRoom features\n- Private bathroom\n- Desk and ergonomic chair\n- Wi-Fi\n- Mini fridge and kettle\n\nPlease note\n- Shoes off inside, please\n- No guests of guests\n- Quiet after 10 PM on weekdays\n\nGuests: 2\nCheck-in from 6 PM\nCheck-out by 12 PM\n",
+  "expected": {
+    "language": "en",
+    "title": "Private Room in a Victorian Townhouse",
+    "description": ["Quillfield arts district", "desk by the bay window"],
+    "houseRules": ["Shoes off inside", "No guests of guests"],
+    "amenities": ["Private bathroom", "Desk", "Wi-Fi", "Mini fridge", "kettle"],
+    "checkInTime": "18:00",
+    "checkoutTime": "12:00",
+    "maxGuests": 2
+  }
+}

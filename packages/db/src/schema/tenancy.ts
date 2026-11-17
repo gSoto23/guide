@@ -29,6 +29,8 @@ export const workspace = pgTable(
     purgeAfter: timestamp("purge_after", { withTimezone: true }),
     /** Pilot seat limit set by Guidesk (FR-021); null uses the default. Feature 011 replaces it. */
     seatLimit: integer("seat_limit"),
+    /** Pilot property limit set by Guidesk (FR-047); null uses the Free plan's 2. */
+    propertyLimit: integer("property_limit"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .notNull()
@@ -39,6 +41,10 @@ export const workspace = pgTable(
     check("workspace_name_length", sql`char_length(${t.name}) BETWEEN 1 AND 80`),
     check("workspace_status_valid", sql`${t.status} IN ('active', 'pending_deletion')`),
     check("workspace_seat_limit_positive", sql`${t.seatLimit} IS NULL OR ${t.seatLimit} > 0`),
+    check(
+      "workspace_property_limit_positive",
+      sql`${t.propertyLimit} IS NULL OR ${t.propertyLimit} > 0`,
+    ),
     index("workspace_created_by_idx").on(t.createdBy),
   ],
 );

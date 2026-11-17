@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { databaseUrlFromParts } from "@guidesk/db";
+import { loadIntegrationSettings, type IntegrationSettings } from "@guidesk/integrations";
 
 /**
  * API configuration (12-factor). Locally from .env; in AWS from SST links, which arrive as
@@ -43,7 +44,10 @@ const schema = z
     path: ["PORTAL_URL"],
   });
 
-export type ApiConfig = z.infer<typeof schema>;
+export type ApiConfig = z.infer<typeof schema> & {
+  /** Feature 002 adapters: keys, storage, sandbox, AI, PMS, and flags (T006). */
+  integrations: IntegrationSettings;
+};
 
 function readSstResource(
   env: NodeJS.ProcessEnv,
@@ -83,12 +87,18 @@ function withSstResources(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
 }
 
 export function loadApiConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
-  const result = schema.safeParse(withSstResources(env));
+  const merged = withSstResources(env);
+  const result = schema.safeParse(merged);
   if (!result.success) {
     const issues = result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`);
     throw new Error(`Invalid API configuration:\n${issues.join("\n")}`);
   }
-  return result.data;
+  // The API never calls the model (extraction runs in the worker), so it never holds the key.
+  const integrations = loadIntegrationSettings(merged, {
+    production: result.data.NODE_ENV === "production",
+    usesLlm: false,
+  });
+  return { ...result.data, integrations };
 }
 
 export const API_CONFIG = Symbol("API_CONFIG");

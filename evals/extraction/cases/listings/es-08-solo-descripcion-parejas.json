@@ -1,0 +1,15 @@
+{
+  "id": "es-08-solo-descripcion-parejas",
+  "language": "es",
+  "text": "Refugio La Lechuza\n\nUna casa sencilla y tranquila entre almendros, a diez minutos caminando del pueblo de Arenaclara. Es ideal para parejas que quieren descansar, leer bajo los árboles y ver las estrellas sin ruido de ciudad.\n",
+  "expected": {
+    "language": "es",
+    "title": "Refugio La Lechuza",
+    "description": ["entre almendros", "ver las estrellas"],
+    "houseRules": null,
+    "amenities": null,
+    "checkInTime": null,
+    "checkoutTime": null,
+    "maxGuests": null
+  }
+}

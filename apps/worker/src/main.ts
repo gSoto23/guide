@@ -2,8 +2,16 @@ import "./instrument.js";
 import { PgBoss } from "pg-boss";
 import { SesEmailAdapter, SmtpEmailAdapter, type EmailAdapter } from "@guidesk/integrations";
 import { describeError, shutdownObservability } from "@guidesk/observability";
+import { JOB_QUEUES, QUEUE_POLICIES } from "@guidesk/domain";
 import { loadConfig, type WorkerConfig } from "./config.js";
+import {
+  CALENDAR_SCHEDULE_CRON,
+  CALENDAR_SCHEDULE_QUEUE,
+  createCalendarRefreshHandler,
+  createCalendarScheduler,
+} from "./jobs/calendar-refresh.js";
 import { createEmailHandler, EMAIL_QUEUE } from "./jobs/email.js";
+import { createExtractionHandler } from "./jobs/extraction.js";
 import {
   createExpireInvitationsHandler,
   EXPIRE_INVITATIONS_CRON,
@@ -19,6 +27,7 @@ import {
   PURGE_WORKSPACES_CRON,
   PURGE_WORKSPACES_QUEUE,
 } from "./jobs/purge-workspaces.js";
+import { createWorkerServices } from "./services.js";
 
 function emailAdapter(config: WorkerConfig): EmailAdapter {
   return config.email.transport === "ses"
@@ -60,11 +69,51 @@ async function main(): Promise<void> {
     createPurgeAccountsHandler(boss.getDb(), emailAdapter(config)),
   );
   await boss.schedule(PURGE_ACCOUNTS_QUEUE, PURGE_ACCOUNTS_CRON, null, { tz: "UTC" });
+
+  // Feature 002 jobs (research R13).
+  const services = createWorkerServices(config, async (message) => {
+    await boss.send(EMAIL_QUEUE, { ...message }, { retryLimit: 5, retryBackoff: true });
+  });
+  const createQueue = (name: string) => {
+    const policy = QUEUE_POLICIES[name];
+    return boss.createQueue(name, policy ? { policy } : undefined);
+  };
+  await createQueue(JOB_QUEUES.calendarRefresh);
+  await boss.work(
+    JOB_QUEUES.calendarRefresh,
+    createCalendarRefreshHandler({
+      db: services.db.db,
+      decrypter: services.decrypter,
+      sandbox: services.sandbox,
+      queueEmail: services.queueEmail,
+      portalUrl: services.portalUrl,
+    }),
+  );
+  await createQueue(JOB_QUEUES.extractionRun);
+  await boss.work(
+    JOB_QUEUES.extractionRun,
+    { localConcurrency: 4 },
+    createExtractionHandler({
+      db: services.db.db,
+      sandbox: services.sandbox,
+      llm: services.llm,
+    }),
+  );
+  const scheduleCalendars = createCalendarScheduler({
+    db: services.db.db,
+    send: (queue, data, options) => boss.send(queue, data, options),
+  });
+  await createQueue(CALENDAR_SCHEDULE_QUEUE);
+  await boss.work(CALENDAR_SCHEDULE_QUEUE, async () => {
+    await scheduleCalendars();
+  });
+  await boss.schedule(CALENDAR_SCHEDULE_QUEUE, CALENDAR_SCHEDULE_CRON, null, { tz: "UTC" });
   console.warn("Guidesk worker started");
 
   const shutdown = async (signal: string): Promise<void> => {
     console.warn(`Received ${signal}, stopping worker`);
     await boss.stop({ graceful: true });
+    await services.close();
     await shutdownObservability();
     process.exit(0);
   };

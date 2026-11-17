@@ -1,0 +1,15 @@
+{
+  "id": "es-03-corto-estudio-15h",
+  "language": "es",
+  "text": "Estudio Alameda en el centro de Puerto Lucerna\n\nEstudio luminoso en un tercer piso sin ascensor, junto a la plaza de la Alameda y a dos calles del mercado.\nComodidades: Wi-Fi, aire acondicionado, cafetera\nNormas: no fumar, no se admiten mascotas.\nCheck-in 15h, check-out 11h. Hasta 2 huéspedes.\n",
+  "expected": {
+    "language": "es",
+    "title": "Estudio Alameda",
+    "description": ["tercer piso sin ascensor", "plaza de la Alameda"],
+    "houseRules": ["no fumar", "no se admiten mascotas"],
+    "amenities": ["Wi-Fi", "aire acondicionado", "cafetera"],
+    "checkInTime": "15:00",
+    "checkoutTime": "11:00",
+    "maxGuests": 2
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "en-01-airbnb-cottage-hot-tub",
+  "language": "en",
+  "text": "Driftwood Cove Cottage with Garden Hot Tub\n\nAbout this space\nA cedar-shingled cottage two streets from the water in the village of Driftwood Cove. Wake up to gulls, walk to the harbor for breakfast, and end the day in the hot tub under the stars.\n\nThe space\nThe cottage has two bedrooms upstairs: one with a queen bed and one with two twin beds. Downstairs there is an open living room with a wood stove, a dining table for six, and a full kitchen. A sofa bed in the den sleeps two more.\n\nGuest access\nGuests have the whole cottage and the fenced garden to themselves. There is parking for two cars in the driveway.\n\nOther things to note\nThe stairs are steep, so the cottage may not suit small children.\n\nWhat this place offers\nHot tub\nKitchen\nWifi\nFree parking on premises\nWasher\nWood stove\nFenced garden\n\nHouse rules\nCheck-in after 3:00 PM\nCheckout before 11:00 AM\n6 guests maximum\nNo parties or events\nNo smoking\nPets allowed\n",
+  "expected": {
+    "language": "en",
+    "title": "Driftwood Cove Cottage with Garden Hot Tub",
+    "description": ["cedar-shingled cottage", "two twin beds"],
+    "houseRules": ["No parties or events", "No smoking"],
+    "amenities": ["Hot tub", "Kitchen", "Wifi", "Free parking", "Washer"],
+    "checkInTime": "15:00",
+    "checkoutTime": "11:00",
+    "maxGuests": 6
+  }
+}
