@@ -14,7 +14,9 @@ import type {
 } from "@guidesk/contracts";
 import {
   countActiveProperties,
+  extractionRequest,
   onboardingProfile,
+  upsertListingContent,
   property,
   calendarFeed,
   restrictedValue,
@@ -23,6 +25,7 @@ import {
   type DbHandle,
 } from "@guidesk/db";
 import {
+  containsRestrictedValue,
   derivePath,
   extractionLimit,
   extractionLimitKey,
@@ -51,7 +54,7 @@ import { toDetail, toSummary, toTimeOfDay, type PropertyRow } from "./property-m
  * Creation paths built so far; `start-options` leaves out the others (T042). Each user story adds
  * its path here when it lands.
  */
-export const AVAILABLE_START_OPTIONS: readonly StartOption[] = ["blank"];
+export const AVAILABLE_START_OPTIONS: readonly StartOption[] = ["listing", "blank"];
 
 const CORE_FACT_KEYS = [
   "name",
@@ -220,19 +223,26 @@ export class PropertiesService {
     };
   }
 
-  /** Blank creation from the confirmation step (US1). Other sources arrive with their stories. */
+  /**
+   * Creation from the confirmation step (FR-004): blank (US1), or listing text with the content
+   * items the host accepted from an extraction (US2, T060). Duplicates arrive with US6.
+   */
   async create(
     caller: Caller,
     workspaceId: string,
     body: CreatePropertyBody,
   ): Promise<PropertyDetail> {
-    if (body.source !== "manual") {
+    if (body.source === "duplicate") {
       throw new ApiProblem(422, "validation_failed", "This creation path is not available yet.", {
         fields: { source: ["Not available"] },
       });
     }
     assertKnownTimeZone(body.timeZone);
     const tx = this.requestDb.current();
+    const extraction =
+      body.source === "listing_text"
+        ? await this.acceptedExtraction(caller, workspaceId, body)
+        : null;
     await this.limits.withCreationSlot(tx, workspaceId, 1);
     const facts = factsOf(body);
     const [row] = await tx
@@ -258,7 +268,75 @@ export class PropertiesService {
         createdBy: caller.userId,
       })
       .returning();
+    if (extraction) {
+      // Content keeps its source label until the host edits or approves it (FR-018).
+      const source = extraction.inputText ? "listing_text" : "screenshot";
+      for (const item of body.contentItems ?? []) {
+        await upsertListingContent(tx, {
+          workspaceId,
+          propertyId: row!.id,
+          kind: item.kind,
+          body: item.body ?? null,
+          items: item.items ?? null,
+          language: item.language ?? null,
+          source,
+          extractionRequestId: extraction.id,
+          editedBy: item.edited ? caller.userId : null,
+        });
+      }
+      // The pasted and recognized text are no longer needed once the property exists (data model §6).
+      await tx
+        .update(extractionRequest)
+        .set({
+          propertyId: row!.id,
+          inputText: null,
+          recognizedText: null,
+          inputDeletedAt: new Date(),
+        })
+        .where(eq(extractionRequest.id, extraction.id));
+    }
     return this.detail(caller, row!);
+  }
+
+  /** The finished extraction behind a listing-text creation, with the host's items checked again. */
+  private async acceptedExtraction(caller: Caller, workspaceId: string, body: CreatePropertyBody) {
+    const extractionId = body.extractionRequestId!;
+    const [extraction] = await this.requestDb
+      .current()
+      .select({
+        id: extractionRequest.id,
+        status: extractionRequest.status,
+        propertyId: extractionRequest.propertyId,
+        inputText: extractionRequest.inputText,
+      })
+      .from(extractionRequest)
+      .where(
+        and(eq(extractionRequest.id, extractionId), eq(extractionRequest.workspaceId, workspaceId)),
+      )
+      .limit(1);
+    if (!extraction) {
+      throw await this.crossTenant.notFound(
+        caller.userId,
+        workspaceId,
+        "extraction_request",
+        extractionId,
+      );
+    }
+    if (extraction.status !== "succeeded" || extraction.propertyId) {
+      throw new ApiProblem(409, "conflict", "This extraction cannot create a property.");
+    }
+    for (const [index, item] of (body.contentItems ?? []).entries()) {
+      const text = [item.body ?? "", ...(item.items ?? [])].join("\n");
+      if (containsRestrictedValue(text)) {
+        throw new ApiProblem(
+          422,
+          "validation_failed",
+          "This looks like a code. Add codes in the guide's locked fields instead.",
+          { fields: { [`contentItems.${index}`]: ["restricted_value"] } },
+        );
+      }
+    }
+    return extraction;
   }
 
   async get(caller: Caller, workspaceId: string, propertyId: string): Promise<PropertyDetail> {

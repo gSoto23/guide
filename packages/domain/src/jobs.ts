@@ -35,3 +35,8 @@ export const QUEUE_POLICIES: Partial<
   [JOB_QUEUES.pmsRefresh]: "stately",
   [JOB_QUEUES.pmsImport]: "singleton",
 };
+
+export interface ExtractionRunJob {
+  extractionId: string;
+  workspaceId: string;
+}

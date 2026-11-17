@@ -635,15 +635,18 @@ describe("TesseractRecognizer without network (research R3)", () => {
 
   it("terminates a worker stuck on an aborted image and starts a new one", async () => {
     let calls = 0;
+    const controller = new AbortController();
     const tesseract = fakeTesseract(() => {
       calls += 1;
-      return calls === 1 ? new Promise(() => undefined) : answer("second")();
+      if (calls > 1) return answer("second")();
+      // The deadline passes while Tesseract is on the image, not while the worker starts: a
+      // fixed delay could land in either under load.
+      setTimeout(() => controller.abort(new Error("deadline")), 0);
+      return new Promise(() => undefined);
     });
     const recognizer = new TesseractRecognizer({ createWorker: tesseract.createWorker });
-    const controller = new AbortController();
 
     const pending = recognizer.recognize(image, { signal: controller.signal });
-    setTimeout(() => controller.abort(new Error("deadline")), 10);
     await expect(pending).rejects.toThrow("deadline");
     expect(tesseract.terminated).toEqual([0]);
 

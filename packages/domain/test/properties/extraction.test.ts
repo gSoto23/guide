@@ -128,6 +128,21 @@ describe("the second line of defense on the output (FR-013, AC-SEC-004)", () => 
     expect(JSON.stringify(result)).not.toMatch(/4821|Colibri2026/);
   });
 
+  it("drops lines and amenities that carry a redaction marker", () => {
+    const result = processExtractionOutput({
+      ...output,
+      description: "Casa frente al mar.\nCódigo de la puerta: [door code removed]",
+      houseRules: "[Wi-Fi password removed]",
+      amenities: ["Wi-Fi", "Caja de llaves: [lockbox code removed]"],
+    });
+    expect(result.items.find((item) => item.kind === "description")?.body).toBe(
+      "Casa frente al mar.",
+    );
+    expect(result.items.some((item) => item.kind === "house_rules")).toBe(false);
+    expect(result.items.find((item) => item.kind === "amenities")?.items).toEqual(["Wi-Fi"]);
+    expect(JSON.stringify(result)).not.toContain("removed]");
+  });
+
   it("limits sizes to what listing content stores", () => {
     const result = processExtractionOutput({
       ...output,

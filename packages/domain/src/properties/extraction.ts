@@ -1,5 +1,5 @@
 import { TIME_OF_DAY } from "./core-facts.js";
-import { containsRestrictedValue } from "./restricted-values.js";
+import { containsRestrictedValue, REDACTION_MARKERS } from "./restricted-values.js";
 
 /**
  * Listing extraction rules around the model call (feature 002 FR-010 to FR-019, research R6).
@@ -78,9 +78,21 @@ export function toProposedFacts(
 
 const LIMITS = { title: 120, body: 20_000, items: 200, item: 120 } as const;
 
+const MARKERS = Object.values(REDACTION_MARKERS);
+
+/** A line the model copied with a "[door code removed]" marker: it was about a code. */
+function hasMarker(line: string): boolean {
+  return MARKERS.some((marker) => line.includes(marker));
+}
+
+/** Trims, drops lines that carry a redaction marker, and caps the length. */
 function text(value: string | null, max: number): string | null {
-  const trimmed = value?.trim() ?? "";
-  return trimmed ? trimmed.slice(0, max) : null;
+  const kept = (value ?? "")
+    .split("\n")
+    .filter((line) => !hasMarker(line))
+    .join("\n")
+    .trim();
+  return kept ? kept.slice(0, max) : null;
 }
 
 /**

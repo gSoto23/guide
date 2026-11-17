@@ -28,7 +28,16 @@ const OPTION_PATHS = {
  * "Add property" (FR-008, T045): the options the API returns, the recommended one first, from
  * the onboarding answers of spec 001.
  */
-export function StartOptionsPanel({ locale, title }: { locale: string; title?: string }) {
+export function StartOptionsPanel({
+  locale,
+  title,
+  subtitle,
+}: {
+  locale: string;
+  title?: string;
+  /** The onboarding path's subtitle on the first-property step (spec 001). */
+  subtitle?: string;
+}) {
   const t = useTranslations("properties");
   const workspace = useWorkspace();
   const [options, setOptions] = useState<StartOptions | null>(null);
@@ -57,6 +66,7 @@ export function StartOptionsPanel({ locale, title }: { locale: string; title?: s
   return (
     <>
       <h1>{title ?? t("start.title")}</h1>
+      {subtitle ? <p className="muted">{subtitle}</p> : null}
       <ul className="property-list">
         {options.options.map(({ option, recommended }) => (
           <li key={option}>
@@ -65,7 +75,11 @@ export function StartOptionsPanel({ locale, title }: { locale: string; title?: s
               {recommended ? (
                 <span className="badge badge-ready">{t("start.recommended")}</span>
               ) : null}
-              <p className="muted">{t(`options.${OPTION_KEYS[option]}.body`)}</p>
+              <p className="muted">
+                {option === "listing" && !options.screenshotsEnabled
+                  ? t("options.paste.bodyTextOnly")
+                  : t(`options.${OPTION_KEYS[option]}.body`)}
+              </p>
             </Link>
           </li>
         ))}

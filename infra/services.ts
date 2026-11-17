@@ -117,6 +117,7 @@ export const worker = new sst.aws.Service("Worker", {
   link: linked,
   environment: {
     NODE_ENV: "production",
+    PORTAL_URL: portalUrl,
     ...databaseEnvironment,
     ...emailEnvironment,
     ...integrationEnvironment,

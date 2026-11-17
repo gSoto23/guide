@@ -57,8 +57,7 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
   if (!response.ok) {
     throw new ApiError(await parseProblem(response));
   }
-  if (response.status === 204) {
-    return undefined as T;
-  }
-  return (await response.json()) as T;
+  // 204, and a 202 that only says "accepted" (extraction submit), have no body.
+  const text = await response.text();
+  return (text ? JSON.parse(text) : undefined) as T;
 }

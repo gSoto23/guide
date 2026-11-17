@@ -11,6 +11,7 @@ import type {
 import { calendarFeed, stay } from "@guidesk/db";
 import {
   detectChannel,
+  feedChannelName,
   feedDisplayHint,
   JOB_QUEUES,
   normalizeFeedUrl,
@@ -68,16 +69,8 @@ type FeedRow = {
   createdAt: Date;
 };
 
-const CHANNEL_NAMES: Record<Exclude<FeedChannel, "other">, string> = {
-  airbnb: "Airbnb",
-  booking: "Booking.com",
-  vrbo: "Vrbo",
-};
-
-/** The channel name stays carry: the OTA's name, or the host's label for another channel. */
-export function channelName(channel: FeedChannel, label: string | null): string {
-  return channel === "other" ? (label ?? "Other").slice(0, 40) : CHANNEL_NAMES[channel];
-}
+/** The channel name stays carry (shared with the worker's refresh). */
+export const channelName = feedChannelName;
 
 function toFeed(row: FeedRow): CalendarFeed {
   return {

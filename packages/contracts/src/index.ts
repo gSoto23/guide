@@ -10,3 +10,4 @@ export * from "./properties.js";
 export * from "./time-zones.js";
 export * from "./calendar-feeds.js";
 export * from "./stays.js";
+export * from "./extractions.js";

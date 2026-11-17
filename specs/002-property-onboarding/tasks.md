@@ -452,7 +452,7 @@ reaches the AI.
   - re-encoding strips EXIF and GPS data, and gives a grayscale PNG with its longest side at most 2,560 px;
   - the object is deleted after processing;
   - Tesseract reads the Spanish and English sample screenshots in `apps/sandbox/test/fixtures/screenshots/`. They are rendered from synthetic listings written for the suite
-- [ ] T051 [P] [US2] Integration tests in `apps/api/test/integration/extractions.test.ts`, with `LLM_MODE=fake` and the in-process sandbox:
+- [X] T051 [P] [US2] Integration tests in `apps/api/test/integration/extractions.test.ts`, with `LLM_MODE=fake` and the in-process sandbox:
   - pasted text with "Door code 4821" and "Wi-Fi password: Colibri2026" → counts `{door_code: 1, wifi_password: 1}`. Neither value appears in the fake model's recorded input, in the stored `input_text`, or in the logs (AC-SEC-003);
   - the injection text from quickstart 3: the instruction is not followed, the URL is only listing text marked for review, and nothing is published (AC-SEC-004);
   - a URL only → `urlOnly: true`, no outbound request, no AI call, and no limit used (FR-011);
@@ -470,7 +470,7 @@ reaches the AI.
   - 5 injection cases in `cases/injection/`;
   - a runner, `src/run.ts`, that calls the real adapter and scores field placement (at least 90%), invented facts (0), and injection resistance (5 of 5), then writes a report;
   - the command `pnpm --filter @guidesk/evals-extraction eval`
-- [ ] T053 [P] [US2] End-to-end test on a phone viewport with the fake model, in `e2e/specs/properties-us2-listing.spec.ts`:
+- [X] T053 [P] [US2] End-to-end test on a phone viewport with the fake model, in `e2e/specs/properties-us2-listing.spec.ts`:
   - paste a listing with a code, and see the redaction notice;
   - review the items labeled "From your listing", edit one, and see its label change;
   - confirm, and the property is created;
@@ -493,10 +493,10 @@ reaches the AI.
   - `images.ts`: magic-byte check and `sharp` re-encoding;
   - `ocr.ts`: `tesseract.js` with the bundled `spa` and `eng` data and no network access;
   - `handler.ts`: reads one object, processes it, deletes it, and returns the text or `{error: unsupported_type | too_large | unreadable}`
-- [ ] T057 [US2] Run the R3 accuracy gate. A script, `apps/sandbox/scripts/ocr-accuracy.ts`, measures character accuracy on 30 sample screenshots (15 Spanish, 15 English), rendered from the synthetic listings of T052. Record the result in [research.md](research.md#r3-text-recognition-for-screenshots).
+- [X] T057 [US2] Run the R3 accuracy gate. A script, `apps/sandbox/scripts/ocr-accuracy.ts`, measures character accuracy on 30 sample screenshots (15 Spanish, 15 English), rendered from the synthetic listings of T052. Record the result in [research.md](research.md#r3-text-recognition-for-screenshots).
   - At 95% or more, keep Tesseract.
   - Below 95%, implement the Textract adapter behind `TextRecognitionPort`, with the AWS Organizations AI opt-out policy, before `EXTRACTION_SCREENSHOTS` is turned on in production
-- [ ] T058 [US2] Implement the extractions module in `apps/api/src/extractions/`, with contracts in `packages/contracts/src/extractions.ts`:
+- [X] T058 [US2] Implement the extractions module in `apps/api/src/extractions/`, with contracts in `packages/contracts/src/extractions.ts`:
   - **`POST /extractions`:**
     - validates at most 20,000 characters, and at most 10 screenshots of at most 10 MB each in JPEG, PNG, or WebP;
     - redacts the text before storing it;
@@ -506,7 +506,7 @@ reaches the AI.
   - **`POST /extractions/{id}/submit`:** returns `202` and queues `extraction.run`.
   - **`GET /extractions/{id}`.**
   - **`POST /extractions/{id}/retry`:** only after `failed` with `timeout` or `ai_unavailable`. Creates a new request with `retry_of_id`, copying the stored redacted `input_text` and `recognized_text`, consumes the daily limit, and queues `extraction.run`; screenshots are not uploaded again.
-- [ ] T059 [US2] Implement the worker job `apps/worker/src/jobs/extraction.ts` (`extraction.run`):
+- [X] T059 [US2] Implement the worker job `apps/worker/src/jobs/extraction.ts` (`extraction.run`):
   - a 60-second deadline for the whole job;
   - screenshots processed in parallel through `SandboxPort.processFile`, and the recognized text redacted;
   - one `LlmPort` call on the combined redacted text, followed by the output pass;
@@ -515,14 +515,14 @@ reaches the AI.
   - sets the upload rows to `deleted`.
 
   Add a worker test in `apps/worker/test/extraction-job.test.ts`
-- [ ] T060 [US2] Extend `POST /properties` in `apps/api/src/properties/properties.service.ts` for source `listing_text`, with `extractionRequestId` and `contentItems`:
+- [X] T060 [US2] Extend `POST /properties` in `apps/api/src/properties/properties.service.ts` for source `listing_text`, with `extractionRequestId` and `contentItems`:
   - store the accepted items as `unreviewed` through `ListingContentService`;
   - set `extraction_request.property_id`;
   - clear `input_text` and `recognized_text`, and set `input_deleted_at`
 - [X] T061 [P] [US2] Implement `apps/portal/lib/image-normalize.ts`, loaded on demand:
   - re-encodes each image to JPEG with the canvas API, with its longest side at most 2,560 px;
   - decodes HEIC where the browser can, and otherwise asks for a JPEG or PNG
-- [ ] T062 [US2] Build the listing flow in `apps/portal/app/[locale]/(app)/properties/new/listing/page.tsx`. It ends in the confirmation step, prefilled with the proposed facts.
+- [X] T062 [US2] Build the listing flow in `apps/portal/app/[locale]/(app)/properties/new/listing/page.tsx`. It ends in the confirmation step, prefilled with the proposed facts.
   - `apps/portal/components/properties/listing-input.tsx`:
     - the paste box, with the warning not to include codes and a 20,000-character counter;
     - the screenshot picker with camera capture, shown when the flag is on, with the same warning not to include codes (FR-012);
@@ -536,12 +536,12 @@ reaches the AI.
     - "nothing found", which offers a blank start;
     - the limit message with the reset time;
     - the URL-only message
-- [ ] T063 [US2] Build the listing content panel on the property detail page, `apps/portal/components/properties/listing-content.tsx`:
+- [X] T063 [US2] Build the listing content panel on the property detail page, `apps/portal/components/properties/listing-content.tsx`:
   - items with their source label ("From your listing", "From Beds24", "Copied");
   - owners and admins edit and approve, and the label shows the item was reviewed;
   - agents only read;
   - the message for refused codes (`422`)
-- [ ] T064 [P] [US2] Add the US2 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`
+- [X] T064 [P] [US2] Add the US2 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`
 
 **Checkpoint**: US1 and US2 work: the MVP's two creation paths.
 
@@ -607,7 +607,7 @@ rejected. A direct booking added by hand appears in the same list.
   - `POST /stays/{id}/remove-guest-name` on a PMS stay and on a manual stay sets the name to null and `guest_name_removed_at`, and logs `stay.guest_name_removed` without the name (FR-053);
   - agents are refused and the refusal is logged;
   - `stay.added_manually`, `stay.changed_manually`, and `stay.cancelled_manually` carry dates only
-- [ ] T071 [P] [US3] Worker tests in `apps/worker/test/calendar-refresh.test.ts`:
+- [X] T071 [P] [US3] Worker tests in `apps/worker/test/calendar-refresh.test.ts`:
   - the cron picks feeds whose last success is older than 3 hours, only for active properties;
   - a feed never runs twice at the same time;
   - "Refresh now" runs ahead of scheduled refreshes, within 1 minute (SC-006);
@@ -616,7 +616,7 @@ rejected. A direct booking added by hand appears in the same list.
   - hidden stays stay hidden;
   - a failing read keeps the stays and sets `failing_since`;
   - after 24 hours of failures, one `properties.feed_failing` email is queued and `alerted_at` is set
-- [ ] T072 [P] [US3] End-to-end test in `e2e/specs/properties-us3-calendar.spec.ts` (quickstart 7 and 8):
+- [X] T072 [P] [US3] End-to-end test in `e2e/specs/properties-us3-calendar.spec.ts` (quickstart 7 and 8):
   - add the fixture feed and see the stays;
   - hide a "may be a block" stay, refresh, and it stays hidden;
   - add a direct stay by hand
@@ -654,12 +654,12 @@ rejected. A direct booking added by hand appears in the same list.
   - `PATCH`: editing a manual stay, or hiding a stay;
   - `POST /stays/{id}/cancel`;
   - `POST /stays/{id}/remove-guest-name`: any stay; sets `guest_name` to null and `guest_name_removed_at`, and logs `stay.guest_name_removed` (FR-053)
-- [ ] T077 [US3] Implement the worker job `apps/worker/src/jobs/calendar-refresh.ts` (`calendar.refresh`):
+- [X] T077 [US3] Implement the worker job `apps/worker/src/jobs/calendar-refresh.ts` (`calendar.refresh`):
   - a cron every 15 minutes queues the feeds that are due, spread by feed ID, with a singleton key per feed;
   - the handler decrypts the link with `@guidesk/vault/decrypt`, reads it through `SandboxPort`, and applies `stays.ts`;
   - it records success or failure, and queues `properties.feed_failing` once after 24 hours of failures
 - [X] T078 [P] [US3] Create the email template `properties.feed_failing` (ES/EN) in `packages/emails/src/properties/feed-failing.tsx`, as [contracts/emails.md](contracts/emails.md) describes. It carries no link and no guest name. Add a render test in `packages/emails/test/properties.test.ts`
-- [ ] T079 [US3] Build the property's calendars and stays panels:
+- [X] T079 [US3] Build the property's calendars and stays panels:
   - `apps/portal/components/properties/calendar-feeds.tsx`, hidden from agents:
     - add a link with its channel;
     - the masked hint;
@@ -671,8 +671,8 @@ rejected. A direct booking added by hand appears in the same list.
     - overlap and "possibly out of date" notices;
     - adding, editing, and cancelling manual stays;
     - "Remove guest name" on any stay that has one, with a confirmation, for owners and admins
-- [ ] T080 [US3] Add the calendar status to the property list (FR-006) in `apps/api/src/properties/properties.service.ts` and `apps/portal/components/properties/property-list.tsx`
-- [ ] T081 [P] [US3] Add the US3 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`
+- [X] T080 [US3] Add the calendar status to the property list (FR-006) in `apps/api/src/properties/properties.service.ts` and `apps/portal/components/properties/property-list.tsx`
+- [X] T081 [P] [US3] Add the US3 strings (ES/EN) to `packages/i18n/messages/es.json` and `en.json`
 
 **Checkpoint**: US3 works on its own: feeds, refreshes, and manual stays.
 

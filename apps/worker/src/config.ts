@@ -3,6 +3,8 @@ import { loadIntegrationSettings, type IntegrationSettings } from "@guidesk/inte
 /** Worker configuration read from the environment (secrets come from Secrets Manager in AWS). */
 export interface WorkerConfig {
   databaseUrl: string;
+  /** The portal's public origin, for links in emails (feature 002). */
+  portalUrl: string;
   email: {
     transport: "smtp" | "ses";
     from: string;
@@ -46,6 +48,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): WorkerConfig {
   const transport = env.EMAIL_TRANSPORT === "ses" ? "ses" : "smtp";
   return {
     databaseUrl,
+    portalUrl: (env.PORTAL_URL ?? "http://localhost:3000").replace(/\/$/, ""),
     email: {
       transport,
       from: env.EMAIL_FROM ?? "no-reply@guidesk.local",

@@ -75,6 +75,20 @@ first-hand is marked **unverified**.
     (FR-016).
   - **Gate:** an early task measures character accuracy on 30 sample screenshots (15 Spanish, 15
     English). The target is 95% or more. Below that, the alternative adapter is used.
+  - **Gate result (2026-11-16, T057): passed, Tesseract stays.**
+    `apps/sandbox/scripts/ocr-accuracy.ts` draws the 30 synthetic listings of the extraction eval
+    suite as 1170×2532 phone screenshots (42 px text, the size of 14 pt text on a 3× screen). It
+    runs them through the file processor's normalization and recognizer and compares the result
+    with the drawn text after collapsing whitespace.
+    - Character accuracy: **99.59%** overall, 99.51% Spanish, 99.67% English.
+    - 24 of 30 scored 99.5% or more. The lowest, `es-05` at 93.65%, is a messy paste with 4 emoji
+      and 9 ✔️/✖️ marks; its error count matches those symbols, which are not text.
+    - Stress run (`--muted`): 34 px gray text (#767676) on light gray (#f6f6f6) scored **99.61%**.
+    - **Limits:** these are clean renders of plain text. Real screenshots also have photos, app
+      bars, and light text on dark buttons, and the file processor test showed Tesseract skipping a
+      white-on-dark booking bar. That text (price, "Reserve") is not listing content, but a check
+      with a handful of real host screenshots should come before `extraction.screenshots` is
+      turned on in production (R15).
 - **Alternative kept behind the same port:** Amazon Textract `DetectDocumentText`.
   - It costs $0.0015 per page in us-east-1 and has a VPC endpoint.
   - **Spanish support is unclear:** the supported-languages page lists text detection as
@@ -411,7 +425,8 @@ accounts.
 ## R15. Rollout and open items
 
 - **Feature flags:** `pms.beds24` and `pms.hostex` (OQ-26), and `extraction.screenshots`, on
-  only after the R3 accuracy gate passes.
+  only after the R3 accuracy gate passes. The gate passed on rendered samples on 2026-11-16
+  (99.59%); a spot check with real host screenshots remains before turning it on.
 - **Before production:**
   - written confirmation from Beds24 and Hostex (OQ-26);
   - real Booking.com and Vrbo iCal fixtures (R8);

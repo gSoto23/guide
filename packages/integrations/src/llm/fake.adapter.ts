@@ -37,9 +37,14 @@ export function fakeExtraction(text: string): ListingExtraction {
     else if (title === null) title = line.slice(0, 120);
     else sections[section].push(line.replace(/^[-•*]\s*/, ""));
   }
+  // "3 pm" is 15:00, "12 am" is 00:00; a bare hour is taken as written.
   const time = (pattern: RegExp) => {
     const match = pattern.exec(text);
-    return match ? `${match[1]!.padStart(2, "0")}:${match[2] ?? "00"}` : null;
+    if (!match) return null;
+    const meridiem = match[3]?.toLowerCase().replaceAll(".", "");
+    let hour = Number(match[1]) % (meridiem ? 12 : 24);
+    if (meridiem === "pm") hour += 12;
+    return `${String(hour).padStart(2, "0")}:${match[2] ?? "00"}`;
   };
   const guests = /(\d{1,2})\s*(guests|huéspedes|personas)/i.exec(text);
   const spanish = /\b(la|el|los|las|con|para|casa|huéspedes|playa)\b/i.test(text);
@@ -50,11 +55,11 @@ export function fakeExtraction(text: string): ListingExtraction {
     houseRules: sections.houseRules.join("\n") || null,
     amenities: sections.amenities.length > 0 ? sections.amenities : null,
     checkInTime:
-      time(/check-?in[^0-9]{0,20}(\d{1,2})(?::(\d{2}))?/i) ??
-      time(/entrada[^0-9]{0,20}(\d{1,2})(?::(\d{2}))?/i),
+      time(/check-?in[^0-9]{0,20}(\d{1,2})(?::(\d{2}))?\s*([ap]\.?m\.?)?/i) ??
+      time(/entrada[^0-9]{0,20}(\d{1,2})(?::(\d{2}))?\s*([ap]\.?m\.?)?/i),
     checkoutTime:
-      time(/check-?out[^0-9]{0,20}(\d{1,2})(?::(\d{2}))?/i) ??
-      time(/salida[^0-9]{0,20}(\d{1,2})(?::(\d{2}))?/i),
+      time(/check-?out[^0-9]{0,20}(\d{1,2})(?::(\d{2}))?\s*([ap]\.?m\.?)?/i) ??
+      time(/salida[^0-9]{0,20}(\d{1,2})(?::(\d{2}))?\s*([ap]\.?m\.?)?/i),
     maxGuests: guests ? Number(guests[1]) : null,
   };
 }

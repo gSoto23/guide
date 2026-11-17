@@ -12,6 +12,8 @@ export interface ListingContentSourceValues {
   language?: string | null;
   source: (typeof listingContent.$inferInsert)["source"];
   extractionRequestId?: string | null;
+  /** The host who edited it before it was stored; the row is then `edited`, not `unreviewed`. */
+  editedBy?: string | null;
 }
 
 /**
@@ -34,7 +36,9 @@ export async function upsertListingContent(
       items: values.items ?? null,
       language: values.language ?? null,
       source: values.source,
-      reviewState: "unreviewed",
+      reviewState: values.editedBy ? "edited" : "unreviewed",
+      reviewedBy: values.editedBy ?? null,
+      reviewedAt: values.editedBy ? new Date() : null,
       extractionRequestId: values.extractionRequestId ?? null,
     })
     .onConflictDoUpdate({

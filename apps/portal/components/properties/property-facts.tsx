@@ -1,12 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { PropertyDetail } from "@guidesk/contracts";
 import { problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
 import { CoreFactsForm, type CoreFactsBody } from "./core-facts-form";
+
+// Loaded after the facts, so the page stays inside its JavaScript budget (plan, Performance).
+const ListingContent = dynamic(() => import("./listing-content").then((m) => m.ListingContent), {
+  ssr: false,
+});
+const CalendarFeeds = dynamic(() => import("./calendar-feeds").then((m) => m.CalendarFeeds), {
+  ssr: false,
+});
+const StaysList = dynamic(() => import("./stays-list").then((m) => m.StaysList), { ssr: false });
 
 /**
  * A property's page (FR-005, T046): its facts in the property's time zone, editable by owners
@@ -20,6 +30,7 @@ export function PropertyFacts({ locale, propertyId }: { locale: string; property
   const [editing, setEditing] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>();
   const [message, setMessage] = useState<{ kind: "info" | "error"; text: string } | null>(null);
+  const [staysVersion, setStaysVersion] = useState(0);
 
   useEffect(() => {
     if (!workspace) return;
@@ -174,6 +185,20 @@ export function PropertyFacts({ locale, propertyId }: { locale: string; property
           )}
         </>
       )}
+      <ListingContent propertyId={propertyId} sourceProvider={property.sourceProvider} />
+      {workspace.canManage ? (
+        <CalendarFeeds
+          propertyId={propertyId}
+          onStaysChanged={() => setStaysVersion((version) => version + 1)}
+        />
+      ) : null}
+      <StaysList
+        propertyId={propertyId}
+        checkInTime={property.checkInTime}
+        checkoutTime={property.checkoutTime}
+        timeZone={property.timeZone}
+        version={staysVersion}
+      />
       <div className="card">
         <strong>{t("detail.nextStep")}</strong>
         <p className="muted">{t("detail.nextStepSoon")}</p>

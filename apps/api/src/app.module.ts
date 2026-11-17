@@ -10,6 +10,7 @@ import { RlsInterceptor } from "./common/rls.interceptor.js";
 import { ConfigModule } from "./config/config.module.js";
 import { DatabaseModule } from "./database/database.module.js";
 import { EmailModule } from "./email/email.module.js";
+import { ExtractionsModule } from "./extractions/extractions.module.js";
 import { HealthController } from "./health/health.controller.js";
 import { IntegrationsModule } from "./integrations/integrations.module.js";
 import { ListingContentModule } from "./listing-content/listing-content.module.js";
@@ -34,6 +35,7 @@ import { TenancyModule } from "./tenancy/tenancy.module.js";
     ListingContentModule,
     CalendarFeedsModule,
     StaysModule,
+    ExtractionsModule,
   ],
   controllers: [HealthController],
   providers: [

@@ -91,3 +91,14 @@ export function feedDisplayHint(url: string): string {
   const extension = dot > 0 ? file.slice(dot) : "";
   return `${host}/…/${base.slice(-4)}${extension}`;
 }
+
+const CHANNEL_NAMES: Record<Exclude<FeedChannel, "other">, string> = {
+  airbnb: "Airbnb",
+  booking: "Booking.com",
+  vrbo: "Vrbo",
+};
+
+/** The channel name stays carry: the OTA's name, or the host's label for another channel. */
+export function feedChannelName(channel: FeedChannel, label: string | null): string {
+  return channel === "other" ? (label ?? "Other").slice(0, 40) : CHANNEL_NAMES[channel];
+}

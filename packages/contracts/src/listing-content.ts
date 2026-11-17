@@ -17,6 +17,8 @@ export const contentItemInputSchema = z
     items: z.array(z.string().trim().min(1).max(120)).max(200).nullable().optional(),
     /** BCP 47 tag; content keeps its language (FR-019). */
     language: z.string().trim().min(2).max(35).nullable().optional(),
+    /** The host changed it while reviewing the extraction, so it is stored as edited (US2 scenario 7). */
+    edited: z.boolean().optional(),
   })
   .strict()
   .refine(

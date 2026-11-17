@@ -114,6 +114,12 @@ export function CoreFactsForm(props: CoreFactsFormProps) {
 
   const set = <K extends keyof CoreFactsValue>(key: K, next: CoreFactsValue[K]) =>
     setValue({ ...value, [key]: next });
+  // The latest values, for the suggestion that arrives after a delay: spreading the values from
+  // when it was asked for would undo whatever the host typed meanwhile.
+  const latest = useRef(value);
+  useEffect(() => {
+    latest.current = value;
+  });
 
   // Time zone: suggested from country and city with Guidesk's own data (FR-002).
   useEffect(() => {
@@ -128,7 +134,7 @@ export function CoreFactsForm(props: CoreFactsFormProps) {
           setZones(result.choices);
           setSuggested(result.suggested);
           if (result.suggested && autoZone.current) {
-            setValue({ ...value, timeZone: result.suggested });
+            setValue({ ...latest.current, timeZone: result.suggested });
           }
         })
         .catch(() => undefined);
@@ -169,7 +175,10 @@ export function CoreFactsForm(props: CoreFactsFormProps) {
   }
 
   const zoneIds = zones.map((zone) => zone.id);
-  const mismatch = Boolean(value.timeZone) && zones.length > 0 && !zoneIds.includes(value.timeZone);
+  // The chosen zone is always an option, even before the country's zones load: otherwise the
+  // required select reads as empty and the browser silently blocks an early save.
+  const unlisted = Boolean(value.timeZone) && !zoneIds.includes(value.timeZone);
+  const mismatch = unlisted && zones.length > 0;
   const fieldError = (name: string) =>
     props.fieldErrors?.[name]?.length ? (
       <span className="field-error" id={`${name}-error`}>
@@ -288,7 +297,7 @@ export function CoreFactsForm(props: CoreFactsFormProps) {
           }}
         >
           <option value="">{t("timeZonePlaceholder")}</option>
-          {mismatch ? <option value={value.timeZone}>{value.timeZone}</option> : null}
+          {unlisted ? <option value={value.timeZone}>{value.timeZone}</option> : null}
           {zones.map((zone) => (
             <option key={zone.id} value={zone.id}>
               {zone.name} · {zone.offset}
