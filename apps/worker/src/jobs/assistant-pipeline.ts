@@ -127,7 +127,7 @@ export const NO_USAGE: AgentUsage = {
   costUsdMicros: 0,
 };
 
-function addUsage(a: AgentUsage, b: AgentUsage): AgentUsage {
+export function addUsage(a: AgentUsage, b: AgentUsage): AgentUsage {
   return {
     inputTokens: a.inputTokens + b.inputTokens,
     outputTokens: a.outputTokens + b.outputTokens,
@@ -252,7 +252,7 @@ export async function recordUsage(
     });
 }
 
-async function knowledgeInput(
+export async function knowledgeInput(
   db: Database,
   context: PropertyContext,
   language: ReplyLanguage,
@@ -322,6 +322,11 @@ export interface DecideInput {
   message: string;
   /** The previous assistant reply was a clarifying question (never two in a row, FR-004). */
   previousWasClarify: boolean;
+  /**
+   * Feature 006 research R4: a member took the conversation over. Only an emergency gets messages
+   * (the emergency card and its holding reply); anything else needs the team with no message.
+   */
+  takenOver?: boolean;
 }
 
 /** Runs the model calls and the policy; writes nothing (feature 005 R5, feature 007 R2). */
@@ -349,10 +354,16 @@ export async function decideReply(deps: PipelineDeps, input: DecideInput): Promi
     ...extra,
   });
 
+  // Taken over: no assistant message, the conversation waits for the member (feature 006 R4).
+  const silent = (extra: Partial<Outcome> = {}): Outcome => ({
+    ...held("taken_over", extra),
+    messages: [],
+  });
+
   const usage = await usageToday(db, context.workspaceId, context.propertyId);
   if (usage.property >= context.propertyLimit || usage.workspace >= context.workspaceLimit) {
     // Over a budget: a holding reply without any model call (feature 005 FR-028).
-    return held("limit");
+    return input.takenOver ? silent() : held("limit");
   }
 
   let classified: AgentCallResult<Classification>;
@@ -363,12 +374,13 @@ export async function decideReply(deps: PipelineDeps, input: DecideInput): Promi
       { signal: AbortSignal.timeout(deps.classifyTimeoutMs ?? CLASSIFY_TIMEOUT_MS) },
     );
   } catch {
-    return held("unavailable");
+    return input.takenOver ? silent() : held("unavailable");
   }
   let spent = classified.usage;
   const modelOf = { model: classified.model, usedModel: true };
   if (classified.outcome !== "ok" || !classified.result) {
     // A refusal or invalid output counts as "not confident", with no draft (edge cases).
+    if (input.takenOver) return silent({ ...modelOf, usage: spent });
     return held("not_confident", { ...modelOf, usage: spent });
   }
   const classification = classified.result;
@@ -386,9 +398,16 @@ export async function decideReply(deps: PipelineDeps, input: DecideInput): Promi
       ),
     )
     .limit(1);
-  if (!version) return held("unavailable", { ...base, usage: spent });
+  if (!version) {
+    return input.takenOver
+      ? silent({ ...base, usage: spent })
+      : held("unavailable", { ...base, usage: spent });
+  }
   const snapshot = version.snapshot as GuideSnapshot;
   const knowledgeIn = await knowledgeInput(db, context, language, snapshot);
+  if (input.takenOver && !(before.kind === "hold" && before.emergency)) {
+    return silent({ ...base, usage: spent });
+  }
 
   if (before.kind === "hold") {
     const messages: Outgoing[] = [];

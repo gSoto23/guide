@@ -6,3 +6,5 @@ export * from "./replies.js";
 export * from "./settings.js";
 export * from "./quiet-hours.js";
 export * from "./instructions.js";
+export * from "./contacts.js";
+export * from "./copilot.js";

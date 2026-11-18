@@ -8,7 +8,7 @@ import {
   user,
   type Database,
 } from "@guidesk/db";
-import { JOB_QUEUES } from "@guidesk/domain";
+import { JOB_QUEUES, type NotificationPushJob } from "@guidesk/domain";
 import { renderChatQuietSummary, toEmailLocale, type ChatNeedsHostReason } from "@guidesk/emails";
 import type { EmailMessage } from "@guidesk/integrations";
 import { runInJobSpan, type JobSpanDeps } from "./span.js";
@@ -25,6 +25,8 @@ const BATCH = 500;
 export interface QuietDigestDeps {
   db: Database;
   queueEmail: (message: EmailMessage) => Promise<void>;
+  /** Feature 006: the summary also goes by push (research R7). */
+  queuePush?: (job: NotificationPushJob) => Promise<void>;
   portalUrl: string;
   span?: JobSpanDeps;
 }
@@ -128,6 +130,13 @@ export async function runQuietDigest(
       conversations,
     });
     await deps.queueEmail({ to: recipient.email, ...rendered, template: "chat.quiet_summary" });
+    await deps.queuePush?.({
+      userId: first.userId,
+      kind: "quiet_summary",
+      workspaceId: first.workspaceId,
+      propertyId: first.propertyId,
+      count: conversations.length,
+    });
     emails += 1;
   }
   // Answered conversations got no summary (their notices went with the claim). The 30-minute rule

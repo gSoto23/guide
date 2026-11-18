@@ -2,7 +2,12 @@ import "./instrument.js";
 import { PgBoss } from "pg-boss";
 import { SesEmailAdapter, SmtpEmailAdapter, type EmailAdapter } from "@guidesk/integrations";
 import { describeError, shutdownObservability } from "@guidesk/observability";
-import { CHAT_REPLY_POLL_SECONDS, JOB_QUEUES, QUEUE_POLICIES } from "@guidesk/domain";
+import {
+  CHAT_REPLY_POLL_SECONDS,
+  JOB_QUEUES,
+  QUEUE_POLICIES,
+  type NotificationPushJob,
+} from "@guidesk/domain";
 import { loadConfig, type WorkerConfig } from "./config.js";
 import {
   CALENDAR_SCHEDULE_CRON,
@@ -52,6 +57,8 @@ import { createMediaCopyHandler } from "./jobs/media-copy.js";
 import { createMediaProcessHandler } from "./jobs/media-process.js";
 import { AGENT_COST_CHECK_CRON, createAgentCostCheckHandler } from "./jobs/agent-cost-check.js";
 import { createAssistantTestHandler } from "./jobs/assistant-test.js";
+import { createCopilotDraftHandler } from "./jobs/copilot-draft.js";
+import { createNotificationPushHandler } from "./jobs/notification-push.js";
 import { createQuietDigestHandler, QUIET_DIGEST_CRON } from "./jobs/quiet-digest.js";
 import { createChatReplyHandler } from "./jobs/chat-reply.js";
 import { createWorkerServices } from "./services.js";
@@ -176,6 +183,10 @@ async function main(): Promise<void> {
     createMediaCopyHandler({ db: services.db.db, media: services.media }),
   );
   // Feature 005: the assistant's replies, polled often so guests wait little (research R2).
+  // Feature 006: push jobs carry IDs only; the job renders the text (research R7).
+  const queuePush = async (job: NotificationPushJob): Promise<void> => {
+    await boss.send(JOB_QUEUES.notificationPush, job, { retryLimit: 2, expireInSeconds: 300 });
+  };
   await createQueue(JOB_QUEUES.chatReply);
   await boss.work(
     JOB_QUEUES.chatReply,
@@ -184,6 +195,7 @@ async function main(): Promise<void> {
       db: services.db.db,
       llm: services.llm,
       queueEmail: services.queueEmail,
+      queuePush,
       portalUrl: services.portalUrl,
       guideUrl: config.guideUrl,
     }),
@@ -208,10 +220,28 @@ async function main(): Promise<void> {
     createQuietDigestHandler({
       db: services.db.db,
       queueEmail: services.queueEmail,
+      queuePush,
       portalUrl: services.portalUrl,
     }),
   );
   await boss.schedule(JOB_QUEUES.chatQuietDigest, QUIET_DIGEST_CRON, null, { tz: "UTC" });
+  // Feature 006: copilot drafts (research R5) and push alerts (research R7).
+  await createQueue(JOB_QUEUES.copilotDraft);
+  await boss.work(
+    JOB_QUEUES.copilotDraft,
+    { localConcurrency: 4, pollingIntervalSeconds: CHAT_REPLY_POLL_SECONDS },
+    createCopilotDraftHandler({ db: services.db.db, llm: services.llm, guideUrl: config.guideUrl }),
+  );
+  await createQueue(JOB_QUEUES.notificationPush);
+  await boss.work(
+    JOB_QUEUES.notificationPush,
+    { localConcurrency: 4 },
+    createNotificationPushHandler({
+      db: services.db.db,
+      push: services.push,
+      portalUrl: services.portalUrl,
+    }),
+  );
   // Shared-block fan-out (research R14): one job per publish or delete.
   await createQueue(JOB_QUEUES.sharedBlockPublish);
   await boss.work(

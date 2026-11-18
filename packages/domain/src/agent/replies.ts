@@ -34,6 +34,7 @@ const FORMAL_HOLDING_ES: Record<NeedsHostReason, string> = {
   limit: "Gracias por su mensaje. Su anfitrión le responderá aquí pronto.",
   unavailable:
     "El asistente no está disponible en este momento. Su anfitrión ya tiene su mensaje y le responderá aquí.",
+  taken_over: "Su anfitrión le responderá aquí personalmente.",
 };
 
 const PLATFORM: Record<ReplyLanguage, string> = {
@@ -59,6 +60,7 @@ const HOLDING: Record<ReplyLanguage, Record<NeedsHostReason, string>> = {
     limit: "Gracias por tu mensaje. Tu anfitrión te responderá aquí pronto.",
     unavailable:
       "El asistente no está disponible en este momento. Tu anfitrión ya tiene tu mensaje y te responderá aquí.",
+    taken_over: "Tu anfitrión te responderá aquí personalmente.",
   },
   en: {
     emergency:
@@ -77,6 +79,7 @@ const HOLDING: Record<ReplyLanguage, Record<NeedsHostReason, string>> = {
     limit: "Thanks for your message. Your host will reply here soon.",
     unavailable:
       "The assistant isn't available right now. Your host has your message and will reply here.",
+    taken_over: "Your host will reply to you here personally.",
   },
 };
 

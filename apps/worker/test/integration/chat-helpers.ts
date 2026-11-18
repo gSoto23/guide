@@ -18,7 +18,7 @@ import {
   workspace,
   type DbHandle,
 } from "@guidesk/db";
-import { uniformAutonomy, type AutonomyLevel } from "@guidesk/domain";
+import { uniformAutonomy, type AutonomyLevel, type NotificationPushJob } from "@guidesk/domain";
 import { FakeLlmAdapter, type EmailMessage, type FakeLlmOptions } from "@guidesk/integrations";
 import { runChatReply, type ChatReplyDeps } from "../../src/jobs/chat-reply.js";
 
@@ -300,8 +300,12 @@ export async function guestSays(s: Seeded, text: string): Promise<string> {
 export function deps(options: FakeLlmOptions = {}, now?: () => Date) {
   const llm = new FakeLlmAdapter(options);
   const emails: EmailMessage[] = [];
+  const pushes: NotificationPushJob[] = [];
   const value: ChatReplyDeps = {
     ...(now ? { now } : {}),
+    queuePush: async (job) => {
+      pushes.push(job);
+    },
     db: handle.db,
     llm,
     queueEmail: async (message) => {
@@ -310,7 +314,7 @@ export function deps(options: FakeLlmOptions = {}, now?: () => Date) {
     portalUrl: "http://localhost:3000",
     guideUrl: "http://127.0.0.1:3001",
   };
-  return { deps: value, llm, emails };
+  return { deps: value, llm, emails, pushes };
 }
 
 export async function run(s: Seeded, d: ChatReplyDeps, messageId: string) {

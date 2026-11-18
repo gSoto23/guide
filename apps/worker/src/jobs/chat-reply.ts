@@ -16,6 +16,7 @@ import {
   type ChatReplyJob,
   type ContactsSetting,
   type NeedsHostReason,
+  type NotificationPushJob,
 } from "@guidesk/domain";
 import {
   renderChatLimitReached,
@@ -47,6 +48,8 @@ import { runInJobSpan, type JobSpanDeps } from "./span.js";
  */
 export interface ChatReplyDeps extends PipelineDeps {
   queueEmail: (message: EmailMessage) => Promise<void>;
+  /** Feature 006: web push to the same recipients as email (research R7). */
+  queuePush?: (job: NotificationPushJob) => Promise<void>;
   portalUrl: string;
   span?: JobSpanDeps;
   /** Tests move the clock for quiet hours. */
@@ -69,9 +72,12 @@ const URGENT_REASONS: ReadonlySet<NeedsHostReason> = new Set(["emergency", "malf
 
 interface Loaded extends PropertyContext {
   conversationId: string;
-  status: "open" | "needs_host";
+  status: "open" | "needs_host" | "done";
   language: "es" | "en";
   stayId: string | null;
+  /** Feature 006: the member who took the conversation over (null when they left or nobody did). */
+  takenOverBy: string | null;
+  takenOver: boolean;
 }
 
 interface StoredMessage {
@@ -89,6 +95,8 @@ async function load(db: Database, job: ChatReplyJob): Promise<Loaded | null> {
       status: conversation.status,
       language: conversation.language,
       stayId: conversation.stayId,
+      takenOverBy: conversation.takenOverBy,
+      takenOverAt: conversation.takenOverAt,
     })
     .from(conversation)
     .where(
@@ -104,6 +112,8 @@ async function load(db: Database, job: ChatReplyJob): Promise<Loaded | null> {
     status: row.status,
     language: row.language,
     stayId: row.stayId,
+    takenOverBy: row.takenOverBy,
+    takenOver: row.takenOverAt !== null,
   };
 }
 
@@ -197,7 +207,15 @@ async function write(
       .set({
         lastMessageAt: sql`now()`,
         // Answers, pointers, and greetings leave an earlier "needs the host" as it was.
-        ...(needsHost ? { status: "needs_host" as const, needsHostReason: outcome.reason } : {}),
+        ...(needsHost
+          ? {
+              status: "needs_host" as const,
+              needsHostReason: outcome.reason,
+              // A member may have marked it done meanwhile (feature 006 research R2).
+              doneAt: null,
+              doneBy: null,
+            }
+          : {}),
       })
       .where(eq(conversation.id, loaded.conversationId));
     const [trace] = await tx
@@ -313,12 +331,15 @@ async function notifyNeedsHost(
   guestMessage: string,
 ): Promise<number> {
   const { db } = deps;
-  const recipients = await recipientsFor(
-    db,
-    loaded.workspaceId,
-    applied.effective.contacts,
-    reason,
-  );
+  let recipients = await recipientsFor(db, loaded.workspaceId, applied.effective.contacts, reason);
+  if (reason === "taken_over" && loaded.takenOverBy) {
+    // Feature 006 research R10: the member who took it over, while they still handle conversations.
+    const handlers = await membersOf(db, loaded.workspaceId, ["owner", "admin", "agent"]);
+    const taker = handlers.filter((member) => member.userId === loaded.takenOverBy);
+    if (taker.length > 0) {
+      recipients = taker.map(({ userId, email, locale }) => ({ userId, email, locale }));
+    }
+  }
   if (applied.quiet.active && applied.quiet.endsAt && !URGENT_REASONS.has(reason)) {
     for (const recipient of recipients) {
       await db
@@ -365,6 +386,14 @@ async function notifyNeedsHost(
       conversationLink: `${deps.portalUrl}/${recipient.locale}/properties/${loaded.propertyId}/conversations/${loaded.conversationId}`,
     });
     await deps.queueEmail({ to: recipient.email, ...rendered, template: "chat.needs_host" });
+    await deps.queuePush?.({
+      userId: recipient.userId,
+      kind: "needs_host",
+      workspaceId: loaded.workspaceId,
+      propertyId: loaded.propertyId,
+      conversationId: loaded.conversationId,
+      reason,
+    });
   }
   return recipients.length;
 }
@@ -417,7 +446,7 @@ export async function runChatReply(
     // The guide closed after the guest wrote: the guest can't see a reply, the team can.
     await db
       .update(conversation)
-      .set({ status: "needs_host", needsHostReason: "unavailable" })
+      .set({ status: "needs_host", needsHostReason: "unavailable", doneAt: null, doneBy: null })
       .where(and(eq(conversation.id, loaded.conversationId), eq(conversation.status, "open")));
     return "unavailable";
   }
@@ -430,6 +459,7 @@ export async function runChatReply(
     history: toTurns(history),
     message: batch.map((entry) => entry.body).join("\n"),
     previousWasClarify: await previousWasClarify(db, loaded, history),
+    takenOver: loaded.takenOver,
   });
   const result = await write(db, loaded, lastSeq, batch, outcome, applied);
   if (!result.written) return "superseded";

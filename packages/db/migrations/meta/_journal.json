@@ -197,6 +197,20 @@
       "when": 1795015112823,
       "tag": "0027_agent_settings_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1795020452300,
+      "tag": "0028_host_inbox",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1795020457902,
+      "tag": "0029_host_inbox_rls",
+      "breakpoints": true
     }
   ]
 }

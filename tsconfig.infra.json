@@ -9,5 +9,6 @@
     "noUncheckedIndexedAccess": false,
     "noImplicitOverride": false
   },
-  "include": ["sst.config.ts", "infra/**/*.ts", ".sst/platform/config.d.ts"]
+  "include": ["sst.config.ts", "infra/**/*.ts", ".sst/platform/config.d.ts"],
+  "exclude": ["node_modules", "dist", "**/* 2.*", "**/* 3.*", "**/* 4.*"]
 }

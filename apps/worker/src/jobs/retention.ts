@@ -35,6 +35,7 @@ import { runInJobSpan, type JobSpanDeps } from "./span.js";
  *   stay), and daily chat usage after 13 months.
  * - feature 007: "test the assistant" runs (with their traces) after 30 days, and instruction
  *   versions that are neither current nor referenced by a trace.
+ * - feature 006: copilot drafts (with their traces) after 30 days, and expired presence rows.
  *
  * It logs counts only, never values.
  */
@@ -89,6 +90,8 @@ export interface RetentionCounts {
   chatUsage: number;
   assistantTests: number;
   instructionVersions: number;
+  copilotRuns: number;
+  presence: number;
 }
 
 function daysBefore(now: Date, days: number): Date {
@@ -331,6 +334,14 @@ export async function runRetention(deps: RetentionDeps): Promise<RetentionCounts
     DELETE FROM assistant_test WHERE created_at < ${daysBefore(now, ASSISTANT_TEST_DAYS).toISOString()}::timestamptz
     RETURNING id
   `);
+  const copilotRuns = await db.execute<{ id: string }>(sql`
+    DELETE FROM copilot_run WHERE created_at < ${daysBefore(now, ASSISTANT_TEST_DAYS).toISOString()}::timestamptz
+    RETURNING id
+  `);
+  const presence = await db.execute<{ user_id: string }>(sql`
+    DELETE FROM conversation_presence WHERE expires_at < now() - interval '1 hour'
+    RETURNING user_id
+  `);
   const instructionVersions = await db.execute<{ id: string }>(sql`
     DELETE FROM assistant_instruction_version
     WHERE id IN (
@@ -350,6 +361,8 @@ export async function runRetention(deps: RetentionDeps): Promise<RetentionCounts
     chatUsage: chatUsage.length,
     assistantTests: assistantTests.rows.length,
     instructionVersions: instructionVersions.rows.length,
+    copilotRuns: copilotRuns.rows.length,
+    presence: presence.rows.length,
     stayLinks: stayLinks.rows.length,
     propertyLinks: propertyLinks.length,
     interviewContent: interviewContent.length,

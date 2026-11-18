@@ -34,6 +34,8 @@ export const NEEDS_HOST_REASONS = [
   "check_failed",
   "limit",
   "unavailable",
+  // Feature 006 (research R4, R10): the guest wrote in a conversation a member took over.
+  "taken_over",
 ] as const;
 export type NeedsHostReason = (typeof NEEDS_HOST_REASONS)[number];
 

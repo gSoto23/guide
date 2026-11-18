@@ -70,4 +70,11 @@ export interface AnswerGuestInput {
   tone?: "casual" | "formal";
   /** Feature 007 (FR-011): the workspace's and the property's custom instructions. */
   preferences?: { workspace: string | null; property: string | null };
+  /**
+   * Feature 006 (research R6): `platform` drafts a reply the host pastes into the booking
+   * platform's chat (the copilot), written as the host. `guide_chat` when absent.
+   */
+  channel?: "guide_chat" | "platform";
+  /** Feature 006: with `platform`, whether the guest has booked (PC-05). */
+  bookingStatus?: "inquiry" | "confirmed";
 }

@@ -19,6 +19,8 @@ import { SharedBlocksModule } from "./shared-blocks/shared-blocks.module.js";
 import { ChatModule } from "./chat/chat.module.js";
 import { ConversationsModule } from "./conversations/conversations.module.js";
 import { AssistantModule } from "./assistant/assistant.module.js";
+import { InboxModule } from "./inbox/inbox.module.js";
+import { PushModule } from "./push/push.module.js";
 import { GuestModule } from "./guest/guest.module.js";
 import { ShareModule } from "./share/share.module.js";
 import { LockedFieldsModule } from "./locked-fields/locked-fields.module.js";
@@ -55,6 +57,8 @@ import { TenancyModule } from "./tenancy/tenancy.module.js";
     ChatModule,
     ConversationsModule,
     AssistantModule,
+    InboxModule,
+    PushModule,
     ShareModule,
     ListingContentModule,
     CalendarFeedsModule,

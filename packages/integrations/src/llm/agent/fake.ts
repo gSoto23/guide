@@ -161,6 +161,17 @@ export function fakeAnswer(input: AnswerGuestInput): GuestAnswer {
   }
   if (!best || best.score < 1 || !best.body.trim()) {
     const formal = input.tone === "formal";
+    if (input.channel === "platform") {
+      return {
+        answer: input.language.startsWith("es")
+          ? "Gracias por escribir. Déjame revisarlo y te confirmo pronto."
+          : "Thanks for your message. Let me check and I'll get back to you soon.",
+        kind: "grounded",
+        sectionIds: [],
+        answerable: false,
+        needsHost: true,
+      };
+    }
     return {
       answer: input.language.startsWith("es")
         ? formal

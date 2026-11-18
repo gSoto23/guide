@@ -66,7 +66,11 @@ export type ProblemCode =
   | "settings_changed"
   | "time_zone_required"
   | "instructions_invalid"
-  | "tests_paused";
+  | "tests_paused"
+  // Feature 006 (contracts/http-api.md).
+  | "conversation_done"
+  | "copilot_paused"
+  | "push_unavailable";
 
 /**
  * Extra members of a problem body, such as `{limit, used}` or `{reason}`. Plain values only, and

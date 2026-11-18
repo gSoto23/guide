@@ -20,6 +20,7 @@ import {
   uuid,
   type AnyPgColumn,
 } from "drizzle-orm/pg-core";
+import { copilotRun } from "./inbox.js";
 import {
   ANSWER_KIND_VALUES,
   ASSISTANT_TONES,
@@ -33,7 +34,8 @@ import { property } from "./properties.js";
 import { stay } from "./stays.js";
 import { workspace } from "./tenancy.js";
 
-export const CONVERSATION_STATUSES = ["open", "needs_host"] as const;
+/** Feature 006 adds `done` (research R2). */
+export const CONVERSATION_STATUSES = ["open", "needs_host", "done"] as const;
 export const NEEDS_HOST_REASON_VALUES = [
   "emergency",
   "malfunction",
@@ -46,6 +48,7 @@ export const NEEDS_HOST_REASON_VALUES = [
   "check_failed",
   "limit",
   "unavailable",
+  "taken_over",
 ] as const;
 export const MESSAGE_AUTHORS = ["guest", "assistant", "host"] as const;
 export const MESSAGE_KINDS = [
@@ -83,10 +86,19 @@ export const conversation = pgTable(
     language: text("language", { enum: ["es", "en"] }).notNull(),
     lastMessageAt: timestamp("last_message_at", { withTimezone: true }).notNull().defaultNow(),
     lastNotifiedAt: timestamp("last_notified_at", { withTimezone: true }),
+    /** Feature 006 (research R2, R4): marked done, and taken over by a member. */
+    doneAt: timestamp("done_at", { withTimezone: true }),
+    doneBy: text("done_by").references((): AnyPgColumn => user.id, { onDelete: "set null" }),
+    takenOverBy: text("taken_over_by").references((): AnyPgColumn => user.id, {
+      onDelete: "set null",
+    }),
+    takenOverAt: timestamp("taken_over_at", { withTimezone: true }),
     createdAt: createdAt(),
   },
   (t) => [
     uniqueIndex("conversation_device_uq").on(t.propertyId, t.cookieHash),
+    index("conversation_inbox_idx").on(t.workspaceId, t.status, t.lastMessageAt),
+    check("conversation_done_consistent", sql`(${t.status} = 'done') = (${t.doneAt} IS NOT NULL)`),
     index("conversation_property_status_idx").on(t.propertyId, t.status, t.lastMessageAt),
     index("conversation_workspace_idx").on(t.workspaceId),
     check("conversation_cookie_hash_format", sql`${t.cookieHash} ~ '^[0-9a-f]{64}$'`),
@@ -143,6 +155,8 @@ export const agentTrace = pgTable(
     assistantTestId: uuid("assistant_test_id").references(() => assistantTest.id, {
       onDelete: "cascade",
     }),
+    /** Feature 006: copilot drafts (research R5). */
+    copilotRunId: uuid("copilot_run_id").references(() => copilotRun.id, { onDelete: "cascade" }),
     guestMessageId: uuid("guest_message_id").references((): AnyPgColumn => chatMessage.id, {
       onDelete: "set null",
     }),
@@ -189,9 +203,10 @@ export const agentTrace = pgTable(
     index("agent_trace_created_idx").on(t.createdAt),
     index("agent_trace_test_idx").on(t.assistantTestId),
     check("agent_trace_decision_valid", inList(t.decision, TRACE_DECISIONS)),
+    index("agent_trace_copilot_idx").on(t.copilotRunId),
     check(
       "agent_trace_subject",
-      sql`(${t.conversationId} IS NULL) <> (${t.assistantTestId} IS NULL)`,
+      sql`(CASE WHEN ${t.conversationId} IS NULL THEN 0 ELSE 1 END) + (CASE WHEN ${t.assistantTestId} IS NULL THEN 0 ELSE 1 END) + (CASE WHEN ${t.copilotRunId} IS NULL THEN 0 ELSE 1 END) = 1`,
     ),
   ],
 );
@@ -275,5 +290,29 @@ export const chatHeldNotice = pgTable(
   (t) => [
     uniqueIndex("chat_held_notice_uq").on(t.conversationId, t.userId),
     index("chat_held_notice_release_idx").on(t.releaseAt),
+  ],
+);
+
+/**
+ * A member replying in a conversation (feature 006 research R8): a heartbeat every 10 seconds keeps
+ * `expires_at` 30 seconds ahead.
+ */
+export const conversationPresence = pgTable(
+  "conversation_presence",
+  {
+    conversationId: uuid("conversation_id")
+      .notNull()
+      .references(() => conversation.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspace.id, { onDelete: "cascade" }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.conversationId, t.userId] }),
+    index("conversation_presence_workspace_idx").on(t.workspaceId, t.expiresAt),
   ],
 );

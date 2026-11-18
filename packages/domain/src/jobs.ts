@@ -27,6 +27,9 @@ export const JOB_QUEUES = {
   // Feature 007 (research R7, R12).
   assistantTest: "assistant.test",
   chatQuietDigest: "chat.quiet-digest",
+  // Feature 006 (research R5, R7).
+  copilotDraft: "copilot.draft",
+  notificationPush: "notification.push",
 } as const;
 
 export interface CalendarRefreshJob {
@@ -128,4 +131,24 @@ export const CHAT_REPLY_POLL_SECONDS = 0.5;
 export interface AssistantTestJob {
   testId: string;
   workspaceId: string;
+}
+
+/** Feature 006 research R5: draft one copilot reply. */
+export interface CopilotDraftJob {
+  runId: string;
+  workspaceId: string;
+}
+
+/**
+ * Feature 006 research R7: one push to a member's devices. IDs and codes only; the job renders the
+ * text in the member's language (SEC-20).
+ */
+export interface NotificationPushJob {
+  userId: string;
+  kind: "needs_host" | "quiet_summary" | "test";
+  workspaceId?: string;
+  propertyId?: string;
+  conversationId?: string;
+  reason?: string;
+  count?: number;
 }
