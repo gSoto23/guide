@@ -174,6 +174,7 @@ export const fileDocumentSchema = z.strictObject({
 const mediaVariantSchema = z.strictObject({
   key: z.string().min(1).max(300),
   bytes: z.int().min(0),
+  contentType: z.string().min(1).max(60).optional(),
   width: z.int().min(1).optional(),
   height: z.int().min(1).optional(),
 });

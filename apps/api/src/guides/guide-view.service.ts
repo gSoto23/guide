@@ -290,6 +290,11 @@ export class GuideViewService {
     );
   }
 
+  /** A media object as the portal sees it, with signed URLs when ready. */
+  async mediaViewOf(_ctx: GuideContext, row: MediaRow): Promise<MediaView> {
+    return this.mediaView(row);
+  }
+
   private async mediaView(row: MediaRow): Promise<MediaView> {
     const urls: MediaView["urls"] = {};
     if (row.status === "ready") {

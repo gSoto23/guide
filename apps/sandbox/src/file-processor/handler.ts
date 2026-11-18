@@ -7,6 +7,9 @@ import {
   type FileProcessResponse,
 } from "../protocol.js";
 import { parseCsvFile } from "./csv.js";
+import { processMediaImage, type MediaSink } from "./media-image.js";
+import { MEDIA_VIDEO_MAX_BYTES, processMediaVideo } from "./media-video.js";
+import { S3MediaSink } from "./s3-media-sink.js";
 import { detectImageType, normalizeImage } from "./images.js";
 import { TesseractRecognizer } from "./ocr.js";
 import { S3ObjectSource } from "./s3-source.js";
@@ -24,6 +27,7 @@ import { S3ObjectSource } from "./s3-source.js";
  */
 
 export { TesseractRecognizer, type TesseractRecognizerOptions } from "./ocr.js";
+export type { MediaSink } from "./media-image.js";
 export type { TextRecognitionPort } from "@guidesk/integrations/ocr-port";
 
 /** Largest file accepted: 10 MB, as for the upload form (FR-009). */
@@ -46,6 +50,8 @@ export interface ObjectSource {
 export interface FileProcessorDeps {
   storage: ObjectSource;
   recognizer: TextRecognitionPort;
+  /** Where cleaned guide media goes (feature 003 research R9); media requests fail without it. */
+  mediaSink?: MediaSink;
   /** Defaults to `FILE_MAX_BYTES`. */
   maxBytes?: number;
   /** Defaults to `RECOGNITION_TIMEOUT_MS`. */
@@ -72,14 +78,20 @@ export function createFileProcessor(
   return async (request) => {
     const parsed = fileProcessRequestSchema.safeParse(request);
     if (!parsed.success) return { error: "internal" };
-    const { objectKey, purpose } = parsed.data;
+    const { objectKey, purpose, mediaPrefix } = parsed.data;
 
     const bytes = await deps.storage.get(objectKey);
     if (bytes === null) return { error: "not_found" };
     try {
       if (purpose === "csv") return parseCsvFile(bytes);
       if (purpose === "screenshot") return await recognizeScreenshot(bytes, deps);
-      // Feature 003 modes arrive with their user stories (T050, T088, T108).
+      if (purpose === "media_image" || purpose === "media_video") {
+        if (!deps.mediaSink || !mediaPrefix) return { error: "internal" };
+        return purpose === "media_image"
+          ? await processMediaImage(bytes, mediaPrefix, deps.mediaSink)
+          : await processMediaVideo(bytes, mediaPrefix, deps.mediaSink);
+      }
+      // Feature 003 modes that arrive with later user stories (T088, T108).
       return { error: "unsupported_type" };
     } finally {
       await deps.storage.delete(objectKey);
@@ -137,9 +149,12 @@ function processorFromEnvironment(): (request: FileProcessRequest) => Promise<Fi
   }
   const bucket = process.env.UPLOADS_BUCKET;
   if (!bucket) throw new Error("UPLOADS_BUCKET is not set");
+  const mediaBucket = process.env.MEDIA_BUCKET;
   lambdaProcessor = createFileProcessor({
-    storage: new S3ObjectSource({ bucket, maxBytes: FILE_MAX_BYTES }),
+    // The largest upload is a guide video; each mode checks its own limit (feature 003 FR-009).
+    storage: new S3ObjectSource({ bucket, maxBytes: MEDIA_VIDEO_MAX_BYTES }),
     recognizer: new TesseractRecognizer(),
+    ...(mediaBucket ? { mediaSink: new S3MediaSink({ bucket: mediaBucket }) } : {}),
   });
   return lambdaProcessor;
 }

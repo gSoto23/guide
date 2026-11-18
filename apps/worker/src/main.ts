@@ -39,6 +39,7 @@ import {
   PURGE_WORKSPACES_QUEUE,
 } from "./jobs/purge-workspaces.js";
 import { createGuideDraftHandler } from "./jobs/guide-draft.js";
+import { createMediaProcessHandler } from "./jobs/media-process.js";
 import { createWorkerServices } from "./services.js";
 
 function emailAdapter(config: WorkerConfig): EmailAdapter {
@@ -117,6 +118,18 @@ async function main(): Promise<void> {
     JOB_QUEUES.guideDraft,
     { localConcurrency: 4 },
     createGuideDraftHandler({ db: services.db.db, llm: services.llm }),
+  );
+  await createQueue(JOB_QUEUES.mediaProcess);
+  await boss.work(
+    JOB_QUEUES.mediaProcess,
+    { localConcurrency: 2 },
+    createMediaProcessHandler({
+      db: services.db.db,
+      sandbox: services.sandbox,
+      storage: services.storage,
+      media: services.media,
+      requireScan: services.mediaRequireScan,
+    }),
   );
   const scheduleCalendars = createCalendarScheduler({
     db: services.db.db,

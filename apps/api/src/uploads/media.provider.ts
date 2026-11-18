@@ -1,10 +1,6 @@
 import { createHmac } from "node:crypto";
 import type { FastifyInstance } from "fastify";
-import {
-  LocalMediaStorage,
-  S3MediaStorage,
-  type MediaStoragePort,
-} from "@guidesk/integrations";
+import { LocalMediaStorage, S3MediaStorage, type MediaStoragePort } from "@guidesk/integrations";
 import type { ApiConfig } from "../config/config.js";
 
 export const MEDIA_STORAGE = Symbol("MEDIA_STORAGE");

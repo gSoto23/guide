@@ -235,3 +235,26 @@ export interface SectionWriteResult {
   warnings: CodeWarning[];
   item?: ItemView;
 }
+
+export const createMediaSchema = z
+  .object({
+    kind: z.enum(MEDIA_KIND_VALUES),
+    contentType: z.enum(["image/jpeg", "image/png", "image/webp", "video/mp4", "video/quicktime"]),
+    size: z.int().min(1).max(150 * 1024 * 1024),
+    fileName: z.string().trim().min(1).max(200),
+  })
+  .strict()
+  .refine((body) => (body.kind === "image") === body.contentType.startsWith("image/"), {
+    message: "The type does not match the kind",
+    path: ["contentType"],
+  })
+  .refine((body) => body.kind === "video" || body.size <= 10 * 1024 * 1024, {
+    message: "Images are at most 10 MB",
+    path: ["size"],
+  });
+export type CreateMediaBody = z.infer<typeof createMediaSchema>;
+
+export interface MediaUpload {
+  mediaId: string;
+  upload: { url: string; fields: Record<string, string> };
+}
