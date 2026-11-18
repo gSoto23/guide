@@ -381,6 +381,10 @@ of feature 002. Facts measured in this repository on 2026-11-17 are marked **mea
        Lambda's addresses for the per-IP guest limit (120 per minute). Watch `429` counts on
        staging; if they appear, exempt the renderer with a shared header or raise its limit.
     5. The quickstart on staging with a real phone on mobile data.
+  - **Local quickstart run (T075, 2026-11-17):** scenarios 1 to 6 pass through `guest-us1` to
+    `guest-us6` and the accessibility spec on the local stack; the API, database, worker, and guest
+    app suites pass; Lighthouse on the fixture guide scores 1.0 for performance and accessibility.
+    Staging items above remain open.
   - **Observability:** guest routes are covered by the API's automatic HTTP spans (route templates
     carry no tokens, codes, or values; problem responses carry stable codes) and Sentry. Counters
     for exchanges, reveals, lockouts, and opens come from the security events and

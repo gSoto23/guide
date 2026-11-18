@@ -262,7 +262,7 @@ with no identifiers.
 - [X] T072 Infrastructure `infra/guide.ts`: `GuideRouter` (CloudFront with WAF, `guideDomain`), the guest app function (arm64, bundled handler `apps/guide/src/lambda.ts`, `API_URL`), routes (`/api/v1/guest` to the API with the edge secret header, everything else to the function, cache policy honoring origin headers); `GUIDE_URL` for the API service in `infra/services.ts`; import from `sst.config.ts`; `pnpm typecheck:infra`
 - [X] T073 Observability: spans for guest routes with outcome codes (`exchanged`, `ended`, `device_limit`, `revealed`, `not_in_window`, `locked`) and counters for exchanges, reveals, verification failures, lockouts, and opens in `apps/api/src/guest/`; errors from the guest app to Sentry through `@guidesk/observability`
 - [X] T074 Documentation: `docs/architecture/adr/0010-guest-guide-server-rendered-without-client-framework.md` and the ADR index; `docs/architecture/overview.md` (containers table, repository layout); `docs/architecture/security.md` (SEC-01 to SEC-04 as implemented, guest session, confirmation code, data classification of stay tokens); `docs/architecture/performance.md` (guest script budget); `docs/ux/README.md` (gap 1 and the verification screen); README (guest app)
-- [ ] T075 Run the [quickstart](quickstart.md) locally end to end and record the result and the open founder gates in `research.md` R20
+- [X] T075 Run the [quickstart](quickstart.md) locally end to end and record the result and the open founder gates in `research.md` R20
 
 ---
 
