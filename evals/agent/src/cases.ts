@@ -4,6 +4,7 @@ import path from "node:path";
 import {
   emergencyNumberFor,
   renderKnowledge,
+  withoutBenefitRecommendations,
   type GuideSnapshot,
   type Knowledge,
 } from "@guidesk/domain";
@@ -47,7 +48,10 @@ export type CaseKind =
   | "clarify"
   | "general"
   | "tone"
-  | "instructions";
+  | "instructions"
+  // Feature 006 (research R5, R6): the copilot's host-voice drafts for the booking platform.
+  | "copilot"
+  | "copilot_safety";
 
 export interface EvalCase {
   id: string;
@@ -61,7 +65,15 @@ export interface EvalCase {
     tone?: "casual" | "formal";
     instructions?: { workspace?: string; property?: string };
   };
+  /** Feature 006: run as a copilot draft (platform channel) with this booking status. */
+  copilot?: { bookingStatus: "inquiry" | "confirmed" };
   expect: {
+    /** Feature 006: the copilot's caution banner (any of these; `null` for none). */
+    caution?: (string | null)[];
+    /** Feature 006: no link, email address, or phone number left in the draft. */
+    noContacts?: boolean;
+    /** Feature 006: strings the model input must not contain (benefit recommendations). */
+    notInKnowledge?: string[];
     /** Feature 007: the answer's kind and what happens to it. */
     kind?: "grounded" | "general" | "clarify";
     decision?: "answered" | "drafted" | "hold" | "pointer" | "greeting";
@@ -84,6 +96,10 @@ export interface LoadedGuide {
   knowledge: Knowledge;
   /** Section ID by kind, to check citations. */
   sectionByKind: Map<string, string>;
+  /** Feature 006: what the copilot gives the model, without benefit recommendations (PC-10). */
+  copilotKnowledge: Knowledge;
+  emergencyNumber: string | null;
+  sectionTitle: (kind: string) => string;
 }
 
 const require = createRequire(import.meta.url);
@@ -135,18 +151,23 @@ export function loadGuideKnowledge(guide: EvalGuide): LoadedGuide {
     })),
   } as unknown as GuideSnapshot;
   const titles = TITLES[guide.language];
-  const knowledge = renderKnowledge({
-    snapshot,
-    language: guide.language,
-    propertyName: guide.propertyName,
-    facts: guide.facts,
-    lockedLabels: new Map(guide.locked.map((field) => [field.id, field.label])),
-    publicValues: new Map(),
-    sectionTitle: (kind, custom) => custom ?? titles[kind] ?? kind,
-    emergencyNumber: emergencyNumberFor(guide.country),
-  });
+  const sectionTitle = (kind: string, custom?: string | null) => custom ?? titles[kind] ?? kind;
+  const emergencyNumber = emergencyNumberFor(guide.country);
+  const render = (from: GuideSnapshot) =>
+    renderKnowledge({
+      snapshot: from,
+      language: guide.language,
+      propertyName: guide.propertyName,
+      facts: guide.facts,
+      lockedLabels: new Map(guide.locked.map((field) => [field.id, field.label])),
+      publicValues: new Map(),
+      sectionTitle,
+      emergencyNumber,
+    });
+  const knowledge = render(snapshot);
+  const copilotKnowledge = render(withoutBenefitRecommendations(snapshot));
   for (const field of guide.locked) {
-    if (knowledge.text.includes(field.secret)) {
+    if (knowledge.text.includes(field.secret) || copilotKnowledge.text.includes(field.secret)) {
       throw new CaseError(`Guide ${guide.id}: a locked value reached the knowledge`);
     }
   }
@@ -154,6 +175,9 @@ export function loadGuideKnowledge(guide: EvalGuide): LoadedGuide {
     guide,
     knowledge,
     sectionByKind: new Map(knowledge.sections.map((section) => [section.kind, section.id])),
+    copilotKnowledge,
+    emergencyNumber,
+    sectionTitle: (kind) => sectionTitle(kind),
   };
 }
 
@@ -168,9 +192,10 @@ export async function loadCases(dir: string): Promise<{
     ) as EvalGuide;
     guides.set(guide.id, loadGuideKnowledge(guide));
   }
-  const cases = JSON.parse(
-    await readFile(path.join(dir, "conversations.json"), "utf8"),
-  ) as EvalCase[];
+  const cases = [
+    ...(JSON.parse(await readFile(path.join(dir, "conversations.json"), "utf8")) as EvalCase[]),
+    ...(JSON.parse(await readFile(path.join(dir, "copilot.json"), "utf8")) as EvalCase[]),
+  ];
   for (const testCase of cases) {
     if (!guides.has(testCase.guide)) throw new CaseError(`${testCase.id}: unknown guide`);
   }

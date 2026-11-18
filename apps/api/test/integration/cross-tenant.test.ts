@@ -693,3 +693,149 @@ describe("feature 005 resources across workspaces (T043, AC-SEC-006)", () => {
     }
   });
 });
+
+describe("feature 006 resources across workspaces (T036, AC-SEC-004)", () => {
+  let foreign: { property: string; conversation: string; draft: string; run: string };
+  let ownProperty: string;
+
+  beforeAll(async () => {
+    const insertProp = async (workspaceId: string, name: string) =>
+      (
+        await db.query<{ id: string }>(
+          `INSERT INTO property (workspace_id, name, guide_languages, setup_status, source)
+           VALUES ($1, $2, ARRAY['es'], 'ready', 'manual') RETURNING id`,
+          [workspaceId, name],
+        )
+      ).rows[0]!.id;
+    const property = await insertProp(bruno.workspaceId, "Casa del Buzón de Bruno");
+    ownProperty = await insertProp(alice.workspaceId, "Casa del Buzón de Alicia");
+    const conversation = (
+      await db.query<{ id: string }>(
+        `INSERT INTO conversation (workspace_id, property_id, cookie_hash, language, status, needs_host_reason)
+         VALUES ($1, $2, repeat('c', 64), 'es', 'needs_host', 'draft_ready') RETURNING id`,
+        [bruno.workspaceId, property],
+      )
+    ).rows[0]!.id;
+    await db.query(
+      `INSERT INTO chat_message (workspace_id, conversation_id, seq, author, body) VALUES ($1, $2, 1, 'guest', 'Hola')`,
+      [bruno.workspaceId, conversation],
+    );
+    const draft = (
+      await db.query<{ id: string }>(
+        `INSERT INTO agent_draft (workspace_id, conversation_id, body) VALUES ($1, $2, 'Borrador') RETURNING id`,
+        [bruno.workspaceId, conversation],
+      )
+    ).rows[0]!.id;
+    const run = (
+      await db.query<{ id: string }>(
+        `INSERT INTO copilot_run (workspace_id, property_id, created_by, message, booking_status)
+         SELECT $1, $2, m.user_id, '¿A qué hora es la salida?', 'confirmed'
+           FROM membership m WHERE m.workspace_id = $1 LIMIT 1 RETURNING id`,
+        [bruno.workspaceId, property],
+      )
+    ).rows[0]!.id;
+    foreign = { property, conversation, draft, run };
+  });
+
+  const routes = (ws: string, propertyId: string) => {
+    const base = `/api/v1/workspaces/${ws}/properties/${propertyId}`;
+    const conv = `${base}/conversations/${foreign.conversation}`;
+    return [
+      ["POST", `${base}/copilot`, { message: "Hola", bookingStatus: "confirmed", language: "es" }],
+      ["GET", `${base}/copilot/${foreign.run}`, undefined],
+      ["POST", `${conv}/done`, {}],
+      ["POST", `${conv}/reopen`, {}],
+      ["POST", `${conv}/drafts/${foreign.draft}/reject`, {}],
+      ["PUT", `${conv}/takeover`, { on: true }],
+      ["POST", `${conv}/presence`, {}],
+    ] as const;
+  };
+
+  function call(method: string, url: string, payload: object | undefined) {
+    return ctx.fastify.inject({
+      method: method as "GET",
+      url,
+      headers: {
+        origin: "http://localhost:3000",
+        cookie: alice.cookie,
+        ...(payload ? { "content-type": "application/json" } : {}),
+      },
+      ...(payload ? { payload } : {}),
+    });
+  }
+
+  async function untouched() {
+    const { rows } = await db.query(
+      `SELECT c.status, c.done_at IS NULL AS not_done, c.taken_over_by IS NULL AS not_taken,
+              d.status AS draft, r.status AS run,
+              (SELECT count(*)::int FROM conversation_presence WHERE conversation_id = c.id) AS presence,
+              (SELECT count(*)::int FROM copilot_run WHERE property_id = c.property_id) AS runs,
+              (SELECT count(*)::int FROM assistant_suggestion_dismissal WHERE property_id = c.property_id) AS dismissals
+         FROM conversation c JOIN agent_draft d ON d.conversation_id = c.id
+         JOIN copilot_run r ON r.id = $2
+        WHERE c.id = $1`,
+      [foreign.conversation, foreign.run],
+    );
+    return rows[0];
+  }
+
+  it("answers 404 under either workspace's path, and logs each attempt", async () => {
+    const dismiss = (ws: string) =>
+      [
+        "POST",
+        `/api/v1/workspaces/${ws}/inbox/suggestions/dismiss`,
+        { propertyId: foreign.property, topic: "arrival" },
+      ] as const;
+    for (const ws of [bruno.workspaceId, alice.workspaceId]) {
+      for (const [method, url, payload] of [...routes(ws, foreign.property), dismiss(ws)]) {
+        const before = await deniedCount();
+        const response = await call(method, url, payload);
+        expect(response.statusCode, `${method} ${url}`).toBe(404);
+        expect(response.json(), `${method} ${url}`).toMatchObject({ code: "not_found" });
+        expect(await deniedCount(), `${method} ${url} logged`).toBe(before + 1);
+      }
+    }
+    const inbox = await call("GET", `/api/v1/workspaces/${bruno.workspaceId}/inbox`, undefined);
+    expect(inbox.statusCode).toBe(404);
+    // Under Alicia's own property, Bruno's conversation, draft, and copilot run are not found either.
+    for (const [method, url, payload] of routes(alice.workspaceId, ownProperty).slice(1)) {
+      const before = await deniedCount();
+      const response = await call(method, url, payload);
+      expect(response.statusCode, `${method} ${url}`).toBe(404);
+      expect(await deniedCount(), `${method} ${url} logged`).toBe(before + 1);
+    }
+    expect(await untouched()).toEqual({
+      status: "needs_host",
+      not_done: true,
+      not_taken: true,
+      draft: "open",
+      run: "pending",
+      presence: 0,
+      runs: 1,
+      dismissals: 0,
+    });
+  });
+
+  it("filters Alicia's inbox by Bruno's property to nothing", async () => {
+    const response = await call(
+      "GET",
+      `/api/v1/workspaces/${alice.workspaceId}/inbox?tab=all&propertyId=${foreign.property}`,
+      undefined,
+    );
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({ items: [], suggestions: [] });
+  });
+
+  it("gives a missing conversation and copilot run the same answer as foreign ones", async () => {
+    for (const [method, url, payload] of routes(alice.workspaceId, ownProperty).slice(1)) {
+      const foreignAnswer = await call(method, url, payload);
+      const missing = await call(
+        method,
+        url.replace(foreign.conversation, MISSING).replace(foreign.run, MISSING),
+        payload,
+      );
+      expect(missing.statusCode, `${method} ${url}`).toBe(foreignAnswer.statusCode);
+      expect(missing.json(), `${method} ${url}`).toEqual(foreignAnswer.json());
+    }
+  });
+});

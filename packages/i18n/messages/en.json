@@ -68,7 +68,10 @@
     "settings_changed": "Someone changed these settings while you were editing.",
     "time_zone_required": "The property needs a time zone to use quiet hours.",
     "instructions_invalid": "The instructions couldn't be saved.",
-    "tests_paused": "You ran many tests. Try again later."
+    "tests_paused": "You ran many tests. Try again later.",
+    "conversation_done": "The conversation was already done.",
+    "copilot_paused": "You drafted many replies. Try again later.",
+    "push_unavailable": "Push alerts aren't available."
   },
   "auth": {
     "signInCta": "Sign in or create an account",
@@ -804,7 +807,8 @@
       "security": "Security",
       "home": "Home",
       "settings": "Settings",
-      "shared": "Shared content"
+      "shared": "Shared content",
+      "inbox": "Inbox"
     },
     "loading": "Loading…",
     "none": "No workspace: create one"
@@ -1573,7 +1577,8 @@
       "draft_ready": "Draft ready to review",
       "check_failed": "The draft failed a check",
       "limit": "Daily assistant limit",
-      "unavailable": "Assistant unavailable"
+      "unavailable": "Assistant unavailable",
+      "taken_over": "The guest wrote again (taken over)"
     },
     "you": "Guest",
     "assistantName": "Assistant",
@@ -1659,7 +1664,21 @@
       }
     },
     "refresh": "Refresh",
-    "readOnly": "Your role can see this conversation but not reply."
+    "readOnly": "Your role can see this conversation but not reply.",
+    "actions": {
+      "reject": "Discard draft",
+      "rejected": "Draft discarded. The guest received nothing.",
+      "takeOver": "I'll reply myself",
+      "takeOverHint": "While this is on, the assistant doesn't answer in this conversation. Emergencies still show the emergency card.",
+      "takenOverBy": "Taken over by {name} on {when}.",
+      "takenOverAnon": "Taken over by the team on {when}.",
+      "handBack": "Hand back to the assistant",
+      "done": "Mark done",
+      "reopen": "Reopen",
+      "doneAt": "Done since {when}.",
+      "replying": "{names} is replying",
+      "banner": "Needs your team: {reason}"
+    }
   },
   "assistant": {
     "title": "Chat assistant",
@@ -1797,5 +1816,100 @@
       "clarify": "Clarifying question"
     },
     "backToProperty": "Back to the property"
+  },
+  "inbox": {
+    "title": "Inbox",
+    "tabs": {
+      "needs": "Needs you",
+      "all": "All",
+      "done": "Done"
+    },
+    "filter": "Property",
+    "allProperties": "All properties",
+    "channel": {
+      "guide_chat": "Guide chat"
+    },
+    "noStay": "No stay",
+    "stay": "{checkIn} → {checkout}",
+    "takenOver": "Taken over by {name}",
+    "takenOverAnon": "Taken over by the team",
+    "replying": "{names} is replying",
+    "caughtUp": "You're all caught up.",
+    "emptyAll": "No conversations yet.",
+    "emptyDone": "No conversations marked done.",
+    "noGuide": "Share your guide to start receiving questions.",
+    "offline": "You're offline. This is the last inbox loaded; actions are disabled.",
+    "more": "Show more",
+    "open": "Open",
+    "copilot": "Paste a guest message",
+    "refresh": "Refresh",
+    "suggestion": "You've sent {count} drafts about {topic} at {property} without changes. Let the assistant answer that topic on its own?",
+    "suggestionLink": "Review settings",
+    "suggestionDismiss": "Not now",
+    "author": {
+      "guest": "Guest",
+      "assistant": "Assistant",
+      "host": "Team"
+    }
+  },
+  "copilot": {
+    "title": "Reply to a platform message",
+    "body": "Paste the message you got on Airbnb, Booking.com, or Vrbo. We draft a reply from your guide for you to copy; nobody receives it until you send it.",
+    "message": "Guest message",
+    "property": "Property",
+    "booking": "Booking status",
+    "inquiry": "Inquiry (not booked yet)",
+    "confirmed": "Confirmed booking",
+    "submit": "Draft a reply",
+    "running": "Drafting…",
+    "again": "Draft again",
+    "counter": "{count}/4000",
+    "result": "Suggested reply",
+    "passed": "Passed checks",
+    "failedChecks": "Review before sending: {checks}",
+    "notCovered": "The guide doesn't fully cover this. Review the reply before sending it.",
+    "removed": "We removed {items}: before booking, platforms don't allow links or contact details.",
+    "removedItems": {
+      "link": "a link",
+      "email": "an email address",
+      "phone": "a phone number"
+    },
+    "copy": "Copy reply",
+    "copied": "Copied.",
+    "sources": "Sources:",
+    "cautions": {
+      "emergency": "Emergency: make sure the guest calls the emergency number, and handle it yourself.",
+      "malfunction": "Something isn't working: confirm with the guest and arrange the fix yourself.",
+      "complaint": "Complaint: reply carefully and personally.",
+      "money": "Refunds and payments go through the platform: don't promise anything in the chat.",
+      "reservation_change": "Reservation changes go through the platform: don't confirm dates or amounts in the chat.",
+      "legal": "Legal or safety matter: answer it yourself, carefully.",
+      "codes": "Codes never go in the reply: the guest sees them in the guide or the stay message."
+    },
+    "outcomes": {
+      "limited": "The assistant's daily limit for this property is reached.",
+      "unavailable": "The assistant isn't available right now. Your text is still here.",
+      "failed": "We couldn't draft a reply. Your text is still here."
+    },
+    "timeout": "This is taking longer than usual. Try again.",
+    "paused": "You drafted many replies. Try again in {minutes} min.",
+    "notPublished": "Publish this property's guide to use the copilot.",
+    "noProperties": "Add a property with a published guide to use the copilot."
+  },
+  "alerts": {
+    "title": "Alerts on this device",
+    "body": "Get an alert when a conversation needs your team. Email always arrives too.",
+    "enable": "Turn on alerts",
+    "disable": "Turn off on this device",
+    "test": "Send a test",
+    "enabled": "Alerts are on for this device.",
+    "tested": "We sent a test. It should arrive within a minute.",
+    "unavailable": "Push alerts aren't available on this installation. We'll alert you by email.",
+    "unsupported": "This browser doesn't support push alerts. We'll alert you by email.",
+    "blocked": "You blocked alerts for Guidesk. Allow them in your browser's settings for this site.",
+    "ios": "On iPhone, first add Guidesk to your home screen: tap Share, then \"Add to Home Screen\". Open it from there and turn on alerts.",
+    "banner": "Alerts are off on this device.",
+    "bannerLink": "Turn them on",
+    "devices": "{count, plural, =0 {No devices with alerts} one {# device with alerts} other {# devices with alerts}}"
   }
 }

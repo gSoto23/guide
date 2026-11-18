@@ -17,6 +17,9 @@ export function contentSecurityPolicy(nonce: string, development: boolean, https
     "img-src 'self' data: blob:",
     "font-src 'self'",
     "connect-src 'self'",
+    // Feature 006: the push service worker and the web app manifest (research R7).
+    "worker-src 'self'",
+    "manifest-src 'self'",
     "object-src 'none'",
     "base-uri 'none'",
     "form-action 'self'",

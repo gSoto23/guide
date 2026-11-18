@@ -68,7 +68,10 @@
     "settings_changed": "Alguien cambió estos ajustes mientras los editabas.",
     "time_zone_required": "La propiedad necesita una zona horaria para usar horas de silencio.",
     "instructions_invalid": "No se pudieron guardar las instrucciones.",
-    "tests_paused": "Hiciste muchas pruebas. Inténtalo más tarde."
+    "tests_paused": "Hiciste muchas pruebas. Inténtalo más tarde.",
+    "conversation_done": "La conversación ya estaba lista.",
+    "copilot_paused": "Preparaste muchas respuestas. Inténtalo más tarde.",
+    "push_unavailable": "Las alertas push no están disponibles."
   },
   "auth": {
     "signInCta": "Entrar o crear cuenta",
@@ -804,7 +807,8 @@
       "security": "Seguridad",
       "home": "Inicio",
       "settings": "Ajustes",
-      "shared": "Contenido compartido"
+      "shared": "Contenido compartido",
+      "inbox": "Bandeja"
     },
     "loading": "Cargando…",
     "none": "Sin workspace: crea uno"
@@ -1573,7 +1577,8 @@
       "draft_ready": "Borrador listo para revisar",
       "check_failed": "El borrador no pasó una revisión",
       "limit": "Límite diario del asistente",
-      "unavailable": "Asistente no disponible"
+      "unavailable": "Asistente no disponible",
+      "taken_over": "El huésped volvió a escribir (conversación tomada)"
     },
     "you": "Huésped",
     "assistantName": "Asistente",
@@ -1659,7 +1664,21 @@
       }
     },
     "refresh": "Actualizar",
-    "readOnly": "Tu rol puede ver esta conversación pero no responder."
+    "readOnly": "Tu rol puede ver esta conversación pero no responder.",
+    "actions": {
+      "reject": "Descartar borrador",
+      "rejected": "Borrador descartado. El huésped no recibió nada.",
+      "takeOver": "Responderé yo",
+      "takeOverHint": "Mientras esté activo, el asistente no responde en esta conversación. Las emergencias igual muestran la tarjeta de emergencia.",
+      "takenOverBy": "La tomó {name} el {when}.",
+      "takenOverAnon": "Tomada por el equipo el {when}.",
+      "handBack": "Devolver al asistente",
+      "done": "Marcar como lista",
+      "reopen": "Volver a abrir",
+      "doneAt": "Lista desde el {when}.",
+      "replying": "{names} está respondiendo",
+      "banner": "Necesita a tu equipo: {reason}"
+    }
   },
   "assistant": {
     "title": "Asistente del chat",
@@ -1797,5 +1816,100 @@
       "clarify": "Pregunta para aclarar"
     },
     "backToProperty": "Volver a la propiedad"
+  },
+  "inbox": {
+    "title": "Bandeja",
+    "tabs": {
+      "needs": "Te necesitan",
+      "all": "Todas",
+      "done": "Listas"
+    },
+    "filter": "Propiedad",
+    "allProperties": "Todas las propiedades",
+    "channel": {
+      "guide_chat": "Chat de la guía"
+    },
+    "noStay": "Sin estadía",
+    "stay": "{checkIn} → {checkout}",
+    "takenOver": "La tomó {name}",
+    "takenOverAnon": "Tomada por el equipo",
+    "replying": "{names} está respondiendo",
+    "caughtUp": "Estás al día.",
+    "emptyAll": "Todavía no hay conversaciones.",
+    "emptyDone": "Ninguna conversación marcada como lista.",
+    "noGuide": "Comparte tu guía para empezar a recibir preguntas.",
+    "offline": "Sin conexión. Ves la última bandeja cargada; las acciones están desactivadas.",
+    "more": "Ver más",
+    "open": "Abrir",
+    "copilot": "Pegar un mensaje de un huésped",
+    "refresh": "Actualizar",
+    "suggestion": "Ya enviaste {count} borradores sobre {topic} en {property} sin cambios. ¿Dejas que el asistente responda ese tema solo?",
+    "suggestionLink": "Revisar ajustes",
+    "suggestionDismiss": "Ahora no",
+    "author": {
+      "guest": "Huésped",
+      "assistant": "Asistente",
+      "host": "Equipo"
+    }
+  },
+  "copilot": {
+    "title": "Responder un mensaje de la plataforma",
+    "body": "Pega el mensaje que te llegó en Airbnb, Booking.com o Vrbo. Preparamos una respuesta con tu guía para que la copies; nadie la recibe hasta que tú la envíes.",
+    "message": "Mensaje del huésped",
+    "property": "Propiedad",
+    "booking": "Estado de la reserva",
+    "inquiry": "Consulta (todavía sin reservar)",
+    "confirmed": "Reserva confirmada",
+    "submit": "Preparar respuesta",
+    "running": "Preparando…",
+    "again": "Preparar otra vez",
+    "counter": "{count}/4000",
+    "result": "Respuesta sugerida",
+    "passed": "Pasó las revisiones",
+    "failedChecks": "Revisa antes de enviar: {checks}",
+    "notCovered": "La guía no cubre esto del todo. Revisa la respuesta antes de enviarla.",
+    "removed": "Quitamos {items}: antes de reservar, las plataformas no permiten enlaces ni datos de contacto.",
+    "removedItems": {
+      "link": "un enlace",
+      "email": "un correo",
+      "phone": "un teléfono"
+    },
+    "copy": "Copiar respuesta",
+    "copied": "Copiada.",
+    "sources": "Fuentes:",
+    "cautions": {
+      "emergency": "Emergencia: asegúrate de que el huésped llame al número de emergencias y atiéndelo tú.",
+      "malfunction": "Algo no funciona: confirma con el huésped y coordina la solución tú.",
+      "complaint": "Queja: responde con cuidado y personalmente.",
+      "money": "Reembolsos y pagos se gestionan por la plataforma: no prometas nada en el chat.",
+      "reservation_change": "Los cambios de reserva se hacen por la plataforma: no confirmes fechas ni montos en el chat.",
+      "legal": "Tema legal o de seguridad: respóndelo tú con cuidado.",
+      "codes": "Los códigos nunca van en la respuesta: el huésped los ve en la guía o en el mensaje de la estadía."
+    },
+    "outcomes": {
+      "limited": "Se alcanzó el límite diario del asistente para esta propiedad.",
+      "unavailable": "El asistente no está disponible ahora. Tu texto sigue aquí.",
+      "failed": "No pudimos preparar una respuesta. Tu texto sigue aquí."
+    },
+    "timeout": "Tarda más de lo normal. Inténtalo de nuevo.",
+    "paused": "Preparaste muchas respuestas. Inténtalo en {minutes} min.",
+    "notPublished": "Publica la guía de esta propiedad para usar el copiloto.",
+    "noProperties": "Agrega una propiedad con su guía publicada para usar el copiloto."
+  },
+  "alerts": {
+    "title": "Alertas en este dispositivo",
+    "body": "Recibe un aviso cuando una conversación necesite a tu equipo. El correo siempre llega igual.",
+    "enable": "Activar alertas",
+    "disable": "Desactivar en este dispositivo",
+    "test": "Enviar una prueba",
+    "enabled": "Las alertas están activadas en este dispositivo.",
+    "tested": "Enviamos una prueba. Debería llegar en menos de un minuto.",
+    "unavailable": "Las alertas push no están disponibles en esta instalación. Te avisamos por correo.",
+    "unsupported": "Este navegador no admite alertas push. Te avisamos por correo.",
+    "blocked": "Bloqueaste las alertas para Guidesk. Actívalas en los ajustes del navegador para este sitio.",
+    "ios": "En iPhone, primero agrega Guidesk a tu pantalla de inicio: toca Compartir y luego «Agregar a inicio». Ábrelo desde ahí y activa las alertas.",
+    "banner": "Las alertas están apagadas en este dispositivo.",
+    "bannerLink": "Activarlas",
+    "devices": "{count, plural, =0 {Ningún dispositivo con alertas} one {# dispositivo con alertas} other {# dispositivos con alertas}}"
   }
 }

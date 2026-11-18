@@ -198,6 +198,20 @@ zone hold non-urgent "needs the host" emails, and a per-minute job (`chat.quiet-
 summary per contact when they end. "Test the assistant" runs the same pipeline in dry-run mode
 (`assistant.test`) and writes only the result, a trace, and the usage.
 
+*As built in spec 006:* members work from one inbox (`GET /api/v1/workspaces/{id}/inbox`, tabs "Needs
+you", "All", and "Done", emergencies first, filtered by property, polled every 15 seconds). A member can
+mark a conversation done (a new guest message or reply reopens it), discard a draft, and take a
+conversation over: the worker still classifies each guest message, so an emergency shows its card and
+alerts everyone, but otherwise sends nothing and marks it "needs the host" with reason `taken_over`,
+alerting only the member who took it. A 30-second presence heartbeat shows who is replying. The
+paste-to-reply copilot stores the pasted message and queues `copilot.draft`; the worker runs the same
+classification, guide knowledge (without benefit recommendations), answer call (channel `platform`,
+written as the host), and checks, uses fixed texts for emergencies and code requests, removes links and
+contact details for inquiries, and counts the usage toward the daily budget. Alerts also go by web push
+(VAPID): the reply job and the quiet hours digest queue `notification.push` jobs with IDs only, and the
+worker renders a title and a short reason, never guest text. The portal registers `/sw.js` and a web
+app manifest so it can be added to an iPhone home screen (ADR-0006).
+
 ### 5.2 Guest writes in the Airbnb chat (Phase 2, through a PMS)
 
 ```mermaid

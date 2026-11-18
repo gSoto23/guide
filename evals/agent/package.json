@@ -2,7 +2,7 @@
   "name": "@guidesk/evals-agent",
   "version": "0.0.0",
   "private": true,
-  "description": "Eval suite for the in-guide assistant (feature 005 research R13, FR-034, constitution V): answers from the guide, escalations, code-seeking and injection, language, greetings.",
+  "description": "Eval suite for the in-guide assistant (feature 005 research R13, FR-034, constitution V): answers from the guide, escalations, code-seeking and injection, language, greetings; feature 006 copilot drafts for the booking platform.",
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",

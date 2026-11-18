@@ -145,6 +145,11 @@ describe("feature 005 security review (API)", () => {
         "status",
         "stay_id",
         "workspace_id",
+        // Feature 006: who on the team marked it done or took it over, and when (member IDs only).
+        "done_at",
+        "done_by",
+        "taken_over_at",
+        "taken_over_by",
       ].sort(),
     );
   });

@@ -116,14 +116,12 @@ describe("feature 006 RLS (T005)", () => {
         .update(conversation)
         .set({ status: "done", needsHostReason: null, doneAt: new Date(), doneBy: aldo })
         .where(eq(conversation.id, convA));
-      await tx
-        .insert(conversationPresence)
-        .values({
-          conversationId: convA,
-          userId: aldo,
-          workspaceId: wsA,
-          expiresAt: new Date(Date.now() + 30_000),
-        });
+      await tx.insert(conversationPresence).values({
+        conversationId: convA,
+        userId: aldo,
+        workspaceId: wsA,
+        expiresAt: new Date(Date.now() + 30_000),
+      });
     });
     const seen = await withRlsContext(handle.db, { userId: ana, workspaceId: wsA }, (tx) =>
       tx.select({ userId: conversationPresence.userId }).from(conversationPresence),
@@ -228,15 +226,13 @@ describe("feature 006 RLS (T005)", () => {
       .insert(agentTrace)
       .values({ workspaceId: wsA, copilotRunId: run!.id, decision: "drafted", autonomy: "draft" });
     await expectDbError(
-      handle.db
-        .insert(agentTrace)
-        .values({
-          workspaceId: wsA,
-          copilotRunId: run!.id,
-          conversationId: convA,
-          decision: "drafted",
-          autonomy: "draft",
-        }),
+      handle.db.insert(agentTrace).values({
+        workspaceId: wsA,
+        copilotRunId: run!.id,
+        conversationId: convA,
+        decision: "drafted",
+        autonomy: "draft",
+      }),
       /agent_trace_subject/,
     );
   });

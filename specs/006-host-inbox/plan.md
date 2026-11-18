@@ -22,7 +22,7 @@ a portal service worker; presence and suggestions are queries ([research](resear
 
 **Language/Version**: TypeScript 6.0 (strict) on Node.js 24 LTS
 
-**Primary Dependencies**: existing stack plus **`web-push` ^4.0.0** in `packages/integrations` (MIT,
+**Primary Dependencies**: existing stack plus **`web-push` ^4.0.0** in `packages/integrations` (MPL-2.0,
 published 2026-11-06, dependencies `jws`, `asn1.js`, `http_ece`, `https-proxy-agent`, no install
 scripts; within the 3-day minimum release age).
 

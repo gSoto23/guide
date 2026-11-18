@@ -90,7 +90,7 @@ Decisions for spec 006, building on specs 005 and 007.
 
 ## R7. Web push
 
-- **Decision:** the standard Web Push protocol with VAPID (`web-push` 4.0.0, MIT, published 2026-11-06,
+- **Decision:** the standard Web Push protocol with VAPID (`web-push` 4.0.0, MPL-2.0, published 2026-11-06,
   no install scripts) behind a new `PushPort` in `packages/integrations` with a fake adapter. Keys come
   from `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, and `VAPID_SUBJECT` (the portal URL); without them push is
   disabled and the API reports it. The portal registers a service worker (`/sw.js`) that shows
@@ -142,4 +142,31 @@ Decisions for spec 006, building on specs 005 and 007.
 - **Gates:** VAPID keys for staging and production (secrets), the real-model eval run, the legal review
   (OQ-35) of the copilot's fixed texts and the push texts, and the staging quickstart with a real phone
   (Android and an iPhone home-screen app).
-- **Notes:** filled in during implementation.
+- **Notes (implementation, 2026-11-18):**
+  - `web-push` is MPL-2.0, not MIT as first noted: file-level copyleft that applies only to changes to its
+    own files; we use it unmodified as a dependency, so nothing changes for our code. It ships no types,
+    so `packages/integrations/src/push/web-push.d.ts` declares the two functions we call. Its
+    `sendNotification` makes its own HTTPS request, so the adapter calls `generateRequestDetails` and
+    sends with `fetch` (one HTTP client, timeouts, and tests against a local endpoint). Endpoints that
+    answer 404 or 410 delete the subscription.
+  - Done and reopen stay consistent in the database: a member's reply and the worker's "needs the host"
+    update clear `done_at` and `done_by` (the `conversation_done_consistent` check).
+  - The guest's `pending` flag is computed per request, so a taken-over conversation shows no typing
+    indicator.
+  - Members with an empty name show their email in presence, "taken over by", and contact lists.
+  - The "I'll reply myself" switch updates at once and the reload fills in who took it over and when.
+  - Retention: copilot requests and their traces after 30 days; presence rows an hour after they expire.
+  - Timings (local, Testcontainers): the inbox route with 1,000 conversations answers every tab and the
+    property filter at p95 13 to 73 ms (`apps/api/test/integration/inbox.perf.test.ts`; target 1 s);
+    the copilot job finishes within 15 s even with 3-second model calls.
+  - Evals: 16 copilot cases in `evals/agent/cases/copilot.json` (8 drafts from the guide in the host's
+    voice, target ≥ 95%; 8 safety cases for codes, emergencies, inquiries, money, and benefit
+    recommendations, target 100%). The runner was checked with the fake model; the real-model run is
+    the founder gate above.
+  - Infrastructure: `VapidPublicKey` and `VapidPrivateKey` are SST secrets passed to the API and the
+    worker through Secrets Manager; `VAPID_SUBJECT` is the portal URL. Deploys need both secrets set
+    for the stage (`npx web-push generate-vapid-keys`, then `pnpm sst secret set`).
+  - Local quickstart (2026-11-18, fake model): scenarios 1 to 6 ran as `e2e/specs/inbox-us1.spec.ts`
+    to `inbox-us6.spec.ts` and passed, together with the full end-to-end suite and the accessibility
+    checks (`e2e/specs/a11y.spec.ts`, feature 006 test). The real phone checks (Android and an iPhone
+    home-screen app) remain for staging.

@@ -61,6 +61,9 @@ const CONVERSATION_BATCH = 1000;
 /** Feature 007 research R12, R13: tests are kept 30 days; old instruction versions while traced. */
 const ASSISTANT_TEST_DAYS = 30;
 const INSTRUCTION_BATCH = 1000;
+/** Feature 006 (data model): copilot drafts are kept 30 days; presence an hour past its expiry. */
+const COPILOT_RUN_DAYS = 30;
+const PRESENCE_GRACE_MS = 3_600_000;
 
 export interface RetentionDeps {
   db: Database;
@@ -335,11 +338,12 @@ export async function runRetention(deps: RetentionDeps): Promise<RetentionCounts
     RETURNING id
   `);
   const copilotRuns = await db.execute<{ id: string }>(sql`
-    DELETE FROM copilot_run WHERE created_at < ${daysBefore(now, ASSISTANT_TEST_DAYS).toISOString()}::timestamptz
+    DELETE FROM copilot_run WHERE created_at < ${daysBefore(now, COPILOT_RUN_DAYS).toISOString()}::timestamptz
     RETURNING id
   `);
   const presence = await db.execute<{ user_id: string }>(sql`
-    DELETE FROM conversation_presence WHERE expires_at < now() - interval '1 hour'
+    DELETE FROM conversation_presence
+     WHERE expires_at < ${new Date(now.getTime() - PRESENCE_GRACE_MS).toISOString()}::timestamptz
     RETURNING user_id
   `);
   const instructionVersions = await db.execute<{ id: string }>(sql`
@@ -401,6 +405,14 @@ export function createRetentionHandler(deps: RetentionDeps) {
           "retention.unused_media": counts.unusedMedia,
           "retention.deleted_media": counts.deletedMedia,
           "retention.ai_requests": counts.aiRequests,
+          "retention.stay_links": counts.stayLinks,
+          "retention.property_links": counts.propertyLinks,
+          "retention.conversations": counts.conversations,
+          "retention.chat_usage": counts.chatUsage,
+          "retention.assistant_tests": counts.assistantTests,
+          "retention.instruction_versions": counts.instructionVersions,
+          "retention.copilot_runs": counts.copilotRuns,
+          "retention.presence": counts.presence,
         });
       },
       deps.span,
