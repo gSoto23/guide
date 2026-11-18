@@ -1,10 +1,19 @@
 import Link from "next/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
-const SECTIONS = ["workspace", "team", "integrations", "account", "security", "log"] as const;
+const SECTIONS = [
+  "workspace",
+  "team",
+  "assistant",
+  "integrations",
+  "account",
+  "security",
+  "log",
+] as const;
 const PATHS: Record<(typeof SECTIONS)[number], string> = {
   workspace: "settings/workspace",
   team: "settings/members",
+  assistant: "settings/assistant",
   integrations: "settings/integrations",
   account: "settings/account",
   security: "settings/security",

@@ -64,7 +64,11 @@
     "draft_closed": "Someone already answered this draft.",
     "reply_warnings": "Check your reply before sending it.",
     "message_too_long": "The message is too long.",
-    "chat_paused": "The chat is paused."
+    "chat_paused": "The chat is paused.",
+    "settings_changed": "Someone changed these settings while you were editing.",
+    "time_zone_required": "The property needs a time zone to use quiet hours.",
+    "instructions_invalid": "The instructions couldn't be saved.",
+    "tests_paused": "You ran many tests. Try again later."
   },
   "auth": {
     "signInCta": "Sign in or create an account",
@@ -814,7 +818,8 @@
       "account": "Your account",
       "security": "Security",
       "log": "Security log",
-      "integrations": "Integrations"
+      "integrations": "Integrations",
+      "assistant": "Chat assistant"
     },
     "workspace": {
       "title": "Workspace",
@@ -1625,7 +1630,32 @@
         "codes": "No codes that aren't in the guide",
         "links": "Only links from the guide",
         "promises": "No promises of refunds, discounts, or changes",
-        "off_platform": "Doesn't ask to book or pay off the platform"
+        "off_platform": "Doesn't ask to book or pay off the platform",
+        "price": "No prices in general information",
+        "clarify": "One short clarifying question"
+      },
+      "level": "Topic autonomy: {level} ({source})",
+      "sources": {
+        "workspace": "workspace setting",
+        "property": "property setting"
+      },
+      "levels": {
+        "draft": "I review each reply",
+        "auto": "answer when it's in the guide",
+        "full_auto": "answer and ask on its own"
+      },
+      "kind": "Kind of reply: {kind}",
+      "tone": "Tone: {tone}",
+      "tones": {
+        "casual": "friendly",
+        "formal": "formal"
+      },
+      "quietHours": "Written during quiet hours",
+      "instructionsUsed": "Used instructions: {which}",
+      "instructionScopes": {
+        "workspace": "the workspace's",
+        "property": "the property's",
+        "both": "the workspace's and the property's"
       }
     },
     "refresh": "Refresh",
@@ -1633,17 +1663,139 @@
   },
   "assistant": {
     "title": "Chat assistant",
-    "workspaceBody": "How the assistant answers in this workspace's guide chats. Emergencies, complaints, payments, and reservation changes always go to your team.",
-    "propertyBody": "How the assistant answers in this property's guide chat.",
-    "draft": "Drafts: I prepare each reply and your team approves it",
-    "auto": "Automatic: I answer only what's in the guide and pass the rest to your team",
-    "inherit": "Use the workspace setting ({mode})",
-    "modes": {
-      "draft": "drafts",
-      "auto": "automatic"
+    "workspaceBody": "These settings apply to every property in the workspace, except those with their own.",
+    "propertyTitle": "This property's assistant",
+    "propertyBody": "Each group can use the workspace settings or have its own for this property.",
+    "follow": "Use the workspace settings",
+    "autonomy": {
+      "title": "When it answers on its own",
+      "body": "For each topic, choose whether the assistant prepares a draft for your team or answers on its own.",
+      "topics": {
+        "arrival": "Arrival and access",
+        "wifi": "Wi-Fi",
+        "house_rules": "House rules",
+        "appliances": "Appliances",
+        "amenities": "Amenities",
+        "parking": "Parking",
+        "local_recommendations": "Local recommendations",
+        "emergency": "Safety information",
+        "checkout": "Checkout",
+        "other": "Other questions"
+      },
+      "levels": {
+        "draft": "I review each reply",
+        "auto": "Answer when it's in the guide",
+        "full_auto": "Answer and ask on its own"
+      },
+      "help": {
+        "draft": "Your team approves every reply before it reaches the guest.",
+        "auto": "Sends only replies that cite the guide and pass the checks; the rest arrives as a draft.",
+        "full_auto": "It can also ask one clarifying question and give general information about the destination, always with the checks."
+      },
+      "locked": "Always go to your team",
+      "lockedItems": {
+        "emergency": "Emergencies and safety",
+        "malfunction": "Damage or something not working",
+        "complaint": "Complaints",
+        "money": "Refunds, payments, and compensation",
+        "reservation_change": "Reservation changes",
+        "legal": "Legal topics, discrimination, or harassment",
+        "codes": "Requests for codes and passwords (it points to the guide section)",
+        "not_confident": "Anything the assistant isn't sure about"
+      }
     },
-    "saved": "Setting saved.",
-    "readOnly": "Only owners and admins can change this setting.",
-    "legend": "Autonomy"
+    "tone": {
+      "title": "Tone",
+      "body": "How the assistant writes to guests, including holding replies.",
+      "casual": "Friendly",
+      "formal": "Formal, without exclamation marks or emoji"
+    },
+    "quiet": {
+      "title": "Quiet hours",
+      "body": "During these hours, alerts that aren't urgent wait and reach you together when they end. Emergencies and malfunctions are sent at once. Guests are told when you usually reply.",
+      "enable": "Turn on quiet hours",
+      "start": "From",
+      "end": "To",
+      "zone": "Property time zone: {zone}.",
+      "zoneWorkspace": "They apply in each property's time zone.",
+      "noZone": "This property has no time zone. Add it in the property details to use quiet hours.",
+      "same": "Start and end must be different."
+    },
+    "contacts": {
+      "title": "Who to alert",
+      "body": "Who gets the email when a conversation needs your team.",
+      "all": "Everyone on the team who handles conversations",
+      "selected": "Only these people",
+      "emergencyNote": "Emergencies always reach owners and admins too.",
+      "chosen": "{count, plural, one {# person chosen} other {# people chosen}}",
+      "roles": {
+        "owner": "Owner",
+        "admin": "Admin",
+        "agent": "Agent"
+      }
+    },
+    "instructions": {
+      "title": "Instructions for the assistant",
+      "body": "Style preferences or what to highlight. They don't change the rules: emergencies, payments, and reservation changes always go to your team, and codes are only shown in the guide.",
+      "label": "Instructions",
+      "placeholder": "For example: Suggest walking to the beach; parking there is hard.",
+      "counter": "{count}/1000",
+      "propertyNote": "They add to the workspace's instructions.",
+      "workspaceText": "Workspace instructions: {text}",
+      "updated": "Updated {date} by {name}.",
+      "updatedNoName": "Updated {date}.",
+      "issuesIntro": "The instructions couldn't be saved:",
+      "issues": {
+        "too_long": "They're over 1,000 characters.",
+        "restricted_value": "They seem to contain a code or a password. Codes are only shown in the guide to verified guests.",
+        "link": "They contain a link.",
+        "email": "They contain an email address.",
+        "phone": "They contain a phone number.",
+        "off_platform": "They ask guests to book or pay outside the platform."
+      }
+    },
+    "save": "Save settings",
+    "saving": "Saving…",
+    "saved": "Settings saved.",
+    "conflict": "Someone changed these settings while you were editing. We loaded the current values; review them and save again.",
+    "readOnly": "Only owners and admins can change these settings.",
+    "summary": {
+      "configure": "Set up the assistant",
+      "automatic": "{count, plural, =0 {No topic is answered on its own} one {# topic is answered on its own} other {# topics are answered on their own}}",
+      "tone": "Tone: {tone}",
+      "quiet": "Quiet hours: {start} to {end}",
+      "own": "This property has its own settings."
+    },
+    "test": {
+      "title": "Test the assistant",
+      "body": "Write a question the way a guest would. You'll see what would happen with the saved settings; nobody receives anything. Each test counts toward the daily limit.",
+      "label": "Question",
+      "submit": "Test",
+      "running": "Testing…",
+      "outcome": "Result: {outcome}",
+      "outcomes": {
+        "sent": "Would be sent to the guest",
+        "draft": "Draft for your team",
+        "held": "Goes to your team",
+        "pointer": "Points to the protected section",
+        "greeting": "Greeting",
+        "limited": "Daily limit reached",
+        "unavailable": "Assistant unavailable"
+      },
+      "topic": "Topic: {topic}",
+      "reason": "Reason: {reason}",
+      "kind": "Kind of reply: {kind}",
+      "reply": "Text",
+      "sources": "Sources:",
+      "timeout": "The test is taking longer than usual. Try again in a moment.",
+      "paused": "You ran many tests. Try again in {minutes} min.",
+      "notPublished": "Publish the guide to test the assistant."
+    },
+    "kinds": {
+      "grounded": "From the guide",
+      "general": "General information",
+      "clarify": "Clarifying question"
+    },
+    "backToProperty": "Back to the property"
   }
 }
