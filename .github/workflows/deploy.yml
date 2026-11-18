@@ -20,6 +20,9 @@ concurrency:
 
 jobs:
   deploy:
+    # Skipped until the AWS account exists and the repository variable AWS_DEPLOY_ROLE_ARN is set
+    # (Settings > Secrets and variables > Actions > Variables); every run failed without it.
+    if: vars.AWS_DEPLOY_ROLE_ARN != ''
     runs-on: ubuntu-latest
     timeout-minutes: 45
     # Production needs a manual run and the "production" environment approval.
