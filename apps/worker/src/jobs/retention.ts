@@ -33,6 +33,8 @@ import { runInJobSpan, type JobSpanDeps } from "./span.js";
  *   rows after 12 months (data model §6).
  * - feature 005: conversations 12 months after the stay's checkout (or the last message without a
  *   stay), and daily chat usage after 13 months.
+ * - feature 007: "test the assistant" runs (with their traces) after 30 days, and instruction
+ *   versions that are neither current nor referenced by a trace.
  *
  * It logs counts only, never values.
  */
@@ -55,6 +57,9 @@ const MEDIA_BATCH = 200;
 const CONVERSATION_MONTHS = 12;
 const CHAT_USAGE_MONTHS = 13;
 const CONVERSATION_BATCH = 1000;
+/** Feature 007 research R12, R13: tests are kept 30 days; old instruction versions while traced. */
+const ASSISTANT_TEST_DAYS = 30;
+const INSTRUCTION_BATCH = 1000;
 
 export interface RetentionDeps {
   db: Database;
@@ -82,6 +87,8 @@ export interface RetentionCounts {
   propertyLinks: number;
   conversations: number;
   chatUsage: number;
+  assistantTests: number;
+  instructionVersions: number;
 }
 
 function daysBefore(now: Date, days: number): Date {
@@ -318,9 +325,31 @@ export async function runRetention(deps: RetentionDeps): Promise<RetentionCounts
     .where(lt(chatUsageDaily.day, monthsBefore(now, CHAT_USAGE_MONTHS)))
     .returning({ day: chatUsageDaily.day });
 
+  // Feature 007: tests and their traces (cascade) after 30 days; instruction versions no settings
+  // row points to and no trace refers to (FR-021: versions live as long as the traces they explain).
+  const assistantTests = await db.execute<{ id: string }>(sql`
+    DELETE FROM assistant_test WHERE created_at < ${daysBefore(now, ASSISTANT_TEST_DAYS).toISOString()}::timestamptz
+    RETURNING id
+  `);
+  const instructionVersions = await db.execute<{ id: string }>(sql`
+    DELETE FROM assistant_instruction_version
+    WHERE id IN (
+      SELECT v.id FROM assistant_instruction_version v
+       WHERE NOT EXISTS (SELECT 1 FROM assistant_settings s WHERE s.instruction_version_id = v.id)
+         AND NOT EXISTS (
+           SELECT 1 FROM agent_trace t
+            WHERE t.workspace_instruction_version_id = v.id OR t.property_instruction_version_id = v.id
+         )
+       LIMIT ${INSTRUCTION_BATCH}
+    )
+    RETURNING id
+  `);
+
   return {
     conversations: conversations.rows.length,
     chatUsage: chatUsage.length,
+    assistantTests: assistantTests.rows.length,
+    instructionVersions: instructionVersions.rows.length,
     stayLinks: stayLinks.rows.length,
     propertyLinks: propertyLinks.length,
     interviewContent: interviewContent.length,

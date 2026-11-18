@@ -3,6 +3,9 @@ import { afterAll, beforeAll, beforeEach, describe, expect, inject, it } from "v
 import { eq, inArray } from "drizzle-orm";
 import {
   agentTrace,
+  assistantInstructionVersion,
+  assistantSettings,
+  assistantTest,
   chatMessage,
   chatUsageDaily,
   conversation,
@@ -680,5 +683,76 @@ describe("retention.daily for the in-guide chat (feature 005 T045)", () => {
       .from(chatUsageDaily)
       .where(eq(chatUsageDaily.propertyId, propertyId));
     expect(left).toEqual([{ replies: 5 }]);
+  });
+});
+
+describe("retention.daily for agent settings (feature 007 T046)", () => {
+  it("deletes tests and their traces after 30 days", async () => {
+    const [old, recent] = await handle.db
+      .insert(assistantTest)
+      .values([
+        {
+          workspaceId,
+          propertyId,
+          createdBy: ownerId,
+          question: "¿Salida?",
+          createdAt: daysAgo(31),
+        },
+        { workspaceId, propertyId, createdBy: ownerId, question: "¿Wifi?", createdAt: daysAgo(2) },
+      ])
+      .returning({ id: assistantTest.id });
+    await handle.db.insert(agentTrace).values({
+      workspaceId,
+      assistantTestId: old!.id,
+      decision: "answered",
+      autonomy: "auto",
+    });
+    await run();
+    const left = await handle.db
+      .select({ id: assistantTest.id })
+      .from(assistantTest)
+      .where(inArray(assistantTest.id, [old!.id, recent!.id]));
+    expect(left.map((row) => row.id)).toEqual([recent!.id]);
+    const traces = await handle.db
+      .select({ id: agentTrace.id })
+      .from(agentTrace)
+      .where(eq(agentTrace.assistantTestId, old!.id));
+    expect(traces).toEqual([]);
+  });
+
+  it("keeps current and traced instruction versions, and deletes the rest", async () => {
+    const versions = await handle.db
+      .insert(assistantInstructionVersion)
+      .values([
+        { workspaceId, text: "Actual" },
+        { workspaceId, text: "Citada por una traza" },
+        { workspaceId, text: "Vieja y sin uso" },
+      ])
+      .returning({ id: assistantInstructionVersion.id });
+    const [current, traced, unused] = versions.map((row) => row.id);
+    await handle.db
+      .insert(assistantSettings)
+      .values({ workspaceId, instructionVersionId: current! })
+      .onConflictDoUpdate({
+        target: [assistantSettings.workspaceId, assistantSettings.propertyId],
+        set: { instructionVersionId: current! },
+      });
+    const [test] = await handle.db
+      .insert(assistantTest)
+      .values({ workspaceId, propertyId, createdBy: ownerId, question: "Hola" })
+      .returning({ id: assistantTest.id });
+    await handle.db.insert(agentTrace).values({
+      workspaceId,
+      assistantTestId: test!.id,
+      decision: "greeting",
+      autonomy: "draft",
+      workspaceInstructionVersionId: traced!,
+    });
+    await run();
+    const left = await handle.db
+      .select({ id: assistantInstructionVersion.id })
+      .from(assistantInstructionVersion)
+      .where(inArray(assistantInstructionVersion.id, [current!, traced!, unused!]));
+    expect(left.map((row) => row.id).sort()).toEqual([current!, traced!].sort());
   });
 });
