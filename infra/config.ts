@@ -17,14 +17,17 @@ export const stageConfig = {
   /** Sentry DSN for the services and the sandbox functions (optional). Not a secret. */
   sentryDsn: process.env.GUIDESK_SENTRY_DSN,
   /**
-   * Feature flags (feature 002, research R15). Off unless set to "true" for the stage: the PMS
-   * flags wait for OQ-26 with each provider, and screenshots for the R3 accuracy gate.
+   * Feature flags (feature 002 research R15, feature 003 research R22). Off unless set to "true"
+   * for the stage: the PMS flags wait for OQ-26 with each provider, screenshots for the R3
+   * accuracy gate, voice answers for the Transcribe and opt-out gates, and scanned PDFs for R22.
    */
   flags: {
     PMS_BEDS24: process.env.GUIDESK_PMS_BEDS24 === "true" ? "true" : "false",
     PMS_HOSTEX: process.env.GUIDESK_PMS_HOSTEX === "true" ? "true" : "false",
     EXTRACTION_SCREENSHOTS:
       process.env.GUIDESK_EXTRACTION_SCREENSHOTS === "true" ? "true" : "false",
+    GUIDE_INTERVIEW_VOICE: process.env.GUIDESK_GUIDE_INTERVIEW_VOICE === "true" ? "true" : "false",
+    GUIDE_SCANNED_PDF: process.env.GUIDESK_GUIDE_SCANNED_PDF === "true" ? "true" : "false",
   },
 };
 

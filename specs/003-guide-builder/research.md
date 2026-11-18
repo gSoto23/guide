@@ -491,3 +491,10 @@ version number, block ID, and counts.
   | GuardDuty Malware Protection enabled on the uploads bucket (002 gate) and blocking for media and documents | Media and document uploads in production | Open |
   | The three eval suites pass with the real model | Merging prompt or schema changes; production | Open |
   | The quickstart run on staging | Release | Open |
+
+  Status recorded on 2026-11-17 at the end of implementation: every gate is open and belongs to
+  the founder. Both flags are off unless a stage sets `GUIDESK_GUIDE_INTERVIEW_VOICE` or
+  `GUIDESK_GUIDE_SCANNED_PDF` to `true` (`infra/config.ts`), and the API answers `404` to voice
+  routes while `guide.interviewVoice` is off. Media and documents wait for the scan result in AWS
+  (`MEDIA_REQUIRE_SCAN=true`). The eval suites ran only with the fake model locally; the real-model
+  run needs the `ANTHROPIC_API_KEY` secret in CI.

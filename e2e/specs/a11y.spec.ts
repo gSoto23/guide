@@ -183,3 +183,61 @@ test("property screens have no WCAG A/AA violations", async ({ browser }) => {
   await expect(page.getByRole("heading", { name: "Propiedades eliminadas" })).toBeVisible();
   await settled("removed list");
 });
+
+test("guide builder screens have no WCAG A/AA violations (feature 003 T123)", async ({
+  browser,
+}) => {
+  test.setTimeout(180_000);
+  const email = uniqueEmail("a11y-guide");
+  const page = await newPage(browser);
+  page.on("dialog", (dialog) => void dialog.accept());
+  await page.goto("/es/sign-in");
+  await page.getByLabel("Tu email").fill(email);
+  await page.getByRole("button", { name: "Enviarme un código" }).click();
+  await expect(page).toHaveURL(/\/es\/verify/);
+  await waitForSubject(email, "Tu código de Guidesk");
+  await page.getByLabel("Código").fill(await latestCodeFor(email));
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await expect(page).toHaveURL(/\/es\/onboarding/);
+
+  await page.goto("/es/properties/new");
+  await page.getByRole("link", { name: /Empezar desde cero/ }).click();
+  await page.getByLabel(/^Nombre de la propiedad/).fill("Casa Accesible");
+  await page.getByLabel(/^País/).selectOption("CR");
+  await page.getByLabel(/^Calle y número/).fill("Calle Ficticia 222");
+  await page.getByLabel(/^Ciudad/).fill("Sámara");
+  await page.getByLabel(/^Máximo de huéspedes/).fill("4");
+  await expect(page.getByLabel(/^Zona horaria/)).toHaveValue("America/Costa_Rica");
+  await page.getByRole("button", { name: "Guardar propiedad" }).click();
+  await expect(page.getByRole("heading", { name: "Casa Accesible" })).toBeVisible();
+  await page.getByRole("link", { name: "Abrir la guía" }).click();
+  await expect(page.getByRole("heading", { name: "Guía de Casa Accesible" })).toBeVisible();
+  const guide = page.url();
+  await expectNoViolations(page, "guide review");
+
+  // The publish dialog open over the review.
+  await page.getByRole("button", { name: "Publicar", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Publicar ahora" })).toBeVisible();
+  await expectNoViolations(page, "publish dialog");
+
+  await page.getByRole("link", { name: "Llegada y acceso", exact: true }).click();
+  await page.getByRole("button", { name: "Agregar texto" }).click();
+  await expect(page.getByRole("textbox", { name: "Escribe para tus huéspedes…" })).toBeVisible();
+  await expectNoViolations(page, "section editor");
+
+  for (const [suffix, heading] of [
+    ["/locked-fields", "Campos protegidos"],
+    ["/interview", "Entrevista"],
+    ["/uploads", "Manuales y fotos"],
+    ["/translations", "Traducciones"],
+    ["/versions", "Versiones publicadas"],
+    ["/preview", "Vista previa"],
+  ] as const) {
+    await page.goto(`${guide}${suffix}`);
+    await expect(page.getByRole("heading", { name: heading, exact: true })).toBeVisible();
+    await expectNoViolations(page, suffix);
+  }
+  await page.goto("/es/shared-content");
+  await expect(page.getByRole("heading", { name: "Contenido compartido" })).toBeVisible();
+  await expectNoViolations(page, "shared content");
+});

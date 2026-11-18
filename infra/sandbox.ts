@@ -47,7 +47,7 @@ export const fileProcessor = new sst.aws.Function("FileProcessor", {
     MEDIA_BUCKET: media.name,
     TESSERACT_LANG_PATH: "lang",
     // Scanned PDF pages are read only behind the flag (feature 003 research R9, R22 gate).
-    GUIDE_SCANNED_PDF: "false",
+    GUIDE_SCANNED_PDF: stageConfig.flags.GUIDE_SCANNED_PDF,
   },
   permissions: [
     {

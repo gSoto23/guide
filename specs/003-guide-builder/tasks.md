@@ -349,15 +349,15 @@ to every inheriting guide at once.
 
 ### Tests for User Story 7 ⚠️
 
-- [ ] T112 [P] [US7] Integration test for shared blocks in `apps/api/test/integration/shared-blocks.test.ts` and the job in `apps/worker/test/integration/shared-block-publish.test.ts`: create, edit, publish, delete; limit 50 (`422 shared_block_limit`); `lockedField` nodes refused; inherited blocks appear in drafts once published, marked shared; override copies items and records the revision; "The shared version changed"; exclude and reset; publishing writes a new version for every inheriting published guide from its previous snapshot, never publishing a draft edit (FR-060); overriding and excluding guides unchanged; delete removes the block from published versions; cross-tenant `404`; agents read only
-- [ ] T113 [P] [US7] Performance test in `apps/worker/test/integration/shared-block-publish.perf.test.ts`: a block published in a workspace with 50 published guides is live in all within 1 minute (SC-007)
-- [ ] T114 [P] [US7] End-to-end test `e2e/specs/guide-us7-shared.spec.ts` (quickstart 8)
+- [X] T112 [P] [US7] Integration test for shared blocks in `apps/api/test/integration/shared-blocks.test.ts` and the job in `apps/worker/test/integration/shared-block-publish.test.ts`: create, edit, publish, delete; limit 50 (`422 shared_block_limit`); `lockedField` nodes refused; inherited blocks appear in drafts once published, marked shared; override copies items and records the revision; "The shared version changed"; exclude and reset; publishing writes a new version for every inheriting published guide from its previous snapshot, never publishing a draft edit (FR-060); overriding and excluding guides unchanged; delete removes the block from published versions; cross-tenant `404`; agents read only
+- [X] T113 [P] [US7] Performance test in `apps/worker/test/integration/shared-block-publish.perf.test.ts`: a block published in a workspace with 50 published guides is live in all within 1 minute (SC-007)
+- [X] T114 [P] [US7] End-to-end test `e2e/specs/guide-us7-shared.spec.ts` (quickstart 8)
 
 ### Implementation for User Story 7
 
-- [ ] T115 [US7] Implement the `shared-blocks` module (`apps/api/src/shared-blocks/`), the per-property override, exclude, and reset routes, the `shared-block.publish` job (`apps/worker/src/jobs/shared-block-publish.ts`), and the shared-block resolution in the guide read model and the completeness computation. Make T112 and T113 pass
-- [ ] T116 [US7] Build the shared content screen (H-29) in `apps/portal/app/[locale]/(app)/shared-content/` (blocks by section, editor reuse, publish, inherit/override/exclude counts and list) and the "Shared" marker with "Override for this property", "Exclude", "Reset to shared", and "The shared version changed" in the section editor
-- [ ] T117 [US7] Make T114 pass
+- [X] T115 [US7] Implement the `shared-blocks` module (`apps/api/src/shared-blocks/`), the per-property override, exclude, and reset routes, the `shared-block.publish` job (`apps/worker/src/jobs/shared-block-publish.ts`), and the shared-block resolution in the guide read model and the completeness computation. Make T112 and T113 pass
+- [X] T116 [US7] Build the shared content screen (H-29) in `apps/portal/app/[locale]/(app)/shared-content/` (blocks by section, editor reuse, publish, inherit/override/exclude counts and list) and the "Shared" marker with "Override for this property", "Exclude", "Reset to shared", and "The shared version changed" in the section editor
+- [X] T117 [US7] Make T114 pass
 
 **Checkpoint**: every user story works on its own.
 
@@ -365,13 +365,13 @@ to every inheriting guide at once.
 
 ## Phase 10: Polish & Cross-Cutting Concerns
 
-- [ ] T118 Production gates (founder): record each gate of [research R22](research.md#r22-rollout-flags-and-production-gates) and its status in research.md; flags stay off in production until they close
+- [X] T118 Production gates (founder): record each gate of [research R22](research.md#r22-rollout-flags-and-production-gates) and its status in research.md; flags stay off in production until they close
 - [ ] T119 [P] Duplicate and remove (FR-067, FR-068): extend `apps/api/test/integration/property-lifecycle.test.ts` and `apps/worker/test/purge-jobs.test.ts` first, then copy the guide on duplication (sections, items labeled `copy`, media objects copied to new keys, links, locked fields with labels and no values) in the property service, and delete guide data, media, and locked fields in `apps/worker/src/jobs/purge-properties.ts`
 - [ ] T120 [P] Retention (data model §6): extend `apps/worker/test/integration/retention.test.ts` first, then add the voice, document, transcript, answer, document-text, version (beyond 20), unreferenced media (24 hours), and AI-request (12 months) rules to `apps/worker/src/jobs/retention.ts`
 - [ ] T121 [P] Security review: `apps/api/test/integration/security-review-003.test.ts` covering AC-SEC-001 to AC-SEC-013 end to end, including a log and span capture that searches for every code used in the tests (SC-004), and an extension of `apps/api/test/integration/cross-tenant.test.ts` to every guide route (AC-SEC-011)
-- [ ] T122 [P] Performance: `perf/k6/guides.js` (guide read, item save, approve, topic mark, publish check; p95 ≤ 300 ms); add the guide pages to `lighthouserc.json`; confirm the bundle check covers the guide routes and the editor chunk
-- [ ] T123 [P] Accessibility: extend `e2e/specs/a11y.spec.ts` to the guide screens (review, editor, locked fields, interview, uploads, translations, publish, shared content)
-- [ ] T124 [P] Documentation (R21): the public Wi-Fi note in `docs/architecture/security.md` §1 and the reveal service in SEC-06; Amazon Transcribe and the media bucket in ADR-0009's service table; the subprocessor note; UX gaps 4, 5, and 8 marked resolved in `docs/ux/README.md`; the repository layout in `docs/architecture/overview.md` §8
+- [X] T122 [P] Performance: `perf/k6/guides.js` (guide read, item save, approve, topic mark, publish check; p95 ≤ 300 ms); add the guide pages to `lighthouserc.json`; confirm the bundle check covers the guide routes and the editor chunk
+- [X] T123 [P] Accessibility: extend `e2e/specs/a11y.spec.ts` to the guide screens (review, editor, locked fields, interview, uploads, translations, publish, shared content)
+- [X] T124 [P] Documentation (R21): the public Wi-Fi note in `docs/architecture/security.md` §1 and the reveal service in SEC-06; Amazon Transcribe and the media bucket in ADR-0009's service table; the subprocessor note; UX gaps 4, 5, and 8 marked resolved in `docs/ux/README.md`; the repository layout in `docs/architecture/overview.md` §8
 - [ ] T125 Run the [quickstart](quickstart.md) locally end to end and record the results in this file's Implementation notes
 
 ---
@@ -492,3 +492,16 @@ _Recorded during implementation._
   request from the daily AI limit only when it reaches the model; a refused one ends `rejected`
   with `ai_limit`. Photos that the browser cannot open never upload. A photo read in this visit can
   be added to a section as an image through the media flow.
+- **Shared content (US7).** Override copies are marked with `guide_item.copied_from_block_id`
+  (migration 0020), so "Reset to shared" removes exactly those copies. The fan-out compares
+  snapshots with `canonicalJson` (sorted keys), the same serialization the publish hash uses,
+  because `jsonb` reorders keys. The 50-guide performance check (T113) lives in
+  `shared-block-publish.test.ts` and measured under 0.1 seconds locally. Blocks are kept in both
+  languages and translated by the same job as sections. The guide view lists the workspace's
+  published blocks with this guide's mode and whether an override is behind.
+- **Performance and accessibility (T122, T123).** `perf/k6/guides.js` covers the guide read, an
+  item save, an approval, a topic mark, and the publish check (p95 ≤ 300 ms); guide pages need a
+  signed-in session, so Lighthouse CI adds the shared content page, and the bundle check covers
+  every guide route and the editor chunk. axe finds no WCAG 2.2 A/AA violations on the guide review,
+  publish dialog, section editor, locked fields, interview, uploads, translations, versions,
+  preview, and shared content screens.

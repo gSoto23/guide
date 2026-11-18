@@ -314,8 +314,8 @@ Notes:
 
 ## 8. Repository layout
 
-Spec 001 built the portal, API, and worker, and the packages marked ✓. The rest arrive with
-later features.
+Specs 001 to 003 built the portal, API, worker, and sandbox, and the packages marked ✓. The rest
+arrive with later features.
 
 ```text
 guidesk/
@@ -327,7 +327,8 @@ guidesk/
 │   ├── portal/               # ✓ Host portal (Next.js)
 │   ├── guide/                # Guest guide PWA (Next.js)
 │   ├── api/                  # ✓ NestJS API + webhooks
-│   └── worker/               # ✓ Background jobs (pg-boss)
+│   ├── worker/               # ✓ Background jobs (pg-boss)
+│   └── sandbox/              # ✓ Lambda functions for untrusted links and files (feed reader, file processor)
 ├── packages/
 │   ├── domain/               # ✓ Pure domain model + application services (no framework)
 │   ├── contracts/            # ✓ Zod schemas, OpenAPI, shared types
@@ -336,13 +337,13 @@ guidesk/
 │   ├── observability/        # ✓ Sentry and OpenTelemetry setup, with scrubbing
 │   ├── testing/              # ✓ Shared test helpers (disposable PostgreSQL with migrations)
 │   ├── agent/                # Prompts, tools, policy engine, eval harness
-│   ├── integrations/         # ✓ Ports and adapters (auth and email so far); later: ical, hospitable, hostaway, guesty, smoobu, channex
-│   ├── ui/                   # Shared React components (scaffolded, empty so far)
+│   ├── integrations/         # ✓ Ports and adapters: auth, email, storage, KMS, sandbox, PMS, the model, speech to text
+│   ├── ui/                   # ✓ Shared React components (the guide document renderer so far)
 │   ├── i18n/                 # ✓ Message catalogs
 │   └── config/               # ✓ tsconfig, eslint, prettier presets
 ├── e2e/                      # ✓ Playwright end-to-end and accessibility tests
 ├── perf/                     # ✓ k6 load tests
-└── evals/                    # Golden conversations and graders
+└── evals/                    # ✓ Eval suites: listing extraction; guide drafting, interview, translation
 ```
 
 Performance budgets are enforced in CI by the bundle-size check and Lighthouse CI on a local

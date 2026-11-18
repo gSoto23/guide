@@ -11,7 +11,8 @@
         "http://localhost:3000/es/properties",
         "http://localhost:3000/es/properties/new",
         "http://localhost:3000/es/properties/new/listing",
-        "http://localhost:3000/es/properties/new/blank"
+        "http://localhost:3000/es/properties/new/blank",
+        "http://localhost:3000/es/shared-content"
       ],
       "numberOfRuns": 3,
       "settings": {
@@ -23,17 +24,31 @@
       "assertions": {
         "largest-contentful-paint": [
           "error",
-          { "maxNumericValue": 2500, "aggregationMethod": "median-run" }
+          {
+            "maxNumericValue": 2500,
+            "aggregationMethod": "median-run"
+          }
         ],
         "cumulative-layout-shift": [
           "error",
-          { "maxNumericValue": 0.1, "aggregationMethod": "median-run" }
+          {
+            "maxNumericValue": 0.1,
+            "aggregationMethod": "median-run"
+          }
         ],
         "total-blocking-time": [
           "error",
-          { "maxNumericValue": 200, "aggregationMethod": "median-run" }
+          {
+            "maxNumericValue": 200,
+            "aggregationMethod": "median-run"
+          }
         ],
-        "categories:accessibility": ["error", { "minScore": 0.95 }]
+        "categories:accessibility": [
+          "error",
+          {
+            "minScore": 0.95
+          }
+        ]
       }
     },
     "upload": {
