@@ -154,6 +154,9 @@ async function storeContent(
         dataKeyId,
         source: "pms",
         sourceField: text.sourceField.slice(0, 80),
+        // Feature 003: a locked field of the guide, listed in Wi-Fi or Arrival (FR-022).
+        sectionKind: match.kind === "wifi_password" ? "wifi" : "arrival",
+        valueSetAt: new Date(),
       });
     }
     const body = removeRedactedLines(redacted.text).slice(0, kind === "title" ? 120 : 20_000);

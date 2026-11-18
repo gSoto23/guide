@@ -148,3 +148,37 @@ new aws.cloudwatch.EventTarget("UploadsThreatsFoundAlert", {
   rule: threatsFound.name,
   arn: opsAlerts.arn,
 });
+
+/**
+ * Private media bucket for guide images and videos (feature 003, research R9, SEC-10, SEC-11).
+ * Only the file processor writes here, after checking and cleaning a file from the uploads
+ * bucket; the portal shows objects through short-lived presigned GET URLs on the bucket's own
+ * origin. Objects stay while a guide, shared block, or kept version references them; the worker's
+ * media sweep deletes the rest (data model §6), so there is no lifecycle expiry.
+ */
+export const media = new sst.aws.Bucket("Media", {
+  cors: {
+    allowOrigins: [portalUrl],
+    allowMethods: ["GET", "HEAD"],
+    allowHeaders: ["Range"],
+    maxAge: "1 hour",
+  },
+  transform: {
+    publicAccessBlock: (args) => {
+      args.blockPublicAcls = true;
+      args.blockPublicPolicy = true;
+      args.ignorePublicAcls = true;
+      args.restrictPublicBuckets = true;
+    },
+  },
+});
+
+new aws.s3.BucketServerSideEncryptionConfiguration("MediaEncryption", {
+  bucket: media.name,
+  rules: [
+    {
+      applyServerSideEncryptionByDefault: { sseAlgorithm: "aws:kms" },
+      bucketKeyEnabled: true,
+    },
+  ],
+});

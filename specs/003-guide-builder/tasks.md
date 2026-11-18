@@ -76,23 +76,23 @@ match.
 
 **Purpose**: Dependencies, configuration, infrastructure, CI, and the eval package.
 
-- [ ] T001 Add dependencies, pinning exact versions that respect the 3-day minimum release age, and record an `allowBuilds` decision for any that requests an install script (SEC-12):
+- [X] T001 Add dependencies, pinning exact versions that respect the 3-day minimum release age, and record an `allowBuilds` decision for any that requests an install script (SEC-12):
   - `apps/portal/package.json`: `@tiptap/react`, `@tiptap/pm`, `@tiptap/starter-kit`, `@tiptap/extension-link`;
   - `packages/integrations/package.json`: `@aws-sdk/client-transcribe`;
   - `apps/sandbox/package.json`: `pdfjs-dist` and `@napi-rs/canvas` (prebuilt binaries for the Lambda architecture)
-- [ ] T002 [P] Scaffold `evals/guide` (`@guidesk/evals-guide`): `package.json` with an `eval` script, `tsconfig.json`, `cases/drafting/`, `cases/interview/`, `cases/translation/`, `cases/injection/`, and placeholder `src/run.ts`, `src/score.ts`, `src/cases.ts` modeled on `evals/extraction`
-- [ ] T003 Extend the configuration schemas in `apps/api/src/config/config.ts` and `apps/worker/src/config.ts`, and list the names (never values) in `.env.example`:
+- [X] T002 [P] Scaffold `evals/guide` (`@guidesk/evals-guide`): `package.json` with an `eval` script, `tsconfig.json`, `cases/drafting/`, `cases/interview/`, `cases/translation/`, `cases/injection/`, and placeholder `src/run.ts`, `src/score.ts`, `src/cases.ts` modeled on `evals/extraction`
+- [X] T003 Extend the configuration schemas in `apps/api/src/config/config.ts` and `apps/worker/src/config.ts`, and list the names (never values) in `.env.example`:
   - `SPEECH_MODE` (`transcribe|fake`), `MEDIA_BUCKET`, `MEDIA_REQUIRE_SCAN` (boolean, default `true`);
   - flags `GUIDE_INTERVIEW_VOICE` and `GUIDE_SCANNED_PDF`: booleans, default `false`.
 
   Production refuses `SPEECH_MODE=fake` and `MEDIA_REQUIRE_SCAN=false`. Add cases to `apps/api/test/unit/config.test.ts` and `apps/worker/test/config.test.ts`
-- [ ] T004 [P] Add the infrastructure in SST (R8, R9):
+- [X] T004 [P] Add the infrastructure in SST (R8, R9):
   - `infra/storage.ts`: the private media bucket: SSE-KMS with the account's S3 key, public access blocked, CORS `GET` and `HEAD` for the portal origin only, no lifecycle expiry; GuardDuty Malware Protection keeps covering the uploads bucket, where every file arrives;
   - `infra/sandbox.ts`: `file-processor` may also `s3:PutObject` on `media/*` in the media bucket and read object tags in the uploads bucket; raise its memory to 3,008 MB, ephemeral storage to 1 GB, and timeout to 120 seconds; bundle `@napi-rs/canvas` for the Lambda architecture;
   - `infra/services.ts`: link the media bucket to the API (presigned GET) and the worker; grant the worker `transcribe:StartTranscriptionJob`, `GetTranscriptionJob`, and `DeleteTranscriptionJob`, `s3:GetObject` on `uploads/*` and `s3:PutObject` on `transcripts/*` in the uploads bucket, and `s3:GetObjectTagging` for the scan wait;
   - `infra/storage.ts`: a lifecycle rule deleting `transcripts/*` after 1 day (covered by the bucket rule; assert it in the infra test)
-- [ ] T005 [P] Extend `.github/workflows/ci.yml`: build, lint, and test the new code paths; add an `evals-guide` job gated by the existing secret check job (runs when `ANTHROPIC_API_KEY` is present, blocks the merge on failure, uploads `evals/guide/report/`)
-- [ ] T006 [P] Update the vault rule in `packages/config/eslint.config.js`: `@guidesk/vault/decrypt` stays forbidden outside `apps/worker/src`, with one exception for the file `apps/api/src/locked-fields/reveal.service.ts` (R4). Add a lint fixture test showing another API file still fails
+- [X] T005 [P] Extend `.github/workflows/ci.yml`: build, lint, and test the new code paths; add an `evals-guide` job gated by the existing secret check job (runs when `ANTHROPIC_API_KEY` is present, blocks the merge on failure, uploads `evals/guide/report/`)
+- [X] T006 [P] Update the vault rule in `packages/config/eslint.config.js`: `@guidesk/vault/decrypt` stays forbidden outside `apps/worker/src`, with one exception for the file `apps/api/src/locked-fields/reveal.service.ts` (R4). Add a lint fixture test showing another API file still fails
 
 ---
 
@@ -105,27 +105,27 @@ security events, guide creation for every property, and test helpers.
 
 ### Tests first ⚠️ (write first, must fail)
 
-- [ ] T007 [P] Integration test for RLS on the 13 new tables and the `restricted_value` changes, run as `guidesk_app`, in `packages/db/test/integration/guide-builder-rls.test.ts` (SEC-14, AC-SEC-011):
+- [X] T007 [P] Integration test for RLS on the 13 new tables and the `restricted_value` changes, run as `guidesk_app`, in `packages/db/test/integration/guide-builder-rls.test.ts` (SEC-14, AC-SEC-011):
   - a member of workspace A reads nothing of workspace B in any new table;
   - agents cannot insert, update, or delete in any new table;
   - agents read locked fields only through `restricted_value_public`, which has no `value_ciphertext` or `public_value` column;
   - `guide_version` refuses `UPDATE` for the application role;
   - inserts into a workspace pending deletion fail;
   - `guide_item` refuses a row with both or neither of `section_id` and `shared_block_id`
-- [ ] T008 [P] Content document schema tests in `packages/contracts/test/guide-document.test.ts` (R2, AC-SEC-008): allowed nodes and marks pass; `script`, raw HTML strings, unknown nodes, `javascript:` and `data:` links, image nodes, headings of level 1, and extra attributes fail with a path; `lockedField` is refused when the schema is used for shared-block items
-- [ ] T009 [P] Detector extension tests in `packages/domain/test/properties/restricted-values.test.ts` and the corpus `restricted-values.corpus.ts` grown to at least 120 snippets (R5): spelled-out digits in Spanish and English, digits split by spaces or dashes, interview phrasings, and look-alikes that must survive (times, prices, phone numbers, room counts, street numbers); recall 100%; reversible masking round trip `{{R1}}`
-- [ ] T010 [P] Unit tests for the guide template and topics in `packages/domain/test/guides/topics.test.ts`: the nine default sections in order (FR-001); every topic has a valid section kind, a weight from 1 to 5, and at least one rule; topic IDs are unique; the essentials of FR-050 exist
-- [ ] T011 [P] Unit tests for coverage and completeness in `packages/domain/test/guides/completeness.test.ts` (R10, FR-030 to FR-032): keyword rules in both languages and without accents; locked-field, media, recommendation, personal-tip, and fact rules; AI topic tags; host marks win; "Doesn't apply" leaves the denominator; hidden and custom sections do not count; inherited shared blocks count
-- [ ] T012 [P] Unit tests for the segmenter in `packages/domain/test/guides/segmenter.test.ts` (R7): round trips for paragraphs, headings, lists, bold, italic, links, `lockedField` nodes, and masked codes; missing, duplicated, or invented tokens are detected
-- [ ] T013 [P] Unit tests for translation states in `packages/domain/test/guides/translation-state.test.ts`: every transition of [data model §7](data-model.md#translation-per-item-and-non-source-language)
-- [ ] T014 [P] Unit tests for the snapshot builder in `packages/domain/test/guides/snapshot.test.ts` (R12): only reviewed items; hidden sections left out; inherited shared blocks resolved from their published snapshot with the block ID; overrides and exclusions respected; locked fields as references and facts as keys; never a value; unreviewed machine translations of reviewed items included
-- [ ] T015 [P] Unit tests for publish checks in `packages/domain/test/guides/publish-checks.test.ts` (R13, FR-050): left-out items by section; missing essentials; unset locked-field references; code-like text unless kept; off-platform phrases and payment domains in both languages (PC-06); counts of unreviewed and out-of-date translations; blockers `not_ready` and `pending_deletion`
-- [ ] T016 [P] Unit tests for limits in `packages/domain/test/guides/limits.test.ts`: the daily AI limit is `guide_ai_daily_limit` or `max(100, 50 × property limit)`; the media limit is `media_storage_limit_mb` or 1,024 MB × property limit (FR-064, FR-065)
+- [X] T008 [P] Content document schema tests in `packages/contracts/test/guide-document.test.ts` (R2, AC-SEC-008): allowed nodes and marks pass; `script`, raw HTML strings, unknown nodes, `javascript:` and `data:` links, image nodes, headings of level 1, and extra attributes fail with a path; `lockedField` is refused when the schema is used for shared-block items
+- [X] T009 [P] Detector extension tests in `packages/domain/test/properties/restricted-values.test.ts` and the corpus `restricted-values.corpus.ts` grown to at least 120 snippets (R5): spelled-out digits in Spanish and English, digits split by spaces or dashes, interview phrasings, and look-alikes that must survive (times, prices, phone numbers, room counts, street numbers); recall 100%; reversible masking round trip `{{R1}}`
+- [X] T010 [P] Unit tests for the guide template and topics in `packages/domain/test/guides/topics.test.ts`: the nine default sections in order (FR-001); every topic has a valid section kind, a weight from 1 to 5, and at least one rule; topic IDs are unique; the essentials of FR-050 exist
+- [X] T011 [P] Unit tests for coverage and completeness in `packages/domain/test/guides/completeness.test.ts` (R10, FR-030 to FR-032): keyword rules in both languages and without accents; locked-field, media, recommendation, personal-tip, and fact rules; AI topic tags; host marks win; "Doesn't apply" leaves the denominator; hidden and custom sections do not count; inherited shared blocks count
+- [X] T012 [P] Unit tests for the segmenter in `packages/domain/test/guides/segmenter.test.ts` (R7): round trips for paragraphs, headings, lists, bold, italic, links, `lockedField` nodes, and masked codes; missing, duplicated, or invented tokens are detected
+- [X] T013 [P] Unit tests for translation states in `packages/domain/test/guides/translation-state.test.ts`: every transition of [data model §7](data-model.md#translation-per-item-and-non-source-language)
+- [X] T014 [P] Unit tests for the snapshot builder in `packages/domain/test/guides/snapshot.test.ts` (R12): only reviewed items; hidden sections left out; inherited shared blocks resolved from their published snapshot with the block ID; overrides and exclusions respected; locked fields as references and facts as keys; never a value; unreviewed machine translations of reviewed items included
+- [X] T015 [P] Unit tests for publish checks in `packages/domain/test/guides/publish-checks.test.ts` (R13, FR-050): left-out items by section; missing essentials; unset locked-field references; code-like text unless kept; off-platform phrases and payment domains in both languages (PC-06); counts of unreviewed and out-of-date translations; blockers `not_ready` and `pending_deletion`
+- [X] T016 [P] Unit tests for limits in `packages/domain/test/guides/limits.test.ts`: the daily AI limit is `guide_ai_daily_limit` or `max(100, 50 × property limit)`; the media limit is `media_storage_limit_mb` or 1,024 MB × property limit (FR-064, FR-065)
 - [ ] T017 [P] Integration test for guide creation in `apps/api/test/integration/guide-creation.test.ts` (R16, FR-001, FR-006): a property created by the blank, listing-text, CSV, and PMS paths gets a guide with the nine sections and the four fact items in one transaction; a property created before the migration gets one from the backfill
 
 ### Implementation
 
-- [ ] T018 Create the Drizzle schemas `packages/db/src/schema/guides.ts`, `shared-blocks.ts`, `media.ts`, and `interviews.ts`, export them from `packages/db/src/schema/index.ts`, change `properties.ts` (`restricted_value`), `extractions.ts` (`upload`), and `tenancy.ts` (`workspace`), and generate `packages/db/migrations/0018_guide_builder.sql`. Follow [data-model.md](data-model.md) for every column and foreign-key rule. Constraints to carry exactly:
+- [X] T018 Create the Drizzle schemas `packages/db/src/schema/guides.ts`, `shared-blocks.ts`, `media.ts`, and `interviews.ts`, export them from `packages/db/src/schema/index.ts`, change `properties.ts` (`restricted_value`), `extractions.ts` (`upload`), and `tenancy.ts` (`workspace`), and generate `packages/db/migrations/0018_guide_builder.sql`. Follow [data-model.md](data-model.md) for every column and foreign-key rule. Constraints to carry exactly:
   - `guide`: `property_id` unique; `status` enum `draft`, `published`, `unpublished`; `draft_state` enum `pending`, `drafting`, `ready`, `waiting_limit`, `failed`; `completeness` "smallint 0–100"; `published_version_id` deferrable FK (`ON DELETE SET NULL`);
   - `guide_section`: `kind` enum `arrival`, `wifi`, `house_rules`, `appliances`, `amenities`, `parking`, `local_recommendations`, `emergency`, `checkout`, `custom`; partial unique index on `(guide_id, kind)` where `kind <> 'custom'`; `title` "`{es?, en?}`, each 1–80 characters"; `revision` integer default 0; `status` enum `missing`, `needs_review`, `ready`;
   - `guide_item`: `CHECK` exactly one of `section_id`, `shared_block_id`; `kind` enum `text`, `image`, `video`, `recommendation`, `fact`; `source` enum `host`, `listing`, `pms`, `document`, `interview`, `copy`; `source_detail` "text ≤ 120"; `fact_key` enum `check_in_time`, `checkout_time`, `max_guests`, `address`; `media_id` FK (`ON DELETE RESTRICT`);
@@ -142,18 +142,18 @@ security events, guide creation for every property, and test helpers.
   - `restricted_value`: `label` "now required, ≤ 80"; `source` adds `host` and `copy`; `value_ciphertext` and `data_key_id` nullable; `public_value` "text ≤ 200, nullable" with the `CHECK` that it and `value_ciphertext` are never both set; `section_kind`; `value_set_at`; `updated_by`;
   - `upload.purpose` adds `document`, `photo`, `media`, `voice`; owners `media_object_id`, `guide_document_id`, `interview_turn_id`;
   - `workspace`: `guide_ai_daily_limit` and `media_storage_limit_mb`, "int, nullable, > 0"
-- [ ] T019 Write `packages/db/migrations/0019_guide_builder_rls.sql`: RLS enabled and forced on the 13 tables with policies as in 002 (members read, `properties.manage` writes); the `restricted_value_public` view; column grants that keep `value_ciphertext` and `public_value` from agent-facing reads; no `UPDATE` grant on `guide_version`; and the backfill that creates a guide, nine sections, and fact items for every existing property. Make T007 pass and keep `pnpm lint:rls` green
-- [ ] T020 [P] Implement the content document schema and its plain-text helpers in `packages/contracts/src/guide-document.ts` (R2), with a variant for shared blocks without `lockedField`. Make T008 pass
-- [ ] T021 [P] Extend the detector in `packages/domain/src/properties/restricted-values.ts` with spelled digits, split digit groups, interview phrasings, and `maskRestrictedValues`/`unmaskRestrictedValues` for reversible masking (R5). Make T009 pass
-- [ ] T022 [P] Implement `packages/domain/src/guides/template.ts` and `topics.ts`: section kinds, default order, the `GUIDE_TOPICS` list (about 35 topics with weights, keyword families in Spanish and English, and rules), and the essentials set (FR-029). Make T010 pass
-- [ ] T023 [P] Implement `packages/domain/src/guides/completeness.ts` (R10). Make T011 pass
-- [ ] T024 [P] Implement `packages/domain/src/guides/segmenter.ts` (R7). Make T012 pass
-- [ ] T025 [P] Implement `packages/domain/src/guides/translation-state.ts`. Make T013 pass
-- [ ] T026 [P] Implement `packages/domain/src/guides/snapshot.ts` and `shared.ts` (snapshot builder and shared-block resolution, R12, R14). Make T014 pass
-- [ ] T027 [P] Implement `packages/domain/src/guides/publish-checks.ts` (R13). Make T015 pass
-- [ ] T028 [P] Implement `packages/domain/src/guides/limits.ts` and export the guide domain from `packages/domain/src/index.ts`. Make T016 pass
-- [ ] T029 [P] Add the queues `guide.draft`, `guide.translate`, `interview.answer`, `guide.document`, `media.process`, and `shared-block.publish` with their payload types (IDs only) to `packages/domain/src/jobs.ts`; `guide.translate` is `stately` with a singleton key per section and language (R7)
-- [ ] T030 [P] Add the security events of [data model §6](data-model.md#6-security-log-retention-and-deletion) to `packages/domain/src/security-events.ts` with their allowlisted fields (R19, FR-066), and extend `packages/domain/test/security-events.test.ts`
+- [X] T019 Write `packages/db/migrations/0019_guide_builder_rls.sql`: RLS enabled and forced on the 13 tables with policies as in 002 (members read, `properties.manage` writes); the `restricted_value_public` view; column grants that keep `value_ciphertext` and `public_value` from agent-facing reads; no `UPDATE` grant on `guide_version`; and the backfill that creates a guide, nine sections, and fact items for every existing property. Make T007 pass and keep `pnpm lint:rls` green
+- [X] T020 [P] Implement the content document schema and its plain-text helpers in `packages/contracts/src/guide-document.ts` (R2), with a variant for shared blocks without `lockedField`. Make T008 pass
+- [X] T021 [P] Extend the detector in `packages/domain/src/properties/restricted-values.ts` with spelled digits, split digit groups, interview phrasings, and `maskRestrictedValues`/`unmaskRestrictedValues` for reversible masking (R5). Make T009 pass
+- [X] T022 [P] Implement `packages/domain/src/guides/template.ts` and `topics.ts`: section kinds, default order, the `GUIDE_TOPICS` list (about 35 topics with weights, keyword families in Spanish and English, and rules), and the essentials set (FR-029). Make T010 pass
+- [X] T023 [P] Implement `packages/domain/src/guides/completeness.ts` (R10). Make T011 pass
+- [X] T024 [P] Implement `packages/domain/src/guides/segmenter.ts` (R7). Make T012 pass
+- [X] T025 [P] Implement `packages/domain/src/guides/translation-state.ts`. Make T013 pass
+- [X] T026 [P] Implement `packages/domain/src/guides/snapshot.ts` and `shared.ts` (snapshot builder and shared-block resolution, R12, R14). Make T014 pass
+- [X] T027 [P] Implement `packages/domain/src/guides/publish-checks.ts` (R13). Make T015 pass
+- [X] T028 [P] Implement `packages/domain/src/guides/limits.ts` and export the guide domain from `packages/domain/src/index.ts`. Make T016 pass
+- [X] T029 [P] Add the queues `guide.draft`, `guide.translate`, `interview.answer`, `guide.document`, `media.process`, and `shared-block.publish` with their payload types (IDs only) to `packages/domain/src/jobs.ts`; `guide.translate` is `stately` with a singleton key per section and language (R7)
+- [X] T030 [P] Add the security events of [data model §6](data-model.md#6-security-log-retention-and-deletion) to `packages/domain/src/security-events.ts` with their allowlisted fields (R19, FR-066), and extend `packages/domain/test/security-events.test.ts`
 - [ ] T031 [P] Extend `LlmPort` in `packages/integrations/src/llm/port.ts` with `draftFromListing`, `draftAnswer`, `suggestFromDocument`, and `translateBlocks` and their result types (outcome, items or strings, usage, model). Extend `fake.adapter.ts` with deterministic answers for each call and an input recorder exposed to tests (decision 4)
 - [ ] T032 [P] Add `SpeechToTextPort` and `FakeSpeechToText` in `packages/integrations/src/speech/` (fixture transcripts keyed by the audio hash, with a default), and export them
 - [ ] T033 [P] Extend the sandbox protocol in `packages/integrations/src/sandbox/protocol.ts` with the `document`, `media`, and `audio` modes and their responses (text with page counts; media variants with sizes, dimensions, duration, and codec; audio container), and the new error codes (`password_protected`, `too_many_pages`, `too_long`, `unsupported_codec`)

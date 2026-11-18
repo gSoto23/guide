@@ -13,3 +13,4 @@ export * from "./stays.js";
 export * from "./extractions.js";
 export * from "./pms.js";
 export * from "./imports.js";
+export * from "./guide-document.js";

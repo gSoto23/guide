@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   containsRestrictedValue,
+  maskRestrictedValues,
+  unmaskRestrictedValues,
   REDACTION_MARKERS,
   redactRestrictedValues,
   RESTRICTED_VALUE_KINDS,
@@ -196,5 +198,42 @@ describe("redactRestrictedValues (T017, FR-012, FR-013, FR-031)", () => {
   it("containsRestrictedValue is true exactly when redaction removes something", () => {
     expect(containsRestrictedValue("Door code 4821")).toBe(true);
     expect(containsRestrictedValue("Check-in 15:00, 3 habitaciones, $120 por noche")).toBe(false);
+  });
+});
+
+describe("feature 003 extensions (T009, research R5)", () => {
+  it("grows the corpus to at least 120 snippets", () => {
+    expect(RESTRICTED_VALUE_CORPUS.length).toBeGreaterThanOrEqual(120);
+  });
+
+  it("masks values with numbered placeholders and puts them back unchanged", () => {
+    const text = "El código de la puerta es 4821 y la clave del wifi: Colibri2026.";
+    const masked = maskRestrictedValues(text);
+    expect(masked.text).toBe("El código de la puerta es {{R1}} y la clave del wifi: {{R2}}.");
+    expect(masked.values).toEqual(["4821", "Colibri2026"]);
+    expect(masked.counts).toEqual({ door_code: 1, wifi_password: 1 });
+    const translated = "The door code is {{R1}} and the Wi-Fi password: {{R2}}.";
+    expect(unmaskRestrictedValues(translated, masked.values)).toBe(
+      "The door code is 4821 and the Wi-Fi password: Colibri2026.",
+    );
+  });
+
+  it("leaves text without values untouched and unknown placeholders in place", () => {
+    expect(maskRestrictedValues("Check-in at 3 pm.")).toEqual({
+      text: "Check-in at 3 pm.",
+      values: [],
+      counts: {},
+    });
+    expect(unmaskRestrictedValues("Code {{R3}}", ["4821"])).toBe("Code {{R3}}");
+  });
+
+  it("masks every labeled value of the corpus", () => {
+    for (const entry of CODE_SNIPPETS) {
+      const masked = maskRestrictedValues(entry.text);
+      for (const code of entry.codes) {
+        expect(masked.text, entry.id).not.toContain(code.value);
+      }
+      expect(unmaskRestrictedValues(masked.text, masked.values), entry.id).toBe(entry.text);
+    }
   });
 });

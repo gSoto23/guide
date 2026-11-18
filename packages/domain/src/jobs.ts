@@ -13,6 +13,13 @@ export const JOB_QUEUES = {
   calendarRefresh: "calendar.refresh",
   retentionDaily: "retention.daily",
   propertiesPurge: "properties.purge",
+  // Feature 003 (research R15).
+  guideDraft: "guide.draft",
+  guideTranslate: "guide.translate",
+  interviewAnswer: "interview.answer",
+  guideDocument: "guide.document",
+  mediaProcess: "media.process",
+  sharedBlockPublish: "shared-block.publish",
 } as const;
 
 export interface CalendarRefreshJob {
@@ -34,9 +41,53 @@ export const QUEUE_POLICIES: Partial<
   [JOB_QUEUES.calendarRefresh]: "stately",
   [JOB_QUEUES.pmsRefresh]: "stately",
   [JOB_QUEUES.pmsImport]: "singleton",
+  // One queued and one active translation per section and language (feature 003 research R7).
+  [JOB_QUEUES.guideTranslate]: "stately",
+  [JOB_QUEUES.guideDraft]: "stately",
 };
 
 export interface ExtractionRunJob {
   extractionId: string;
   workspaceId: string;
+}
+
+/** Feature 003 job payloads (research R15). IDs only, never content or restricted values. */
+export interface GuideDraftJob {
+  guideId: string;
+  workspaceId: string;
+  /** Redraft one section from the listing content (FR-007); the whole draft when absent. */
+  sectionId?: string;
+}
+
+export interface GuideTranslateJob {
+  workspaceId: string;
+  /** A property section, or a shared block. */
+  sectionId?: string;
+  sharedBlockId?: string;
+  language: "es" | "en";
+}
+
+/** Translation waits this long after the last save, so autosave does not translate every keystroke. */
+export const TRANSLATE_DEBOUNCE_SECONDS = 20;
+
+export interface InterviewAnswerJob {
+  workspaceId: string;
+  turnId: string;
+}
+
+export interface GuideDocumentJob {
+  workspaceId: string;
+  documentId: string;
+}
+
+export interface MediaProcessJob {
+  workspaceId: string;
+  mediaId: string;
+}
+
+export interface SharedBlockPublishJob {
+  workspaceId: string;
+  sharedBlockId: string;
+  /** `published` after a publish, `deleted` after a delete. */
+  change: "published" | "deleted";
 }

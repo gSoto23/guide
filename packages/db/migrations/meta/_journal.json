@@ -127,6 +127,20 @@
       "when": 1794872278323,
       "tag": "0017_property_onboarding_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1794959341846,
+      "tag": "0018_guide_builder",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1794959398757,
+      "tag": "0019_guide_builder_rls",
+      "breakpoints": true
     }
   ]
 }

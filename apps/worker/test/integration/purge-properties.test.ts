@@ -115,6 +115,7 @@ async function propertyWithData(removedDaysAgo: number | null): Promise<string> 
     workspaceId,
     propertyId: id,
     kind: "door_code",
+    label: "Beds24 · house_rules",
     valueCiphertext: code.ciphertext,
     dataKeyId: code.dataKeyId,
     source: "pms",

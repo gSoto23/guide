@@ -18,7 +18,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { user } from "./auth.js";
 import { bytea, createdAt, inList, updatedAt } from "./columns.js";
-import { PMS_PROVIDERS } from "./enums.js";
+import { GUIDE_LANGUAGES, PMS_PROVIDERS } from "./enums.js";
 import { extractionRequest } from "./extractions.js";
 import { workspaceDataKey } from "./keys.js";
 import { pmsConnection } from "./pms.js";
@@ -29,7 +29,7 @@ export const PROPERTY_SOURCES = ["manual", "listing_text", "csv", "pms", "duplic
 export { PMS_PROVIDERS };
 export const PROPERTY_PMS_STATUSES = ["linked", "not_found"] as const;
 export const PROPERTY_STATUSES = ["active", "removed"] as const;
-export const GUIDE_LANGUAGES = ["es", "en"] as const;
+export { GUIDE_LANGUAGES };
 
 export const property = pgTable(
   "property",
@@ -196,6 +196,25 @@ export const RESTRICTED_VALUE_KINDS = [
  * Codes found in imported PMS text (FR-031). Shown masked; this feature never decrypts them
  * (revealing them is spec 003).
  */
+export const RESTRICTED_VALUE_SOURCES = ["pms", "host", "copy"] as const;
+/** Section kinds a locked field can be listed in (feature 003 data model §2). */
+export const LOCKED_FIELD_SECTION_KINDS = [
+  "arrival",
+  "wifi",
+  "house_rules",
+  "appliances",
+  "amenities",
+  "parking",
+  "local_recommendations",
+  "emergency",
+  "checkout",
+] as const;
+
+/**
+ * Restricted values: codes imported from a PMS (feature 002) and the guide's locked fields
+ * (feature 003 data model §2). The value columns are never selectable from a request; reveals go
+ * through the API's reveal service (feature 003 research R4).
+ */
 export const restrictedValue = pgTable(
   "restricted_value",
   {
@@ -207,14 +226,20 @@ export const restrictedValue = pgTable(
       .notNull()
       .references(() => property.id, { onDelete: "cascade" }),
     kind: text("kind", { enum: RESTRICTED_VALUE_KINDS }).notNull(),
-    label: text("label"),
-    valueCiphertext: bytea("value_ciphertext").notNull(),
-    dataKeyId: uuid("data_key_id")
-      .notNull()
-      .references(() => workspaceDataKey.id),
-    source: text("source", { enum: ["pms"] }).notNull(),
+    label: text("label").notNull(),
+    /** Null means "not set" (a duplicated property's fields, feature 003 FR-067). */
+    valueCiphertext: bytea("value_ciphertext"),
+    dataKeyId: uuid("data_key_id").references(() => workspaceDataKey.id),
+    /** A Wi-Fi password the host made public (feature 003 FR-021); then the ciphertext is null. */
+    publicValue: text("public_value"),
+    source: text("source", { enum: RESTRICTED_VALUE_SOURCES }).notNull(),
     /** Where it was found, for example `beds24:houseRules`, for re-import matching. */
-    sourceField: text("source_field").notNull(),
+    sourceField: text("source_field"),
+    sectionKind: text("section_kind", { enum: LOCKED_FIELD_SECTION_KINDS })
+      .notNull()
+      .default("arrival"),
+    valueSetAt: timestamp("value_set_at", { withTimezone: true }),
+    updatedBy: text("updated_by").references(() => user.id, { onDelete: "set null" }),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
@@ -222,14 +247,28 @@ export const restrictedValue = pgTable(
     index("restricted_value_property_idx").on(t.propertyId, t.sourceField),
     index("restricted_value_workspace_idx").on(t.workspaceId),
     check("restricted_value_kind_valid", inList(t.kind, RESTRICTED_VALUE_KINDS)),
-    check(
-      "restricted_value_label_length",
-      sql`${t.label} IS NULL OR char_length(${t.label}) <= 80`,
-    ),
-    check("restricted_value_source_valid", sql`${t.source} = 'pms'`),
+    check("restricted_value_label_length", sql`char_length(${t.label}) BETWEEN 1 AND 80`),
+    check("restricted_value_source_valid", inList(t.source, RESTRICTED_VALUE_SOURCES)),
     check(
       "restricted_value_source_field_length",
-      sql`char_length(${t.sourceField}) BETWEEN 1 AND 80`,
+      sql`${t.sourceField} IS NULL OR char_length(${t.sourceField}) BETWEEN 1 AND 80`,
+    ),
+    check(
+      "restricted_value_pms_source_field",
+      sql`${t.source} <> 'pms' OR ${t.sourceField} IS NOT NULL`,
+    ),
+    check("restricted_value_section_kind_valid", inList(t.sectionKind, LOCKED_FIELD_SECTION_KINDS)),
+    check(
+      "restricted_value_key_with_value",
+      sql`(${t.valueCiphertext} IS NULL) = (${t.dataKeyId} IS NULL)`,
+    ),
+    check(
+      "restricted_value_public_or_secret",
+      sql`${t.publicValue} IS NULL OR ${t.valueCiphertext} IS NULL`,
+    ),
+    check(
+      "restricted_value_public_wifi_only",
+      sql`${t.publicValue} IS NULL OR (${t.kind} = 'wifi_password' AND char_length(${t.publicValue}) BETWEEN 1 AND 200)`,
     ),
   ],
 );

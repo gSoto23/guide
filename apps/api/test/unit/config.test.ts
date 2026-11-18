@@ -26,6 +26,7 @@ const production = {
   LOCAL_KMS_KEY: "",
   STORAGE_MODE: "s3",
   UPLOADS_BUCKET: "guidesk-uploads-test",
+  MEDIA_BUCKET: "guidesk-media-test",
   SANDBOX_MODE: "lambda",
   SANDBOX_FEED_READER_FUNCTION: "feed-reader",
   SANDBOX_FILE_PROCESSOR_FUNCTION: "file-processor",
@@ -95,7 +96,15 @@ describe("integration settings (T006)", () => {
       sandbox: { mode: "in-process" },
       llm: { mode: "none" },
       pms: { mode: "fixtures" },
-      flags: { pmsBeds24: false, pmsHostex: false, extractionScreenshots: false },
+      speech: { mode: "fake" },
+      mediaRequireScan: true,
+      flags: {
+        pmsBeds24: false,
+        pmsHostex: false,
+        extractionScreenshots: false,
+        guideInterviewVoice: false,
+        guideScannedPdf: false,
+      },
     });
     expect(integrations.kms.mode === "local" && integrations.kms.localKey.length).toBe(32);
   });
@@ -117,7 +126,9 @@ describe("integration settings (T006)", () => {
   it("requires the settings each AWS mode needs", () => {
     expect(() =>
       loadApiConfig({ ...base, KMS_MODE: "aws", STORAGE_MODE: "s3", SANDBOX_MODE: "lambda" }),
-    ).toThrow(/KMS_KEY_ID[\s\S]*UPLOADS_BUCKET[\s\S]*SANDBOX_FEED_READER_FUNCTION/);
+    ).toThrow(
+      /KMS_KEY_ID[\s\S]*UPLOADS_BUCKET[\s\S]*MEDIA_BUCKET[\s\S]*SANDBOX_FEED_READER_FUNCTION/,
+    );
   });
 
   it("never needs the model's API key, because extraction runs in the worker", () => {
@@ -134,11 +145,15 @@ describe("integration settings (T006)", () => {
       PMS_BEDS24: "true",
       PMS_HOSTEX: "1",
       EXTRACTION_SCREENSHOTS: "false",
+      GUIDE_INTERVIEW_VOICE: "true",
+      GUIDE_SCANNED_PDF: "",
     });
     expect(integrations.flags).toEqual({
       pmsBeds24: true,
       pmsHostex: true,
       extractionScreenshots: false,
+      guideInterviewVoice: true,
+      guideScannedPdf: false,
     });
   });
 
@@ -146,7 +161,7 @@ describe("integration settings (T006)", () => {
     const { integrations } = loadApiConfig(production);
     expect(integrations).toMatchObject({
       kms: { mode: "aws" },
-      storage: { mode: "s3", bucket: "guidesk-uploads-test" },
+      storage: { mode: "s3", bucket: "guidesk-uploads-test", mediaBucket: "guidesk-media-test" },
       sandbox: { mode: "lambda" },
       llm: { mode: "none" },
       pms: { mode: "live" },
@@ -158,6 +173,7 @@ describe("integration settings (T006)", () => {
     ["STORAGE_MODE", { STORAGE_MODE: "local" }],
     ["SANDBOX_MODE", { SANDBOX_MODE: "in-process" }],
     ["PMS_MODE", { PMS_MODE: "fixtures" }],
+    ["MEDIA_REQUIRE_SCAN", { MEDIA_REQUIRE_SCAN: "false" }],
     ["SANDBOX_TEST_ALLOW_HOST", { SANDBOX_TEST_ALLOW_HOST: "localhost" }],
     ["SANDBOX_TEST_CA_FILE", { SANDBOX_TEST_CA_FILE: "/tmp/ca.pem" }],
   ])("refuses %s test settings in production (research R2)", (name, override) => {

@@ -79,4 +79,37 @@ describe("feature 002 event metadata (T015)", () => {
     ).not.toThrow();
     expect(() => assertSafeMetadata({ rows: 25, firstRow: "Casa" }, "import.started")).toThrow();
   });
+
+  it("lets locked-field events name the field and its kind, never the value (feature 003 R19)", () => {
+    const field = { propertyId: "p-1", fieldId: "f-1", kind: "lockbox_code" };
+    for (const type of [
+      "restricted_value.added",
+      "restricted_value.changed",
+      "restricted_value.deleted",
+      "restricted_value.revealed",
+      "restricted_value.made_public",
+      "restricted_value.made_locked",
+    ] as const) {
+      expect(SECURITY_EVENT_TYPES).toContain(type);
+      expect(() => assertSafeMetadata(field, type)).not.toThrow();
+      expect(() => assertSafeMetadata({ ...field, value: "4821" }, type)).toThrow();
+      expect(() => assertSafeMetadata({ ...field, code: "4821" }, type)).toThrow();
+    }
+    expect(() =>
+      assertSafeMetadata({ ...field, reveals: 21 }, "restricted_value.reveal_limited"),
+    ).not.toThrow();
+  });
+
+  it("lets guide and shared-block events carry version numbers and counts", () => {
+    expect(() =>
+      assertSafeMetadata({ propertyId: "p-1", versionNumber: 3 }, "guide.published"),
+    ).not.toThrow();
+    expect(() =>
+      assertSafeMetadata(
+        { sharedBlockId: "b-1", sectionKind: "checkout", guidesUpdated: 39 },
+        "shared_block.published",
+      ),
+    ).not.toThrow();
+    expect(() => assertSafeMetadata({ title: "Salida" }, "shared_block.deleted")).toThrow();
+  });
 });

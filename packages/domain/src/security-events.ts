@@ -50,6 +50,19 @@ export const SECURITY_EVENT_TYPES = [
   "property.removed",
   "property.restored",
   "property.purged",
+  // Feature 003 (data model §6, research R19).
+  "restricted_value.added",
+  "restricted_value.changed",
+  "restricted_value.deleted",
+  "restricted_value.revealed",
+  "restricted_value.reveal_limited",
+  "restricted_value.made_public",
+  "restricted_value.made_locked",
+  "guide.published",
+  "guide.unpublished",
+  "guide.version_restored",
+  "shared_block.published",
+  "shared_block.deleted",
 ] as const;
 
 export type SecurityEventType = (typeof SECURITY_EVENT_TYPES)[number];
@@ -73,6 +86,10 @@ const FORBIDDEN_METADATA_KEYS = /(code|otp|token|secret|password|cookie)/i;
 
 const IMPORT_COUNTS = ["kind", "total", "created", "updated", "needsDetails", "failed", "skipped"];
 const STAY_DATES = ["stayId", "checkInDate", "checkoutDate"];
+/** Locked-field events name the field and its kind, never the value (feature 003 R19). */
+const LOCKED_FIELD = ["propertyId", "fieldId", "kind"];
+const GUIDE_VERSION = ["propertyId", "versionNumber"];
+const SHARED_BLOCK = ["sharedBlockId", "sectionKind", "guidesUpdated"];
 
 /**
  * Metadata allowed per feature 002 event (data model §5, T015). Feed events carry the channel,
@@ -95,6 +112,18 @@ const METADATA_ALLOWLIST: Partial<Record<SecurityEventType, readonly string[]>> 
   "property.removed": [],
   "property.restored": [],
   "property.purged": [],
+  "restricted_value.added": LOCKED_FIELD,
+  "restricted_value.changed": LOCKED_FIELD,
+  "restricted_value.deleted": LOCKED_FIELD,
+  "restricted_value.revealed": LOCKED_FIELD,
+  "restricted_value.reveal_limited": ["propertyId", "fieldId", "kind", "reveals"],
+  "restricted_value.made_public": LOCKED_FIELD,
+  "restricted_value.made_locked": LOCKED_FIELD,
+  "guide.published": GUIDE_VERSION,
+  "guide.unpublished": GUIDE_VERSION,
+  "guide.version_restored": GUIDE_VERSION,
+  "shared_block.published": SHARED_BLOCK,
+  "shared_block.deleted": SHARED_BLOCK,
 };
 
 /** Short labels, numbers, booleans, and calendar dates; nothing that could carry free text. */

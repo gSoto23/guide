@@ -138,3 +138,31 @@ jobs:
           name: extraction-eval-report
           path: evals/extraction/report/
           retention-days: 14
+
+  # Guide builder eval suites (feature 003 research R6, constitution V): drafting, interview, and
+  # translation. Same secret gate as the extraction eval; blocks the merge when it fails.
+  evals-guide:
+    needs: evals-extraction-secret
+    if: needs.evals-extraction-secret.outputs.present == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo run build --filter=@guidesk/evals-guide^...
+      - run: pnpm --filter @guidesk/evals-guide eval
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: guide-eval-report
+          path: evals/guide/report/
+          retention-days: 14

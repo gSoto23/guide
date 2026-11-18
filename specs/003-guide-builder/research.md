@@ -167,11 +167,14 @@ facts not checked first-hand against the provider's documentation on 2026-11-17 
 ## R7. Translation
 
 - **Decision:** translation works per section and language, on blocks.
-  - **Segmenter (domain):** each block (paragraph, heading, list item, caption) becomes one string
-    with inline tokens: `**bold**`, `_italic_`, `[link text]{L1}`, `{{F1}}` for a locked-field
-    reference, and `{{R1}}` for a masked code (R5). After the call, the strings are parsed back
-    into the same blocks. If any token is missing, duplicated, or invented, the section is retried
-    once, then marked `failed` with the reason (FR-047).
+  - **Segmenter (domain):** each text block (paragraph, heading, caption) becomes one string with
+    inline tags: `<b>…</b>`, `<i>…</i>`, `<a1>…</a1>` for a link (the address stays with Guidesk),
+    `<f1/>` for a locked-field reference, `<br/>` for a hard break, and `&lt;`, `&gt;`, `&amp;` for
+    those characters; masked codes travel as `{{R1}}` (R5). After the call, the strings are parsed
+    back into the same blocks. If any tag or placeholder is missing, duplicated, or invented, the
+    section is retried once, then marked `failed` with the reason (FR-047). As built (T024), tags
+    replaced the Markdown-like tokens first planned: models keep XML-like tags more reliably, and
+    they cannot collide with underscores or brackets in hosts' text.
   - **Triggers:** saving a text changes its source hash. Other languages become `stale` (machine
     translations) or `out_of_date` (reviewed ones, FR-046). A `guide.translate` job per section and
     language starts 20 seconds after the last save (pg-boss `stately` with a singleton key and

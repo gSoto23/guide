@@ -19,11 +19,19 @@ import {
 } from "drizzle-orm/pg-core";
 import { user } from "./auth.js";
 import { createdAt, inList } from "./columns.js";
+import { guideDocument, interviewTurn, mediaObject } from "./guides.js";
 import { importRun } from "./imports.js";
 import { property } from "./properties.js";
 import { workspace } from "./tenancy.js";
 
-export const UPLOAD_PURPOSES = ["screenshot", "csv"] as const;
+export const UPLOAD_PURPOSES = [
+  "screenshot",
+  "csv",
+  "document",
+  "photo",
+  "media",
+  "voice",
+] as const;
 export const UPLOAD_STATUSES = ["pending", "received", "processed", "rejected", "deleted"] as const;
 
 export const upload = pgTable(
@@ -48,6 +56,16 @@ export const upload = pgTable(
     importRunId: uuid("import_run_id").references((): AnyPgColumn => importRun.id, {
       onDelete: "set null",
     }),
+    /** Feature 003 owners (data model §5). */
+    mediaObjectId: uuid("media_object_id").references((): AnyPgColumn => mediaObject.id, {
+      onDelete: "set null",
+    }),
+    guideDocumentId: uuid("guide_document_id").references((): AnyPgColumn => guideDocument.id, {
+      onDelete: "set null",
+    }),
+    interviewTurnId: uuid("interview_turn_id").references((): AnyPgColumn => interviewTurn.id, {
+      onDelete: "set null",
+    }),
     createdBy: text("created_by").references(() => user.id, { onDelete: "set null" }),
     createdAt: createdAt(),
     expiresAt: timestamp("expires_at", { withTimezone: true })
@@ -64,9 +82,11 @@ export const upload = pgTable(
     index("upload_extraction_idx").on(t.extractionRequestId),
     check("upload_purpose_valid", inList(t.purpose, UPLOAD_PURPOSES)),
     check("upload_status_valid", inList(t.status, UPLOAD_STATUSES)),
+    // 10 MB for images and voice notes, 2 MB for CSV (checked by the API), 20 MB for documents,
+    // and 150 MB for media, where videos are (feature 003 FR-009, FR-039).
     check(
       "upload_declared_size_range",
-      sql`${t.declaredSize} > 0 AND ${t.declaredSize} <= 10485760`,
+      sql`${t.declaredSize} > 0 AND ${t.declaredSize} <= CASE ${t.purpose} WHEN 'media' THEN 157286400 WHEN 'document' THEN 20971520 ELSE 10485760 END`,
     ),
     check("upload_declared_type_length", sql`char_length(${t.declaredType}) BETWEEN 1 AND 100`),
   ],
