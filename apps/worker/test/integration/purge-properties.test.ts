@@ -4,6 +4,13 @@ import { and, eq, inArray } from "drizzle-orm";
 import {
   calendarFeed,
   createDb,
+  createGuideForProperty,
+  guide,
+  guideDocument,
+  guideSection,
+  guideVersion,
+  interviewSession,
+  interviewTurn,
   listingContent,
   membership,
   property,
@@ -115,6 +122,7 @@ async function propertyWithData(removedDaysAgo: number | null): Promise<string> 
     workspaceId,
     propertyId: id,
     kind: "door_code",
+    label: "Beds24 · house_rules",
     valueCiphertext: code.ciphertext,
     dataKeyId: code.dataKeyId,
     source: "pms",
@@ -188,5 +196,56 @@ describe("properties.purge (FR-045)", () => {
     const recent = await propertyWithData(29);
     await runPropertiesPurge({ db: handle.db, now: () => new Date(Date.now() + 2 * DAY) });
     expect((await remaining([recent])).properties).toBe(0);
+  });
+});
+
+describe("purging a property's guide (feature 003 FR-068, T119)", () => {
+  it("deletes the guide with its versions, items, locked fields, interview, and documents", async () => {
+    const id = await propertyWithData(31);
+    const { guideId } = await createGuideForProperty(handle.db, {
+      workspaceId,
+      propertyId: id,
+      guideLanguages: ["es"],
+    });
+    await handle.db.insert(guideVersion).values({
+      workspaceId,
+      guideId,
+      number: 1,
+      cause: "publish",
+      snapshot: { schema: 1, languages: ["es"], sections: [] },
+      snapshotSchema: 1,
+      languages: ["es"],
+    });
+    const [session] = await handle.db
+      .insert(interviewSession)
+      .values({ workspaceId, guideId, startedBy: ownerId })
+      .returning({ id: interviewSession.id });
+    await handle.db.insert(interviewTurn).values({
+      workspaceId,
+      sessionId: session!.id,
+      topicId: "checkout.steps",
+      answerKind: "text",
+      answerText: "Dejen las llaves.",
+    });
+    await handle.db
+      .insert(guideDocument)
+      .values({ workspaceId, guideId, fileName: "manual.pdf", kind: "pdf", text: "Texto." });
+
+    expect(await runPropertiesPurge({ db: handle.db })).toBeGreaterThanOrEqual(1);
+    for (const [table, column] of [
+      [guide, guide.id],
+      [guideVersion, guideVersion.guideId],
+      [guideSection, guideSection.guideId],
+      [interviewSession, interviewSession.guideId],
+      [guideDocument, guideDocument.guideId],
+    ] as const) {
+      const rows = await handle.db.select().from(table).where(eq(column, guideId));
+      expect(rows).toHaveLength(0);
+    }
+    const codes = await handle.db
+      .select()
+      .from(restrictedValue)
+      .where(eq(restrictedValue.propertyId, id));
+    expect(codes).toHaveLength(0);
   });
 });

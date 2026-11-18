@@ -5,8 +5,9 @@ import { AUTH_INSTANCE, type GuideskAuth } from "./auth/auth.js";
 import { registerAuthRoutes } from "./auth/auth.route.js";
 import { createEdgeHook } from "./common/edge-headers.js";
 import { API_CONFIG, type ApiConfig } from "./config/config.js";
-import type { ObjectStoragePort } from "@guidesk/integrations";
+import type { MediaStoragePort, ObjectStoragePort } from "@guidesk/integrations";
 import { registerLocalUploadRoute } from "./uploads/local-upload.controller.js";
+import { MEDIA_STORAGE, registerLocalMediaRoute } from "./uploads/media.provider.js";
 import { OBJECT_STORAGE } from "./uploads/storage.provider.js";
 
 /** Proxy hops whose X-Forwarded-For entries Fastify trusts when computing request.ip (T103). */
@@ -96,4 +97,5 @@ export function configureApp(app: NestFastifyApplication | INestApplication): vo
   fastify.addHook("onSend", createSecurityHeadersHook(config.PORTAL_URL.startsWith("https://")));
   registerAuthRoutes(fastify, auth, config.PORTAL_URL);
   registerLocalUploadRoute(fastify, fastifyApp.get<ObjectStoragePort>(OBJECT_STORAGE));
+  registerLocalMediaRoute(fastify, fastifyApp.get<MediaStoragePort>(MEDIA_STORAGE));
 }

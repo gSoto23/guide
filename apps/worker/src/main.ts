@@ -38,6 +38,18 @@ import {
   PURGE_WORKSPACES_CRON,
   PURGE_WORKSPACES_QUEUE,
 } from "./jobs/purge-workspaces.js";
+import { createGuideDraftHandler } from "./jobs/guide-draft.js";
+import {
+  createGuideTranslateHandler,
+  findTranslationWork,
+  GUIDE_TRANSLATE_SWEEP_CRON,
+  GUIDE_TRANSLATE_SWEEP_QUEUE,
+} from "./jobs/guide-translate.js";
+import { createGuideDocumentHandler } from "./jobs/guide-document.js";
+import { createInterviewAnswerHandler } from "./jobs/interview-answer.js";
+import { createSharedBlockPublishHandler } from "./jobs/shared-block-publish.js";
+import { createMediaCopyHandler } from "./jobs/media-copy.js";
+import { createMediaProcessHandler } from "./jobs/media-process.js";
 import { createWorkerServices } from "./services.js";
 
 function emailAdapter(config: WorkerConfig): EmailAdapter {
@@ -110,6 +122,81 @@ async function main(): Promise<void> {
       llm: services.llm,
     }),
   );
+  // Feature 003 (research R15).
+  await createQueue(JOB_QUEUES.guideDraft);
+  await boss.work(
+    JOB_QUEUES.guideDraft,
+    { localConcurrency: 4 },
+    createGuideDraftHandler({ db: services.db.db, llm: services.llm }),
+  );
+  await createQueue(JOB_QUEUES.mediaProcess);
+  await boss.work(
+    JOB_QUEUES.mediaProcess,
+    { localConcurrency: 2 },
+    createMediaProcessHandler({
+      db: services.db.db,
+      sandbox: services.sandbox,
+      storage: services.storage,
+      media: services.media,
+      requireScan: services.mediaRequireScan,
+    }),
+  );
+  await createQueue(JOB_QUEUES.interviewAnswer);
+  await boss.work(
+    JOB_QUEUES.interviewAnswer,
+    { localConcurrency: 4 },
+    createInterviewAnswerHandler({
+      db: services.db.db,
+      llm: services.llm,
+      speech: services.speech,
+      sandbox: services.sandbox,
+      storage: services.storage,
+    }),
+  );
+  await createQueue(JOB_QUEUES.guideDocument);
+  await boss.work(
+    JOB_QUEUES.guideDocument,
+    { localConcurrency: 2 },
+    createGuideDocumentHandler({
+      db: services.db.db,
+      sandbox: services.sandbox,
+      storage: services.storage,
+      llm: services.llm,
+      requireScan: services.mediaRequireScan,
+    }),
+  );
+  await createQueue(JOB_QUEUES.mediaCopy);
+  await boss.work(
+    JOB_QUEUES.mediaCopy,
+    { localConcurrency: 2 },
+    createMediaCopyHandler({ db: services.db.db, media: services.media }),
+  );
+  // Shared-block fan-out (research R14): one job per publish or delete.
+  await createQueue(JOB_QUEUES.sharedBlockPublish);
+  await boss.work(
+    JOB_QUEUES.sharedBlockPublish,
+    { localConcurrency: 2 },
+    createSharedBlockPublishHandler({ db: services.db.db }),
+  );
+  // Translation per section and language (research R7): saves schedule their own debounced job;
+  // the sweep picks up texts nothing scheduled, such as drafts from the worker and restores.
+  await createQueue(JOB_QUEUES.guideTranslate);
+  await boss.work(
+    JOB_QUEUES.guideTranslate,
+    { localConcurrency: 4 },
+    createGuideTranslateHandler({ db: services.db.db, llm: services.llm }),
+  );
+  await createQueue(GUIDE_TRANSLATE_SWEEP_QUEUE);
+  await boss.work(GUIDE_TRANSLATE_SWEEP_QUEUE, async () => {
+    for (const work of await findTranslationWork(services.db.db)) {
+      await boss.send(JOB_QUEUES.guideTranslate, work, {
+        singletonKey: `${work.sectionId}:${work.language}`,
+        retryLimit: 3,
+        retryBackoff: true,
+      });
+    }
+  });
+  await boss.schedule(GUIDE_TRANSLATE_SWEEP_QUEUE, GUIDE_TRANSLATE_SWEEP_CRON, null, { tz: "UTC" });
   const scheduleCalendars = createCalendarScheduler({
     db: services.db.db,
     send: (queue, data, options) => boss.send(queue, data, options),
@@ -183,7 +270,11 @@ async function main(): Promise<void> {
   await createQueue(JOB_QUEUES.retentionDaily);
   await boss.work(
     JOB_QUEUES.retentionDaily,
-    createRetentionHandler({ db: services.db.db, storage: services.storage }),
+    createRetentionHandler({
+      db: services.db.db,
+      storage: services.storage,
+      media: services.media,
+    }),
   );
   await boss.schedule(JOB_QUEUES.retentionDaily, RETENTION_CRON, null, { tz: "UTC" });
   console.warn("Guidesk worker started");

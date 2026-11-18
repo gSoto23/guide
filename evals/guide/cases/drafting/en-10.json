@@ -1,0 +1,19 @@
+{
+  "id": "en-10",
+  "language": "en",
+  "description": "A condo with beach access.\nGive your unit number at the gatehouse when you arrive.\nVisitor parking is space 14.\nThe capsule coffee machine is in the cupboard above the sink.",
+  "expected": [
+    {
+      "phrase": "Give your unit number at the gatehouse when you arrive.",
+      "section": "arrival"
+    },
+    {
+      "phrase": "Visitor parking is space 14.",
+      "section": "parking"
+    },
+    {
+      "phrase": "The capsule coffee machine is in the cupboard above the sink.",
+      "section": "appliances"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "es-08",
+  "language": "es",
+  "description": "Estudio luminoso con terraza en Escazú.\nEl internet es de fibra y la clave está en la tarjeta del refrigerador.\nLa parada de bus a San José está frente al edificio.\nLa farmacia Fischel abre hasta las diez.",
+  "expected": [
+    {
+      "phrase": "El internet es de fibra y la clave está en la tarjeta del refrigerador.",
+      "section": "wifi"
+    },
+    {
+      "phrase": "La parada de bus a San José está frente al edificio.",
+      "section": "parking"
+    },
+    {
+      "phrase": "La farmacia Fischel abre hasta las diez.",
+      "section": "emergency"
+    }
+  ]
+}

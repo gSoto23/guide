@@ -22,8 +22,8 @@ const alarm = (value: string) => ({ value, kind: "alarm_code" as const });
 const wifi = (value: string) => ({ value, kind: "wifi_password" as const });
 const other = (value: string) => ({ value, kind: "other" as const });
 
-/** Snippets that hold at least one restricted value. */
-export const CODE_SNIPPETS: readonly CorpusEntry[] = [
+/** Snippets that hold at least one restricted value (feature 002). */
+const CODE_SNIPPETS_002: readonly CorpusEntry[] = [
   // English: keyword before the value.
   { id: "en-door-basic", lang: "en", text: "Door code 4821", codes: [door("4821")], keep: [] },
   { id: "en-code-is", lang: "en", text: "The code is 4821", codes: [other("4821")], keep: [] },
@@ -472,7 +472,158 @@ export const CODE_SNIPPETS: readonly CorpusEntry[] = [
 ];
 
 /** Snippets with look-alikes only: nothing may be removed. */
-export const LOOK_ALIKE_SNIPPETS: readonly CorpusEntry[] = [
+
+/**
+ * Feature 003 (research R5): phrasings from interview answers, voice transcripts, and guide text,
+ * including spelled-out digits and digit groups split by spaces or dashes.
+ */
+const GUIDE_CODE_SNIPPETS: readonly CorpusEntry[] = [
+  {
+    id: "es-spelled-door",
+    lang: "es",
+    text: "El código de la puerta es cuatro ocho dos uno.",
+    codes: [door("cuatro ocho dos uno")],
+    keep: [],
+  },
+  {
+    id: "es-split-lockbox",
+    lang: "es",
+    text: "La caja de llaves se abre con 48 21",
+    codes: [lockbox("48 21")],
+    keep: [],
+  },
+  {
+    id: "es-dashed-keypad",
+    lang: "es",
+    text: "Marque 4-8-2-1 en el teclado",
+    codes: [door("4-8-2-1")],
+    keep: [],
+  },
+  {
+    id: "es-opens-with",
+    lang: "es",
+    text: "Para entrar, la puerta se abre con 2580.",
+    codes: [door("2580")],
+    keep: [],
+  },
+  {
+    id: "es-spelled-gate",
+    lang: "es",
+    text: "El portón abre con el código cero nueve cero nueve",
+    codes: [gate("cero nueve cero nueve")],
+    keep: [],
+  },
+  {
+    id: "es-transcript-lockbox",
+    lang: "es",
+    text: "sí, este, el código de la caja es el uno dos tres cuatro y ya",
+    codes: [lockbox("uno dos tres cuatro")],
+    keep: [],
+  },
+  {
+    id: "es-padlock",
+    lang: "es",
+    text: "La combinación del candado es 3-3-0-7",
+    codes: [lockbox("3-3-0-7")],
+    keep: [],
+  },
+  {
+    id: "es-alarm-spaced",
+    lang: "es",
+    text: "La alarma se desactiva con el 7 3 9 5 antes de 30 segundos.",
+    codes: [alarm("7 3 9 5")],
+    keep: ["30 segundos"],
+  },
+  {
+    id: "es-transcript-wifi",
+    lang: "es",
+    text: "la clave del wifi es mango dos mil veintiséis, todo junto",
+    codes: [wifi("mango")],
+    keep: [],
+  },
+  {
+    id: "es-opens-spelled",
+    lang: "es",
+    text: "La puerta de atrás se abre con nueve cinco uno uno.",
+    codes: [door("nueve cinco uno uno")],
+    keep: [],
+  },
+  {
+    id: "en-spelled-door",
+    lang: "en",
+    text: "The door code is four eight two one.",
+    codes: [door("four eight two one")],
+    keep: [],
+  },
+  {
+    id: "en-split-lockbox",
+    lang: "en",
+    text: "The lockbox opens with 48 21.",
+    codes: [lockbox("48 21")],
+    keep: [],
+  },
+  {
+    id: "en-dashed-keypad",
+    lang: "en",
+    text: "Punch in 4-8-2-1 on the keypad",
+    codes: [door("4-8-2-1")],
+    keep: [],
+  },
+  {
+    id: "en-opens-with",
+    lang: "en",
+    text: "To get in, the door opens with 2580",
+    codes: [door("2580")],
+    keep: [],
+  },
+  {
+    id: "en-spelled-alarm",
+    lang: "en",
+    text: "Alarm: nine three seven five, then press off",
+    codes: [alarm("nine three seven five")],
+    keep: [],
+  },
+  {
+    id: "en-spelled-oh",
+    lang: "en",
+    text: "The gate code is oh nine oh nine",
+    codes: [gate("oh nine oh nine")],
+    keep: [],
+  },
+  {
+    id: "en-transcript-lockbox",
+    lang: "en",
+    text: "um so the code for the lockbox is one two three four, yeah",
+    codes: [lockbox("one two three four")],
+    keep: [],
+  },
+  {
+    id: "en-padlock",
+    lang: "en",
+    text: "The padlock combination is 3-3-0-7",
+    codes: [lockbox("3-3-0-7")],
+    keep: [],
+  },
+  {
+    id: "en-garage-spaced",
+    lang: "en",
+    text: "The garage opens with code 1 9 8 4",
+    codes: [gate("1 9 8 4")],
+    keep: [],
+  },
+  {
+    id: "en-opens-spelled",
+    lang: "en",
+    text: "The back door opens with five five two zero.",
+    codes: [door("five five two zero")],
+    keep: [],
+  },
+];
+
+/** Snippets that hold at least one restricted value. */
+export const CODE_SNIPPETS: readonly CorpusEntry[] = [...CODE_SNIPPETS_002, ...GUIDE_CODE_SNIPPETS];
+
+const LOOK_ALIKE_SNIPPETS_002: readonly CorpusEntry[] = [
   // Prices.
   {
     id: "es-price",
@@ -705,6 +856,57 @@ export const LOOK_ALIKE_SNIPPETS: readonly CorpusEntry[] = [
     codes: [],
     keep: ["$25 per person"],
   },
+];
+
+/** Feature 003 look-alikes: spelled numbers and short numbers that are not codes. */
+const GUIDE_LOOK_ALIKE_SNIPPETS: readonly CorpusEntry[] = [
+  {
+    id: "es-rooms-spelled",
+    lang: "es",
+    text: "La casa tiene cuatro habitaciones y dos baños.",
+    codes: [],
+    keep: ["cuatro habitaciones", "dos baños"],
+  },
+  {
+    id: "es-checkin-spelled",
+    lang: "es",
+    text: "El check-in es a las tres de la tarde y la salida a las once.",
+    codes: [],
+    keep: ["tres de la tarde", "las once"],
+  },
+  {
+    id: "es-phone-before-door",
+    lang: "es",
+    text: "Llama al 8888-0000 si tienes problemas con la puerta.",
+    codes: [],
+    keep: ["8888-0000"],
+  },
+  {
+    id: "en-parking-spelled",
+    lang: "en",
+    text: "Checkout is at eleven, and there are two parking spots by the gate.",
+    codes: [],
+    keep: ["eleven", "two parking spots"],
+  },
+  {
+    id: "en-door-number",
+    lang: "en",
+    text: "The door is the second one on the left, number 12.",
+    codes: [],
+    keep: ["number 12"],
+  },
+  {
+    id: "en-keypad-buttons",
+    lang: "en",
+    text: "The keypad has four buttons and one light.",
+    codes: [],
+    keep: ["four buttons", "one light"],
+  },
+];
+
+export const LOOK_ALIKE_SNIPPETS: readonly CorpusEntry[] = [
+  ...LOOK_ALIKE_SNIPPETS_002,
+  ...GUIDE_LOOK_ALIKE_SNIPPETS,
 ];
 
 export const RESTRICTED_VALUE_CORPUS: readonly CorpusEntry[] = [

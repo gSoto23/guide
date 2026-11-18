@@ -1,0 +1,19 @@
+{
+  "id": "es-02",
+  "language": "es",
+  "description": "Apartamento en el segundo piso con vista al mar.\nLa red de Wi-Fi se llama Colibri_5G y llega bien a la terraza.\nPara llegar, sigan la calle de lastre hasta el árbol de almendro y doblen a la derecha.\nAntes de salir, dejen la basura en el basurero verde de la entrada.",
+  "expected": [
+    {
+      "phrase": "La red de Wi-Fi se llama Colibri_5G y llega bien a la terraza.",
+      "section": "wifi"
+    },
+    {
+      "phrase": "Para llegar, sigan la calle de lastre hasta el árbol de almendro y doblen a la derecha.",
+      "section": "arrival"
+    },
+    {
+      "phrase": "Antes de salir, dejen la basura en el basurero verde de la entrada.",
+      "section": "checkout"
+    }
+  ]
+}

@@ -4,7 +4,7 @@
  * database, the API, or the worker. The API and worker invoke them synchronously.
  */
 import { stageConfig } from "./config";
-import { uploads } from "./storage";
+import { media, uploads } from "./storage";
 
 const environment: Record<string, string> = {
   NODE_ENV: "production",
@@ -26,30 +26,39 @@ export const feedReader = new sst.aws.Function("FeedReader", {
 const tesseractData = "apps/sandbox/node_modules/@tesseract.js-data";
 
 /**
- * Checks, re-encodes, and recognizes one uploaded image, or parses one CSV file. It can only read
- * and delete objects under `uploads/` in the uploads bucket.
+ * Checks, re-encodes, and recognizes one uploaded image, parses one CSV file, reads one PDF, or
+ * checks one voice note; for guide media it also writes the cleaned image variants or video to the
+ * media bucket (feature 003, research R9). It can only read and delete objects under `uploads/` in
+ * the uploads bucket, and write objects under `media/` in the media bucket.
  */
 export const fileProcessor = new sst.aws.Function("FileProcessor", {
   handler: "apps/sandbox/src/file-processor/handler.handler",
   runtime: "nodejs24.x",
   architecture: "arm64",
-  memory: "2048 MB",
-  // One screenshot per invocation; the extraction job's limit is 60 seconds (FR-016).
-  timeout: "60 seconds",
+  memory: "3008 MB",
+  // One file per invocation. Screenshots stay within the extraction job's 60 seconds (FR-016);
+  // a 60-page PDF or a 150 MB video needs up to 2 minutes (feature 003 FR-041, plan budget).
+  timeout: "120 seconds",
+  // Videos up to 150 MB are cleaned on local disk (feature 003 research R9).
+  storage: "1 GB",
   environment: {
     ...environment,
     UPLOADS_BUCKET: uploads.name,
+    MEDIA_BUCKET: media.name,
     TESSERACT_LANG_PATH: "lang",
+    // Scanned PDF pages are read only behind the flag (feature 003 research R9, R22 gate).
+    GUIDE_SCANNED_PDF: stageConfig.flags.GUIDE_SCANNED_PDF,
   },
   permissions: [
     {
       actions: ["s3:GetObject", "s3:DeleteObject"],
       resources: [$interpolate`${uploads.arn}/uploads/*`],
     },
+    { actions: ["s3:PutObject"], resources: [$interpolate`${media.arn}/media/*`] },
   ],
   nodejs: {
     // Native and WebAssembly packages are installed for the Lambda platform, not bundled.
-    install: ["sharp", "tesseract.js"],
+    install: ["sharp", "tesseract.js", "@napi-rs/canvas", "pdfjs-dist"],
   },
   // The Spanish and English recognition models ship with the function, so nothing is
   // downloaded at runtime (research R3).

@@ -32,7 +32,22 @@ export type ProblemCode =
   | "feed_rejected"
   | "invalid_credential"
   | "extraction_limit_reached"
-  | "provider_unavailable";
+  | "provider_unavailable"
+  // Feature 003 (contracts/http-api.md).
+  | "section_changed"
+  | "not_ready_to_publish"
+  | "locked_field_referenced"
+  | "interview_active"
+  | "section_limit"
+  | "item_limit"
+  | "text_too_long"
+  | "invalid_document"
+  | "benefit_required"
+  | "wifi_only"
+  | "shared_block_limit"
+  | "storage_limit_reached"
+  | "ai_limit_reached"
+  | "reveal_limit_reached";
 
 /**
  * Extra members of a problem body, such as `{limit, used}` or `{reason}`. Plain values only, and

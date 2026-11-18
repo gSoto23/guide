@@ -6,12 +6,18 @@ import {
   FakeLlmAdapter,
   InProcessSandbox,
   LambdaSandbox,
+  LocalMediaStorage,
   LocalObjectStorage,
+  S3MediaStorage,
   S3ObjectStorage,
+  FakeSpeechToText,
+  TranscribeSpeechToText,
   type EmailMessage,
   type KeyManagementPort,
   type LlmPort,
+  type MediaStoragePort,
   type ObjectStoragePort,
+  type SpeechToTextPort,
   type PmsPort,
   type PmsProvider,
   type SandboxPort,
@@ -40,6 +46,12 @@ export interface WorkerServices {
   decrypter: VaultDecrypter;
   sandbox: SandboxPort;
   storage: ObjectStoragePort;
+  /** Feature 003: the media bucket (research R9). */
+  media: MediaStoragePort;
+  /** Feature 003: speech to text for voice notes (research R8). */
+  speech: SpeechToTextPort;
+  /** Media and documents wait for the malware scan (research R9). */
+  mediaRequireScan: boolean;
   llm: LlmPort;
   /** PMS adapters; recorded fixtures outside production (T092). */
   pms: Record<PmsProvider, PmsPort>;
@@ -61,9 +73,27 @@ function createStorage(config: WorkerConfig): ObjectStoragePort {
       });
 }
 
+/**
+ * The media bucket; locally a folder under the uploads folder, with URLs signed like the API's
+ * (the same secret, derived from FEED_URL_PEPPER).
+ */
+function createMedia(config: WorkerConfig): MediaStoragePort {
+  const storage = config.integrations.storage;
+  return storage.mode === "s3"
+    ? new S3MediaStorage({ bucket: storage.mediaBucket })
+    : new LocalMediaStorage({
+        dir: storage.dir,
+        mediaUrl: `${config.portalUrl}/api/v1/local-media`,
+        secret: createHmac("sha256", config.integrations.feedUrlPepper)
+          .update("guidesk-local-media")
+          .digest(),
+      });
+}
+
 function createSandbox(
   config: WorkerConfig,
   storage: ObjectStoragePort,
+  media: MediaStoragePort,
 ): { sandbox: SandboxPort; close: () => Promise<void> } {
   const settings = config.integrations.sandbox;
   if (settings.mode === "lambda") {
@@ -83,7 +113,12 @@ function createSandbox(
         ...(settings.testAllowHost ? { testAllowHost: settings.testAllowHost } : {}),
         ...(ca ? { send: createPinnedSend(ca) } : {}),
       }),
-      processFile: createFileProcessor({ storage, recognizer }),
+      processFile: createFileProcessor({
+        storage,
+        recognizer,
+        mediaSink: { put: (key, bytes, contentType) => media.put(key, bytes, contentType) },
+        readScannedPdfPages: config.integrations.flags.guideScannedPdf,
+      }),
     }),
     close: () => recognizer.terminate(),
   };
@@ -103,7 +138,8 @@ export function createWorkerServices(
   const db = createDb(config.databaseUrl, { max: 5, statementTimeoutMillis: 30_000 });
   const kms = createKeyManagement(config.integrations.kms);
   const storage = createStorage(config);
-  const { sandbox, close: closeSandbox } = createSandbox(config, storage);
+  const media = createMedia(config);
+  const { sandbox, close: closeSandbox } = createSandbox(config, storage, media);
   return {
     db,
     kms,
@@ -111,6 +147,16 @@ export function createWorkerServices(
     decrypter: new VaultDecrypter(kms),
     sandbox,
     storage,
+    media,
+    speech:
+      config.integrations.speech.mode === "transcribe" && config.integrations.storage.mode === "s3"
+        ? new TranscribeSpeechToText({ bucket: config.integrations.storage.bucket })
+        : new FakeSpeechToText({
+            read: async (key) => (await storage.get(key)) ?? Buffer.alloc(0),
+          }),
+    // Local storage has no scanner, so there is nothing to wait for (research R9).
+    mediaRequireScan:
+      config.integrations.mediaRequireScan && config.integrations.storage.mode === "s3",
     llm: createLlm(config),
     pms: createPmsAdapters({ mode: config.integrations.pms.mode }),
     feedFingerprint: (normalizedUrl) =>

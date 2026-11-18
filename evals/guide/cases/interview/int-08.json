@@ -1,0 +1,8 @@
+{
+  "id": "int-08",
+  "language": "es",
+  "kind": "text",
+  "topicId": "wifi.troubleshooting",
+  "sectionKind": "wifi",
+  "answer": "Si el Wi-Fi se cae, desconecten el router blanco de la sala, esperen diez segundos y vuelvan a conectarlo."
+}

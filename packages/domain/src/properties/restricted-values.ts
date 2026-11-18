@@ -82,6 +82,46 @@ export function redactRestrictedValues(text: string): RedactionResult {
   return { text: redacted, counts, matches };
 }
 
+/** A text with its likely restricted values replaced by numbered placeholders. */
+export interface MaskResult {
+  /** The text with `{{R1}}`, `{{R2}}`, … in place of each value. */
+  text: string;
+  /** The removed values, in placeholder order. Restricted: never log or send these. */
+  values: string[];
+  counts: Partial<Record<RestrictedValueKind, number>>;
+}
+
+const PLACEHOLDER = /\{\{R(\d{1,4})\}\}/gu;
+
+/**
+ * Reversible masking for translation (feature 003 research R5, FR-025): each likely value becomes
+ * a placeholder the model keeps, and {@link unmaskRestrictedValues} puts the values back unchanged
+ * in the translated text, so a code never reaches the model.
+ */
+export function maskRestrictedValues(text: string): MaskResult {
+  const matches = new Detector(text).detect();
+  const values: string[] = [];
+  const counts: Partial<Record<RestrictedValueKind, number>> = {};
+  let masked = "";
+  let cursor = 0;
+  for (const match of matches) {
+    values.push(match.value);
+    masked += `${text.slice(cursor, match.start)}{{R${values.length}}}`;
+    cursor = match.end;
+    counts[match.kind] = (counts[match.kind] ?? 0) + 1;
+  }
+  masked += text.slice(cursor);
+  return { text: masked, values, counts };
+}
+
+/** Puts masked values back; a placeholder with no value is left as it is. */
+export function unmaskRestrictedValues(text: string, values: readonly string[]): string {
+  return text.replace(
+    PLACEHOLDER,
+    (placeholder, number: string) => values[Number(number) - 1] ?? placeholder,
+  );
+}
+
 /** True when {@link redactRestrictedValues} would remove anything (FR-013). */
 export function containsRestrictedValue(text: string): boolean {
   return new Detector(text).detect().length > 0;
@@ -135,7 +175,7 @@ const WIFI = String.raw`wi[\s\-\u2010-\u2015.]?fi`;
 
 const KEYWORD_RULES: readonly KeywordRule[] = [
   keyword(
-    String.raw`caj(?:a|ita)s?\s+(?:(?:de|para)\s+)?(?:las\s+)?(?:seguridad|llaves?)|cajas?\s+fuertes?|guarda\s?llaves|(?:lock|key)[\s\-]?box(?:es)?|key[\s\-]?safes?|safes?`,
+    String.raw`caj(?:a|ita)s?\s+(?:(?:de|para)\s+)?(?:las\s+)?(?:seguridad|llaves?)|cajas?\s+fuertes?|guarda\s?llaves|(?:lock|key)[\s\-]?box(?:es)?|key[\s\-]?safes?|safes?|candados?|padlocks?|caj(?:a|ita)s?`,
     "lockbox",
   ),
   keyword(String.raw`alarmas?|alarms?|sistemas?\s+de\s+seguridad|security\s+systems?`, "alarm"),
@@ -194,9 +234,22 @@ const CONNECTORS = words("ademas also and e luego mas o or plus tambien then u y
 
 /** Verbs that introduce a value typed on a keypad ("Use 4821 to open the door"). */
 const ENTRY_VERBS = words(`
-  dial digita digite enter escriba escribe ingresa ingrese input introduce introduzca marca marque
-  press presiona presione punch teclea teclee type usa use usar utilice
+  dial digita digite enter escriba escribe ingresa ingrese input introduce introduzca key marca
+  marque press presiona presione punch teclea teclee type usa use usar utilice
 `);
+
+/** Particles after an entry verb ("punch in", "key in"). */
+const ENTRY_PARTICLES = words("in into");
+
+/**
+ * Digit words in Spanish and English, for codes spoken in voice notes or spelled out ("cuatro ocho
+ * dos uno", "oh nine oh nine"; feature 003 research R5). "o" is left out: it is also Spanish "or".
+ */
+const NUMBER_WORDS = words(`
+  cero uno una dos tres cuatro cinco seis siete ocho nueve
+  zero oh one two three four five six seven eight nine
+`);
+const SPELLED_GAP = /^[ \t\u00a0]{1,2}$|^,[ \t\u00a0]?$|^[ \t\u00a0]?-[ \t\u00a0]?$/u;
 
 /** Common words after "password:" that are not a password ("Password: provided at check-in"). */
 const STOPWORDS = words(`
@@ -227,7 +280,9 @@ const HAS_DIGIT = /\p{N}/u;
 const HAS_LETTER = /\p{L}/u;
 const PURE_DIGITS = /^\p{Nd}+$/u;
 const CURRENCY_SIGN = /[$€£¥₡₹]/u;
-const CURRENCY_CODE = /^(?:usd|us|crc|eur|mxn|cop|gbp|cad)\d|\d(?:usd|crc|eur|mxn|cop|gbp|cad)$/u;
+/** A currency code before the amount ("usd25") or after it ("25usd"); each side is anchored. */
+const CURRENCY_CODE =
+  /(?:^(?:usd|us|crc|eur|mxn|cop|gbp|cad)\d)|(?:\d(?:usd|crc|eur|mxn|cop|gbp|cad)$)/u;
 const MEASURE =
   /^\d+(?:[.,]\d+)?(?:ghz|mhz|gbps|mbps|kbps|tb|gb|mb|m2|km|kg|cm|mm|mts|ft|sqft|hrs?|am|pm|mins?|pax|%)$/u;
 
@@ -363,10 +418,13 @@ class Detector {
     }
     const markers = this.findMarkers();
     const keywordSpans = this.findKeywords(markers);
-    this.tokens = mergeSpacedDigits(
-      this.tokenize(
-        markers,
-        keywordSpans.flatMap((span) => [span.start, span.end]),
+    this.tokens = mergeSpelledDigits(
+      mergeSpacedDigits(
+        this.tokenize(
+          markers,
+          keywordSpans.flatMap((span) => [span.start, span.end]),
+        ),
+        text,
       ),
       text,
     );
@@ -566,8 +624,16 @@ class Detector {
       chainEnd = hit;
     }
     const namesSecret = chain.some((hit) => hit.rule.secret);
+    // "Use 4821", and with a particle, "Punch in 4821" (feature 003 research R5).
+    const beforePrevious = this.tokens[i - 2];
     const entered =
-      previous !== undefined && previous.line === token.line && ENTRY_VERBS.has(previous.folded);
+      previous !== undefined &&
+      previous.line === token.line &&
+      (ENTRY_VERBS.has(previous.folded) ||
+        (ENTRY_PARTICLES.has(previous.folded) &&
+          beforePrevious !== undefined &&
+          beforePrevious.line === token.line &&
+          ENTRY_VERBS.has(beforePrevious.folded)));
     const opensSomething = chain.some(
       (hit) => hit.rule.topic !== null && hit.rule.topic !== "wifi",
     );
@@ -859,6 +925,45 @@ function mergeSpacedDigits(tokens: Token[], text: string): Token[] {
     }
     const end = tokens[last]?.end ?? token.end;
     if (last > k && digits >= MIN_VALUE_LENGTH) {
+      const core = text.slice(token.start, end);
+      merged.push({ ...token, end, core, folded: core, shape: "code", merged: true });
+      k = last;
+    } else {
+      merged.push(token);
+    }
+  }
+  return merged.map((token, index) => ({ ...token, index }));
+}
+
+/**
+ * Joins four to twelve digit words in a row ("cuatro ocho dos uno", "oh nine oh nine") into one
+ * value, as speech to text writes spoken codes (feature 003 research R5). Fewer than four never
+ * merge, so "cuatro habitaciones" and "two parking spots" stay words.
+ */
+function mergeSpelledDigits(tokens: Token[], text: string): Token[] {
+  const merged: Token[] = [];
+  for (let k = 0; k < tokens.length; k += 1) {
+    const token = tokens[k];
+    if (!token) {
+      continue;
+    }
+    let last = k;
+    if (!token.marker && !token.hit && NUMBER_WORDS.has(token.folded)) {
+      for (let next = tokens[last + 1]; next; next = tokens[last + 1]) {
+        if (
+          next.marker ||
+          next.hit ||
+          !NUMBER_WORDS.has(next.folded) ||
+          !SPELLED_GAP.test(next.gapBefore) ||
+          last + 1 - k >= MAX_CODE_LENGTH
+        ) {
+          break;
+        }
+        last += 1;
+      }
+    }
+    const end = tokens[last]?.end ?? token.end;
+    if (last - k + 1 >= MIN_VALUE_LENGTH) {
       const core = text.slice(token.start, end);
       merged.push({ ...token, end, core, folded: core, shape: "code", merged: true });
       k = last;

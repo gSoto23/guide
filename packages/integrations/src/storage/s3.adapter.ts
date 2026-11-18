@@ -1,10 +1,17 @@
-import { DeleteObjectCommand, GetObjectCommand, NoSuchKey, S3Client } from "@aws-sdk/client-s3";
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  GetObjectTaggingCommand,
+  NoSuchKey,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import {
   PRESIGNED_POST_TTL_SECONDS,
   type ObjectStoragePort,
   type PresignedPost,
   type PresignedPostInput,
+  type ScanStatus,
 } from "./port.js";
 
 export interface S3StorageOptions {
@@ -54,5 +61,16 @@ export class S3ObjectStorage implements ObjectStoragePort {
 
   async delete(key: string): Promise<void> {
     await this.client.send(new DeleteObjectCommand({ Bucket: this.options.bucket, Key: key }));
+  }
+
+  async scanStatus(key: string): Promise<ScanStatus> {
+    const output = await this.client.send(
+      new GetObjectTaggingCommand({ Bucket: this.options.bucket, Key: key }),
+    );
+    const tag = output.TagSet?.find((entry) => entry.Key === "GuardDutyMalwareScanStatus")?.Value;
+    if (!tag) return "pending";
+    if (tag === "NO_THREATS_FOUND") return "clean";
+    if (tag === "THREATS_FOUND") return "threats";
+    return "failed";
   }
 }

@@ -559,3 +559,140 @@ describe("roles (AC-SEC-001)", () => {
     expect(rows).toEqual([{ status: "active" }]);
   });
 });
+
+describe("duplicating a property's guide (feature 003 FR-067, T119)", () => {
+  it("copies sections, items to review, and locked fields without values", async () => {
+    // Its own workspace: the fixtures above leave a data key the local KMS cannot unwrap.
+    const team = await seedTeam(ctx, db, "lifecycle-guide");
+    await setLimit(team.workspaceId, 5);
+    const created = await wsApi(ctx, team.owner, "POST", team.workspaceId, "/properties", {
+      name: "Casa Original",
+      addressLine1: "Calle Ficticia 77",
+      city: "Sámara",
+      country: "CR",
+      timeZone: "America/Costa_Rica",
+      checkInTime: "15:00",
+      checkoutTime: "11:00",
+      maxGuests: 4,
+      guideLanguages: ["es", "en"],
+      source: "manual",
+    });
+    expect(created.statusCode, created.body).toBe(201);
+    const originalId = (created.json() as { id: string }).id;
+    const guidePath = (id: string, suffix = "") => `/properties/${id}/guide${suffix}`;
+    const field = await wsApi(
+      ctx,
+      team.owner,
+      "POST",
+      team.workspaceId,
+      guidePath(originalId, "/locked-fields"),
+      { kind: "lockbox_code", label: "Caja de llaves", value: "5813" },
+    );
+    expect(field.statusCode, field.body).toBe(201);
+    const fieldId = (field.json() as { id: string }).id;
+    const view = (
+      await wsApi(ctx, team.owner, "GET", team.workspaceId, guidePath(originalId))
+    ).json() as { sections: { id: string; kind: string; revision: number }[] };
+    const arrival = view.sections.find((section) => section.kind === "arrival")!;
+    const parking = view.sections.find((section) => section.kind === "parking")!;
+    await wsApi(
+      ctx,
+      team.owner,
+      "POST",
+      team.workspaceId,
+      guidePath(originalId, `/sections/${arrival.id}/items`),
+      {
+        revision: arrival.revision,
+        kind: "text",
+        language: "es",
+        doc: {
+          type: "doc",
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                { type: "text", text: "La llave está en la caja: " },
+                { type: "lockedField", attrs: { fieldId } },
+              ],
+            },
+          ],
+        },
+      },
+    );
+    await wsApi(
+      ctx,
+      team.owner,
+      "PATCH",
+      team.workspaceId,
+      guidePath(originalId, `/sections/${parking.id}`),
+      {
+        revision: parking.revision,
+        hidden: true,
+      },
+    );
+    await wsApi(ctx, team.owner, "POST", team.workspaceId, guidePath(originalId, "/sections"), {
+      title: { es: "Piscina" },
+    });
+
+    const draft = (
+      await wsApi(
+        ctx,
+        team.owner,
+        "GET",
+        team.workspaceId,
+        `/properties/${originalId}/duplicate-draft`,
+      )
+    ).json() as DuplicateDraft;
+    const copied = await wsApi(
+      ctx,
+      team.owner,
+      "POST",
+      team.workspaceId,
+      "/properties",
+      confirmedCopy(draft),
+    );
+    expect(copied.statusCode, copied.body).toBe(201);
+    const copyId = (copied.json() as { id: string }).id;
+    const copy = (
+      await wsApi(ctx, team.owner, "GET", team.workspaceId, guidePath(copyId))
+    ).json() as {
+      draftState: string;
+      status: string;
+      sections: {
+        kind: string;
+        hidden: boolean;
+        title: { es?: string } | null;
+        items: {
+          source: string;
+          sourceDetail: string | null;
+          reviewed: boolean;
+          texts: Record<string, { doc: unknown }>;
+        }[];
+      }[];
+      lockedFields: { id: string; label: string; isSet: boolean; source: string }[];
+    };
+    expect(copy).toMatchObject({ draftState: "ready", status: "draft" });
+    expect(copy.sections.find((section) => section.kind === "parking")?.hidden).toBe(true);
+    expect(copy.sections.find((section) => section.kind === "custom")?.title).toEqual({
+      es: "Piscina",
+    });
+    const copiedItem = copy.sections
+      .find((section) => section.kind === "arrival")!
+      .items.find((item) => item.source === "copy")!;
+    expect(copiedItem).toMatchObject({ sourceDetail: "Casa Original", reviewed: false });
+    expect(copy.lockedFields).toEqual([
+      expect.objectContaining({ label: "Caja de llaves", isSet: false, source: "copy" }),
+    ]);
+    const newFieldId = copy.lockedFields[0]!.id;
+    const text = JSON.stringify(copiedItem.texts.es?.doc);
+    expect(text).toContain(newFieldId);
+    expect(text).not.toContain(fieldId);
+    expect(JSON.stringify(copy)).not.toContain("5813");
+    const { rows } = await db.query<{ count: number }>(
+      `SELECT count(*)::int AS count FROM pgboss.job j JOIN guide g ON g.id::text = j.data->>'guideId'
+        WHERE j.name = 'guide.draft' AND g.property_id = $1`,
+      [copyId],
+    );
+    expect(rows[0]?.count).toBe(0);
+  });
+});

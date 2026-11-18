@@ -1,9 +1,15 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState, type ReactNode } from "react";
-import { StepUpDialog } from "@/components/step-up-dialog";
 import { ApiError } from "./api";
 import type { StepUpMethod } from "./step-up";
+
+/** Loaded only when the API asks for a recent sign-in, so pages don't carry it up front. */
+const StepUpDialog = dynamic(
+  () => import("@/components/step-up-dialog").then((module) => module.StepUpDialog),
+  { ssr: false },
+);
 
 /**
  * Runs an API action; if the API asks for re-authentication (FR-011), shows the step-up dialog

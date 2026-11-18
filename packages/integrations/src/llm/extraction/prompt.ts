@@ -24,6 +24,6 @@ Rules:
 
 /** Wraps redacted listing text in the delimited block; a closing tag inside the text is broken. */
 export function buildExtractionMessage(redactedText: string): string {
-  const safe = redactedText.replace(/<\s*\/?\s*listing\s*>/gi, (tag) => tag.replace("<", "‹"));
+  const safe = redactedText.replace(/<\s*(?:\/\s*)?listing\s*>/gi, (tag) => tag.replace(/</g, "‹"));
   return `<listing>\n${safe}\n</listing>`;
 }

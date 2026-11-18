@@ -31,6 +31,9 @@ export const workspace = pgTable(
     seatLimit: integer("seat_limit"),
     /** Pilot property limit set by Guidesk (FR-047); null uses the Free plan's 2. */
     propertyLimit: integer("property_limit"),
+    /** Feature 003 pilot overrides (data model §5): daily guide AI requests and media storage. */
+    guideAiDailyLimit: integer("guide_ai_daily_limit"),
+    mediaStorageLimitMb: integer("media_storage_limit_mb"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .notNull()
@@ -44,6 +47,14 @@ export const workspace = pgTable(
     check(
       "workspace_property_limit_positive",
       sql`${t.propertyLimit} IS NULL OR ${t.propertyLimit} > 0`,
+    ),
+    check(
+      "workspace_guide_ai_daily_limit_positive",
+      sql`${t.guideAiDailyLimit} IS NULL OR ${t.guideAiDailyLimit} > 0`,
+    ),
+    check(
+      "workspace_media_storage_limit_positive",
+      sql`${t.mediaStorageLimitMb} IS NULL OR ${t.mediaStorageLimitMb} > 0`,
     ),
     index("workspace_created_by_idx").on(t.createdBy),
   ],

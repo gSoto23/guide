@@ -3,11 +3,19 @@ import { and, eq, ne, sql } from "drizzle-orm";
 import {
   calendarFeed,
   extractionRequest,
+  guideDocument,
+  guideItem,
+  guideSection,
+  guideVersion,
   importRun,
   invitation,
   membership,
+  interviewSession,
+  mediaObject,
   pmsConnection,
   property,
+  restrictedValue,
+  sharedBlock,
   stay,
   type DbHandle,
   type Transaction,
@@ -27,6 +35,15 @@ const TABLES = {
   pms_connection: pmsConnection,
   import_run: importRun,
   extraction_request: extractionRequest,
+  // Feature 003 (AC-SEC-011).
+  guide_section: guideSection,
+  guide_item: guideItem,
+  guide_version: guideVersion,
+  media_object: mediaObject,
+  shared_block: sharedBlock,
+  locked_field: restrictedValue,
+  guide_document: guideDocument,
+  interview_session: interviewSession,
 } as const;
 export type TenantResource = keyof typeof TABLES;
 

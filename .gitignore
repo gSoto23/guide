@@ -35,4 +35,5 @@ playwright-report/
 .uploads/
 .tz-sources/
 evals/extraction/report/
+evals/guide/report/
 e2e/.certs/

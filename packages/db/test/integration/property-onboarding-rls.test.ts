@@ -222,6 +222,7 @@ async function seed(workspaceId: string, createdBy: string): Promise<Fixture> {
       workspaceId,
       propertyId,
       kind: "door_code",
+      label: "Beds24 · house_rules",
       valueCiphertext: randomBytes(64),
       dataKeyId,
       source: "pms",

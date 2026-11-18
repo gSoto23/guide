@@ -13,16 +13,35 @@ import { z } from "zod";
  */
 export interface IntegrationSettings {
   kms: { mode: "aws"; keyId: string } | { mode: "local"; localKey: Buffer };
-  storage: { mode: "s3"; bucket: string } | { mode: "local"; dir: string };
+  /**
+   * `mediaBucket` keeps guide images and videos (feature 003 research R9); locally both buckets
+   * are folders under `dir`.
+   */
+  storage: { mode: "s3"; bucket: string; mediaBucket: string } | { mode: "local"; dir: string };
   sandbox:
     | { mode: "lambda"; feedReaderFunction: string; fileProcessorFunction: string }
     | { mode: "in-process"; testAllowHost?: string; testCaFile?: string };
   /** `none` for a service that never calls the model (the API: extraction runs in the worker). */
   llm: { mode: "anthropic"; apiKey: string } | { mode: "fake" } | { mode: "none" };
   pms: { mode: "live" | "fixtures" };
+  /** Speech to text for interview voice notes (feature 003 research R8). */
+  speech: { mode: "transcribe" | "fake" };
+  /**
+   * Whether media and documents wait for the malware scan before they are read (feature 003
+   * research R9). Always true in production.
+   */
+  mediaRequireScan: boolean;
   /** Secret for calendar-link fingerprints (HMAC-SHA-256). */
   feedUrlPepper: string;
-  flags: { pmsBeds24: boolean; pmsHostex: boolean; extractionScreenshots: boolean };
+  flags: {
+    pmsBeds24: boolean;
+    pmsHostex: boolean;
+    extractionScreenshots: boolean;
+    /** Feature 003: voice answers in the interview (research R22). */
+    guideInterviewVoice: boolean;
+    /** Feature 003: text recognition on scanned PDF pages (research R9). */
+    guideScannedPdf: boolean;
+  };
 }
 
 const flag = z
@@ -56,6 +75,14 @@ const schema = z.object({
   PMS_BEDS24: flag,
   PMS_HOSTEX: flag,
   EXTRACTION_SCREENSHOTS: flag,
+  MEDIA_BUCKET: optionalText,
+  SPEECH_MODE: z.enum(["transcribe", "fake"]).default("fake"),
+  MEDIA_REQUIRE_SCAN: z
+    .enum(["true", "false", "1", "0", ""])
+    .optional()
+    .transform((value) => value !== "false" && value !== "0"),
+  GUIDE_INTERVIEW_VOICE: flag,
+  GUIDE_SCANNED_PDF: flag,
 });
 
 type Parsed = z.infer<typeof schema>;
@@ -83,6 +110,7 @@ function problems(env: Parsed, production: boolean, usesLlm: boolean): string[] 
   }
   if (env.STORAGE_MODE === "s3") {
     require(Boolean(env.UPLOADS_BUCKET), "UPLOADS_BUCKET is required with STORAGE_MODE=s3");
+    require(Boolean(env.MEDIA_BUCKET), "MEDIA_BUCKET is required with STORAGE_MODE=s3");
   }
   if (env.SANDBOX_MODE === "lambda") {
     require(Boolean(
@@ -102,6 +130,10 @@ function problems(env: Parsed, production: boolean, usesLlm: boolean): string[] 
       "in-process", "SANDBOX_MODE=in-process is not allowed in production (research R2)");
     if (usesLlm) require(env.LLM_MODE !== "fake", "LLM_MODE=fake is not allowed in production");
     require(env.PMS_MODE !== "fixtures", "PMS_MODE=fixtures is not allowed in production");
+    if (usesLlm) {
+      require(env.SPEECH_MODE !== "fake", "SPEECH_MODE=fake is not allowed in production");
+    }
+    require(env.MEDIA_REQUIRE_SCAN, "MEDIA_REQUIRE_SCAN=false is not allowed in production (SEC-10)");
     require(!env.SANDBOX_TEST_ALLOW_HOST &&
       !env.SANDBOX_TEST_CA_FILE, "SANDBOX_TEST_ALLOW_HOST and SANDBOX_TEST_CA_FILE are not allowed in production (research R2)");
   }
@@ -131,7 +163,11 @@ export function loadIntegrationSettings(
         : { mode: "local", localKey: Buffer.from(parsed.LOCAL_KMS_KEY as string, "base64") },
     storage:
       parsed.STORAGE_MODE === "s3"
-        ? { mode: "s3", bucket: parsed.UPLOADS_BUCKET as string }
+        ? {
+            mode: "s3",
+            bucket: parsed.UPLOADS_BUCKET as string,
+            mediaBucket: parsed.MEDIA_BUCKET as string,
+          }
         : { mode: "local", dir: resolveLocalDir(parsed.LOCAL_STORAGE_DIR ?? ".uploads") },
     sandbox:
       parsed.SANDBOX_MODE === "lambda"
@@ -153,11 +189,15 @@ export function loadIntegrationSettings(
         ? { mode: "anthropic", apiKey: parsed.ANTHROPIC_API_KEY as string }
         : { mode: "fake" },
     pms: { mode: parsed.PMS_MODE },
+    speech: { mode: parsed.SPEECH_MODE },
+    mediaRequireScan: parsed.MEDIA_REQUIRE_SCAN,
     feedUrlPepper: parsed.FEED_URL_PEPPER,
     flags: {
       pmsBeds24: parsed.PMS_BEDS24,
       pmsHostex: parsed.PMS_HOSTEX,
       extractionScreenshots: parsed.EXTRACTION_SCREENSHOTS,
+      guideInterviewVoice: parsed.GUIDE_INTERVIEW_VOICE,
+      guideScannedPdf: parsed.GUIDE_SCANNED_PDF,
     },
   };
 }

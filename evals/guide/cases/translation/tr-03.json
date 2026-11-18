@@ -1,0 +1,7 @@
+{
+  "id": "tr-03",
+  "from": "es",
+  "to": "en",
+  "blocks": ["El Wi-Fi se llama <i>Casa Garza</i> y la contraseña es <f1/>."],
+  "keep": ["Casa Garza"]
+}

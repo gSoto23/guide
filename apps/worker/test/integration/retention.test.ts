@@ -3,7 +3,17 @@ import { afterAll, beforeAll, beforeEach, describe, expect, inject, it } from "v
 import { eq, inArray } from "drizzle-orm";
 import {
   createDb,
+  createGuideForProperty,
   extractionRequest,
+  guide,
+  guideAiRequest,
+  guideDocument,
+  guideItem,
+  guideSection,
+  guideVersion,
+  interviewSession,
+  interviewTurn,
+  mediaObject,
   importItem,
   importRun,
   membership,
@@ -274,5 +284,229 @@ describe("retention.daily (data model §6)", () => {
     const [ws] = await handle.db.select().from(workspace).where(eq(workspace.id, workspaceId));
     expect(ws).toBeDefined();
     expect(second.cancelledRuns).toBe(0);
+  });
+});
+
+describe("retention.daily for the guide builder (feature 003 T120)", () => {
+  let guideId: string;
+  let deletedPrefixes: string[];
+  const media = {
+    put: async () => undefined,
+    get: async () => null,
+    copy: async () => undefined,
+    deletePrefix: async (prefix: string) => void deletedPrefixes.push(prefix),
+    signedUrl: async () => "",
+  };
+  const runAll = () => runRetention({ db: handle.db, storage, media });
+
+  beforeEach(async () => {
+    deletedPrefixes = [];
+    guideId = (
+      await createGuideForProperty(handle.db, { workspaceId, propertyId, guideLanguages: ["es"] })
+    ).guideId;
+  });
+
+  it("clears interview answers and transcripts after 7 days, and keeps newer ones", async () => {
+    const [session] = await handle.db
+      .insert(interviewSession)
+      .values({ workspaceId, guideId, startedBy: ownerId })
+      .returning({ id: interviewSession.id });
+    const [old, fresh] = await handle.db
+      .insert(interviewTurn)
+      .values([
+        {
+          workspaceId,
+          sessionId: session!.id,
+          topicId: "checkout.steps",
+          answerKind: "voice",
+          answerText: null,
+          transcript: "Dejen las llaves en la mesa.",
+          createdAt: daysAgo(8),
+        },
+        {
+          workspaceId,
+          sessionId: session!.id,
+          topicId: "checkout.time",
+          answerKind: "text",
+          answerText: "A las once.",
+          createdAt: daysAgo(2),
+        },
+      ])
+      .returning({ id: interviewTurn.id });
+    expect((await runAll()).interviewContent).toBe(1);
+    const rows = await handle.db
+      .select()
+      .from(interviewTurn)
+      .where(inArray(interviewTurn.id, [old!.id, fresh!.id]));
+    const byId = new Map(rows.map((row) => [row.id, row]));
+    expect(byId.get(old!.id)).toMatchObject({ transcript: null, answerText: null });
+    expect(byId.get(old!.id)?.contentDeletedAt).not.toBeNull();
+    expect(byId.get(fresh!.id)?.answerText).toBe("A las once.");
+  });
+
+  it("clears text read from documents after 7 days", async () => {
+    const [old, fresh] = await handle.db
+      .insert(guideDocument)
+      .values([
+        {
+          workspaceId,
+          guideId,
+          fileName: "viejo.pdf",
+          kind: "pdf",
+          status: "done",
+          text: "Texto viejo.",
+          readAt: daysAgo(9),
+        },
+        {
+          workspaceId,
+          guideId,
+          fileName: "nuevo.pdf",
+          kind: "pdf",
+          status: "done",
+          text: "Texto nuevo.",
+          readAt: daysAgo(1),
+        },
+      ])
+      .returning({ id: guideDocument.id });
+    expect((await runAll()).documentText).toBe(1);
+    const rows = await handle.db
+      .select({ id: guideDocument.id, text: guideDocument.text })
+      .from(guideDocument)
+      .where(inArray(guideDocument.id, [old!.id, fresh!.id]));
+    expect(rows.find((row) => row.id === old!.id)?.text).toBeNull();
+    expect(rows.find((row) => row.id === fresh!.id)?.text).toBe("Texto nuevo.");
+  });
+
+  it("keeps the latest 20 versions and the one guests read", async () => {
+    const snapshot = { schema: 1, languages: ["es"], sections: [] };
+    const versions = await handle.db
+      .insert(guideVersion)
+      .values(
+        Array.from({ length: 23 }, (_, index) => ({
+          workspaceId,
+          guideId,
+          number: index + 1,
+          cause: "publish" as const,
+          snapshot,
+          snapshotSchema: 1,
+          languages: ["es" as const],
+        })),
+      )
+      .returning({ id: guideVersion.id, number: guideVersion.number });
+    // Guests read version 2, which is older than the latest 20.
+    await handle.db
+      .update(guide)
+      .set({ status: "published", publishedVersionId: versions.find((v) => v.number === 2)!.id })
+      .where(eq(guide.id, guideId));
+    expect((await runAll()).versions).toBe(2);
+    const left = await handle.db
+      .select({ number: guideVersion.number })
+      .from(guideVersion)
+      .where(eq(guideVersion.guideId, guideId));
+    expect(left.map((row) => row.number).sort((a, b) => a - b)).toEqual([
+      2,
+      ...Array.from({ length: 20 }, (_, index) => index + 4),
+    ]);
+  });
+
+  it("deletes media 24 hours after nothing uses it, and keeps media in use", async () => {
+    const used = randomUUID();
+    const unused = randomUUID();
+    const inVersion = randomUUID();
+    await handle.db.insert(mediaObject).values(
+      [used, unused, inVersion].map((id) => ({
+        id,
+        workspaceId,
+        kind: "image" as const,
+        status: "ready" as const,
+        objectPrefix: `media/${workspaceId}/${id}/`,
+        createdAt: daysAgo(3),
+      })),
+    );
+    const [section] = await handle.db
+      .select({ id: guideSection.id })
+      .from(guideSection)
+      .where(eq(guideSection.guideId, guideId))
+      .limit(1);
+    await handle.db.insert(guideItem).values({
+      workspaceId,
+      sectionId: section!.id,
+      kind: "image",
+      position: 50,
+      source: "host",
+      reviewedAt: new Date(),
+      sourceLanguage: "es",
+      mediaId: used,
+    });
+    await handle.db.insert(guideVersion).values({
+      workspaceId,
+      guideId,
+      number: 1,
+      cause: "publish",
+      snapshot: {
+        schema: 1,
+        languages: ["es"],
+        sections: [
+          {
+            id: section!.id,
+            kind: "arrival",
+            items: [
+              {
+                id: randomUUID(),
+                kind: "image",
+                mediaId: inVersion,
+                texts: {},
+                sourceLanguage: "es",
+              },
+            ],
+          },
+        ],
+      },
+      snapshotSchema: 1,
+      languages: ["es"],
+    });
+    const first = await runAll();
+    expect(first.unusedMedia).toBe(1);
+    expect(first.deletedMedia).toBe(0);
+    // A day later, the unused media goes with its objects.
+    await handle.db
+      .update(mediaObject)
+      .set({ unreferencedSince: daysAgo(2) })
+      .where(eq(mediaObject.id, unused));
+    const second = await runAll();
+    expect(second.deletedMedia).toBe(1);
+    expect(deletedPrefixes).toEqual([`media/${workspaceId}/${unused}/`]);
+    const left = await handle.db
+      .select({ id: mediaObject.id })
+      .from(mediaObject)
+      .where(eq(mediaObject.workspaceId, workspaceId));
+    expect(left.map((row) => row.id).sort()).toEqual([used, inVersion].sort());
+  });
+
+  it("deletes AI usage rows after 12 months", async () => {
+    await handle.db.insert(guideAiRequest).values([
+      {
+        workspaceId,
+        guideId,
+        kind: "translation",
+        model: "fake",
+        outcome: "ok",
+        createdAt: daysAgo(400),
+      },
+      {
+        workspaceId,
+        guideId,
+        kind: "translation",
+        model: "fake",
+        outcome: "ok",
+        createdAt: daysAgo(30),
+      },
+    ]);
+    expect((await runAll()).aiRequests).toBe(1);
+    const left = await handle.db
+      .select({ id: guideAiRequest.id })
+      .from(guideAiRequest)
+      .where(eq(guideAiRequest.workspaceId, workspaceId));
+    expect(left).toHaveLength(1);
   });
 });

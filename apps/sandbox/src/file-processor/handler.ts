@@ -6,7 +6,12 @@ import {
   type FileProcessRequest,
   type FileProcessResponse,
 } from "../protocol.js";
+import { checkAudio } from "./audio.js";
 import { parseCsvFile } from "./csv.js";
+import { readPdf } from "./pdf.js";
+import { processMediaImage, type MediaSink } from "./media-image.js";
+import { MEDIA_VIDEO_MAX_BYTES, processMediaVideo } from "./media-video.js";
+import { S3MediaSink } from "./s3-media-sink.js";
 import { detectImageType, normalizeImage } from "./images.js";
 import { TesseractRecognizer } from "./ocr.js";
 import { S3ObjectSource } from "./s3-source.js";
@@ -24,6 +29,7 @@ import { S3ObjectSource } from "./s3-source.js";
  */
 
 export { TesseractRecognizer, type TesseractRecognizerOptions } from "./ocr.js";
+export type { MediaSink } from "./media-image.js";
 export type { TextRecognitionPort } from "@guidesk/integrations/ocr-port";
 
 /** Largest file accepted: 10 MB, as for the upload form (FR-009). */
@@ -34,6 +40,8 @@ export const FILE_MAX_BYTES = 10 * 1024 * 1024;
  * (infra/sandbox.ts, FR-016) to delete the object and answer.
  */
 export const RECOGNITION_TIMEOUT_MS = 45_000;
+/** A 60-page PDF with up to 20 scanned pages fits in the function's 2 minutes (feature 003). */
+export const DOCUMENT_TIMEOUT_MS = 100_000;
 
 /** Where uploaded objects are read from and deleted: S3 in AWS, injected by the worker locally. */
 export interface ObjectSource {
@@ -46,10 +54,14 @@ export interface ObjectSource {
 export interface FileProcessorDeps {
   storage: ObjectSource;
   recognizer: TextRecognitionPort;
+  /** Where cleaned guide media goes (feature 003 research R9); media requests fail without it. */
+  mediaSink?: MediaSink;
   /** Defaults to `FILE_MAX_BYTES`. */
   maxBytes?: number;
   /** Defaults to `RECOGNITION_TIMEOUT_MS`. */
   recognitionTimeoutMs?: number;
+  /** `guide.scannedPdf`: read scanned PDF pages by recognition (feature 003 research R9). */
+  readScannedPdfPages?: boolean;
 }
 
 /**
@@ -61,7 +73,8 @@ export interface FileProcessorDeps {
  * 3. processes it: a CSV file is parsed into rows (`csv.ts`, FR-038); a screenshot over
  *    `maxBytes` is `too_large`, one that is not JPEG, PNG, or WebP by its magic bytes is
  *    `unsupported_type`, and one that cannot be decoded or shows no text is `unreadable`;
- * 4. deletes the object, after success and after every failure, a thrown error included (FR-015).
+ * 4. deletes the object, after success and after every failure, a thrown error included (FR-015);
+ *    a voice note that passes the `audio` check stays for the transcription, which deletes it.
  *
  * A result is returned only once the object is deleted: when the delete fails, the call throws
  * and the bucket's 1-day lifecycle rule remains the backstop (research R9).
@@ -72,15 +85,36 @@ export function createFileProcessor(
   return async (request) => {
     const parsed = fileProcessRequestSchema.safeParse(request);
     if (!parsed.success) return { error: "internal" };
-    const { objectKey, purpose } = parsed.data;
+    const { objectKey, purpose, mediaPrefix } = parsed.data;
 
     const bytes = await deps.storage.get(objectKey);
     if (bytes === null) return { error: "not_found" };
+    // A voice note that passes stays for the transcription, which deletes it (research R8).
+    let keep = false;
     try {
+      if (purpose === "audio") {
+        const result = checkAudio(bytes);
+        keep = !("error" in result);
+        return result;
+      }
       if (purpose === "csv") return parseCsvFile(bytes);
-      return await recognizeScreenshot(bytes, deps);
+      if (purpose === "screenshot") return await recognizeScreenshot(bytes, deps);
+      if (purpose === "media_image" || purpose === "media_video") {
+        if (!deps.mediaSink || !mediaPrefix) return { error: "internal" };
+        return purpose === "media_image"
+          ? await processMediaImage(bytes, mediaPrefix, deps.mediaSink)
+          : await processMediaVideo(bytes, mediaPrefix, deps.mediaSink);
+      }
+      if (purpose === "document") {
+        return await readPdf(bytes, {
+          recognizer: deps.recognizer,
+          readScannedPages: deps.readScannedPdfPages ?? false,
+          signal: AbortSignal.timeout(DOCUMENT_TIMEOUT_MS),
+        });
+      }
+      return { error: "unsupported_type" };
     } finally {
-      await deps.storage.delete(objectKey);
+      if (!keep) await deps.storage.delete(objectKey);
     }
   };
 }
@@ -135,9 +169,13 @@ function processorFromEnvironment(): (request: FileProcessRequest) => Promise<Fi
   }
   const bucket = process.env.UPLOADS_BUCKET;
   if (!bucket) throw new Error("UPLOADS_BUCKET is not set");
+  const mediaBucket = process.env.MEDIA_BUCKET;
   lambdaProcessor = createFileProcessor({
-    storage: new S3ObjectSource({ bucket, maxBytes: FILE_MAX_BYTES }),
+    // The largest upload is a guide video; each mode checks its own limit (feature 003 FR-009).
+    storage: new S3ObjectSource({ bucket, maxBytes: MEDIA_VIDEO_MAX_BYTES }),
     recognizer: new TesseractRecognizer(),
+    ...(mediaBucket ? { mediaSink: new S3MediaSink({ bucket: mediaBucket }) } : {}),
+    readScannedPdfPages: process.env.GUIDE_SCANNED_PDF === "true",
   });
   return lambdaProcessor;
 }

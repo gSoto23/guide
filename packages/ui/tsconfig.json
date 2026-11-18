@@ -2,7 +2,9 @@
   "extends": "@guidesk/config/tsconfig/node.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "lib": ["ES2024", "DOM"]
   },
   "include": ["src"]
 }

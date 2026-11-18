@@ -10,7 +10,7 @@ import { vpc } from "./network";
 import { portalUrl } from "./router";
 import { apiSecretArns, workerSecretArns } from "./runtime-secrets";
 import { feedReader, fileProcessor } from "./sandbox";
-import { uploads } from "./storage";
+import { media, uploads } from "./storage";
 
 const cluster = new sst.aws.Cluster("Cluster", { vpc });
 
@@ -41,10 +41,13 @@ const integrationEnvironment = {
   KMS_KEY_ID: restrictedDataKey.arn,
   STORAGE_MODE: "s3",
   UPLOADS_BUCKET: uploads.name,
+  MEDIA_BUCKET: media.name,
   SANDBOX_MODE: "lambda",
   SANDBOX_FEED_READER_FUNCTION: feedReader.name,
   SANDBOX_FILE_PROCESSOR_FUNCTION: fileProcessor.name,
   PMS_MODE: "live",
+  SPEECH_MODE: "transcribe",
+  MEDIA_REQUIRE_SCAN: "true",
   ...stageConfig.flags,
 };
 
@@ -95,6 +98,8 @@ export const api = new sst.aws.Service("Api", {
     { actions: ["s3:PutObject"], resources: [$interpolate`${uploads.arn}/uploads/*`] },
     // Saving a calendar link reads it through the feed reader first (FR-021).
     { actions: ["lambda:InvokeFunction"], resources: [feedReader.arn] },
+    // Presigned GET URLs for guide media shown in the portal (feature 003 research R9).
+    { actions: ["s3:GetObject"], resources: [$interpolate`${media.arn}/media/*`] },
   ],
   loadBalancer: {
     ...(stageConfig.apiDomain ? { domain: stageConfig.apiDomain } : {}),
@@ -130,6 +135,30 @@ export const worker = new sst.aws.Service("Worker", {
     // Retention and rejected uploads (data model §6).
     { actions: ["s3:DeleteObject"], resources: [$interpolate`${uploads.arn}/uploads/*`] },
     { actions: ["lambda:InvokeFunction"], resources: [feedReader.arn, fileProcessor.arn] },
+    // Feature 003: the malware scan result on media and documents (research R9), and voice notes
+    // sent to Amazon Transcribe with the transcript written back under transcripts/ (research R8).
+    // Transcribe reads and writes S3 with the caller's permissions (unverified: research R22 gate).
+    {
+      actions: ["s3:GetObjectTagging", "s3:GetObject"],
+      resources: [$interpolate`${uploads.arn}/uploads/*`],
+    },
+    {
+      actions: ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
+      resources: [$interpolate`${uploads.arn}/transcripts/*`],
+    },
+    {
+      actions: [
+        "transcribe:StartTranscriptionJob",
+        "transcribe:GetTranscriptionJob",
+        "transcribe:DeleteTranscriptionJob",
+      ],
+      resources: ["*"],
+    },
+    // Media copies on duplication, size checks, and the media sweep (data model §6).
+    {
+      actions: ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+      resources: [$interpolate`${media.arn}/media/*`],
+    },
   ],
   dev: {
     command: "pnpm --filter @guidesk/worker dev",

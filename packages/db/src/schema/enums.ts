@@ -5,3 +5,6 @@
  * of a cycle).
  */
 export const PMS_PROVIDERS = ["beds24", "hostex"] as const;
+
+/** Guide languages (feature 002 FR-003); shared by properties and guides without an import cycle. */
+export const GUIDE_LANGUAGES = ["es", "en"] as const;

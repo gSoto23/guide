@@ -1,0 +1,7 @@
+{
+  "id": "tr-24",
+  "from": "en",
+  "to": "es",
+  "blocks": ["The <a1>Elm Street Market</a1> opens from 8 to 20 &amp; takes cards."],
+  "keep": ["Elm Street Market"]
+}

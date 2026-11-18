@@ -31,7 +31,15 @@ describe("integration settings (T006)", () => {
       sandbox: { mode: "in-process" },
       llm: { mode: "fake" },
       pms: { mode: "fixtures" },
+      speech: { mode: "fake" },
+      mediaRequireScan: true,
     });
+  });
+
+  it("refuses fake speech to text and skipped malware scans in production (feature 003 R8, R9)", () => {
+    expect(() =>
+      loadConfig({ ...env, NODE_ENV: "production", MEDIA_REQUIRE_SCAN: "false" }),
+    ).toThrow(/SPEECH_MODE=fake[\s\S]*MEDIA_REQUIRE_SCAN=false/);
   });
 
   it("requires the model's API key with LLM_MODE=anthropic", () => {

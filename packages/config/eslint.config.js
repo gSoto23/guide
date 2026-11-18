@@ -2,12 +2,19 @@
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 
-// Only the worker decrypts restricted values (research R5, SEC-06): the API encrypts with
+// Only the worker and the locked-field reveal service decrypt restricted values (feature 002
+// research R5, feature 003 research R4, SEC-06): the rest of the API encrypts with
 // `@guidesk/vault` but never reads plaintext back. `files` globs are relative to the config that
 // loads this one (the repository root for apps/api, apps/worker, and packages/*).
 const VAULT_DECRYPT_MESSAGE =
-  "Only apps/worker/src may import @guidesk/vault/decrypt (research R5, SEC-06). The API encrypts and never decrypts restricted values.";
-const VAULT_DECRYPT_ALLOWED = ["apps/worker/src/**", "apps/worker/test/**", "packages/vault/**"];
+  "Only apps/worker/src and apps/api/src/locked-fields/reveal.service.ts may import @guidesk/vault/decrypt (research R5, feature 003 R4, SEC-06). The rest of the API encrypts and never decrypts restricted values.";
+const VAULT_DECRYPT_ALLOWED = [
+  "apps/worker/src/**",
+  "apps/worker/test/**",
+  "packages/vault/**",
+  // Feature 003 (research R4): the single API file that reveals a locked field.
+  "apps/api/src/locked-fields/reveal.service.ts",
+];
 
 export default tseslint.config(
   {

@@ -1,0 +1,19 @@
+{
+  "id": "en-08",
+  "language": "en",
+  "description": "A studio with a rooftop terrace.\nThe internet is fiber and the password is on the card on the fridge.\nThe bus to the city stops across the street.\nThe pharmacy on the corner is open until ten.",
+  "expected": [
+    {
+      "phrase": "The internet is fiber and the password is on the card on the fridge.",
+      "section": "wifi"
+    },
+    {
+      "phrase": "The bus to the city stops across the street.",
+      "section": "parking"
+    },
+    {
+      "phrase": "The pharmacy on the corner is open until ten.",
+      "section": "emergency"
+    }
+  ]
+}

@@ -44,7 +44,21 @@
     "feed_rejected": "We couldn't read that calendar link. Check that it's an iCal export link that starts with https.",
     "invalid_credential": "Your PMS didn't accept that credential. Nothing was saved.",
     "extraction_limit_reached": "You've used today's listing imports. Try again tomorrow.",
-    "provider_unavailable": "Your PMS didn't answer. Try again in a few minutes."
+    "provider_unavailable": "Your PMS didn't answer. Try again in a few minutes.",
+    "section_changed": "The section changed since you opened it. Compare and choose what to keep.",
+    "not_ready_to_publish": "Confirm the property's details before publishing.",
+    "locked_field_referenced": "A published version uses this locked field.",
+    "interview_active": "An interview is already in progress.",
+    "section_limit": "You can have up to 10 sections of your own.",
+    "item_limit": "This section already has the most photos or videos allowed.",
+    "text_too_long": "The section is longer than 20,000 characters.",
+    "invalid_document": "The content has formatting that cannot be saved.",
+    "benefit_required": "Say whether you get a commission, discount, or other benefit from this business.",
+    "wifi_only": "Only the Wi-Fi password can be public.",
+    "shared_block_limit": "You can have up to 50 shared blocks.",
+    "storage_limit_reached": "You reached your photo and video storage limit.",
+    "ai_limit_reached": "You reached the daily AI limit. It resets at midnight (UTC).",
+    "reveal_limit_reached": "You revealed too many locked fields in an hour. Try again later."
   },
   "auth": {
     "signInCta": "Sign in or create an account",
@@ -179,7 +193,13 @@
       "toConfirm": "{count, plural, one {# imported property is ready to confirm.} other {# imported properties are ready to confirm.}}",
       "confirmAll": "Confirm all",
       "confirmed": "{count, plural, one {# property confirmed.} other {# properties confirmed.}}",
-      "notFoundInPms": "Not in your PMS"
+      "notFoundInPms": "Not in your PMS",
+      "guide": {
+        "draft": "Draft guide · {score}%",
+        "published": "Published guide · {score}%",
+        "published_changes": "Published guide · unpublished changes",
+        "unpublished": "Unpublished guide"
+      }
     },
     "limits": {
       "usage": "{used} of {limit} properties",
@@ -249,7 +269,7 @@
       "guests": "Maximum guests",
       "languages": "Guide languages",
       "nextStep": "Next: build the guide",
-      "nextStepSoon": "The guide builder arrives in the next update.",
+      "nextStepSoon": "Fill in the guide with what guests ask most, and publish it when it's ready.",
       "notFoundInPms": "This listing is no longer in {provider}, so its stays aren't updated.",
       "toConfirm": "These details came from your PMS. Check them and confirm.",
       "confirm": "Confirm details",
@@ -773,7 +793,8 @@
       "team": "Team",
       "security": "Security",
       "home": "Home",
-      "settings": "Settings"
+      "settings": "Settings",
+      "shared": "Shared content"
     },
     "loading": "Loading…",
     "none": "No workspace: create one"
@@ -873,5 +894,546 @@
       "howToDelete": "How to delete it",
       "connect": "Connect a PMS"
     }
+  },
+  "guide": {
+    "title": "Guide",
+    "sections": {
+      "arrival": "Arrival and access",
+      "wifi": "Wi-Fi",
+      "house_rules": "House rules",
+      "appliances": "Appliances and how-tos",
+      "amenities": "Amenities",
+      "parking": "Parking and transport",
+      "local_recommendations": "Local recommendations",
+      "emergency": "Emergency and contacts",
+      "checkout": "Checkout"
+    },
+    "status": {
+      "missing": "Missing",
+      "needs_review": "Needs review",
+      "ready": "Ready"
+    },
+    "guideStatus": {
+      "draft": "Draft",
+      "published": "Published",
+      "published_changes": "Published · unpublished changes",
+      "unpublished": "Unpublished"
+    },
+    "source": {
+      "host": "Written by you",
+      "listing": "From your listing",
+      "pms": "From {provider}",
+      "document": "From {file}",
+      "interview": "From your interview",
+      "copy": "Copied from {name}",
+      "reviewed": "Reviewed"
+    },
+    "facts": {
+      "check_in_time": "Check-in from {time}",
+      "checkout_time": "Checkout by {time}",
+      "max_guests": "Up to {count} guests",
+      "address": "Address: {address}",
+      "editInProperty": "Change in property details"
+    },
+    "lockedKinds": {
+      "door_code": "Door code",
+      "gate_code": "Gate code",
+      "lockbox_code": "Lockbox code",
+      "alarm_code": "Alarm code",
+      "wifi_password": "Wi-Fi password",
+      "other": "Other code"
+    },
+    "topics": {
+      "arrival.check_in_time": {
+        "name": "Check-in time",
+        "question": "What time can guests check in?"
+      },
+      "arrival.access_steps": {
+        "name": "How to get in",
+        "question": "How do guests get into the property, step by step?"
+      },
+      "arrival.access_code": {
+        "name": "Access code",
+        "question": "Add the door, gate, or lockbox code in a locked field."
+      },
+      "arrival.access_photo": {
+        "name": "Photo of the entrance",
+        "question": "Can you add a photo of the entrance or the lockbox?"
+      },
+      "arrival.directions": {
+        "name": "Directions",
+        "question": "How do guests find the property? Landmarks, Waze, or Google Maps."
+      },
+      "arrival.early_check_in": {
+        "name": "Early check-in and luggage",
+        "question": "Can guests arrive early or leave their luggage?"
+      },
+      "wifi.network": {
+        "name": "Network name",
+        "question": "What is the Wi-Fi network called?"
+      },
+      "wifi.password": {
+        "name": "Wi-Fi password",
+        "question": "Add the Wi-Fi password in a locked field."
+      },
+      "wifi.troubleshooting": {
+        "name": "If the Wi-Fi fails",
+        "question": "What should guests do if the Wi-Fi stops working?"
+      },
+      "house_rules.quiet_hours": {
+        "name": "Quiet hours",
+        "question": "Are there quiet hours or rules about noise?"
+      },
+      "house_rules.smoking": {
+        "name": "Smoking",
+        "question": "Is smoking allowed? Where?"
+      },
+      "house_rules.pets": {
+        "name": "Pets",
+        "question": "Are pets allowed?"
+      },
+      "house_rules.parties": {
+        "name": "Parties and visitors",
+        "question": "Are parties or visitors allowed?"
+      },
+      "house_rules.max_guests": {
+        "name": "Maximum guests",
+        "question": "How many guests at most?"
+      },
+      "house_rules.trash": {
+        "name": "Trash and recycling",
+        "question": "What do guests do with trash and recycling?"
+      },
+      "appliances.ac_heating": {
+        "name": "Air conditioning",
+        "question": "How does the air conditioning or heating work?"
+      },
+      "appliances.hot_water": {
+        "name": "Hot water",
+        "question": "How does the hot water work?"
+      },
+      "appliances.kitchen": {
+        "name": "Kitchen",
+        "question": "Anything to know about the kitchen, coffee maker, or stove?"
+      },
+      "appliances.laundry": {
+        "name": "Washer and dryer",
+        "question": "How do guests use the washer and dryer?"
+      },
+      "appliances.tv": {
+        "name": "TV",
+        "question": "How do guests use the TV or streaming?"
+      },
+      "appliances.how_to_media": {
+        "name": "Photo or video how-to",
+        "question": "Can you add a photo or short video of how to use an appliance?"
+      },
+      "amenities.list": {
+        "name": "Amenities list",
+        "question": "What amenities does the property have?"
+      },
+      "amenities.pool_beach": {
+        "name": "Pool and beach",
+        "question": "Is there a pool, beach towels, or umbrellas?"
+      },
+      "parking.where": {
+        "name": "Where to park",
+        "question": "Where can guests park?"
+      },
+      "parking.transport": {
+        "name": "Transport",
+        "question": "How do guests get around without a car? Taxi, bus, or shuttle."
+      },
+      "local.groceries": {
+        "name": "Groceries",
+        "question": "Where do guests buy groceries?"
+      },
+      "local.restaurants": {
+        "name": "Restaurants",
+        "question": "Which restaurants nearby do you recommend?"
+      },
+      "local.activities": {
+        "name": "Activities",
+        "question": "What can guests do nearby? Beaches, tours, or hikes."
+      },
+      "local.recommendations": {
+        "name": "At least three recommendations",
+        "question": "Add at least three places you recommend."
+      },
+      "local.personal_tip": {
+        "name": "Your personal tip",
+        "question": "What is your favorite spot that few visitors know?"
+      },
+      "emergency.contacts": {
+        "name": "How to reach you",
+        "question": "How can guests reach you if they need help?"
+      },
+      "emergency.number": {
+        "name": "Emergency number",
+        "question": "What is the country's emergency number?"
+      },
+      "emergency.medical": {
+        "name": "Hospital and pharmacy",
+        "question": "Where is the nearest hospital, clinic, or pharmacy?"
+      },
+      "emergency.safety_equipment": {
+        "name": "Extinguisher and first aid",
+        "question": "Where are the fire extinguisher and first-aid kit?"
+      },
+      "checkout.time": {
+        "name": "Checkout time",
+        "question": "What time do guests check out?"
+      },
+      "checkout.steps": {
+        "name": "Checkout steps",
+        "question": "What should guests do before leaving? Keys, trash, dishes."
+      },
+      "checkout.late_checkout": {
+        "name": "Late checkout",
+        "question": "Can guests check out later?"
+      }
+    },
+    "keepCodesOut": "Don't add door codes here. Add them in the locked fields.",
+    "drafting": "Drafting from your listing…",
+    "draftWaiting": "Drafting continues at {time}, when the daily AI limit resets.",
+    "review": {
+      "title": "{name} guide",
+      "completeness": "{score}% complete",
+      "completenessHint": "What guests ask about most and is still missing:",
+      "noMissing": "The guide covers what guests ask about most.",
+      "answerInInterview": "Answer in the interview",
+      "editSection": "Edit section",
+      "items": "{count, plural, =0 {No content} one {# item} other {# items}}",
+      "hidden": "Hidden",
+      "readOnly": "You can read the guide, but only owners and admins edit it.",
+      "draftFailed": "We could not draft the guide from your listing. You can write it by hand or try again from a section.",
+      "backToProperty": "Back to the property",
+      "addSection": "Add a section of your own",
+      "sectionTitle": "Section name",
+      "create": "Create",
+      "cancel": "Cancel",
+      "open": "Open the guide",
+      "notReady": "Confirm the property's details to be able to publish the guide."
+    },
+    "editor": {
+      "backToGuide": "Back to the guide",
+      "approve": "Approve",
+      "approveAll": "Approve all",
+      "approved": "Approved",
+      "needsReview": "Needs review",
+      "delete": "Remove",
+      "deleteConfirm": "Remove this item?",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "hide": "Hide section",
+      "show": "Show section",
+      "hiddenNotice": "This section is hidden: it is not published and does not count toward completeness.",
+      "rename": "Rename",
+      "deleteSection": "Delete section",
+      "addText": "Add text",
+      "addPhoto": "Add photo",
+      "addVideo": "Add video",
+      "addRecommendation": "Add recommendation",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "unsaved": "Not saved: it will be sent when the connection returns.",
+      "offline": "Offline: your text stays on this device.",
+      "conflict": "Someone changed this section while you were editing it. Reload to see the current version; your text stays on this device.",
+      "reload": "Reload",
+      "redraft": "Draft again from the listing",
+      "redraftQueued": "We asked for a new draft; it will appear as content to review.",
+      "codeWarning": "This looks like a code or a password. Keep it in a locked field.",
+      "keepAsText": "Keep as text",
+      "bold": "Bold",
+      "italic": "Italic",
+      "bulletList": "List",
+      "orderedList": "Numbered list",
+      "link": "Link",
+      "linkPrompt": "Link address (https://…)",
+      "heading": "Subheading",
+      "lockedField": "Locked field",
+      "factHint": "This comes from the property's details.",
+      "empty": "This section has no content yet.",
+      "caption": "Description for people who cannot see the image",
+      "textPlaceholder": "Write for your guests…",
+      "edit": "Edit",
+      "insertLocked": "Insert locked field"
+    },
+    "media": {
+      "uploading": "Uploading…",
+      "processing": "Checking the file…",
+      "rejected": "File rejected: {reason}",
+      "reasons": {
+        "unsupported_type": "type not allowed",
+        "too_large": "too large",
+        "too_long": "the video is longer than 90 seconds",
+        "unsupported_codec": "video format not supported",
+        "malware": "it did not pass the security check",
+        "storage_limit": "storage is full",
+        "unreadable": "it could not be read"
+      },
+      "hevcNote": "This video is HEVC: some Android phones may not play it.",
+      "heicUnsupported": "This browser cannot read HEIC photos. Use JPEG or PNG.",
+      "storage": "Storage: {used} of {limit}"
+    },
+    "recommendation": {
+      "name": "Place name",
+      "category": "Type",
+      "categories": {
+        "restaurant": "Restaurant",
+        "grocery": "Grocery",
+        "beach": "Beach",
+        "activity": "Activity",
+        "shopping": "Shopping",
+        "transport": "Transport",
+        "service": "Service",
+        "other": "Other"
+      },
+      "url": "Website (optional)",
+      "address": "Address (optional)",
+      "benefit": "Do you get a commission, discount, or other benefit from this business?",
+      "benefits": {
+        "none": "No",
+        "commission": "Yes, a commission",
+        "discount": "Yes, a discount",
+        "other": "Yes, another benefit"
+      },
+      "benefitNote": "Benefit details (optional)",
+      "personalTip": "This is my personal recommendation",
+      "description": "Your tip",
+      "save": "Save recommendation",
+      "disclosure": "Guests will see that you get a benefit."
+    },
+    "locked": {
+      "title": "Locked fields",
+      "intro": "Codes and the Wi-Fi password are stored encrypted. You only see them after confirming your identity, and every time is logged.",
+      "link": "Locked fields",
+      "add": "Add a locked field",
+      "kind": "Kind",
+      "label": "Name",
+      "value": "Value",
+      "save": "Save",
+      "set": "Set on {date}",
+      "notSet": "No value",
+      "reveal": "Show",
+      "hide": "Hide",
+      "hidesIn": "Hides in {seconds} s",
+      "change": "Change value",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this locked field?",
+      "referenced": "The published guide uses this field. If you delete it, guests will see a blank until you publish again. Delete anyway?",
+      "publicWifi": "Show to anyone with the guide link",
+      "publicWifiWarning": "Anyone with the guide's link or QR code will see the Wi-Fi password. Continue?",
+      "isPublic": "Public",
+      "locked": "Locked",
+      "agentNotice": "Only owners and admins see locked fields.",
+      "history": "Who saw them",
+      "historyEmpty": "Nobody has seen these fields yet.",
+      "historyItem": "{name} saw “{label}” on {date}",
+      "insert": "Insert locked field",
+      "move": "Move to a locked field",
+      "fromPms": "From {provider}"
+    },
+    "publish": {
+      "open": "Publish",
+      "preview": "Preview",
+      "versions": "Versions",
+      "unpublish": "Unpublish",
+      "unpublishConfirm": "Guests will stop seeing the guide until you publish it again. Unpublish?",
+      "unpublished": "The guide is no longer published.",
+      "title": "Publish the guide",
+      "checking": "Checking the guide…",
+      "notReady": "Confirm the property's details before publishing.",
+      "openProperty": "Open the property",
+      "pendingDeletion": "This workspace is scheduled for deletion. Restore it to publish.",
+      "leftOutTitle": "Left out because they need review",
+      "leftOutIntro": "Approve them to include them, or publish without them.",
+      "review": "Review",
+      "approve": "Approve",
+      "noLeftOut": "All content is reviewed.",
+      "warningsTitle": "Warnings",
+      "warningsIntro": "Warnings don't stop you from publishing.",
+      "warning_missing_essential": "Missing: {topic}",
+      "warning_unset_locked_field": "The locked field “{label}” has no value",
+      "warning_code_like_text": "A text in {section} looks like a code or a password",
+      "warning_off_platform": "A text in {section} asks guests to book or pay outside the platform",
+      "warning_unreviewed_translations": "{count, plural, one {# translation not reviewed} other {# translations not reviewed}}",
+      "warning_out_of_date_translations": "{count, plural, one {# translation out of date} other {# translations out of date}}",
+      "confirm": "Publish now",
+      "publishing": "Publishing…",
+      "cancel": "Cancel",
+      "published": "You published version {number}. Guests see it now.",
+      "changed": "The guide changed while you were reviewing. Check it again before publishing.",
+      "liveVersion": "Guests see version {number}."
+    },
+    "versions": {
+      "title": "Published versions",
+      "intro": "The latest 20 versions are kept. Restoring one makes it your draft; nothing changes for guests until you publish.",
+      "empty": "You haven't published this guide yet.",
+      "version": "Version {number}",
+      "current": "Guests see this one",
+      "by": "{date} · {name}",
+      "byShared": "{date} · shared content",
+      "view": "View",
+      "restore": "Restore as draft",
+      "restoreConfirm": "Your current draft will be replaced with version {number}. Continue?",
+      "restored": "You restored version {number} as the draft. Publish when it's ready."
+    },
+    "preview": {
+      "title": "Preview",
+      "intro": "This is how guests will see the guide. Locked fields show as placeholders.",
+      "draft": "Draft",
+      "published": "Published",
+      "version": "Version {number}",
+      "language": "Language",
+      "notPublished": "This guide isn't published.",
+      "empty": "This section has no reviewed content yet.",
+      "personalTip": "Personal recommendation"
+    },
+    "interview": {
+      "start": "Start the interview",
+      "answerInInterview": "Answer in the interview",
+      "notApplicable": "Doesn't apply",
+      "undoMark": "Remove mark",
+      "title": "Interview",
+      "intro": "We ask one question at a time about what guests ask most. We draft the text and you review it.",
+      "reminder": "Don't include codes or passwords in your answers: keep them in a locked field.",
+      "section": "For the {section} section",
+      "answerLabel": "Your answer",
+      "send": "Send",
+      "sending": "Sending…",
+      "orRecord": "Or record a voice note",
+      "record": "Record a voice note",
+      "stop": "Stop",
+      "recording": "Recording… {seconds} s of 120",
+      "uploading": "Uploading the voice note…",
+      "micDenied": "We couldn't use the microphone. Type your answer.",
+      "queued": "Getting your answer ready…",
+      "transcribing": "Transcribing…",
+      "drafting": "Drafting…",
+      "done": "We added {count, plural, one {# text} other {# texts}} to {section} for you to review.",
+      "reviewSection": "Review in {section}",
+      "transcript": "What we understood",
+      "drafted": "Drafted text",
+      "redacted": "We removed a code from your answer. Keep it in a locked field.",
+      "error_not_understood": "We didn't understand the answer. Try again or say it another way.",
+      "error_transcription_failed": "We couldn't transcribe the voice note. Type your answer.",
+      "error_unsupported_type": "We couldn't read the voice note. Type your answer.",
+      "error_ai_unavailable": "The assistant isn't available right now. Try again in a few minutes.",
+      "lockedTopic": "This answer is a code. Keep it in a locked field, not in the text.",
+      "openLocked": "Open locked fields",
+      "skip": "Skip",
+      "finish": "Finish",
+      "noMore": "Done! There are no more questions for now.",
+      "finished": "You finished the interview.",
+      "busyElsewhere": "Someone else has an interview open on this guide. You can continue it here."
+    },
+    "translations": {
+      "link": "Translations",
+      "title": "Translations",
+      "intro": "Every text is translated by itself. Review the translations and fix what's needed; the ones you review don't change without you.",
+      "singleLanguage": "This guide is in one language. Add another language in the property's details to translate it.",
+      "openProperty": "Open the property",
+      "empty": "This section has no texts yet.",
+      "source": "Original ({language})",
+      "translation": "Translation ({language})",
+      "state_waiting": "Translating…",
+      "state_machine": "Machine translation",
+      "state_reviewed": "Reviewed",
+      "state_out_of_date": "Out of date: the original changed",
+      "state_failed": "Couldn't translate",
+      "state_pending": "Pending",
+      "reason_ai_limit": "the daily AI limit was reached; it continues tomorrow",
+      "reason_ai_unavailable": "the assistant isn't available; we'll try again",
+      "reason_tokens_mismatch": "the formatting didn't match",
+      "edit": "Edit",
+      "save": "Save translation",
+      "cancel": "Cancel",
+      "markReviewed": "Mark reviewed",
+      "translateAgain": "Translate again",
+      "keep": "Keep as is",
+      "changed": "The section changed. Reload to see the latest.",
+      "reload": "Reload"
+    },
+    "uploads": {
+      "link": "Manuals and photos",
+      "title": "Manuals and photos",
+      "intro": "Upload PDF manuals or photos of appliances, the entrance, or instructions. We read the text, delete the file, and suggest content for you to review.",
+      "reminder": "Don't upload photos of codes or passwords: keep them in a locked field.",
+      "pick": "Choose files",
+      "takePhoto": "Take a photo",
+      "limit": "Up to 10 files at a time: PDFs up to 20 MB or photos up to 10 MB.",
+      "uploading": "Uploading…",
+      "status_checking": "Checking the file…",
+      "status_reading": "Reading…",
+      "status_done": "{count, plural, =0 {Done} one {Done: # suggestion to review} other {Done: # suggestions to review}}",
+      "status_rejected": "Couldn't read it",
+      "pages": "{pages, plural, one {# page} other {# pages}}",
+      "redacted": "We removed {count, plural, one {a code} other {# codes}} from the text we read.",
+      "reason_unsupported_type": "This file type isn't supported.",
+      "reason_too_large": "The file is too large.",
+      "reason_too_many_pages": "The PDF has more than 60 pages.",
+      "reason_password_protected": "The PDF has a password. Remove it and upload it again.",
+      "reason_unreadable": "We couldn't read the file.",
+      "reason_malware": "The file didn't pass the security check.",
+      "reason_nothing_found": "We didn't find useful information for the guide.",
+      "reason_ai_limit": "You reached the daily AI limit. Upload it again tomorrow.",
+      "reason_ai_unavailable": "The assistant isn't available. Try again later.",
+      "accept": "Accept",
+      "discard": "Discard",
+      "edit": "Edit in the section",
+      "remove": "Remove file",
+      "addToSection": "Add this photo to a section",
+      "chooseSection": "Section",
+      "add": "Add",
+      "added": "We added the photo to {section}.",
+      "empty": "You haven't uploaded files yet.",
+      "photoUnreadable": "We couldn't open the photo {name}. Try another photo."
+    },
+    "shared": {
+      "badge": "Shared: {name}",
+      "override": "Override for this property",
+      "exclude": "Exclude from this property",
+      "overridden": "You use your own copy of “{name}”.",
+      "behind": "The shared version changed since you made your copy.",
+      "reset": "Reset to shared",
+      "excluded": "You excluded “{name}” from this property.",
+      "include": "Include again",
+      "resetConfirm": "Your copy of “{name}” will be replaced with the shared version. Continue?"
+    }
+  },
+  "sharedContent": {
+    "title": "Shared content",
+    "intro": "Write once what repeats across your properties (policies, emergency contacts, checkout steps, area recommendations). Every guide inherits it; you can override or exclude it per property.",
+    "create": "Create block",
+    "name": "Block name",
+    "section": "Section",
+    "cancel": "Cancel",
+    "limit": "You can have up to {limit} blocks.",
+    "empty": "You don't have shared content yet.",
+    "status_draft": "Draft",
+    "status_published": "Published",
+    "changes": "Unpublished changes",
+    "counts": "Inherited by {inherit} · Own copy {override} · Excluded {exclude}",
+    "back": "Back to shared content",
+    "items": "Content",
+    "addText": "Add text",
+    "save": "Save",
+    "delete": "Delete",
+    "noLocked": "Locked fields belong to each property: they can't be used in shared content.",
+    "publish": "Publish",
+    "publishing": "Publishing…",
+    "published": "Published. {count, plural, =0 {Guides update when they are published} one {# published guide will update} other {# published guides will update}}.",
+    "deleteBlock": "Delete block",
+    "deleteConfirm": "It will be removed from every guide, published ones too. Delete?",
+    "properties": "Properties",
+    "inherit": "Inherit it",
+    "override": "Have their own copy",
+    "exclude": "Exclude it",
+    "behind": "the shared version changed",
+    "none": "None",
+    "changed": "The block changed. Reload to see the latest.",
+    "reload": "Reload",
+    "textPlaceholder": "Write the shared content…"
   }
 }

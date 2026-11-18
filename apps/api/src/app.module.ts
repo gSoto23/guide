@@ -11,6 +11,12 @@ import { ConfigModule } from "./config/config.module.js";
 import { DatabaseModule } from "./database/database.module.js";
 import { EmailModule } from "./email/email.module.js";
 import { ExtractionsModule } from "./extractions/extractions.module.js";
+import { GuideMediaModule } from "./guide-media/guide-media.module.js";
+import { GuidesModule } from "./guides/guides.module.js";
+import { GuideDocumentsModule } from "./guide-documents/guide-documents.module.js";
+import { InterviewsModule } from "./interviews/interviews.module.js";
+import { SharedBlocksModule } from "./shared-blocks/shared-blocks.module.js";
+import { LockedFieldsModule } from "./locked-fields/locked-fields.module.js";
 import { ImportRunsModule } from "./imports/import-runs.module.js";
 import { HealthController } from "./health/health.controller.js";
 import { IntegrationsModule } from "./integrations/integrations.module.js";
@@ -34,6 +40,12 @@ import { TenancyModule } from "./tenancy/tenancy.module.js";
     IntegrationsModule,
     UploadsModule,
     PropertiesModule,
+    GuidesModule,
+    GuideMediaModule,
+    LockedFieldsModule,
+    InterviewsModule,
+    GuideDocumentsModule,
+    SharedBlocksModule,
     ListingContentModule,
     CalendarFeedsModule,
     StaysModule,

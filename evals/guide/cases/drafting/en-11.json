@@ -1,0 +1,19 @@
+{
+  "id": "en-11",
+  "language": "en",
+  "description": "A two-story house near the hot springs.\nThe hot springs resort is ten minutes away.\nThe first-aid kit and fire extinguisher are under the sink.\nWhen you leave, put the keys on the dining table.",
+  "expected": [
+    {
+      "phrase": "The hot springs resort is ten minutes away.",
+      "section": "local_recommendations"
+    },
+    {
+      "phrase": "The first-aid kit and fire extinguisher are under the sink.",
+      "section": "emergency"
+    },
+    {
+      "phrase": "When you leave, put the keys on the dining table.",
+      "section": "checkout"
+    }
+  ]
+}

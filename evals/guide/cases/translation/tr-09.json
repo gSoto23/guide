@@ -1,0 +1,7 @@
+{
+  "id": "tr-09",
+  "from": "es",
+  "to": "en",
+  "blocks": ["El supermercado <a1>Palí</a1> abre de 8 a 20 horas &amp; acepta tarjeta."],
+  "keep": ["Palí"]
+}

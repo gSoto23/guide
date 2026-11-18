@@ -1,0 +1,21 @@
+{
+  "name": "@guidesk/evals-guide",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Eval suites for the guide builder's AI calls (feature 003 research R6, constitution V): drafting, interview, and translation.",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "eval": "tsc -p tsconfig.json && node --env-file-if-exists=../../.env dist/run.js"
+  },
+  "dependencies": {
+    "@guidesk/domain": "workspace:*",
+    "@guidesk/i18n": "workspace:*",
+    "@guidesk/integrations": "workspace:*"
+  },
+  "devDependencies": {
+    "@guidesk/config": "workspace:*"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "id": "tr-07",
+  "from": "es",
+  "to": "en",
+  "blocks": ["La alarma se desactiva con {{R1}} en el panel de la entrada."],
+  "keep": []
+}

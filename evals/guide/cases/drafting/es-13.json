@@ -1,0 +1,19 @@
+{
+  "id": "es-13",
+  "language": "es",
+  "description": "Penthouse con jacuzzi en Herradura.\nEl jacuzzi se enciende con el botón azul junto a la puerta.\nEl parqueo es el sótano dos, espacio 31.\nLa marina tiene buenos restaurantes de mariscos.",
+  "expected": [
+    {
+      "phrase": "El jacuzzi se enciende con el botón azul junto a la puerta.",
+      "section": "appliances"
+    },
+    {
+      "phrase": "El parqueo es el sótano dos, espacio 31.",
+      "section": "parking"
+    },
+    {
+      "phrase": "La marina tiene buenos restaurantes de mariscos.",
+      "section": "local_recommendations"
+    }
+  ]
+}

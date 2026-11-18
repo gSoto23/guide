@@ -1,0 +1,19 @@
+{
+  "id": "en-09",
+  "language": "en",
+  "description": "A stone cottage with a fireplace.\nOnly burn the firewood from the box on the porch.\nThe lookout on Ridge Trail is a fifteen minute drive.\nNo smoking inside the house.",
+  "expected": [
+    {
+      "phrase": "Only burn the firewood from the box on the porch.",
+      "section": "appliances"
+    },
+    {
+      "phrase": "The lookout on Ridge Trail is a fifteen minute drive.",
+      "section": "local_recommendations"
+    },
+    {
+      "phrase": "No smoking inside the house.",
+      "section": "house_rules"
+    }
+  ]
+}

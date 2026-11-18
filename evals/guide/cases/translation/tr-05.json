@@ -1,0 +1,7 @@
+{
+  "id": "tr-05",
+  "from": "es",
+  "to": "en",
+  "blocks": ["Salida a las 11:00.<br/>Dejen las llaves en la mesa."],
+  "keep": ["11:00"]
+}

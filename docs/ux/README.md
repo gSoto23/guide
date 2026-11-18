@@ -56,10 +56,12 @@ design for each.
    every guide-chat answer waits for the host, while the pilot targets ≥ 60% of questions answered
    without the host. The design adds a "choose how the assistant replies" onboarding step and a
    suggestion after unchanged approvals; the default itself is unchanged.
-4. **Codes typed into AI inputs.** FR-03.9 keeps imported sensitive values away from the AI, but a
+4. **Codes typed into AI inputs.** *Resolved by spec 003: a detector masks or removes codes before
+   any model call (research R5), and the editor offers "Move to a locked field".* FR-03.9 keeps imported sensitive values away from the AI, but a
    host can still type a door code into the interview or paste listing text or screenshots that
-   contain one. Spec 003 should define detection or redaction before text reaches the model.
-5. **Wi-Fi password classification.** The security architecture classifies Wi-Fi passwords as
+   contain one.
+5. **Wi-Fi password classification.** *Resolved by spec 003: the Wi-Fi password is a locked field
+   by default, and the host may make it public per property (FR-021).* The security architecture classifies Wi-Fi passwords as
    restricted, while FR-03.7 lets the host choose which fields are sensitive. The UX supports
    both; one rule should be chosen.
 6. **The "3–10 properties" onboarding path.** Spec 001 defines the paths for "1–2" and "10+ with a
@@ -67,8 +69,9 @@ design for each.
 7. **Passkey sign-up.** Spec 001 lists passkeys as a sign-up method (FR-001), but FR-002 verifies
    new accounts by email code or Google. The design treats passkeys as a sign-in method added
    after the first sign-in.
-8. **Voice notes need speech-to-text.** FR-03.3 requires voice-note answers, but no provider is
-   named; it would be a new subprocessor (constitution VI).
+8. **Voice notes need speech-to-text.** *Resolved by spec 003: Amazon Transcribe, under the AWS
+   hosting agreement (research R8).* FR-03.3 requires voice-note answers, but no provider was
+   named.
 
 ## How to use these documents
 

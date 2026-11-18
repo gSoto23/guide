@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { Inject, Injectable } from "@nestjs/common";
 import {
   and,
@@ -7,8 +8,10 @@ import {
   gte,
   ilike,
   inArray,
+  isNotNull,
   isNull,
   lt,
+  ne,
   or,
   sql,
   type SQL,
@@ -30,9 +33,17 @@ import type {
   UpdatePropertyBody,
 } from "@guidesk/contracts";
 import {
+  createGuideForProperty,
   countActiveProperties,
   extractionRequest,
+  guide,
+  guideItem,
+  guideItemText,
+  guideSection,
+  guideSharedLink,
   LISTING_CONTENT_KINDS,
+  mediaObject,
+  restrictedValuePublic,
   listingContent,
   onboardingProfile,
   upsertListingContent,
@@ -51,6 +62,7 @@ import {
   extractionLimitKey,
   initialSetupStatus,
   isKnownTimeZone,
+  JOB_QUEUES,
   missingFacts,
   normalizeAddressKey,
   orderStartOptions,
@@ -58,12 +70,16 @@ import {
   setupStatusAfterEdit,
   todayIn,
   type CoreFacts,
+  type GuideDraftJob,
+  type GuideTranslateJob,
+  type MediaCopyJob,
   type PmsOption,
   type Role,
   type StartOption,
   type SupportedPms,
 } from "@guidesk/domain";
 import { ApiProblem } from "../common/problem.js";
+import { JobQueueService } from "../jobs/job-queue.service.js";
 import { API_CONFIG, type ApiConfig } from "../config/config.js";
 import { DB_HANDLE } from "../database/database.module.js";
 import { RequestDb } from "../database/request-db.js";
@@ -162,6 +178,7 @@ export class PropertiesService {
     private readonly securityLog: SecurityLogService,
     @Inject(DB_HANDLE) private readonly handle: DbHandle,
     @Inject(API_CONFIG) private readonly config: ApiConfig,
+    private readonly jobs: JobQueueService,
   ) {}
 
   async list(
@@ -199,15 +216,28 @@ export class PropertiesService {
         createdAt: property.createdAt,
         purgeAfter: property.purgeAfter,
         calendarStatus: calendarStatusSql,
+        guideStatus: guide.status,
+        guideChanges: guide.hasUnpublishedChanges,
+        guideCompleteness: guide.completeness,
       })
       .from(property)
+      .leftJoin(guide, eq(guide.propertyId, property.id))
       .where(and(...conditions))
       .orderBy(desc(property.createdAt), desc(property.id))
       .limit(query.limit + 1);
     const page = rows.slice(0, query.limit);
     const last = page.at(-1);
     return {
-      items: page.map((row) => toSummary(row, row.calendarStatus)),
+      items: page.map((row) => ({
+        ...toSummary(row, row.calendarStatus),
+        guide: row.guideStatus
+          ? {
+              status: row.guideStatus,
+              hasUnpublishedChanges: row.guideChanges ?? false,
+              completeness: row.guideCompleteness ?? 0,
+            }
+          : null,
+      })),
       nextCursor: rows.length > query.limit && last ? encodeCursor(last) : null,
     };
   }
@@ -318,7 +348,15 @@ export class PropertiesService {
         createdBy: caller.userId,
       })
       .returning();
+    // Feature 003: every property starts with its guide (FR-001, research R16).
+    const newGuide = await createGuideForProperty(tx, {
+      workspaceId,
+      propertyId: row!.id,
+      guideLanguages: row!.guideLanguages,
+    });
     if (original) {
+      // Feature 003 FR-067: the guide's draft comes along, labeled as copied, to review.
+      await this.copyGuide(workspaceId, original, row!, newGuide.guideId, caller.userId);
       // The listing content, labeled as copied until the host edits or approves it (FR-043).
       for (const item of await this.contentOf(original.id)) {
         await upsertListingContent(tx, {
@@ -358,6 +396,16 @@ export class PropertiesService {
           inputDeletedAt: new Date(),
         })
         .where(eq(extractionRequest.id, extraction.id));
+    }
+    // The AI part of the draft runs in the worker once this transaction has committed (research
+    // R16); `startAfter` leaves it time, and the job retries if the guide is not visible yet. A
+    // copy brings its guide with it instead (FR-067).
+    if (!original) {
+      await this.jobs.send(
+        JOB_QUEUES.guideDraft,
+        { guideId: newGuide.guideId, workspaceId } satisfies GuideDraftJob,
+        { startAfter: 2, retryLimit: 3, retryBackoff: true, singletonKey: newGuide.guideId },
+      );
     }
     return this.detail(caller, row!);
   }
@@ -437,7 +485,319 @@ export class PropertiesService {
       .returning();
     if (!row)
       throw await this.crossTenant.notFound(caller.userId, workspaceId, "property", propertyId);
+    if (body.guideLanguages) {
+      await this.guideLanguagesChanged(
+        workspaceId,
+        propertyId,
+        current.guideLanguages,
+        row.guideLanguages,
+      );
+    }
     return this.detail(caller, row);
+  }
+
+  /**
+   * Copies a guide for a duplicated property (feature 003 FR-067, research R16): sections (custom
+   * ones too), items labeled "Copied from …" and left to review, media copied to new keys by the
+   * worker, shared-block overrides and exclusions, and locked fields with their labels and no
+   * value. Published versions, translations' review state, and reveal history stay behind.
+   */
+  private async copyGuide(
+    workspaceId: string,
+    original: PropertyRow,
+    copy: typeof property.$inferSelect,
+    guideId: string,
+    userId: string,
+  ): Promise<void> {
+    const tx = this.requestDb.current();
+    const [source] = await tx
+      .select({ id: guide.id })
+      .from(guide)
+      .where(eq(guide.propertyId, original.id))
+      .limit(1);
+    if (!source) return;
+    const label = original.name.slice(0, 120);
+    const targetSections = await tx
+      .select({ id: guideSection.id, kind: guideSection.kind })
+      .from(guideSection)
+      .where(eq(guideSection.guideId, guideId));
+    const sourceSections = await tx
+      .select()
+      .from(guideSection)
+      .where(eq(guideSection.guideId, source.id))
+      .orderBy(asc(guideSection.position));
+
+    // Locked fields: labels without values, and a map for the references in copied texts.
+    const fields = await tx
+      .select({
+        id: restrictedValuePublic.id,
+        kind: restrictedValuePublic.kind,
+        label: restrictedValuePublic.label,
+        sectionKind: restrictedValuePublic.sectionKind,
+      })
+      .from(restrictedValuePublic)
+      .where(eq(restrictedValuePublic.propertyId, original.id));
+    const fieldMap = new Map<string, string>();
+    for (const field of fields) {
+      const [created] = await tx
+        .insert(restrictedValue)
+        .values({
+          workspaceId,
+          propertyId: copy.id,
+          kind: field.kind,
+          label: field.label,
+          sectionKind: field.sectionKind,
+          source: "copy",
+          updatedBy: userId,
+        })
+        .returning({ id: restrictedValue.id });
+      fieldMap.set(field.id, created!.id);
+    }
+    const remap = (doc: unknown): unknown => {
+      if (Array.isArray(doc)) return doc.map(remap);
+      if (doc && typeof doc === "object") {
+        const node = doc as Record<string, unknown>;
+        if (node.type === "lockedField") {
+          const attrs = node.attrs as { fieldId?: string } | undefined;
+          const mapped = attrs?.fieldId ? fieldMap.get(attrs.fieldId) : undefined;
+          return mapped ? { ...node, attrs: { fieldId: mapped } } : null;
+        }
+        return Object.fromEntries(
+          Object.entries(node).map(([key, value]) => [
+            key,
+            key === "content" && Array.isArray(value)
+              ? (value.map(remap).filter((entry) => entry !== null) as unknown[])
+              : remap(value),
+          ]),
+        );
+      }
+      return doc;
+    };
+
+    const sectionMap = new Map<string, string>();
+    for (const section of sourceSections) {
+      if (section.kind === "custom") {
+        const [created] = await tx
+          .insert(guideSection)
+          .values({
+            workspaceId,
+            guideId,
+            kind: "custom",
+            title: section.title,
+            position: section.position,
+            updatedBy: userId,
+          })
+          .returning({ id: guideSection.id });
+        sectionMap.set(section.id, created!.id);
+        continue;
+      }
+      const target = targetSections.find((candidate) => candidate.kind === section.kind);
+      if (!target) continue;
+      sectionMap.set(section.id, target.id);
+      await tx
+        .update(guideSection)
+        .set({ hidden: section.hidden, position: section.position })
+        .where(eq(guideSection.id, target.id));
+    }
+
+    const items = sourceSections.length
+      ? await tx
+          .select()
+          .from(guideItem)
+          .where(
+            and(
+              inArray(
+                guideItem.sectionId,
+                sourceSections.map((section) => section.id),
+              ),
+              ne(guideItem.kind, "fact"),
+            ),
+          )
+          .orderBy(asc(guideItem.position))
+      : [];
+    const texts = items.length
+      ? await tx
+          .select()
+          .from(guideItemText)
+          .where(
+            inArray(
+              guideItemText.itemId,
+              items.map((item) => item.id),
+            ),
+          )
+      : [];
+    const mediaMap = new Map<string, string>();
+    for (const item of items) {
+      const sectionId = item.sectionId ? sectionMap.get(item.sectionId) : undefined;
+      if (!sectionId) continue;
+      let mediaId: string | null = null;
+      if (item.mediaId) {
+        mediaId = mediaMap.get(item.mediaId) ?? null;
+        if (!mediaId) {
+          const [media] = await tx
+            .select()
+            .from(mediaObject)
+            .where(eq(mediaObject.id, item.mediaId))
+            .limit(1);
+          if (!media || media.status !== "ready") continue;
+          const id = randomUUID();
+          await tx.insert(mediaObject).values({
+            id,
+            workspaceId,
+            kind: media.kind,
+            status: "processing",
+            objectPrefix: `media/${workspaceId}/${id}/`,
+            createdBy: userId,
+          });
+          await this.jobs.send(
+            JOB_QUEUES.mediaCopy,
+            { workspaceId, mediaId: id, sourceMediaId: media.id } satisfies MediaCopyJob,
+            { startAfter: 1, retryLimit: 3, retryBackoff: true },
+          );
+          mediaMap.set(item.mediaId, id);
+          mediaId = id;
+        }
+      }
+      const [created] = await tx
+        .insert(guideItem)
+        .values({
+          workspaceId,
+          sectionId,
+          kind: item.kind,
+          position: item.position,
+          source: "copy",
+          sourceDetail: label,
+          sourceLanguage: item.sourceLanguage,
+          topics: item.topics,
+          mediaId,
+          recommendation: item.recommendation,
+          copiedFromBlockId: item.copiedFromBlockId,
+          updatedBy: userId,
+        })
+        .returning({ id: guideItem.id });
+      for (const text of texts.filter((candidate) => candidate.itemId === item.id)) {
+        if (!text.doc) continue;
+        const isSource = text.language === item.sourceLanguage;
+        await tx.insert(guideItemText).values({
+          itemId: created!.id,
+          language: text.language,
+          workspaceId,
+          doc: remap(text.doc),
+          textLength: text.textLength,
+          // A translation's review state stays with the original (FR-067).
+          origin: isSource ? "source" : "machine",
+          state: "current",
+          sourceHash: isSource ? null : text.sourceHash,
+        });
+      }
+    }
+
+    const links = await tx
+      .select()
+      .from(guideSharedLink)
+      .where(eq(guideSharedLink.guideId, source.id));
+    for (const link of links) {
+      await tx
+        .insert(guideSharedLink)
+        .values({
+          guideId,
+          sharedBlockId: link.sharedBlockId,
+          workspaceId,
+          mode: link.mode,
+          basedOnRevision: link.basedOnRevision,
+          createdBy: userId,
+        })
+        .onConflictDoNothing();
+    }
+    await tx.update(guide).set({ draftState: "ready" }).where(eq(guide.id, guideId));
+  }
+
+  /**
+   * Guide languages changed (FR-048): a removed language leaves the draft (published versions keep
+   * it until the next publish), and an added one is translated for every section.
+   */
+  private async guideLanguagesChanged(
+    workspaceId: string,
+    propertyId: string,
+    before: readonly ("es" | "en")[],
+    after: readonly ("es" | "en")[],
+  ): Promise<void> {
+    const removed = before.filter((language) => !after.includes(language));
+    const added = after.filter((language) => !before.includes(language));
+    if (removed.length === 0 && added.length === 0) return;
+    const tx = this.requestDb.current();
+    const [row] = await tx
+      .select({ id: guide.id })
+      .from(guide)
+      .where(eq(guide.propertyId, propertyId))
+      .limit(1);
+    if (!row) return;
+    const items = await tx
+      .select({
+        id: guideItem.id,
+        sectionId: guideItem.sectionId,
+        sourceLanguage: guideItem.sourceLanguage,
+      })
+      .from(guideItem)
+      .innerJoin(guideSection, eq(guideSection.id, guideItem.sectionId))
+      .where(and(eq(guideSection.guideId, row.id), ne(guideItem.kind, "fact")));
+    for (const language of removed) {
+      // An item written in the removed language keeps its source text.
+      const translated = items
+        .filter((item) => item.sourceLanguage !== language)
+        .map((item) => item.id);
+      if (translated.length > 0) {
+        await tx
+          .delete(guideItemText)
+          .where(
+            and(eq(guideItemText.language, language), inArray(guideItemText.itemId, translated)),
+          );
+      }
+    }
+    if (after.length < 2 || added.length === 0 || items.length === 0) return;
+    const sources = await tx
+      .select({ itemId: guideItemText.itemId, language: guideItemText.language })
+      .from(guideItemText)
+      .where(
+        and(
+          inArray(
+            guideItemText.itemId,
+            items.map((item) => item.id),
+          ),
+          isNotNull(guideItemText.doc),
+        ),
+      );
+    const sections = new Set<string>();
+    for (const language of added) {
+      for (const item of items) {
+        if (item.sourceLanguage === language) continue;
+        if (
+          !sources.some((text) => text.itemId === item.id && text.language === item.sourceLanguage)
+        ) {
+          continue;
+        }
+        await tx
+          .insert(guideItemText)
+          .values({
+            itemId: item.id,
+            language,
+            workspaceId,
+            doc: null,
+            origin: "machine",
+            state: "stale",
+          })
+          .onConflictDoNothing();
+        if (item.sectionId) sections.add(`${item.sectionId}:${language}`);
+      }
+    }
+    for (const key of sections) {
+      const [sectionId, language] = key.split(":") as [string, "es" | "en"];
+      await this.jobs.send(
+        JOB_QUEUES.guideTranslate,
+        { workspaceId, sectionId, language } satisfies GuideTranslateJob,
+        { startAfter: 1, singletonKey: key, retryLimit: 3, retryBackoff: true },
+      );
+    }
   }
 
   async addressCheck(workspaceId: string, query: AddressCheckQuery): Promise<AddressCheck> {

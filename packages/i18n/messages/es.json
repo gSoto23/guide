@@ -44,7 +44,21 @@
     "feed_rejected": "No pudimos leer ese enlace de calendario. Revisa que sea un enlace de exportación iCal que empiece con https.",
     "invalid_credential": "Tu PMS no aceptó esa credencial. No guardamos nada.",
     "extraction_limit_reached": "Ya usaste las importaciones de anuncios de hoy. Vuelve a intentarlo mañana.",
-    "provider_unavailable": "Tu PMS no respondió. Inténtalo de nuevo en unos minutos."
+    "provider_unavailable": "Tu PMS no respondió. Inténtalo de nuevo en unos minutos.",
+    "section_changed": "La sección cambió desde que la abriste. Compara y elige qué guardar.",
+    "not_ready_to_publish": "Confirma los datos de la propiedad antes de publicar.",
+    "locked_field_referenced": "Una versión publicada usa este campo protegido.",
+    "interview_active": "Ya hay una entrevista en curso.",
+    "section_limit": "Puedes tener hasta 10 secciones propias.",
+    "item_limit": "Esta sección ya tiene el máximo de fotos o videos.",
+    "text_too_long": "La sección pasa de 20.000 caracteres.",
+    "invalid_document": "El contenido tiene un formato que no se puede guardar.",
+    "benefit_required": "Indica si recibes una comisión, descuento u otro beneficio de este negocio.",
+    "wifi_only": "Solo la contraseña de Wi-Fi puede ser pública.",
+    "shared_block_limit": "Puedes tener hasta 50 bloques compartidos.",
+    "storage_limit_reached": "Llegaste al límite de almacenamiento de fotos y videos.",
+    "ai_limit_reached": "Llegaste al límite diario de IA. Se renueva a medianoche (UTC).",
+    "reveal_limit_reached": "Revelaste demasiados campos protegidos en una hora. Inténtalo más tarde."
   },
   "auth": {
     "signInCta": "Entrar o crear cuenta",
@@ -179,7 +193,13 @@
       "toConfirm": "{count, plural, one {# propiedad importada está lista para confirmar.} other {# propiedades importadas están listas para confirmar.}}",
       "confirmAll": "Confirmar todas",
       "confirmed": "{count, plural, one {# propiedad confirmada.} other {# propiedades confirmadas.}}",
-      "notFoundInPms": "No está en tu PMS"
+      "notFoundInPms": "No está en tu PMS",
+      "guide": {
+        "draft": "Guía en borrador · {score} %",
+        "published": "Guía publicada · {score} %",
+        "published_changes": "Guía publicada · cambios sin publicar",
+        "unpublished": "Guía no publicada"
+      }
     },
     "limits": {
       "usage": "{used} de {limit} propiedades",
@@ -249,7 +269,7 @@
       "guests": "Máximo de huéspedes",
       "languages": "Idiomas de la guía",
       "nextStep": "Siguiente: armar la guía",
-      "nextStepSoon": "El armado de la guía llega en la próxima actualización.",
+      "nextStepSoon": "Completa la guía con lo que más preguntan tus huéspedes y publícala cuando esté lista.",
       "notFoundInPms": "Este anuncio ya no está en {provider}, así que sus estadías no se actualizan.",
       "toConfirm": "Estos datos vienen de tu PMS. Revísalos y confírmalos.",
       "confirm": "Confirmar datos",
@@ -773,7 +793,8 @@
       "team": "Equipo",
       "security": "Seguridad",
       "home": "Inicio",
-      "settings": "Ajustes"
+      "settings": "Ajustes",
+      "shared": "Contenido compartido"
     },
     "loading": "Cargando…",
     "none": "Sin workspace: crea uno"
@@ -873,5 +894,546 @@
       "howToDelete": "Cómo borrarlo",
       "connect": "Conectar un PMS"
     }
+  },
+  "guide": {
+    "title": "Guía",
+    "sections": {
+      "arrival": "Llegada y acceso",
+      "wifi": "Wi-Fi",
+      "house_rules": "Normas de la casa",
+      "appliances": "Electrodomésticos y cómo usarlos",
+      "amenities": "Comodidades",
+      "parking": "Parqueo y transporte",
+      "local_recommendations": "Recomendaciones locales",
+      "emergency": "Emergencias y contactos",
+      "checkout": "Salida"
+    },
+    "status": {
+      "missing": "Falta",
+      "needs_review": "Por revisar",
+      "ready": "Lista"
+    },
+    "guideStatus": {
+      "draft": "Borrador",
+      "published": "Publicada",
+      "published_changes": "Publicada · cambios sin publicar",
+      "unpublished": "No publicada"
+    },
+    "source": {
+      "host": "Escrito por ti",
+      "listing": "De tu anuncio",
+      "pms": "De {provider}",
+      "document": "De {file}",
+      "interview": "De tu entrevista",
+      "copy": "Copiado de {name}",
+      "reviewed": "Revisado"
+    },
+    "facts": {
+      "check_in_time": "Entrada desde las {time}",
+      "checkout_time": "Salida antes de las {time}",
+      "max_guests": "Máximo {count} huéspedes",
+      "address": "Dirección: {address}",
+      "editInProperty": "Cambiar en los datos de la propiedad"
+    },
+    "lockedKinds": {
+      "door_code": "Código de puerta",
+      "gate_code": "Código de portón",
+      "lockbox_code": "Código de caja de llaves",
+      "alarm_code": "Código de alarma",
+      "wifi_password": "Contraseña de Wi-Fi",
+      "other": "Otro código"
+    },
+    "topics": {
+      "arrival.check_in_time": {
+        "name": "Hora de entrada",
+        "question": "¿A qué hora pueden entrar los huéspedes?"
+      },
+      "arrival.access_steps": {
+        "name": "Cómo entrar",
+        "question": "¿Cómo entran los huéspedes a la propiedad, paso a paso?"
+      },
+      "arrival.access_code": {
+        "name": "Código de acceso",
+        "question": "Agrega el código de la puerta, el portón o la caja de llaves en un campo protegido."
+      },
+      "arrival.access_photo": {
+        "name": "Foto de la entrada",
+        "question": "¿Puedes agregar una foto de la entrada o de la caja de llaves?"
+      },
+      "arrival.directions": {
+        "name": "Cómo llegar",
+        "question": "¿Cómo se llega a la propiedad? Puntos de referencia, Waze o Google Maps."
+      },
+      "arrival.early_check_in": {
+        "name": "Entrada temprana y maletas",
+        "question": "¿Pueden llegar antes o dejar las maletas?"
+      },
+      "wifi.network": {
+        "name": "Nombre de la red",
+        "question": "¿Cómo se llama la red de Wi-Fi?"
+      },
+      "wifi.password": {
+        "name": "Contraseña de Wi-Fi",
+        "question": "Agrega la contraseña del Wi-Fi en un campo protegido."
+      },
+      "wifi.troubleshooting": {
+        "name": "Si el Wi-Fi falla",
+        "question": "¿Qué deben hacer los huéspedes si el Wi-Fi no funciona?"
+      },
+      "house_rules.quiet_hours": {
+        "name": "Horas de silencio",
+        "question": "¿Hay horas de silencio o reglas sobre el ruido?"
+      },
+      "house_rules.smoking": {
+        "name": "Fumar",
+        "question": "¿Se puede fumar? ¿Dónde?"
+      },
+      "house_rules.pets": {
+        "name": "Mascotas",
+        "question": "¿Se permiten mascotas?"
+      },
+      "house_rules.parties": {
+        "name": "Fiestas y visitas",
+        "question": "¿Se permiten fiestas o visitas?"
+      },
+      "house_rules.max_guests": {
+        "name": "Máximo de huéspedes",
+        "question": "¿Cuántos huéspedes como máximo?"
+      },
+      "house_rules.trash": {
+        "name": "Basura y reciclaje",
+        "question": "¿Qué hacen los huéspedes con la basura y el reciclaje?"
+      },
+      "appliances.ac_heating": {
+        "name": "Aire acondicionado",
+        "question": "¿Cómo funciona el aire acondicionado o la calefacción?"
+      },
+      "appliances.hot_water": {
+        "name": "Agua caliente",
+        "question": "¿Cómo funciona el agua caliente?"
+      },
+      "appliances.kitchen": {
+        "name": "Cocina",
+        "question": "¿Hay algo que saber de la cocina, la cafetera o la estufa?"
+      },
+      "appliances.laundry": {
+        "name": "Lavadora y secadora",
+        "question": "¿Cómo se usan la lavadora y la secadora?"
+      },
+      "appliances.tv": {
+        "name": "Televisor",
+        "question": "¿Cómo se usa el televisor o el streaming?"
+      },
+      "appliances.how_to_media": {
+        "name": "Foto o video de cómo usar",
+        "question": "¿Puedes agregar una foto o un video corto de cómo usar un aparato?"
+      },
+      "amenities.list": {
+        "name": "Lista de comodidades",
+        "question": "¿Qué comodidades tiene la propiedad?"
+      },
+      "amenities.pool_beach": {
+        "name": "Piscina y playa",
+        "question": "¿Hay piscina, toallas de playa o sombrillas?"
+      },
+      "parking.where": {
+        "name": "Dónde parquear",
+        "question": "¿Dónde pueden parquear los huéspedes?"
+      },
+      "parking.transport": {
+        "name": "Transporte",
+        "question": "¿Cómo se mueven sin carro? Taxi, bus o traslado."
+      },
+      "local.groceries": {
+        "name": "Supermercado",
+        "question": "¿Dónde compran comida los huéspedes?"
+      },
+      "local.restaurants": {
+        "name": "Restaurantes",
+        "question": "¿Qué restaurantes recomiendas cerca?"
+      },
+      "local.activities": {
+        "name": "Actividades",
+        "question": "¿Qué pueden hacer cerca? Playas, tours o caminatas."
+      },
+      "local.recommendations": {
+        "name": "Al menos tres recomendaciones",
+        "question": "Agrega al menos tres lugares que recomiendas."
+      },
+      "local.personal_tip": {
+        "name": "Tu consejo personal",
+        "question": "¿Cuál es tu lugar favorito que pocos turistas conocen?"
+      },
+      "emergency.contacts": {
+        "name": "Cómo contactarte",
+        "question": "¿Cómo te contactan los huéspedes si necesitan ayuda?"
+      },
+      "emergency.number": {
+        "name": "Número de emergencias",
+        "question": "¿Cuál es el número de emergencias del país?"
+      },
+      "emergency.medical": {
+        "name": "Hospital y farmacia",
+        "question": "¿Dónde está el hospital, la clínica o la farmacia más cercana?"
+      },
+      "emergency.safety_equipment": {
+        "name": "Extintor y botiquín",
+        "question": "¿Dónde están el extintor y el botiquín?"
+      },
+      "checkout.time": {
+        "name": "Hora de salida",
+        "question": "¿A qué hora deben salir los huéspedes?"
+      },
+      "checkout.steps": {
+        "name": "Pasos de salida",
+        "question": "¿Qué deben hacer los huéspedes antes de salir? Llaves, basura, platos."
+      },
+      "checkout.late_checkout": {
+        "name": "Salida tardía",
+        "question": "¿Se puede salir más tarde?"
+      }
+    },
+    "keepCodesOut": "No escribas códigos de puertas aquí. Agrégalos en los campos protegidos.",
+    "drafting": "Preparando el borrador desde tu anuncio…",
+    "draftWaiting": "El borrador sigue a las {time}, cuando se renueva el límite diario de IA.",
+    "review": {
+      "title": "Guía de {name}",
+      "completeness": "Completa al {score} %",
+      "completenessHint": "Lo que los huéspedes más preguntan y aún falta:",
+      "noMissing": "La guía cubre lo que los huéspedes más preguntan.",
+      "answerInInterview": "Responder en la entrevista",
+      "editSection": "Editar sección",
+      "items": "{count, plural, =0 {Sin contenido} one {# elemento} other {# elementos}}",
+      "hidden": "Oculta",
+      "readOnly": "Puedes leer la guía, pero solo los propietarios y administradores la editan.",
+      "draftFailed": "No pudimos preparar el borrador desde tu anuncio. Puedes escribir la guía a mano o intentarlo de nuevo desde una sección.",
+      "backToProperty": "Volver a la propiedad",
+      "addSection": "Agregar sección propia",
+      "sectionTitle": "Nombre de la sección",
+      "create": "Crear",
+      "cancel": "Cancelar",
+      "open": "Abrir la guía",
+      "notReady": "Confirma los datos de la propiedad para poder publicar la guía."
+    },
+    "editor": {
+      "backToGuide": "Volver a la guía",
+      "approve": "Aprobar",
+      "approveAll": "Aprobar todo",
+      "approved": "Aprobado",
+      "needsReview": "Por revisar",
+      "delete": "Quitar",
+      "deleteConfirm": "¿Quitar este elemento?",
+      "moveUp": "Subir",
+      "moveDown": "Bajar",
+      "hide": "Ocultar sección",
+      "show": "Mostrar sección",
+      "hiddenNotice": "Esta sección está oculta: no se publica ni cuenta en la completitud.",
+      "rename": "Cambiar nombre",
+      "deleteSection": "Eliminar sección",
+      "addText": "Agregar texto",
+      "addPhoto": "Agregar foto",
+      "addVideo": "Agregar video",
+      "addRecommendation": "Agregar recomendación",
+      "saving": "Guardando…",
+      "saved": "Guardado",
+      "unsaved": "Sin guardar: se enviará al volver la conexión.",
+      "offline": "Sin conexión: tu texto queda en este dispositivo.",
+      "conflict": "Alguien cambió esta sección mientras la editabas. Recarga para ver la versión actual; tu texto sigue en este dispositivo.",
+      "reload": "Recargar",
+      "redraft": "Redactar de nuevo desde el anuncio",
+      "redraftQueued": "Pedimos un borrador nuevo; aparecerá como contenido por revisar.",
+      "codeWarning": "Esto parece un código o una contraseña. Guárdalo en un campo protegido.",
+      "keepAsText": "Dejar como texto",
+      "bold": "Negrita",
+      "italic": "Cursiva",
+      "bulletList": "Lista",
+      "orderedList": "Lista numerada",
+      "link": "Enlace",
+      "linkPrompt": "Dirección del enlace (https://…)",
+      "heading": "Subtítulo",
+      "lockedField": "Campo protegido",
+      "factHint": "Este dato viene de la propiedad.",
+      "empty": "Esta sección todavía no tiene contenido.",
+      "caption": "Descripción para quien no puede ver la imagen",
+      "textPlaceholder": "Escribe para tus huéspedes…",
+      "edit": "Editar",
+      "insertLocked": "Insertar campo protegido"
+    },
+    "media": {
+      "uploading": "Subiendo…",
+      "processing": "Revisando el archivo…",
+      "rejected": "Archivo rechazado: {reason}",
+      "reasons": {
+        "unsupported_type": "tipo no permitido",
+        "too_large": "demasiado grande",
+        "too_long": "el video dura más de 90 segundos",
+        "unsupported_codec": "formato de video no compatible",
+        "malware": "no pasó la revisión de seguridad",
+        "storage_limit": "se llenó el almacenamiento",
+        "unreadable": "no se pudo leer"
+      },
+      "hevcNote": "Este video está en HEVC: algunos teléfonos Android quizá no lo reproduzcan.",
+      "heicUnsupported": "Este navegador no puede leer fotos HEIC. Usa JPEG o PNG.",
+      "storage": "Almacenamiento: {used} de {limit}"
+    },
+    "recommendation": {
+      "name": "Nombre del lugar",
+      "category": "Tipo",
+      "categories": {
+        "restaurant": "Restaurante",
+        "grocery": "Supermercado",
+        "beach": "Playa",
+        "activity": "Actividad",
+        "shopping": "Compras",
+        "transport": "Transporte",
+        "service": "Servicio",
+        "other": "Otro"
+      },
+      "url": "Sitio web (opcional)",
+      "address": "Dirección (opcional)",
+      "benefit": "¿Recibes una comisión, descuento u otro beneficio de este negocio?",
+      "benefits": {
+        "none": "No",
+        "commission": "Sí, una comisión",
+        "discount": "Sí, un descuento",
+        "other": "Sí, otro beneficio"
+      },
+      "benefitNote": "Detalle del beneficio (opcional)",
+      "personalTip": "Es mi recomendación personal",
+      "description": "Tu consejo",
+      "save": "Guardar recomendación",
+      "disclosure": "Los huéspedes verán que recibes un beneficio."
+    },
+    "locked": {
+      "title": "Campos protegidos",
+      "intro": "Los códigos y la contraseña del Wi-Fi se guardan cifrados. Solo los ves después de confirmar tu identidad, y cada vez queda registrado.",
+      "link": "Campos protegidos",
+      "add": "Agregar campo protegido",
+      "kind": "Tipo",
+      "label": "Nombre",
+      "value": "Valor",
+      "save": "Guardar",
+      "set": "Configurado el {date}",
+      "notSet": "Sin valor",
+      "reveal": "Ver",
+      "hide": "Ocultar",
+      "hidesIn": "Se oculta en {seconds} s",
+      "change": "Cambiar valor",
+      "delete": "Eliminar",
+      "deleteConfirm": "¿Eliminar este campo protegido?",
+      "referenced": "La guía publicada usa este campo. Si lo eliminas, los huéspedes verán un espacio vacío hasta que publiques de nuevo. ¿Eliminar de todos modos?",
+      "publicWifi": "Mostrar a cualquiera con el enlace de la guía",
+      "publicWifiWarning": "Cualquier persona con el enlace o el código QR de la guía verá la contraseña del Wi-Fi. ¿Continuar?",
+      "isPublic": "Pública",
+      "locked": "Protegido",
+      "agentNotice": "Los campos protegidos solo los ven propietarios y administradores.",
+      "history": "Quién los vio",
+      "historyEmpty": "Nadie ha visto estos campos todavía.",
+      "historyItem": "{name} vio «{label}» el {date}",
+      "insert": "Insertar campo protegido",
+      "move": "Mover a un campo protegido",
+      "fromPms": "De {provider}"
+    },
+    "publish": {
+      "open": "Publicar",
+      "preview": "Vista previa",
+      "versions": "Versiones",
+      "unpublish": "Dejar de publicar",
+      "unpublishConfirm": "Los huéspedes dejarán de ver la guía hasta que la publiques de nuevo. ¿Dejar de publicar?",
+      "unpublished": "La guía ya no está publicada.",
+      "title": "Publicar la guía",
+      "checking": "Revisando la guía…",
+      "notReady": "Confirma los datos de la propiedad antes de publicar.",
+      "openProperty": "Abrir la propiedad",
+      "pendingDeletion": "Este espacio de trabajo está programado para eliminarse. Restáuralo para publicar.",
+      "leftOutTitle": "Quedan fuera porque necesitan revisión",
+      "leftOutIntro": "Apruébalos para incluirlos, o publica sin ellos.",
+      "review": "Revisar",
+      "approve": "Aprobar",
+      "noLeftOut": "Todo el contenido está revisado.",
+      "warningsTitle": "Avisos",
+      "warningsIntro": "Los avisos no impiden publicar.",
+      "warning_missing_essential": "Falta: {topic}",
+      "warning_unset_locked_field": "El campo protegido «{label}» no tiene valor",
+      "warning_code_like_text": "Un texto en {section} parece un código o una contraseña",
+      "warning_off_platform": "Un texto en {section} pide reservar o pagar fuera de la plataforma",
+      "warning_unreviewed_translations": "{count, plural, one {# traducción sin revisar} other {# traducciones sin revisar}}",
+      "warning_out_of_date_translations": "{count, plural, one {# traducción desactualizada} other {# traducciones desactualizadas}}",
+      "confirm": "Publicar ahora",
+      "publishing": "Publicando…",
+      "cancel": "Cancelar",
+      "published": "Publicaste la versión {number}. Los huéspedes ya la ven.",
+      "changed": "La guía cambió mientras revisabas. Revisa de nuevo antes de publicar.",
+      "liveVersion": "Los huéspedes ven la versión {number}."
+    },
+    "versions": {
+      "title": "Versiones publicadas",
+      "intro": "Se guardan las últimas 20 versiones. Restaurar una la convierte en tu borrador; nada cambia para los huéspedes hasta que publiques.",
+      "empty": "Todavía no has publicado esta guía.",
+      "version": "Versión {number}",
+      "current": "La ven los huéspedes",
+      "by": "{date} · {name}",
+      "byShared": "{date} · contenido compartido",
+      "view": "Ver",
+      "restore": "Restaurar como borrador",
+      "restoreConfirm": "Tu borrador actual se reemplazará por la versión {number}. ¿Continuar?",
+      "restored": "Restauraste la versión {number} como borrador. Publica cuando esté lista."
+    },
+    "preview": {
+      "title": "Vista previa",
+      "intro": "Así verán la guía tus huéspedes. Los campos protegidos se muestran como marcadores.",
+      "draft": "Borrador",
+      "published": "Publicada",
+      "version": "Versión {number}",
+      "language": "Idioma",
+      "notPublished": "Esta guía no está publicada.",
+      "empty": "Esta sección aún no tiene contenido revisado.",
+      "personalTip": "Recomendación personal"
+    },
+    "interview": {
+      "start": "Empezar la entrevista",
+      "answerInInterview": "Responder en la entrevista",
+      "notApplicable": "No aplica",
+      "undoMark": "Quitar marca",
+      "title": "Entrevista",
+      "intro": "Te hacemos una pregunta a la vez sobre lo que más preguntan los huéspedes. Redactamos el texto y tú lo revisas.",
+      "reminder": "No incluyas códigos ni contraseñas en tus respuestas: guárdalos en un campo protegido.",
+      "section": "Para la sección {section}",
+      "answerLabel": "Tu respuesta",
+      "send": "Enviar",
+      "sending": "Enviando…",
+      "orRecord": "O graba una nota de voz",
+      "record": "Grabar nota de voz",
+      "stop": "Detener",
+      "recording": "Grabando… {seconds} s de 120",
+      "uploading": "Subiendo la nota de voz…",
+      "micDenied": "No pudimos usar el micrófono. Escribe tu respuesta.",
+      "queued": "Preparando tu respuesta…",
+      "transcribing": "Transcribiendo…",
+      "drafting": "Redactando…",
+      "done": "Agregamos {count, plural, one {# texto} other {# textos}} a {section} para que los revises.",
+      "reviewSection": "Revisar en {section}",
+      "transcript": "Lo que entendimos",
+      "drafted": "Texto redactado",
+      "redacted": "Quitamos un código de tu respuesta. Guárdalo en un campo protegido.",
+      "error_not_understood": "No entendimos la respuesta. Intenta de nuevo o escríbela con otras palabras.",
+      "error_transcription_failed": "No pudimos transcribir la nota de voz. Escribe tu respuesta.",
+      "error_unsupported_type": "No pudimos leer la nota de voz. Escribe tu respuesta.",
+      "error_ai_unavailable": "El asistente no está disponible ahora. Intenta en unos minutos.",
+      "lockedTopic": "Esta respuesta es un código. Guárdalo en un campo protegido, no en el texto.",
+      "openLocked": "Abrir los campos protegidos",
+      "skip": "Saltar",
+      "finish": "Terminar",
+      "noMore": "¡Listo! No hay más preguntas por ahora.",
+      "finished": "Terminaste la entrevista.",
+      "busyElsewhere": "Otra persona tiene una entrevista abierta en esta guía. Puedes continuarla aquí."
+    },
+    "translations": {
+      "link": "Traducciones",
+      "title": "Traducciones",
+      "intro": "Cada texto se traduce solo. Revisa las traducciones y corrige lo que haga falta; las que revises no cambian sin ti.",
+      "singleLanguage": "Esta guía está en un solo idioma. Agrega otro idioma en los datos de la propiedad para traducirla.",
+      "openProperty": "Abrir la propiedad",
+      "empty": "Esta sección todavía no tiene textos.",
+      "source": "Original ({language})",
+      "translation": "Traducción ({language})",
+      "state_waiting": "Traduciendo…",
+      "state_machine": "Traducción automática",
+      "state_reviewed": "Revisada",
+      "state_out_of_date": "Desactualizada: el original cambió",
+      "state_failed": "No se pudo traducir",
+      "state_pending": "Pendiente",
+      "reason_ai_limit": "se alcanzó el límite diario de IA; sigue mañana",
+      "reason_ai_unavailable": "el asistente no está disponible; lo intentaremos de nuevo",
+      "reason_tokens_mismatch": "el formato no coincidió",
+      "edit": "Editar",
+      "save": "Guardar traducción",
+      "cancel": "Cancelar",
+      "markReviewed": "Marcar revisada",
+      "translateAgain": "Traducir de nuevo",
+      "keep": "Mantener como está",
+      "changed": "La sección cambió. Recarga para ver lo último.",
+      "reload": "Recargar"
+    },
+    "uploads": {
+      "link": "Manuales y fotos",
+      "title": "Manuales y fotos",
+      "intro": "Sube manuales en PDF o fotos de electrodomésticos, del acceso o de instrucciones. Leemos el texto, borramos el archivo y te sugerimos contenido para revisar.",
+      "reminder": "No subas fotos de códigos ni contraseñas: guárdalos en un campo protegido.",
+      "pick": "Elegir archivos",
+      "takePhoto": "Tomar una foto",
+      "limit": "Hasta 10 archivos a la vez: PDF de hasta 20 MB o fotos de hasta 10 MB.",
+      "uploading": "Subiendo…",
+      "status_checking": "Revisando el archivo…",
+      "status_reading": "Leyendo…",
+      "status_done": "{count, plural, =0 {Listo} one {Listo: # sugerencia por revisar} other {Listo: # sugerencias por revisar}}",
+      "status_rejected": "No se pudo leer",
+      "pages": "{pages, plural, one {# página} other {# páginas}}",
+      "redacted": "Quitamos {count, plural, one {un código} other {# códigos}} del texto leído.",
+      "reason_unsupported_type": "El tipo de archivo no es compatible.",
+      "reason_too_large": "El archivo es demasiado grande.",
+      "reason_too_many_pages": "El PDF tiene más de 60 páginas.",
+      "reason_password_protected": "El PDF tiene contraseña. Quítala y súbelo de nuevo.",
+      "reason_unreadable": "No pudimos leer el archivo.",
+      "reason_malware": "El archivo no pasó la revisión de seguridad.",
+      "reason_nothing_found": "No encontramos información útil para la guía.",
+      "reason_ai_limit": "Llegaste al límite diario de IA. Súbelo de nuevo mañana.",
+      "reason_ai_unavailable": "El asistente no está disponible. Intenta más tarde.",
+      "accept": "Aceptar",
+      "discard": "Descartar",
+      "edit": "Editar en la sección",
+      "remove": "Quitar archivo",
+      "addToSection": "Agregar esta foto a una sección",
+      "chooseSection": "Sección",
+      "add": "Agregar",
+      "added": "Agregamos la foto a {section}.",
+      "empty": "Todavía no has subido archivos.",
+      "photoUnreadable": "No pudimos abrir la foto {name}. Prueba con otra foto."
+    },
+    "shared": {
+      "badge": "Compartido: {name}",
+      "override": "Sobrescribir para esta propiedad",
+      "exclude": "Excluir de esta propiedad",
+      "overridden": "Usas una copia propia de «{name}».",
+      "behind": "La versión compartida cambió desde que hiciste tu copia.",
+      "reset": "Restablecer al compartido",
+      "excluded": "Excluiste «{name}» de esta propiedad.",
+      "include": "Incluir de nuevo",
+      "resetConfirm": "Tu copia de «{name}» se reemplazará por la versión compartida. ¿Continuar?"
+    }
+  },
+  "sharedContent": {
+    "title": "Contenido compartido",
+    "intro": "Escribe una vez lo que se repite en tus propiedades (políticas, contactos de emergencia, pasos de salida, recomendaciones de la zona). Cada guía lo hereda; puedes sobrescribirlo o excluirlo por propiedad.",
+    "create": "Crear bloque",
+    "name": "Nombre del bloque",
+    "section": "Sección",
+    "cancel": "Cancelar",
+    "limit": "Puedes tener hasta {limit} bloques.",
+    "empty": "Todavía no tienes contenido compartido.",
+    "status_draft": "Borrador",
+    "status_published": "Publicado",
+    "changes": "Cambios sin publicar",
+    "counts": "Lo heredan {inherit} · Copia propia {override} · Excluido {exclude}",
+    "back": "Volver al contenido compartido",
+    "items": "Contenido",
+    "addText": "Agregar texto",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "noLocked": "Los campos protegidos son de cada propiedad: no se pueden usar en contenido compartido.",
+    "publish": "Publicar",
+    "publishing": "Publicando…",
+    "published": "Publicado. Se actualizarán {count, plural, =0 {las guías cuando se publiquen} one {# guía publicada} other {# guías publicadas}}.",
+    "deleteBlock": "Eliminar bloque",
+    "deleteConfirm": "Se quitará de todas las guías, también de las publicadas. ¿Eliminar?",
+    "properties": "Propiedades",
+    "inherit": "Lo heredan",
+    "override": "Con copia propia",
+    "exclude": "Lo excluyen",
+    "behind": "la versión compartida cambió",
+    "none": "Ninguna",
+    "changed": "El bloque cambió. Recarga para ver lo último.",
+    "reload": "Recargar",
+    "textPlaceholder": "Escribe el contenido compartido…"
   }
 }

@@ -1,0 +1,19 @@
+{
+  "id": "es-01",
+  "language": "es",
+  "description": "Casa de madera a dos cuadras de la playa de Sámara.\nHay parqueo techado para un carro dentro del portón.\nEl supermercado Palí queda a 400 metros caminando.\nEl aire acondicionado del cuarto principal se enciende con el control blanco.",
+  "expected": [
+    {
+      "phrase": "Hay parqueo techado para un carro dentro del portón.",
+      "section": "parking"
+    },
+    {
+      "phrase": "El supermercado Palí queda a 400 metros caminando.",
+      "section": "local_recommendations"
+    },
+    {
+      "phrase": "El aire acondicionado del cuarto principal se enciende con el control blanco.",
+      "section": "appliances"
+    }
+  ]
+}

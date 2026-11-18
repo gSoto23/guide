@@ -1,0 +1,19 @@
+{
+  "id": "es-03",
+  "language": "es",
+  "description": "Cabaña rodeada de jardín en las montañas de Monteverde.\nEl agua caliente tarda un minuto en llegar a la ducha.\nLa soda La Esquina sirve casados ricos a cinco minutos.\nPedimos silencio después de las diez de la noche.",
+  "expected": [
+    {
+      "phrase": "El agua caliente tarda un minuto en llegar a la ducha.",
+      "section": "appliances"
+    },
+    {
+      "phrase": "La soda La Esquina sirve casados ricos a cinco minutos.",
+      "section": "local_recommendations"
+    },
+    {
+      "phrase": "Pedimos silencio después de las diez de la noche.",
+      "section": "house_rules"
+    }
+  ]
+}

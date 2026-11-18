@@ -1,0 +1,19 @@
+{
+  "id": "en-05",
+  "language": "en",
+  "description": "A downtown loft above a bookshop.\nPick up the keys at the front desk of the hotel next door.\nThe public garage on Elm Street charges by the hour.\nThe farmers market runs on Saturday mornings.",
+  "expected": [
+    {
+      "phrase": "Pick up the keys at the front desk of the hotel next door.",
+      "section": "arrival"
+    },
+    {
+      "phrase": "The public garage on Elm Street charges by the hour.",
+      "section": "parking"
+    },
+    {
+      "phrase": "The farmers market runs on Saturday mornings.",
+      "section": "local_recommendations"
+    }
+  ]
+}

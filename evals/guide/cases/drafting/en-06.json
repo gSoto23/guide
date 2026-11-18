@@ -1,0 +1,19 @@
+{
+  "id": "en-06",
+  "language": "en",
+  "description": "A family farmhouse by the river.\nNo parties, and no visitors after 9 pm.\nThe shuttle to the airport can be booked at the general store.\nBeach towels and an umbrella are in the hall closet.",
+  "expected": [
+    {
+      "phrase": "No parties, and no visitors after 9 pm.",
+      "section": "house_rules"
+    },
+    {
+      "phrase": "The shuttle to the airport can be booked at the general store.",
+      "section": "parking"
+    },
+    {
+      "phrase": "Beach towels and an umbrella are in the hall closet.",
+      "section": "amenities"
+    }
+  ]
+}

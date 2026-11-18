@@ -1,4 +1,13 @@
 import type { ListingExtraction } from "./extraction/schema.js";
+import type {
+  DraftAnswer,
+  DraftAnswerInput,
+  DraftFromListingInput,
+  DraftItems,
+  SuggestFromDocumentInput,
+  TranslateBlocksInput,
+  TranslatedBlocks,
+} from "./guide/schemas.js";
 
 /**
  * The language model behind listing extraction (research R6, ADR-0005). Only redacted text is
@@ -20,7 +29,43 @@ export interface LlmExtractionResult {
   model: string;
 }
 
-export interface LlmPort {
+/** The outcome of a structured call; `refused`, `truncated`, and `invalid` carry no result. */
+export interface LlmCallResult<T> {
+  outcome: "ok" | "refused" | "truncated" | "invalid";
+  result: T | null;
+  usage: ExtractionUsage;
+  model: string;
+}
+
+export interface LlmCallOptions {
+  signal?: AbortSignal;
+}
+
+/**
+ * The guide builder's calls (feature 003 research R6). Every input has passed the restricted-value
+ * detector (research R5); locked-field values never reach these calls, and neither do images or
+ * audio.
+ */
+export interface GuideLlmPort {
+  draftFromListing(
+    input: DraftFromListingInput,
+    options?: LlmCallOptions,
+  ): Promise<LlmCallResult<DraftItems>>;
+  draftAnswer(
+    input: DraftAnswerInput,
+    options?: LlmCallOptions,
+  ): Promise<LlmCallResult<DraftAnswer>>;
+  suggestFromDocument(
+    input: SuggestFromDocumentInput,
+    options?: LlmCallOptions,
+  ): Promise<LlmCallResult<DraftItems>>;
+  translateBlocks(
+    input: TranslateBlocksInput,
+    options?: LlmCallOptions,
+  ): Promise<LlmCallResult<TranslatedBlocks>>;
+}
+
+export interface LlmPort extends GuideLlmPort {
   extractListing(
     redactedText: string,
     options?: { signal?: AbortSignal },

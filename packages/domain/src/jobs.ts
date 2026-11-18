@@ -13,6 +13,14 @@ export const JOB_QUEUES = {
   calendarRefresh: "calendar.refresh",
   retentionDaily: "retention.daily",
   propertiesPurge: "properties.purge",
+  // Feature 003 (research R15).
+  guideDraft: "guide.draft",
+  guideTranslate: "guide.translate",
+  interviewAnswer: "interview.answer",
+  guideDocument: "guide.document",
+  mediaProcess: "media.process",
+  sharedBlockPublish: "shared-block.publish",
+  mediaCopy: "media.copy",
 } as const;
 
 export interface CalendarRefreshJob {
@@ -34,9 +42,63 @@ export const QUEUE_POLICIES: Partial<
   [JOB_QUEUES.calendarRefresh]: "stately",
   [JOB_QUEUES.pmsRefresh]: "stately",
   [JOB_QUEUES.pmsImport]: "singleton",
+  // One queued and one active translation per section and language (feature 003 research R7).
+  [JOB_QUEUES.guideTranslate]: "stately",
+  [JOB_QUEUES.guideDraft]: "stately",
 };
 
 export interface ExtractionRunJob {
   extractionId: string;
   workspaceId: string;
+}
+
+/** Feature 003 job payloads (research R15). IDs only, never content or restricted values. */
+export interface GuideDraftJob {
+  guideId: string;
+  workspaceId: string;
+  /** Redraft one section from the listing content (FR-007); the whole draft when absent. */
+  sectionId?: string;
+  /** The API already took this request from the daily AI limit (redraft). */
+  limitTaken?: boolean;
+}
+
+export interface GuideTranslateJob {
+  workspaceId: string;
+  /** A property section, or a shared block. */
+  sectionId?: string;
+  sharedBlockId?: string;
+  language: "es" | "en";
+}
+
+/** Translation waits this long after the last save, so autosave does not translate every keystroke. */
+export const TRANSLATE_DEBOUNCE_SECONDS = 20;
+
+export interface InterviewAnswerJob {
+  workspaceId: string;
+  turnId: string;
+}
+
+export interface GuideDocumentJob {
+  workspaceId: string;
+  documentId: string;
+}
+
+export interface MediaProcessJob {
+  workspaceId: string;
+  mediaId: string;
+}
+
+/** A duplicated property's media, copied to the new object's own keys (feature 003 FR-067). */
+export interface MediaCopyJob {
+  workspaceId: string;
+  /** The new media object, in `processing` until its objects are copied. */
+  mediaId: string;
+  sourceMediaId: string;
+}
+
+export interface SharedBlockPublishJob {
+  workspaceId: string;
+  sharedBlockId: string;
+  /** `published` after a publish, `deleted` after a delete. */
+  change: "published" | "deleted";
 }

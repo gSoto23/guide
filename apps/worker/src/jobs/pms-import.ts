@@ -1,5 +1,6 @@
 import { and, asc, eq, sql } from "drizzle-orm";
 import {
+  createGuideForProperty,
   importItem,
   importRun,
   lockPropertySlots,
@@ -154,6 +155,9 @@ async function storeContent(
         dataKeyId,
         source: "pms",
         sourceField: text.sourceField.slice(0, 80),
+        // Feature 003: a locked field of the guide, listed in Wi-Fi or Arrival (FR-022).
+        sectionKind: match.kind === "wifi_password" ? "wifi" : "arrival",
+        valueSetAt: new Date(),
       });
     }
     const body = removeRedactedLines(redacted.text).slice(0, kind === "title" ? 120 : 20_000);
@@ -297,6 +301,13 @@ async function importListing(
         .returning({ id: property.id });
       propertyId = created!.id;
       outcome = setupStatus === "needs_details" ? "needs_details" : "created";
+      // Feature 003: the guide exists from the start (FR-001); the AI part of the draft runs when
+      // the guide is first opened, so a large import spends no AI budget up front (research R16).
+      await createGuideForProperty(tx, {
+        workspaceId: input.workspaceId,
+        propertyId,
+        guideLanguages: languages,
+      });
     }
     await storeContent(deps, db, {
       workspaceId: input.workspaceId,
