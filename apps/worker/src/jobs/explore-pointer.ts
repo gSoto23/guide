@@ -112,5 +112,7 @@ export async function exploreUrlFor(
     )
     .limit(1);
   if (!link) return null;
-  return `${guideUrl.replace(/\/+$/, "")}/g/${link.publicId}/${language}/explore`;
+  let end = guideUrl.length;
+  while (end > 0 && guideUrl[end - 1] === "/") end -= 1;
+  return `${guideUrl.slice(0, end)}/g/${link.publicId}/${language}/explore`;
 }

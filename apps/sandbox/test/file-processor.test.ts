@@ -202,7 +202,8 @@ describe("re-encoding (research R3, R9)", () => {
     expect(output.orientation).toBeUndefined();
     expect(normalized.image.includes("Exif")).toBe(false);
     expect(normalized.image.includes("SyntheticCam")).toBe(false);
-  });
+    // Re-encoding a 12-megapixel photo can pass 5 s on shared CI runners.
+  }, 30_000);
 
   it("shrinks a tall screenshot to a longest side of 2,560 px", async () => {
     const tall = await solid(1000, 6000).png().toBuffer();

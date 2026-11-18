@@ -72,6 +72,13 @@ function image(value: unknown): PartnerExperience["image"] {
   return best;
 }
 
+/** Drops trailing slashes with a loop (no backtracking regex on configuration text). */
+function withoutTrailingSlashes(value: string): string {
+  let end = value.length;
+  while (end > 0 && value[end - 1] === "/") end -= 1;
+  return value.slice(0, end);
+}
+
 export function parseViatorProduct(value: unknown): PartnerExperience | null {
   if (!isObject(value)) return null;
   const productId = typeof value.productCode === "string" ? value.productCode : "";
@@ -114,7 +121,7 @@ export class ViatorAdapter implements ExperiencePartnerPort {
   private readonly timeoutMs: number;
 
   constructor(private readonly options: ViatorAdapterOptions) {
-    this.baseUrl = (options.baseUrl ?? "https://api.viator.com/partner").replace(/\/+$/, "");
+    this.baseUrl = withoutTrailingSlashes(options.baseUrl ?? "https://api.viator.com/partner");
     this.fetchImpl = options.fetch ?? globalThis.fetch;
     this.timeoutMs = options.timeoutMs ?? 10_000;
   }
