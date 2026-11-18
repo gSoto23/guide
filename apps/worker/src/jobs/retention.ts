@@ -36,6 +36,7 @@ import { runInJobSpan, type JobSpanDeps } from "./span.js";
  * - feature 007: "test the assistant" runs (with their traces) after 30 days, and instruction
  *   versions that are neither current nor referenced by a trace.
  * - feature 006: copilot drafts (with their traces) after 30 days, and expired presence rows.
+ * - feature 008: add-on requests (with the guest's note) 12 months after their stay's checkout.
  *
  * It logs counts only, never values.
  */
@@ -64,6 +65,9 @@ const INSTRUCTION_BATCH = 1000;
 /** Feature 006 (data model): copilot drafts are kept 30 days; presence an hour past its expiry. */
 const COPILOT_RUN_DAYS = 30;
 const PRESENCE_GRACE_MS = 3_600_000;
+/** Feature 008 research R9: requests are kept 12 months after their stay's checkout, like chats. */
+const SERVICE_REQUEST_MONTHS = 12;
+const SERVICE_REQUEST_BATCH = 1000;
 
 export interface RetentionDeps {
   db: Database;
@@ -95,6 +99,7 @@ export interface RetentionCounts {
   instructionVersions: number;
   copilotRuns: number;
   presence: number;
+  serviceRequests: number;
 }
 
 function daysBefore(now: Date, days: number): Date {
@@ -360,7 +365,22 @@ export async function runRetention(deps: RetentionDeps): Promise<RetentionCounts
     RETURNING id
   `);
 
+  // Feature 008 (research R9): requests 12 months after their stay's checkout; the daily counts
+  // carry no personal data and stay for analytics (spec 010).
+  const serviceRequests = await db.execute<{ id: string }>(sql`
+    DELETE FROM service_request
+    WHERE id IN (
+      SELECT r.id
+        FROM service_request r
+        JOIN stay s ON s.id = r.stay_id
+       WHERE s.checkout_date < ${monthsBefore(now, SERVICE_REQUEST_MONTHS)}::date
+       LIMIT ${SERVICE_REQUEST_BATCH}
+    )
+    RETURNING id
+  `);
+
   return {
+    serviceRequests: serviceRequests.rows.length,
     conversations: conversations.rows.length,
     chatUsage: chatUsage.length,
     assistantTests: assistantTests.rows.length,
@@ -413,6 +433,7 @@ export function createRetentionHandler(deps: RetentionDeps) {
           "retention.instruction_versions": counts.instructionVersions,
           "retention.copilot_runs": counts.copilotRuns,
           "retention.presence": counts.presence,
+          "retention.service_requests": counts.serviceRequests,
         });
       },
       deps.span,

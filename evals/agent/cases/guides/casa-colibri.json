@@ -90,5 +90,18 @@
       ]
     }
   ],
-  "exploreUrl": "https://guide.guidesk.app/g/abcdefghijklmnopqrstuvwxyz/es/explore"
+  "exploreUrl": "https://guide.guidesk.app/g/abcdefghijklmnopqrstuvwxyz/es/explore",
+  "extras": [
+    {
+      "name": "Recogida en el aeropuerto de Liberia",
+      "price": 85,
+      "currency": "USD"
+    },
+    {
+      "name": "Limpieza adicional",
+      "price": 30,
+      "currency": "USD"
+    }
+  ],
+  "extrasUrl": "https://guide.guidesk.app/g/abcdefghijklmnopqrstuvwxyz/es/extras"
 }

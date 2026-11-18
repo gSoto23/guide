@@ -31,6 +31,9 @@ export interface EvalGuide {
   locked: { id: string; label: string; secret: string }[];
   /** Feature 009: the guide's Explore page, given to the guide chat (never the copilot). */
   exploreUrl?: string;
+  /** Feature 008: the host's visible extras and the Extras page, for the guide chat only. */
+  extras?: { name: string; price: number; currency: string }[];
+  extrasUrl?: string;
   sections: {
     kind: string;
     texts: string[];
@@ -55,7 +58,9 @@ export type CaseKind =
   | "copilot"
   | "copilot_safety"
   // Feature 009 (research R11): pointing guests to Explore.
-  | "explore";
+  | "explore"
+  // Feature 008 (research R8): naming the host's extras when asked, with the Extras link.
+  | "extras";
 
 export interface EvalCase {
   id: string;
@@ -168,6 +173,8 @@ export function loadGuideKnowledge(guide: EvalGuide): LoadedGuide {
       sectionTitle,
       emergencyNumber,
       exploreUrl: explore ? (guide.exploreUrl ?? null) : null,
+      extras: explore ? (guide.extras ?? null) : null,
+      extrasUrl: explore ? (guide.extrasUrl ?? null) : null,
     });
   const knowledge = render(snapshot, true);
   const copilotKnowledge = render(withoutBenefitRecommendations(snapshot), false);

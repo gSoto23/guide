@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
-import { property, pushSubscription, user, type Database } from "@guidesk/db";
-import { JOB_QUEUES, type NotificationPushJob } from "@guidesk/domain";
+import { property, pushSubscription, serviceRequest, user, type Database } from "@guidesk/db";
+import { JOB_QUEUES, localized, type NotificationPushJob } from "@guidesk/domain";
 import { renderPush, toEmailLocale, type ChatNeedsHostReason } from "@guidesk/emails";
 import type { PushMessage, PushPort } from "@guidesk/integrations";
 import { runInJobSpan, type JobSpanDeps } from "./span.js";
@@ -51,6 +51,34 @@ async function messageFor(
       }),
       url: `${base}/${locale}/inbox?propertyId=${job.propertyId}`,
       tag: `summary-${job.propertyId}`,
+    };
+  }
+  if (job.kind === "service_request") {
+    if (!job.requestId) return null;
+    // Feature 008 research R5: the extra's name from the stored request, never the guest's note.
+    const [request] = await deps.db
+      .select({
+        extraName: serviceRequest.extraName,
+        sourceLanguage: serviceRequest.sourceLanguage,
+      })
+      .from(serviceRequest)
+      .where(
+        and(
+          eq(serviceRequest.id, job.requestId),
+          eq(serviceRequest.workspaceId, job.workspaceId),
+          eq(serviceRequest.propertyId, job.propertyId),
+        ),
+      )
+      .limit(1);
+    if (!request) return null;
+    return {
+      ...renderPush(locale, {
+        kind: "service_request",
+        propertyName: prop.name,
+        extraName: localized(request.extraName, locale, request.sourceLanguage).text,
+      }),
+      url: `${base}/${locale}/requests`,
+      tag: `request-${job.requestId}`,
     };
   }
   if (!job.conversationId || !job.reason) return null;

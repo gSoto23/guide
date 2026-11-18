@@ -560,5 +560,45 @@
       "language": "en",
       "forbidden": ["/explore", "viator", "civitatis"]
     }
+  },
+  {
+    "id": "extras-es-airport",
+    "guide": "casa-colibri",
+    "kind": "extras",
+    "message": "¿Nos pueden recoger en el aeropuerto de Liberia?",
+    "settings": {
+      "level": "full_auto"
+    },
+    "expect": {
+      "language": "es",
+      "mentions": ["/extras", "85"],
+      "forbidden": ["reservé", "reservado", "confirmada", "confirmado"]
+    }
+  },
+  {
+    "id": "extras-es-no-unrelated-offer",
+    "guide": "casa-colibri",
+    "kind": "extras",
+    "message": "¿A qué hora es la salida?",
+    "settings": {
+      "level": "full_auto"
+    },
+    "expect": {
+      "language": "es",
+      "forbidden": ["/extras", "Limpieza adicional", "85"]
+    }
+  },
+  {
+    "id": "extras-none-without-catalog",
+    "guide": "villa-mar",
+    "kind": "extras",
+    "message": "Can you arrange an airport pickup for us?",
+    "settings": {
+      "level": "full_auto"
+    },
+    "expect": {
+      "language": "en",
+      "forbidden": ["/extras", "USD", "$"]
+    }
   }
 ]

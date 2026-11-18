@@ -73,6 +73,10 @@ import {
   EXPLORE_REFRESH_CRON,
 } from "./jobs/explore-refresh.js";
 import { createChatReplyHandler } from "./jobs/chat-reply.js";
+import {
+  createServiceRequestTickHandler,
+  SERVICE_REQUEST_TICK_CRON,
+} from "./jobs/service-request-tick.js";
 import { createWorkerServices } from "./services.js";
 
 function emailAdapter(config: WorkerConfig): EmailAdapter {
@@ -275,6 +279,20 @@ async function main(): Promise<void> {
   await createQueue(JOB_QUEUES.exploreReferences);
   await boss.work(JOB_QUEUES.exploreReferences, createExploreReferencesHandler(exploreDeps));
   await boss.schedule(JOB_QUEUES.exploreReferences, EXPLORE_REFERENCES_CRON, null, { tz: "UTC" });
+  // Feature 008 (research R5): add-on request alerts, expiry, and stays that ended, every minute.
+  await createQueue(JOB_QUEUES.serviceRequestTick);
+  await boss.work(
+    JOB_QUEUES.serviceRequestTick,
+    createServiceRequestTickHandler({
+      db: services.db.db,
+      queueEmail: services.queueEmail,
+      queuePush,
+      portalUrl: services.portalUrl,
+    }),
+  );
+  await boss.schedule(JOB_QUEUES.serviceRequestTick, SERVICE_REQUEST_TICK_CRON, null, {
+    tz: "UTC",
+  });
   // Shared-block fan-out (research R14): one job per publish or delete.
   await createQueue(JOB_QUEUES.sharedBlockPublish);
   await boss.work(

@@ -31,6 +31,18 @@ export interface KnowledgeInput {
    * tours or things to do. Never set for copilot drafts (PC-10). No partner content enters here.
    */
   exploreUrl?: string | null;
+  /**
+   * Feature 008 (research R8): the host's visible extras and the guide's Extras page, for guests
+   * asking about a service. Host content only; never set for copilot drafts (FR-022, PC-10).
+   */
+  extras?: readonly KnowledgeExtra[] | null;
+  extrasUrl?: string | null;
+}
+
+export interface KnowledgeExtra {
+  name: string;
+  price: number;
+  currency: string;
 }
 
 export interface KnowledgeSection {
@@ -84,6 +96,17 @@ export function renderKnowledge(input: KnowledgeInput): Knowledge {
       "",
       "## Explore",
       `Tours and activities near the property are listed on the guide's Explore page: ${input.exploreUrl}`,
+    );
+  }
+  if (input.extras && input.extras.length > 0 && input.extrasUrl) {
+    lines.push(
+      "",
+      "## Extras",
+      `Optional services the host offers; guests request them on the guide's Extras page and the host confirms and arranges payment: ${input.extrasUrl}`,
+      ...input.extras.map(
+        (extra) =>
+          `- ${extra.name}: ${extra.price === 0 ? "free" : `${extra.price} ${extra.currency}`}`,
+      ),
     );
   }
   lines.push("", "## Guide sections");
