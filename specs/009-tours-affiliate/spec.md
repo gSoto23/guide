@@ -30,8 +30,10 @@ Answered with the recommended option under the founder's standing instruction to
   with its own disclosure text ("Your host and Guidesk may earn a commission").
 - Q: Where does the list of experiences come from? → A: From each partner's catalog for the property's
   destination (city, region, country), through the partner's affiliate content access where Guidesk
-  has it, otherwise from a short list per destination that Guidesk curates. Lists are refreshed once a
-  day per destination and stored, so opening the guide never waits on a partner.
+  has it, otherwise from a short list per destination that Guidesk curates. Lists are refreshed in the
+  background for destinations with published guides and kept only as long as each partner allows
+  (Viator: search results for at most 1 hour, so its lists refresh at least hourly), so opening the
+  guide never waits on a partner.
 - Q: Who changes the Explore settings? → A: Owners and admins, who edit guides (spec 003); agents can
   view them. A workspace default (experiences on or off, hidden categories) applies to every property
   without its own settings; a property can follow the default or set its own and hide single
@@ -144,25 +146,28 @@ experience and confirm that no request leaves for a non-partner site.
 
 ### User Story 4 - The list stays fresh without slowing the guide (Priority: P2)
 
-Every day Guidesk refreshes the experiences of each destination that has properties: new experiences
-appear, removed ones disappear, prices and ratings update. When a partner is down, guests still see
-yesterday's list.
+Guidesk refreshes the experiences of each destination that has published guides in the background, as
+often as each partner requires: new experiences appear, removed ones disappear, prices and ratings
+update. When a partner is briefly down, guests still see the last list for as long as that partner
+allows it to be kept.
 
 **Why this priority**: Freshness keeps prices and links correct; isolation from partners keeps the
 guide fast and available, which matters more than the offers.
 
-**Independent Test**: With synthetic partner data, run the daily refresh, change the partner data
-(remove an experience, change a price), run it again, and confirm the guide reflects it; make the
-partner fail and confirm the guide still shows the last list and opens within its budget.
+**Independent Test**: With synthetic partner data, run the refresh, change the partner data (remove an
+experience, change a price), run it again, and confirm the guide reflects it; make the partner fail and
+confirm the guide still shows the last list while it may be kept, then without that partner, always
+within its budget.
 
 **Acceptance Scenarios**:
 
-1. **Given** properties in a destination, **When** the daily refresh runs, **Then** each partner's
+1. **Given** published guides in a destination, **When** the refresh runs, **Then** each partner's
    experiences for that destination are stored with their category, language versions, price, rating,
    photo, and partner link, and experiences the partner no longer lists are dropped.
 2. **Given** a partner that fails or times out, **When** the refresh runs, **Then** the last stored
-   list stays in use for up to 7 days, after which that partner's experiences are no longer shown,
-   and the failure is logged without guest data.
+   list stays in use only until the time that partner allows content to be kept (for Viator, 1 hour
+   after it was fetched), after which that partner's experiences are no longer shown, and the failure
+   is logged without guest data.
 3. **Given** a guest opens Explore, **When** the experiences are read, **Then** no partner is contacted
    during the guest's request.
 4. **Given** a property whose destination changed (spec 002 edit), **When** the next refresh runs or the
@@ -265,10 +270,13 @@ reply includes a link to Explore, no partner experience or partner link, and pas
 - **FR-014**: The system MUST select a property's experiences from each available partner's catalog for
   the property's destination (city, region, and country from spec 002), through the partner's affiliate
   content access where Guidesk has it, or otherwise from a list per destination curated by Guidesk.
-- **FR-015**: The system MUST refresh each destination's experiences once a day, add new ones, update
-  prices, ratings, and photos, and drop experiences the partner no longer lists.
-- **FR-016**: When a partner fails, the system MUST keep using its last stored list for up to 7 days and
-  then stop showing that partner's experiences until a refresh succeeds.
+- **FR-015**: The system MUST refresh the experiences of each destination with published guides in the
+  background, often enough that each partner's content is never shown longer than that partner allows
+  it to be kept (Viator: 1 hour), adding new experiences, updating prices, ratings, and photos, and
+  dropping experiences the partner no longer lists.
+- **FR-016**: When a partner fails, the system MUST keep using its last stored list only until that
+  partner's keeping limit and then stop showing that partner's experiences until a refresh succeeds;
+  Guidesk's curated entries have no such limit.
 - **FR-017**: Opening the guide or Explore MUST NOT contact any partner during the guest's request.
 - **FR-018**: The system MUST sort and balance experiences so that no single category fills the list,
   preferring higher-rated experiences, and MUST apply the property's hidden categories and experiences
@@ -414,6 +422,7 @@ on the guide origin.
 - Bookings and commissions happen on the partners' sites; reconciling commissions, revenue sharing, and
   in-guide booking are later phases.
 - The disclosure wording is a proposal for the legal review (OQ-35).
-- The limits (12 experiences, daily refresh, 7 days of stale data) are pilot values to tune.
+- The limits (12 experiences, the refresh frequency, how long each partner's content is kept) follow
+  the partners' terms and are pilot values to tune within them.
 - Unsolicited offers in the guide chat (PRD §6.3: at most one per conversation per day) come in a later
   spec with their own evals.
