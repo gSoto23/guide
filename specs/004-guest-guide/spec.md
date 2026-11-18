@@ -531,9 +531,10 @@ stored records contain no network address, device fingerprint, or guest identifi
   link, and revoke or regenerate stay links; each change MUST be recorded in the security log.
 - **FR-053**: Guide requests MUST be rate limited per network address so the guide cannot be scraped
   or link values guessed at scale; refused requests MUST get a plain "Try again in a moment" page.
-- **FR-054**: Responses for unknown, stopped, and working tokens MUST NOT differ in a way that reveals
-  whether a token ever existed, beyond the "This stay link has ended" note for tokens of the guide's
-  own property opened from a device that held them.
+- **FR-054**: Unknown property link values and unknown stay link tokens MUST get the same
+  unavailable response, whatever the reason (never existed, regenerated, guide unpublished), so a
+  response never tells whether a value ever existed. A stopped stay link MAY say that it has ended,
+  because it then shows only the property's public guide.
 - **FR-055**: Stay links and their sessions, confirmation codes, and failure counters MUST be deleted
   30 days after their stay window ends; per-day open counts MUST be kept for analytics (spec 010)
   without any per-device data.
