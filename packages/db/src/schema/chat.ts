@@ -20,6 +20,12 @@ import {
   uuid,
   type AnyPgColumn,
 } from "drizzle-orm/pg-core";
+import {
+  ANSWER_KIND_VALUES,
+  ASSISTANT_TONES,
+  assistantInstructionVersion,
+  assistantTest,
+} from "./assistant.js";
 import { user } from "./auth.js";
 import { createdAt, inList } from "./columns.js";
 import { guideVersion } from "./guides.js";
@@ -130,9 +136,13 @@ export const agentTrace = pgTable(
     workspaceId: uuid("workspace_id")
       .notNull()
       .references(() => workspace.id, { onDelete: "cascade" }),
-    conversationId: uuid("conversation_id")
-      .notNull()
-      .references(() => conversation.id, { onDelete: "cascade" }),
+    /** Null for "test the assistant" traces (feature 007 research R13). */
+    conversationId: uuid("conversation_id").references(() => conversation.id, {
+      onDelete: "cascade",
+    }),
+    assistantTestId: uuid("assistant_test_id").references(() => assistantTest.id, {
+      onDelete: "cascade",
+    }),
     guestMessageId: uuid("guest_message_id").references((): AnyPgColumn => chatMessage.id, {
       onDelete: "set null",
     }),
@@ -142,7 +152,20 @@ export const agentTrace = pgTable(
     classification: jsonb("classification").$type<Record<string, unknown>>(),
     decision: text("decision", { enum: TRACE_DECISIONS }).notNull(),
     reason: text("reason", { enum: NEEDS_HOST_REASON_VALUES }),
-    autonomy: text("autonomy", { enum: ["draft", "auto"] }).notNull(),
+    autonomy: text("autonomy", { enum: ["draft", "auto", "full_auto"] }).notNull(),
+    /** Feature 007 (FR-020): where the level came from and the other settings that applied. */
+    autonomySource: text("autonomy_source", { enum: ["workspace", "property"] }),
+    answerKind: text("answer_kind", { enum: ANSWER_KIND_VALUES }),
+    tone: text("tone", { enum: ASSISTANT_TONES }),
+    quietHours: boolean("quiet_hours").notNull().default(false),
+    workspaceInstructionVersionId: uuid("workspace_instruction_version_id").references(
+      () => assistantInstructionVersion.id,
+      { onDelete: "no action" },
+    ),
+    propertyInstructionVersionId: uuid("property_instruction_version_id").references(
+      () => assistantInstructionVersion.id,
+      { onDelete: "no action" },
+    ),
     guideVersionId: uuid("guide_version_id").references(() => guideVersion.id, {
       onDelete: "set null",
     }),
@@ -164,7 +187,12 @@ export const agentTrace = pgTable(
   (t) => [
     index("agent_trace_conversation_idx").on(t.conversationId),
     index("agent_trace_created_idx").on(t.createdAt),
+    index("agent_trace_test_idx").on(t.assistantTestId),
     check("agent_trace_decision_valid", inList(t.decision, TRACE_DECISIONS)),
+    check(
+      "agent_trace_subject",
+      sql`(${t.conversationId} IS NULL) <> (${t.assistantTestId} IS NULL)`,
+    ),
   ],
 );
 
@@ -216,5 +244,36 @@ export const chatUsageDaily = pgTable(
   (t) => [
     primaryKey({ columns: [t.propertyId, t.day] }),
     index("chat_usage_daily_workspace_idx").on(t.workspaceId, t.day),
+  ],
+);
+
+/**
+ * A "needs the host" email waiting for the end of quiet hours (feature 007 research R7). One per
+ * recipient and conversation; the `chat.quiet-digest` job turns due notices into summaries. System
+ * only: no member policies or grants.
+ */
+export const chatHeldNotice = pgTable(
+  "chat_held_notice",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspace.id, { onDelete: "cascade" }),
+    propertyId: uuid("property_id")
+      .notNull()
+      .references(() => property.id, { onDelete: "cascade" }),
+    conversationId: uuid("conversation_id")
+      .notNull()
+      .references(() => conversation.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    reason: text("reason", { enum: NEEDS_HOST_REASON_VALUES }).notNull(),
+    releaseAt: timestamp("release_at", { withTimezone: true }).notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    uniqueIndex("chat_held_notice_uq").on(t.conversationId, t.userId),
+    index("chat_held_notice_release_idx").on(t.releaseAt),
   ],
 );

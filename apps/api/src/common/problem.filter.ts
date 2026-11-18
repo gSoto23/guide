@@ -68,6 +68,10 @@ const TITLES: Record<ProblemCode, string> = {
   chat_paused: "Chat paused",
   draft_closed: "Draft already handled",
   reply_warnings: "Reply needs review",
+  settings_changed: "Settings changed meanwhile",
+  time_zone_required: "Property time zone required",
+  instructions_invalid: "Instructions can't be saved",
+  tests_paused: "Too many tests",
 };
 
 const CODE_BY_STATUS: Record<number, ProblemCode> = {

@@ -921,3 +921,45 @@ input[type="radio"] {
   margin: 4px 0;
   padding-left: 1.25rem;
 }
+
+/* Feature 007: assistant settings (screen H-26). */
+.topic-rows {
+  display: grid;
+  gap: 8px;
+  margin-top: var(--space);
+}
+
+.topic-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+}
+
+@media (min-width: 640px) {
+  .topic-row {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+}
+
+.topic-row label {
+  margin: 0;
+}
+
+.level-help {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  display: grid;
+  gap: 4px;
+}
+
+.locked-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.test-result {
+  margin-top: var(--space);
+}

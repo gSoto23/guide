@@ -10,3 +10,4 @@ export * from "./property-slots.js";
 export * from "./listing-content.js";
 export * from "./guide-factory.js";
 export * from "./guide-limits.js";
+export * from "./assistant-settings.js";

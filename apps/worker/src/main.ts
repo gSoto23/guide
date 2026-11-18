@@ -51,6 +51,8 @@ import { createSharedBlockPublishHandler } from "./jobs/shared-block-publish.js"
 import { createMediaCopyHandler } from "./jobs/media-copy.js";
 import { createMediaProcessHandler } from "./jobs/media-process.js";
 import { AGENT_COST_CHECK_CRON, createAgentCostCheckHandler } from "./jobs/agent-cost-check.js";
+import { createAssistantTestHandler } from "./jobs/assistant-test.js";
+import { createQuietDigestHandler, QUIET_DIGEST_CRON } from "./jobs/quiet-digest.js";
 import { createChatReplyHandler } from "./jobs/chat-reply.js";
 import { createWorkerServices } from "./services.js";
 
@@ -189,6 +191,27 @@ async function main(): Promise<void> {
   await createQueue(JOB_QUEUES.agentCostCheck);
   await boss.work(JOB_QUEUES.agentCostCheck, createAgentCostCheckHandler({ db: services.db.db }));
   await boss.schedule(JOB_QUEUES.agentCostCheck, AGENT_COST_CHECK_CRON, null, { tz: "UTC" });
+  // Feature 007: "test the assistant" (research R12) and the quiet hours summary (research R7).
+  await createQueue(JOB_QUEUES.assistantTest);
+  await boss.work(
+    JOB_QUEUES.assistantTest,
+    { localConcurrency: 4, pollingIntervalSeconds: CHAT_REPLY_POLL_SECONDS },
+    createAssistantTestHandler({
+      db: services.db.db,
+      llm: services.llm,
+      guideUrl: config.guideUrl,
+    }),
+  );
+  await createQueue(JOB_QUEUES.chatQuietDigest);
+  await boss.work(
+    JOB_QUEUES.chatQuietDigest,
+    createQuietDigestHandler({
+      db: services.db.db,
+      queueEmail: services.queueEmail,
+      portalUrl: services.portalUrl,
+    }),
+  );
+  await boss.schedule(JOB_QUEUES.chatQuietDigest, QUIET_DIGEST_CRON, null, { tz: "UTC" });
   // Shared-block fan-out (research R14): one job per publish or delete.
   await createQueue(JOB_QUEUES.sharedBlockPublish);
   await boss.work(

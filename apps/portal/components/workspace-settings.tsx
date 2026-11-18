@@ -170,7 +170,7 @@ export function WorkspaceSettings({ locale }: { locale: string }) {
             )}
           </section>
 
-          <AssistantCard />
+          <AssistantCard locale={locale} />
 
           {isOwner ? (
             <section className="card" aria-labelledby="transfer-title">

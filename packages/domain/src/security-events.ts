@@ -75,6 +75,8 @@ export const SECURITY_EVENT_TYPES = [
   // Feature 005 (data model §4).
   "assistant.autonomy_changed",
   "conversation.replied",
+  // Feature 007 (research R10).
+  "assistant.settings_changed",
 ] as const;
 
 export type SecurityEventType = (typeof SECURITY_EVENT_TYPES)[number];
@@ -149,6 +151,17 @@ const METADATA_ALLOWLIST: Partial<Record<SecurityEventType, readonly string[]>> 
   "restricted_value.exported": ["propertyId", "stayId", "fields", "language"],
   "assistant.autonomy_changed": ["propertyId", "autonomy"],
   "conversation.replied": ["propertyId", "conversationId", "fromDraft", "edited"],
+  // One `true` flag per changed group, never the instruction text (feature 007 FR-015).
+  "assistant.settings_changed": [
+    "scope",
+    "propertyId",
+    "autonomy",
+    "tone",
+    "quietHours",
+    "contacts",
+    "instructions",
+    "follows",
+  ],
 };
 
 /** Short labels, numbers, booleans, and calendar dates; nothing that could carry free text. */

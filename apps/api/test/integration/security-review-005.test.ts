@@ -55,7 +55,7 @@ describe("feature 005 security review (API)", () => {
     const { cookie } = await firstMessage("¿Hay toallas?");
     for (const url of [
       `/api/v1/workspaces/${team.workspaceId}/properties/${published.propertyId}/conversations`,
-      `/api/v1/workspaces/${team.workspaceId}/assistant-settings`,
+      `/api/v1/workspaces/${team.workspaceId}/assistant`,
       "/api/v1/me",
     ]) {
       const response = await ctx.fastify.inject({

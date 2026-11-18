@@ -64,7 +64,11 @@
     "draft_closed": "Otra persona ya respondió este borrador.",
     "reply_warnings": "Revisa tu respuesta antes de enviarla.",
     "message_too_long": "El mensaje es demasiado largo.",
-    "chat_paused": "El chat está en pausa."
+    "chat_paused": "El chat está en pausa.",
+    "settings_changed": "Alguien cambió estos ajustes mientras los editabas.",
+    "time_zone_required": "La propiedad necesita una zona horaria para usar horas de silencio.",
+    "instructions_invalid": "No se pudieron guardar las instrucciones.",
+    "tests_paused": "Hiciste muchas pruebas. Inténtalo más tarde."
   },
   "auth": {
     "signInCta": "Entrar o crear cuenta",
@@ -814,7 +818,8 @@
       "account": "Tu cuenta",
       "security": "Seguridad",
       "log": "Registro de seguridad",
-      "integrations": "Integraciones"
+      "integrations": "Integraciones",
+      "assistant": "Asistente del chat"
     },
     "workspace": {
       "title": "Workspace",
@@ -1625,7 +1630,32 @@
         "codes": "Sin códigos que no estén en la guía",
         "links": "Solo enlaces de la guía",
         "promises": "Sin promesas de reembolsos, descuentos o cambios",
-        "off_platform": "Sin pedir reservar o pagar fuera de la plataforma"
+        "off_platform": "Sin pedir reservar o pagar fuera de la plataforma",
+        "price": "Sin precios en información general",
+        "clarify": "Una sola pregunta corta para aclarar"
+      },
+      "level": "Autonomía del tema: {level} ({source})",
+      "sources": {
+        "workspace": "ajuste del espacio",
+        "property": "ajuste de la propiedad"
+      },
+      "levels": {
+        "draft": "reviso cada respuesta",
+        "auto": "responde si está en la guía",
+        "full_auto": "responde y pregunta solo"
+      },
+      "kind": "Tipo de respuesta: {kind}",
+      "tone": "Tono: {tone}",
+      "tones": {
+        "casual": "cercano",
+        "formal": "formal"
+      },
+      "quietHours": "Escrita durante horas de silencio",
+      "instructionsUsed": "Usó instrucciones: {which}",
+      "instructionScopes": {
+        "workspace": "del espacio",
+        "property": "de la propiedad",
+        "both": "del espacio y de la propiedad"
       }
     },
     "refresh": "Actualizar",
@@ -1633,17 +1663,139 @@
   },
   "assistant": {
     "title": "Asistente del chat",
-    "workspaceBody": "Cómo responde el asistente en el chat de las guías de este espacio. Las emergencias, quejas, pagos y cambios de reserva siempre pasan a tu equipo.",
-    "propertyBody": "Cómo responde el asistente en el chat de la guía de esta propiedad.",
-    "draft": "Borradores: preparo cada respuesta y tu equipo la aprueba",
-    "auto": "Automático: respondo solo lo que está en la guía y paso lo demás a tu equipo",
-    "inherit": "Usar el ajuste del espacio ({mode})",
-    "modes": {
-      "draft": "borradores",
-      "auto": "automático"
+    "workspaceBody": "Estos ajustes se aplican a todas las propiedades del espacio, salvo a las que tengan los suyos.",
+    "propertyTitle": "Asistente de esta propiedad",
+    "propertyBody": "Cada grupo puede usar los ajustes del espacio o tener los suyos en esta propiedad.",
+    "follow": "Usar los ajustes del espacio",
+    "autonomy": {
+      "title": "Cuándo responde solo",
+      "body": "Por tema, elige si el asistente prepara un borrador para tu equipo o responde solo.",
+      "topics": {
+        "arrival": "Llegada y acceso",
+        "wifi": "Wi-Fi",
+        "house_rules": "Normas de la casa",
+        "appliances": "Electrodomésticos",
+        "amenities": "Comodidades",
+        "parking": "Parqueo",
+        "local_recommendations": "Recomendaciones locales",
+        "emergency": "Información de seguridad",
+        "checkout": "Salida",
+        "other": "Otras preguntas"
+      },
+      "levels": {
+        "draft": "Reviso cada respuesta",
+        "auto": "Responde si está en la guía",
+        "full_auto": "Responde y pregunta solo"
+      },
+      "help": {
+        "draft": "Tu equipo aprueba cada respuesta antes de que llegue al huésped.",
+        "auto": "Envía solo respuestas que citan la guía y pasan las revisiones; lo demás llega como borrador.",
+        "full_auto": "Además puede hacer una pregunta para aclarar y dar información general del destino, siempre con las revisiones."
+      },
+      "locked": "Siempre pasan a tu equipo",
+      "lockedItems": {
+        "emergency": "Emergencias y seguridad",
+        "malfunction": "Daños o algo que no funciona",
+        "complaint": "Quejas",
+        "money": "Reembolsos, pagos y compensaciones",
+        "reservation_change": "Cambios de reserva",
+        "legal": "Temas legales, discriminación o acoso",
+        "codes": "Pedidos de códigos y contraseñas (se indica la sección de la guía)",
+        "not_confident": "Lo que el asistente no sabe con certeza"
+      }
     },
-    "saved": "Ajuste guardado.",
-    "readOnly": "Solo propietarios y administradores pueden cambiar este ajuste.",
-    "legend": "Autonomía"
+    "tone": {
+      "title": "Tono",
+      "body": "Cómo escribe el asistente a los huéspedes, incluidas las respuestas de espera.",
+      "casual": "Cercano (tú)",
+      "formal": "Formal (usted), sin exclamaciones ni emojis"
+    },
+    "quiet": {
+      "title": "Horas de silencio",
+      "body": "Durante estas horas, los avisos que no son urgentes esperan y te llegan juntos al terminar. Las emergencias y las averías se avisan de inmediato. El huésped sabe a qué hora sueles responder.",
+      "enable": "Activar horas de silencio",
+      "start": "Desde",
+      "end": "Hasta",
+      "zone": "Zona horaria de la propiedad: {zone}.",
+      "zoneWorkspace": "Se aplican en la zona horaria de cada propiedad.",
+      "noZone": "Esta propiedad no tiene zona horaria. Agrégala en los datos de la propiedad para usar horas de silencio.",
+      "same": "El inicio y el fin deben ser distintos."
+    },
+    "contacts": {
+      "title": "A quién avisar",
+      "body": "Quién recibe el correo cuando una conversación necesita a tu equipo.",
+      "all": "A todo el equipo que atiende conversaciones",
+      "selected": "Solo a estas personas",
+      "emergencyNote": "Las emergencias también llegan siempre a propietarios y administradores.",
+      "chosen": "{count, plural, one {# persona elegida} other {# personas elegidas}}",
+      "roles": {
+        "owner": "Propietario",
+        "admin": "Administrador",
+        "agent": "Agente"
+      }
+    },
+    "instructions": {
+      "title": "Instrucciones para el asistente",
+      "body": "Preferencias de estilo o qué destacar. No cambian las reglas: las emergencias, los pagos y los cambios de reserva siempre pasan a tu equipo, y los códigos solo se ven en la guía.",
+      "label": "Instrucciones",
+      "placeholder": "Ej.: Sugiere caminar a la playa; el parqueo allá es difícil.",
+      "counter": "{count}/1000",
+      "propertyNote": "Se suman a las instrucciones del espacio.",
+      "workspaceText": "Instrucciones del espacio: {text}",
+      "updated": "Actualizadas el {date} por {name}.",
+      "updatedNoName": "Actualizadas el {date}.",
+      "issuesIntro": "No se pudieron guardar las instrucciones:",
+      "issues": {
+        "too_long": "Tienen más de 1000 caracteres.",
+        "restricted_value": "Parecen tener un código o una contraseña. Los códigos solo se muestran en la guía a huéspedes verificados.",
+        "link": "Tienen un enlace.",
+        "email": "Tienen una dirección de correo.",
+        "phone": "Tienen un número de teléfono.",
+        "off_platform": "Piden reservar o pagar fuera de la plataforma."
+      }
+    },
+    "save": "Guardar ajustes",
+    "saving": "Guardando…",
+    "saved": "Ajustes guardados.",
+    "conflict": "Alguien cambió estos ajustes mientras los editabas. Cargamos los valores actuales; revisa y vuelve a guardar.",
+    "readOnly": "Solo propietarios y administradores pueden cambiar estos ajustes.",
+    "summary": {
+      "configure": "Configurar el asistente",
+      "automatic": "{count, plural, =0 {Ningún tema responde solo} one {# tema responde solo} other {# temas responden solos}}",
+      "tone": "Tono: {tone}",
+      "quiet": "Horas de silencio: {start} a {end}",
+      "own": "Esta propiedad tiene ajustes propios."
+    },
+    "test": {
+      "title": "Probar el asistente",
+      "body": "Escribe una pregunta como la haría un huésped. Verás qué pasaría con los ajustes guardados; nadie recibe nada. Cada prueba cuenta para el límite diario.",
+      "label": "Pregunta",
+      "submit": "Probar",
+      "running": "Probando…",
+      "outcome": "Resultado: {outcome}",
+      "outcomes": {
+        "sent": "Se enviaría al huésped",
+        "draft": "Borrador para tu equipo",
+        "held": "Pasa a tu equipo",
+        "pointer": "Indica la sección del dato protegido",
+        "greeting": "Saludo",
+        "limited": "Límite diario alcanzado",
+        "unavailable": "Asistente no disponible"
+      },
+      "topic": "Tema: {topic}",
+      "reason": "Motivo: {reason}",
+      "kind": "Tipo de respuesta: {kind}",
+      "reply": "Texto",
+      "sources": "Fuentes:",
+      "timeout": "La prueba tarda más de lo normal. Inténtalo de nuevo en un momento.",
+      "paused": "Hiciste muchas pruebas. Inténtalo de nuevo en {minutes} min.",
+      "notPublished": "Publica la guía para probar el asistente."
+    },
+    "kinds": {
+      "grounded": "De la guía",
+      "general": "Información general",
+      "clarify": "Pregunta para aclarar"
+    },
+    "backToProperty": "Volver a la propiedad"
   }
 }

@@ -3,6 +3,9 @@ import { and, asc, eq, sql } from "drizzle-orm";
 import {
   agentDraft,
   agentTrace,
+  assistantContact,
+  assistantInstructionVersion,
+  assistantSettings,
   chatMessage,
   conversation,
   createGuideForProperty,
@@ -15,6 +18,7 @@ import {
   workspace,
   type DbHandle,
 } from "@guidesk/db";
+import { uniformAutonomy, type AutonomyLevel } from "@guidesk/domain";
 import { FakeLlmAdapter, type EmailMessage, type FakeLlmOptions } from "@guidesk/integrations";
 import { runChatReply, type ChatReplyDeps } from "../../src/jobs/chat-reply.js";
 
@@ -49,10 +53,14 @@ export interface Seeded {
   sections: Record<string, string>;
   ownerEmail: string;
   agentEmail: string;
+  ownerId: string;
+  agentId: string;
+  ownerMembershipId: string;
+  agentMembershipId: string;
 }
 
 export async function seed(
-  options: { autonomy?: "draft" | "auto"; propertyLimit?: number } = {},
+  options: { autonomy?: AutonomyLevel; propertyLimit?: number; timeZone?: string } = {},
 ): Promise<Seeded> {
   const db = handle.db;
   const ownerId = `owner-${randomUUID()}`;
@@ -66,15 +74,22 @@ export async function seed(
     id: workspaceId,
     name: "Hospedajes Ana",
     createdBy: ownerId,
-    assistantAutonomy: options.autonomy ?? "draft",
     ...(options.propertyLimit !== undefined
       ? { chatPropertyDailyLimit: options.propertyLimit }
       : {}),
   });
-  await db.insert(membership).values([
-    { workspaceId, userId: ownerId, role: "owner" },
-    { workspaceId, userId: agentId, role: "agent" },
-  ]);
+  const members = await db
+    .insert(membership)
+    .values([
+      { workspaceId, userId: ownerId, role: "owner" },
+      { workspaceId, userId: agentId, role: "agent" },
+    ])
+    .returning({ id: membership.id, userId: membership.userId });
+  if (options.autonomy && options.autonomy !== "draft") {
+    await db
+      .insert(assistantSettings)
+      .values({ workspaceId, autonomy: uniformAutonomy(options.autonomy) });
+  }
   const [prop] = await db
     .insert(property)
     .values({
@@ -88,6 +103,7 @@ export async function seed(
       checkInTime: "15:00",
       checkoutTime: "11:00",
       maxGuests: 4,
+      timeZone: options.timeZone ?? null,
     })
     .returning({ id: property.id });
   const propertyId = prop!.id;
@@ -190,8 +206,77 @@ export async function seed(
     sections,
     ownerEmail: `${ownerId}@example.com`,
     agentEmail: `${agentId}@example.com`,
+    ownerId,
+    agentId,
+    ownerMembershipId: members.find((member) => member.userId === ownerId)!.id,
+    agentMembershipId: members.find((member) => member.userId === agentId)!.id,
   };
 }
+
+export interface SettingsPatch {
+  autonomy?: Record<string, AutonomyLevel>;
+  tone?: "casual" | "formal";
+  quiet?: { start: string; end: string } | null;
+  contacts?: string[] | null;
+  instructions?: string | null;
+  ownGroups?: ("autonomy" | "tone" | "quiet_hours" | "contacts")[];
+}
+
+/**
+ * Writes the workspace's (or the property's) assistant settings row directly, as the system, for
+ * feature 007 tests. Contacts are membership IDs; `null` means all handlers.
+ */
+export async function setSettings(
+  s: Seeded,
+  scope: "workspace" | "property",
+  patch: SettingsPatch,
+): Promise<{ instructionVersionId: string | null }> {
+  const db = handle.db;
+  const propertyId = scope === "property" ? s.propertyId : null;
+  let instructionVersionId: string | null = null;
+  if (patch.instructions) {
+    const [version] = await db
+      .insert(assistantInstructionVersion)
+      .values({ workspaceId: s.workspaceId, propertyId, text: patch.instructions })
+      .returning({ id: assistantInstructionVersion.id });
+    instructionVersionId = version!.id;
+  }
+  const values = {
+    ...(patch.autonomy ? { autonomy: patch.autonomy } : {}),
+    ...(patch.tone ? { tone: patch.tone } : {}),
+    ...(patch.quiet !== undefined
+      ? {
+          quietEnabled: patch.quiet !== null,
+          quietStart: patch.quiet?.start ?? null,
+          quietEnd: patch.quiet?.end ?? null,
+        }
+      : {}),
+    ...(patch.contacts !== undefined
+      ? { contactsMode: patch.contacts ? ("selected" as const) : ("all" as const) }
+      : {}),
+    ...(patch.instructions !== undefined ? { instructionVersionId } : {}),
+    ...(patch.ownGroups ? { ownGroups: patch.ownGroups } : {}),
+  };
+  const [row] = await db
+    .insert(assistantSettings)
+    .values({ workspaceId: s.workspaceId, propertyId, ...values })
+    .onConflictDoUpdate({
+      target: [assistantSettings.workspaceId, assistantSettings.propertyId],
+      set: { ...values, version: sql`${assistantSettings.version} + 1` },
+    })
+    .returning({ id: assistantSettings.id });
+  if (patch.contacts !== undefined) {
+    await db.delete(assistantContact).where(eq(assistantContact.settingsId, row!.id));
+    for (const membershipId of patch.contacts ?? []) {
+      await db
+        .insert(assistantContact)
+        .values({ settingsId: row!.id, membershipId, workspaceId: s.workspaceId });
+    }
+  }
+  return { instructionVersionId };
+}
+
+export { uniformAutonomy };
 
 export async function guestSays(s: Seeded, text: string): Promise<string> {
   const [next] = await handle.db
@@ -212,10 +297,11 @@ export async function guestSays(s: Seeded, text: string): Promise<string> {
   return row!.id;
 }
 
-export function deps(options: FakeLlmOptions = {}) {
+export function deps(options: FakeLlmOptions = {}, now?: () => Date) {
   const llm = new FakeLlmAdapter(options);
   const emails: EmailMessage[] = [];
   const value: ChatReplyDeps = {
+    ...(now ? { now } : {}),
     db: handle.db,
     llm,
     queueEmail: async (message) => {

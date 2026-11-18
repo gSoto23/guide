@@ -45,3 +45,37 @@ describe("fake assistant (feature 005, development only)", () => {
     });
   });
 });
+
+describe("fake assistant, feature 007 kinds and tone", () => {
+  const input = (message: string, language = "en", tone?: "casual" | "formal") => ({
+    propertyName: "Casa",
+    hostName: "Ana",
+    knowledge: "[section s1] Checkout\nLeave by 11:00.",
+    history: [],
+    message,
+    language,
+    tone,
+  });
+
+  it("asks one clarifying question for ambiguous distance questions", () => {
+    expect(fakeAnswer(input("Is it far?"))).toMatchObject({ kind: "clarify", sectionIds: [] });
+    expect(fakeAnswer(input("¿Está lejos?", "es", "formal")).answer).toContain("le respondo");
+  });
+
+  it("gives a general answer for weather questions, in the tone", () => {
+    expect(fakeAnswer(input("What's the weather like in March?"))).toMatchObject({
+      kind: "general",
+      answerable: true,
+    });
+    expect(fakeAnswer(input("¿Cómo es el clima en marzo?", "es", "formal")).answer).toContain(
+      "su anfitrión",
+    );
+  });
+
+  it("marks guide answers as grounded", () => {
+    expect(fakeAnswer(input("When is checkout?"))).toMatchObject({
+      kind: "grounded",
+      sectionIds: ["s1"],
+    });
+  });
+});

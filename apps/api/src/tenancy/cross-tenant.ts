@@ -2,6 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { and, eq, ne, sql } from "drizzle-orm";
 import {
   agentDraft,
+  assistantTest,
   calendarFeed,
   conversation,
   extractionRequest,
@@ -49,6 +50,8 @@ const TABLES = {
   // Feature 005 (AC-SEC-006).
   conversation,
   agent_draft: agentDraft,
+  // Feature 007 (AC-SEC-003).
+  assistant_test: assistantTest,
 } as const;
 export type TenantResource = keyof typeof TABLES;
 

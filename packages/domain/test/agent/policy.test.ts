@@ -86,3 +86,58 @@ describe("policy after the answer", () => {
     });
   });
 });
+
+describe("policy after the answer per level (feature 007 research R2)", () => {
+  const sure = { answerable: true, needsHost: false } as const;
+
+  it("drafts unsure answers at every level", () => {
+    for (const level of ["draft", "auto", "full_auto"] as const) {
+      expect(decideAfterAnswer({ ...sure, needsHost: true, kind: "general" }, level, true)).toEqual(
+        {
+          kind: "draft",
+          reason: "not_confident",
+        },
+      );
+    }
+  });
+
+  it("drafts everything at draft", () => {
+    for (const kind of ["grounded", "general", "clarify"] as const) {
+      expect(decideAfterAnswer({ ...sure, kind }, "draft", true)).toEqual({
+        kind: "draft",
+        reason: "draft_ready",
+      });
+    }
+  });
+
+  it("sends only grounded answers at auto", () => {
+    expect(decideAfterAnswer({ ...sure, kind: "grounded" }, "auto", true)).toEqual({
+      kind: "send",
+    });
+    expect(decideAfterAnswer({ ...sure, kind: "general" }, "auto", true)).toEqual({
+      kind: "draft",
+      reason: "draft_ready",
+    });
+    expect(decideAfterAnswer({ ...sure, kind: "clarify" }, "auto", true)).toEqual({
+      kind: "draft",
+      reason: "draft_ready",
+    });
+  });
+
+  it("sends general answers and one clarifying question at full_auto when checks pass", () => {
+    expect(decideAfterAnswer({ ...sure, kind: "general" }, "full_auto", true)).toEqual({
+      kind: "send",
+    });
+    expect(decideAfterAnswer({ ...sure, kind: "clarify" }, "full_auto", true)).toEqual({
+      kind: "send",
+    });
+    expect(decideAfterAnswer({ ...sure, kind: "clarify" }, "full_auto", true, true)).toEqual({
+      kind: "draft",
+      reason: "draft_ready",
+    });
+    expect(decideAfterAnswer({ ...sure, kind: "general" }, "full_auto", false)).toEqual({
+      kind: "draft",
+      reason: "check_failed",
+    });
+  });
+});

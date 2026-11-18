@@ -136,3 +136,44 @@ export function renderChatLimitReached(
     ],
   });
 }
+
+export interface ChatQuietSummaryDetails {
+  propertyName: string;
+  /** The conversations still waiting when quiet hours ended. */
+  conversations: { reason: ChatNeedsHostReason; guestMessage: string; link: string }[];
+}
+
+function shortExcerpt(text: string): string {
+  const flat = text.replace(/\s+/g, " ").trim();
+  return flat.length > 120 ? `${flat.slice(0, 119)}…` : flat;
+}
+
+/** `chat.quiet_summary` (feature 007 FR-008): one per recipient and property when quiet hours end. */
+export function renderChatQuietSummary(
+  locale: EmailLocale,
+  details: ChatQuietSummaryDetails,
+): Promise<Rendered> {
+  const count = details.conversations.length;
+  if (locale === "en") {
+    return renderNotice(locale, {
+      subject: `${count} ${count === 1 ? "guest is" : "guests are"} waiting at ${details.propertyName}`,
+      heading: "While your quiet hours were on",
+      paragraphs: [
+        `${count === 1 ? "This conversation needs" : "These conversations need"} your reply:`,
+        ...details.conversations.map(
+          (item) => `${REASONS.en[item.reason]} “${shortExcerpt(item.guestMessage)}” ${item.link}`,
+        ),
+      ],
+    });
+  }
+  return renderNotice(locale, {
+    subject: `${count} ${count === 1 ? "huésped espera" : "huéspedes esperan"} en ${details.propertyName}`,
+    heading: "Durante tus horas de silencio",
+    paragraphs: [
+      `${count === 1 ? "Esta conversación necesita" : "Estas conversaciones necesitan"} tu respuesta:`,
+      ...details.conversations.map(
+        (item) => `${REASONS.es[item.reason]} «${shortExcerpt(item.guestMessage)}» ${item.link}`,
+      ),
+    ],
+  });
+}

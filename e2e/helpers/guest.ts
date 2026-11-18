@@ -167,12 +167,71 @@ export async function addStay(
 // Feature 005: the in-guide chat ---------------------------------------------------------------------
 
 /** Sets the workspace's assistant autonomy through the API (owners and admins). */
-export async function setAutonomy(page: Page, guide: PublishedGuide, autonomy: "draft" | "auto") {
+const TOPICS = [
+  "arrival",
+  "wifi",
+  "house_rules",
+  "appliances",
+  "amenities",
+  "parking",
+  "local_recommendations",
+  "emergency",
+  "checkout",
+  "other",
+] as const;
+type Level = "draft" | "auto" | "full_auto";
+
+interface WorkspaceSettings {
+  version: number;
+  autonomy: Record<string, Level>;
+  tone: "casual" | "formal";
+  quietHours: { enabled: boolean; start: string | null; end: string | null };
+  contacts: { mode: "all" } | { mode: "selected"; memberIds: string[] };
+  instructions: { text: string } | null;
+  members: { id: string; name: string; role: string }[];
+}
+
+/** Every topic at one level (feature 007 research R1). */
+export const allTopics = (level: Level): Record<string, Level> =>
+  Object.fromEntries(TOPICS.map((topic) => [topic, level]));
+
+/** Reads the workspace's assistant settings (feature 007 contracts). */
+export async function assistantSettings(
+  page: Page,
+  guide: PublishedGuide,
+): Promise<WorkspaceSettings> {
+  return json<WorkspaceSettings>(
+    await page.request.get(`/api/v1/workspaces/${guide.workspaceId}/assistant`),
+  );
+}
+
+/** Changes the workspace's assistant settings through the API, keeping what the patch omits. */
+export async function setAssistantSettings(
+  page: Page,
+  guide: PublishedGuide,
+  patch: Partial<Omit<WorkspaceSettings, "version" | "members" | "instructions">> & {
+    instructions?: string;
+  },
+): Promise<void> {
+  const current = await assistantSettings(page, guide);
   await json(
-    await page.request.put(`/api/v1/workspaces/${guide.workspaceId}/assistant-settings`, {
-      data: { autonomy },
+    await page.request.put(`/api/v1/workspaces/${guide.workspaceId}/assistant`, {
+      data: {
+        version: current.version,
+        autonomy: current.autonomy,
+        tone: current.tone,
+        quietHours: current.quietHours,
+        contacts: current.contacts,
+        instructions: current.instructions?.text ?? "",
+        ...patch,
+      },
     }),
   );
+}
+
+/** Every topic at one level for the workspace (feature 005's two modes, feature 007's three). */
+export async function setAutonomy(page: Page, guide: PublishedGuide, autonomy: Level) {
+  await setAssistantSettings(page, guide, { autonomy: allTopics(autonomy) });
 }
 
 /** The guide's property link, from the Share overview. */

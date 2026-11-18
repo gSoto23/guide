@@ -326,3 +326,31 @@ test("guide chat and conversation screens have no WCAG A/AA violations (feature 
   await expect(host.getByRole("heading", { name: "Asistente del chat" })).toBeVisible();
   await expectNoViolations(host, "property page with the assistant card");
 });
+
+test("assistant settings screens have no WCAG A/AA violations (feature 007 T047)", async ({
+  browser,
+}) => {
+  test.setTimeout(180_000);
+  const { publishGuide, signIn } = await import("../helpers/guest");
+  const host = await newPage(browser);
+  await signIn(host, uniqueEmail("a11y-settings"));
+  const guide = await publishGuide(host);
+
+  await host.goto("/es/settings/assistant");
+  await expect(host.getByRole("heading", { name: "Asistente del chat", level: 1 })).toBeVisible();
+  await host.getByLabel("Activar horas de silencio").check();
+  await host.getByRole("radio", { name: "Solo a estas personas" }).check();
+  await expectNoViolations(host, "workspace assistant settings");
+
+  await host.goto(`/en/properties/${guide.propertyId}/assistant`);
+  await expect(host.getByRole("heading", { name: "This property's assistant" })).toBeVisible();
+  await host
+    .locator("section.card", { hasText: "When it answers on its own" })
+    .getByLabel("Use the workspace settings")
+    .uncheck();
+  const panel = host.locator("section.card", { hasText: "Test the assistant" });
+  await panel.getByLabel("Question").fill("How do I open the lockbox?");
+  await panel.getByRole("button", { name: "Test" }).click();
+  await expect(panel.getByText(/^Result:/)).toBeVisible({ timeout: 20_000 });
+  await expectNoViolations(host, "property assistant settings with a test result");
+});

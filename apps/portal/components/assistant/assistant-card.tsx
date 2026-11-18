@@ -1,97 +1,63 @@
 "use client";
 
-import { useCallback, useEffect, useId, useState } from "react";
+import Link from "next/link";
+import { useEffect, useId, useState } from "react";
 import { useTranslations } from "next-intl";
-import type { PropertyAssistantSettings, WorkspaceAssistantSettings } from "@guidesk/contracts";
+import type { AssistantGroups, PropertyAssistant, WorkspaceAssistant } from "@guidesk/contracts";
 import { useWorkspace } from "@/lib/use-workspace";
 
-type Choice = "draft" | "auto" | "inherit";
-
 /**
- * The assistant's autonomy (feature 005 US4, FR-022): the workspace default in workspace settings,
- * or the property's override on the property page. Owners and admins change it; agents read it.
+ * A summary of the assistant's settings with a link to the settings screen (feature 007 US1):
+ * on the property page (what applies there) and in workspace settings (the defaults).
  */
-export function AssistantCard({ propertyId }: { propertyId?: string }) {
+export function AssistantCard({ locale, propertyId }: { locale: string; propertyId?: string }) {
   const t = useTranslations("assistant");
-  const errors = useTranslations("errors");
   const workspace = useWorkspace();
   const id = useId();
-  const [choice, setChoice] = useState<Choice | null>(null);
-  const [inherited, setInherited] = useState<"draft" | "auto">("draft");
-  const [message, setMessage] = useState<{ kind: "success" | "error"; text: string } | null>(null);
-  const path = propertyId ? `/properties/${propertyId}/assistant-settings` : "/assistant-settings";
-
-  const load = useCallback(async () => {
-    if (!workspace) return;
-    try {
-      if (propertyId) {
-        const [settings, defaults] = await Promise.all([
-          workspace.api.get<PropertyAssistantSettings>(path),
-          workspace.api.get<WorkspaceAssistantSettings>("/assistant-settings"),
-        ]);
-        setInherited(defaults.autonomy);
-        setChoice(settings.override ?? "inherit");
-      } else {
-        setChoice((await workspace.api.get<WorkspaceAssistantSettings>(path)).autonomy);
-      }
-    } catch {
-      setMessage({ kind: "error", text: errors("internal_error") });
-    }
-  }, [workspace, path, propertyId, errors]);
+  const [summary, setSummary] = useState<{ groups: AssistantGroups; own: boolean } | null>(null);
 
   useEffect(() => {
-    void load();
-  }, [load]);
-
-  if (!workspace || choice === null) return null;
-  const canEdit = workspace.canManage;
-
-  async function save(next: Choice) {
     if (!workspace) return;
-    const previous = choice;
-    setChoice(next);
-    setMessage(null);
-    try {
-      await workspace.api.put(
-        path,
-        propertyId ? { override: next === "inherit" ? null : next } : { autonomy: next },
-      );
-      setMessage({ kind: "success", text: t("saved") });
-    } catch {
-      setChoice(previous);
-      setMessage({ kind: "error", text: errors("internal_error") });
-    }
-  }
+    let active = true;
+    const load = propertyId
+      ? workspace.api
+          .get<PropertyAssistant>(`/properties/${propertyId}/assistant`)
+          .then((data) => ({
+            groups: data.effective,
+            own: Object.values(data.follows).some((follows) => !follows) || !!data.instructions,
+          }))
+      : workspace.api.get<WorkspaceAssistant>("/assistant").then((data) => ({
+          groups: data,
+          own: false,
+        }));
+    load.then((value) => active && setSummary(value)).catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [workspace, propertyId]);
 
-  const options: Choice[] = propertyId ? ["inherit", "draft", "auto"] : ["draft", "auto"];
+  if (!workspace || !summary) return null;
+  const automatic = Object.values(summary.groups.autonomy).filter(
+    (level) => level !== "draft",
+  ).length;
+  const href = propertyId
+    ? `/${locale}/properties/${propertyId}/assistant`
+    : `/${locale}/settings/assistant`;
+  const quiet = summary.groups.quietHours;
   return (
     <section className="card" aria-labelledby={`${id}-title`}>
       <h2 id={`${id}-title`}>{t("title")}</h2>
-      <p className="muted">{propertyId ? t("propertyBody") : t("workspaceBody")}</p>
-      <fieldset disabled={!canEdit}>
-        <legend className="visually-hidden">{t("legend")}</legend>
-        {options.map((option) => (
-          <label key={option} className="choice">
-            <input
-              type="radio"
-              name={`${id}-autonomy`}
-              value={option}
-              checked={choice === option}
-              onChange={() => void save(option)}
-            />{" "}
-            {option === "inherit" ? t("inherit", { mode: t(`modes.${inherited}`) }) : t(option)}
-          </label>
-        ))}
-      </fieldset>
-      {!canEdit && <p className="muted">{t("readOnly")}</p>}
-      {message && (
-        <p
-          className={`alert ${message.kind === "error" ? "alert-error" : "alert-success"}`}
-          role={message.kind === "error" ? "alert" : "status"}
-        >
-          {message.text}
-        </p>
-      )}
+      <ul className="why-list">
+        <li>{t("summary.automatic", { count: automatic })}</li>
+        <li>{t("summary.tone", { tone: t(`tone.${summary.groups.tone}`) })}</li>
+        {quiet.enabled && quiet.start && quiet.end && (
+          <li>{t("summary.quiet", { start: quiet.start, end: quiet.end })}</li>
+        )}
+      </ul>
+      {summary.own && <p className="muted">{t("summary.own")}</p>}
+      <p>
+        <Link href={href}>{t("summary.configure")}</Link>
+      </p>
     </section>
   );
 }

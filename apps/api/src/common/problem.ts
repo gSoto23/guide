@@ -61,7 +61,12 @@ export type ProblemCode =
   | "message_too_long"
   | "chat_paused"
   | "draft_closed"
-  | "reply_warnings";
+  | "reply_warnings"
+  // Feature 007 (contracts/http-api.md).
+  | "settings_changed"
+  | "time_zone_required"
+  | "instructions_invalid"
+  | "tests_paused";
 
 /**
  * Extra members of a problem body, such as `{limit, used}` or `{reason}`. Plain values only, and

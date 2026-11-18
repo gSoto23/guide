@@ -13,7 +13,7 @@ export default async function PropertyPage({
   return (
     <main>
       <PropertyFacts locale={locale} propertyId={propertyId} />
-      <AssistantCard propertyId={propertyId} />
+      <AssistantCard locale={locale} propertyId={propertyId} />
     </main>
   );
 }

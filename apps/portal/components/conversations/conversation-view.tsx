@@ -295,13 +295,41 @@ export function ConversationView({
 /** "Why this reply" (FR-031): the member part of the trace, never model, tokens, or cost. */
 function Why({ trace }: { trace: MemberTrace }) {
   const t = useTranslations("conversations.why");
+  const kinds = useTranslations("assistant.kinds");
   return (
     <details className="issue-details">
       <summary>{t("title")}</summary>
       <ul className="why-list">
         <li>{t("decision", { decision: t(`decisions.${trace.decision}`) })}</li>
         {trace.topic && <li>{t("topic", { topic: trace.topic })}</li>}
-        <li>{t("autonomy", { autonomy: trace.autonomy })}</li>
+        {trace.autonomySource ? (
+          <li>
+            {t("level", {
+              level: t(`levels.${trace.autonomy}`),
+              source: t(`sources.${trace.autonomySource}`),
+            })}
+          </li>
+        ) : (
+          <li>{t("autonomy", { autonomy: t(`levels.${trace.autonomy}`) })}</li>
+        )}
+        {trace.answerKind && <li>{t("kind", { kind: kinds(trace.answerKind) })}</li>}
+        {trace.tone && <li>{t("tone", { tone: t(`tones.${trace.tone}`) })}</li>}
+        {trace.quietHours && <li>{t("quietHours")}</li>}
+        {(trace.instructions.workspace || trace.instructions.property) && (
+          <li>
+            {t("instructionsUsed", {
+              which: t(
+                `instructionScopes.${
+                  trace.instructions.workspace && trace.instructions.property
+                    ? "both"
+                    : trace.instructions.workspace
+                      ? "workspace"
+                      : "property"
+                }`,
+              ),
+            })}
+          </li>
+        )}
         {trace.guideVersion !== null && <li>{t("version", { version: trace.guideVersion })}</li>}
         {trace.edited && <li>{t("edited")}</li>}
       </ul>

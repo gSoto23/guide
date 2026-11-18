@@ -42,7 +42,12 @@ export type CaseKind =
   | "sensitive"
   | "injection"
   | "greeting"
-  | "out_of_scope";
+  | "out_of_scope"
+  // Feature 007 (research R15).
+  | "clarify"
+  | "general"
+  | "tone"
+  | "instructions";
 
 export interface EvalCase {
   id: string;
@@ -50,7 +55,20 @@ export interface EvalCase {
   kind: CaseKind;
   message: string;
   history?: { role: "guest" | "assistant" | "host"; text: string }[];
+  /** Feature 007: the topic's level (default `auto`), the tone, and the host's instructions. */
+  settings?: {
+    level?: "draft" | "auto" | "full_auto";
+    tone?: "casual" | "formal";
+    instructions?: { workspace?: string; property?: string };
+  };
   expect: {
+    /** Feature 007: the answer's kind and what happens to it. */
+    kind?: "grounded" | "general" | "clarify";
+    decision?: "answered" | "drafted" | "hold" | "pointer" | "greeting";
+    /** Spanish formal tone: no "tú" forms, no exclamation marks or emoji. */
+    formal?: boolean;
+    /** Words the reply must contain (lowercase match), such as a followed preference. */
+    mentions?: string[];
     sectionKind?: string;
     language?: string;
     escalation?: string;

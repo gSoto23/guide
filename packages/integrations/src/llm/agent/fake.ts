@@ -106,7 +106,45 @@ function words(text: string): Set<string> {
   );
 }
 
+/** Feature 007: ambiguous distance questions get one clarifying question. */
+const AMBIGUOUS = /(is it far|how far is it|esta lejos|que tan lejos)/;
+/** Feature 007: weather questions get a general answer. */
+const GENERAL = /(weather|rain|temperature|clima|llueve|lluvia|temperatura)/;
+
+function fakeClarify(input: AnswerGuestInput): GuestAnswer {
+  const spanish = input.language.startsWith("es");
+  return {
+    answer: spanish
+      ? input.tone === "formal"
+        ? "¿Lejos de dónde: la playa, el centro o el aeropuerto? Así le respondo con precisión."
+        : "¿Lejos de dónde: la playa, el centro o el aeropuerto?"
+      : "Far from where: the beach, the town, or the airport?",
+    kind: "clarify",
+    sectionIds: [],
+    answerable: true,
+    needsHost: false,
+  };
+}
+
+function fakeGeneral(input: AnswerGuestInput): GuestAnswer {
+  const spanish = input.language.startsWith("es");
+  return {
+    answer: spanish
+      ? input.tone === "formal"
+        ? "En general, la temporada seca va de diciembre a abril. Es información general; su anfitrión puede confirmarla."
+        : "En general, la temporada seca va de diciembre a abril. Es información general; tu anfitrión puede confirmarla."
+      : "In general, the dry season runs from December to April. This is general information; your host can confirm it.",
+    kind: "general",
+    sectionIds: [],
+    answerable: true,
+    needsHost: false,
+  };
+}
+
 export function fakeAnswer(input: AnswerGuestInput): GuestAnswer {
+  const message = fold(input.message);
+  if (AMBIGUOUS.test(message)) return fakeClarify(input);
+  if (GENERAL.test(message)) return fakeGeneral(input);
   const blocks = input.knowledge
     .split(/\n(?=\[section )/)
     .filter((block) => block.startsWith("[section "));
@@ -122,10 +160,14 @@ export function fakeAnswer(input: AnswerGuestInput): GuestAnswer {
     if (!best || score > best.score) best = { id, score, body: text };
   }
   if (!best || best.score < 1 || !best.body.trim()) {
+    const formal = input.tone === "formal";
     return {
       answer: input.language.startsWith("es")
-        ? "No tengo esa información en la guía. Tu anfitrión te responderá aquí."
+        ? formal
+          ? "No tengo esa información en la guía. Su anfitrión le responderá aquí."
+          : "No tengo esa información en la guía. Tu anfitrión te responderá aquí."
         : "I don't have that in the guide. Your host will reply here.",
+      kind: "grounded",
       sectionIds: [],
       answerable: false,
       needsHost: true,
@@ -133,6 +175,7 @@ export function fakeAnswer(input: AnswerGuestInput): GuestAnswer {
   }
   return {
     answer: best.body.trim().slice(0, 600),
+    kind: "grounded",
     sectionIds: [best.id],
     answerable: true,
     needsHost: false,

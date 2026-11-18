@@ -51,3 +51,38 @@ describe("output checks (feature 005 research R6)", () => {
     ]);
   });
 });
+
+describe("checks per answer kind (feature 007 research R4)", () => {
+  const kindFailing = (text: string, kind: "general" | "clarify") =>
+    checkAnswer({ text, sectionIds: [], kind }, context)
+      .filter((result) => !result.passed)
+      .map((result) => result.check);
+
+  it("needs no citation for general answers but refuses prices", () => {
+    expect(kindFailing("March is usually dry and warm; your host can confirm.", "general")).toEqual(
+      [],
+    );
+    expect(kindFailing("A taxi costs about $20.", "general")).toEqual(["price"]);
+    expect(kindFailing("Un taxi cuesta unos 10 000 colones.", "general")).toEqual([
+      "codes",
+      "price",
+    ]);
+    expect(kindFailing("Cuesta 15 dólares.", "general")).toEqual(["price"]);
+    expect(kindFailing("It is about USD 15.", "general")).toEqual(["price"]);
+  });
+
+  it("allows one short clarifying question", () => {
+    expect(kindFailing("Far from where: the beach or the airport?", "clarify")).toEqual([]);
+    expect(kindFailing("¿Lejos de dónde? ¿De la playa o del aeropuerto?", "clarify")).toEqual([]);
+    expect(kindFailing("I can help with that.", "clarify")).toEqual(["clarify"]);
+    expect(
+      kindFailing("I see. Do you mean the beach? Or the airport? Or the town?", "clarify"),
+    ).toEqual(["clarify"]);
+    expect(kindFailing(`${"Which one ".repeat(40)}?`, "clarify")).toEqual(["clarify"]);
+  });
+
+  it("still runs the code, link, promise, and off-platform checks", () => {
+    expect(kindFailing("Do you want a refund?", "clarify")).toEqual(["promises"]);
+    expect(kindFailing("See https://evil.example.com for weather.", "general")).toEqual(["links"]);
+  });
+});
