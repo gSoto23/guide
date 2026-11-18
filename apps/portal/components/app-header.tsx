@@ -18,6 +18,7 @@ export function AppHeader({ locale }: { locale: string }) {
       <nav aria-label="Guidesk">
         <Link href={`/${locale}/inbox`}>{t("nav.inbox")}</Link>
         <Link href={`/${locale}/requests`}>{t("nav.requests")}</Link>
+        <Link href={`/${locale}/analytics`}>{t("nav.analytics")}</Link>
         <Link href={`/${locale}/properties`}>{t("nav.properties")}</Link>
         <Link href={`/${locale}/shared-content`}>{t("nav.shared")}</Link>
         <Link href={`/${locale}/settings/members`}>{t("nav.team")}</Link>

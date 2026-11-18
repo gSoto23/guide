@@ -1081,3 +1081,51 @@ describe("feature 008 resources across workspaces (T024, AC-SEC-004)", () => {
     expect(missing.json()).toEqual(foreign.json());
   });
 });
+
+describe("feature 010 analytics across workspaces (T020, AC-SEC-001)", () => {
+  let foreignProperty: string;
+
+  beforeAll(async () => {
+    foreignProperty = (
+      await db.query<{ id: string }>(
+        `INSERT INTO property (workspace_id, name, guide_languages, setup_status, source, country)
+         VALUES ($1, 'Casa Analítica de Bruno', ARRAY['es'], 'ready', 'manual', 'CR') RETURNING id`,
+        [bruno.workspaceId],
+      )
+    ).rows[0]!.id;
+  });
+
+  const get = (url: string) =>
+    ctx.fastify.inject({
+      method: "GET",
+      url,
+      headers: { origin: "http://localhost:3000", cookie: alice.cookie },
+    });
+
+  it("answers 404 for another workspace's analytics and its properties, and logs each attempt", async () => {
+    const urls = [
+      `/api/v1/workspaces/${bruno.workspaceId}/analytics?period=30`,
+      `/api/v1/workspaces/${bruno.workspaceId}/analytics/unanswered?period=30`,
+      `/api/v1/workspaces/${alice.workspaceId}/analytics?period=30&propertyId=${foreignProperty}`,
+      `/api/v1/workspaces/${alice.workspaceId}/analytics/unanswered?period=30&propertyId=${foreignProperty}`,
+    ];
+    for (const url of urls) {
+      const before = await deniedCount();
+      const response = await get(url);
+      expect(response.statusCode, url).toBe(404);
+      expect(await deniedCount(), `${url} logged`).toBe(before + 1);
+    }
+  });
+
+  it("gives a missing property the same answer as a foreign one", async () => {
+    const url = (id: string) =>
+      `/api/v1/workspaces/${alice.workspaceId}/analytics?period=7&propertyId=${id}`;
+    const foreign = await get(url(foreignProperty));
+    const missing = await get(url(MISSING));
+    expect(missing.statusCode).toBe(foreign.statusCode);
+    expect(missing.json()).toEqual(foreign.json());
+    const own = await get(`/api/v1/workspaces/${alice.workspaceId}/analytics?period=7`);
+    expect(own.statusCode).toBe(200);
+    expect(JSON.stringify(own.json())).not.toContain("Casa Analítica de Bruno");
+  });
+});

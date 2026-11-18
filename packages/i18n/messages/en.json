@@ -816,7 +816,8 @@
       "settings": "Settings",
       "shared": "Shared content",
       "inbox": "Inbox",
-      "requests": "Requests"
+      "requests": "Requests",
+      "analytics": "Analytics"
     },
     "loading": "Loading…",
     "none": "No workspace: create one"
@@ -2142,5 +2143,125 @@
     "notWaiting": "Someone already answered this request. We reloaded the list.",
     "notConfirmed": "This request isn't confirmed any more. We reloaded the list.",
     "payment": "Nothing is charged in Guidesk: arrange payment with the guest."
+  },
+  "analytics": {
+    "title": "Analytics",
+    "workspaceTitle": "Analytics: all properties",
+    "propertyTitle": "Analytics: {name}",
+    "intro": "How guests use your guides, from the visits and questions Guidesk already counts. No guest is tracked.",
+    "backToProperty": "← Back to the property",
+    "allProperties": "See all properties",
+    "cardTitle": "Analytics",
+    "cardBody": "Guide views, questions the assistant answered, and what guests asked, over the last 7, 30, or 90 days.",
+    "open": "Open analytics",
+    "periodLegend": "Period",
+    "periods": {
+      "7": "7 days",
+      "30": "30 days",
+      "90": "90 days"
+    },
+    "utcNote": "A property has no time zone, so its days are counted in UTC.",
+    "removedNote": "This property was removed; its numbers stay in the workspace totals until it's deleted.",
+    "loading": "Loading…",
+    "empty": "Nothing in this period yet. Share the guide link with your next guests to start seeing numbers.",
+    "change": {
+      "same": "Same as the previous {days} days",
+      "up": "+{abs} ({rel}) vs. the previous {days} days",
+      "down": "−{abs} ({rel}) vs. the previous {days} days",
+      "upNoRate": "+{abs} vs. the previous {days} days",
+      "downNoRate": "−{abs} vs. the previous {days} days",
+      "none": "No comparison yet: the previous {days} days started before this was set up."
+    },
+    "noRate": "—",
+    "noRateHint": "No questions in this period.",
+    "noAttachHint": "No stay opened the guide in this period.",
+    "sections": {
+      "guide": "Guide",
+      "chat": "Questions in the guide chat",
+      "topics": "What guests asked about",
+      "escalations": "Sent to you, by reason",
+      "unanswered": "Questions the assistant couldn't answer",
+      "explore": "Explore",
+      "requests": "Add-on requests",
+      "properties": "By property"
+    },
+    "metrics": {
+      "views": "Guide views",
+      "viewsSplit": "{property} from the property link, {stay} from stay links",
+      "staysOpened": "Stays that opened the guide",
+      "questions": "Guest questions",
+      "automatic": "Answered automatically",
+      "withHost": "Answered with you",
+      "escalated": "Sent to you",
+      "resolution": "Automated resolution rate",
+      "resolutionHint": "Answered automatically ÷ all guest questions",
+      "exploreOpens": "Explore opens",
+      "clicks": "Partner clicks",
+      "requestsMade": "Requests made",
+      "attach": "Attach rate",
+      "attachHint": "Stays with a request ÷ stays that opened the guide"
+    },
+    "outcomesLabel": "Questions by outcome",
+    "share": "{share} of questions",
+    "noneYet": "None in this period.",
+    "topics": {
+      "arrival": "Arrival and access",
+      "wifi": "Wi-Fi",
+      "house_rules": "House rules",
+      "appliances": "Appliances",
+      "amenities": "Amenities",
+      "parking": "Parking",
+      "local_recommendations": "Local recommendations",
+      "emergency": "Emergencies",
+      "checkout": "Checkout",
+      "other": "Other"
+    },
+    "reasons": {
+      "emergency": "Emergency",
+      "malfunction": "Something broken",
+      "complaint": "Complaint",
+      "money": "Money or refunds",
+      "reservation_change": "Reservation change",
+      "legal": "Legal",
+      "not_confident": "The assistant didn't know",
+      "check_failed": "Answer failed a check",
+      "limit": "Daily limit reached",
+      "unavailable": "Assistant unavailable"
+    },
+    "statuses": {
+      "waiting": "Waiting",
+      "confirmed": "Confirmed",
+      "declined": "Declined",
+      "cancelled": "Cancelled by the guest",
+      "host_cancelled": "Cancelled by the host",
+      "expired": "Expired"
+    },
+    "partners": {
+      "viator": "Viator",
+      "civitatis": "Civitatis"
+    },
+    "clicksNote": "Counts only. Commissions aren't shown here.",
+    "unansweredHint": "Add the answers to your guide so the assistant can answer next time.",
+    "unansweredEmpty": "The assistant answered everything it was asked in this period.",
+    "openConversation": "Open the conversation",
+    "removedText": "The message is no longer available.",
+    "more": "Show more",
+    "table": {
+      "caption": "Properties in this period",
+      "name": "Property",
+      "views": "Views",
+      "questions": "Questions",
+      "automatic": "Automatic",
+      "rate": "Rate",
+      "escalated": "Sent to you",
+      "requests": "Requests",
+      "clicks": "Clicks",
+      "removed": "Removed",
+      "showAll": "Show all {count} properties",
+      "sorted": "Sorted by {column}, {direction}",
+      "ascending": "ascending",
+      "descending": "descending"
+    },
+    "byStatus": "By status"
   }
 }

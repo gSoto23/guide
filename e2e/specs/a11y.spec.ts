@@ -502,3 +502,32 @@ test("Extras, extra detail with requests, the catalog, and Requests have no WCAG
   await host.locator(".request-row").first().getByRole("button", { name: "Decline" }).click();
   await expectNoViolations(host, "Requests with the reason form");
 });
+
+test("Analytics for a property and the workspace have no WCAG A/AA violations (feature 010 T023)", async ({
+  browser,
+}) => {
+  test.setTimeout(240_000);
+  const { openChat, propertyLink, publishGuide, sendChatMessage, setAutonomy, signIn } =
+    await import("../helpers/guest");
+  const host = await newPage(browser);
+  await signIn(host, uniqueEmail("a11y-analytics"));
+  const guide = await publishGuide(host);
+  await setAutonomy(host, guide, "auto");
+  const context = await browser.newContext({ locale: "es-CR", viewport: { width: 390, height: 844 } });
+  const guest = await context.newPage();
+  await guest.goto(await propertyLink(host, guide));
+  await openChat(guest);
+  await sendChatMessage(guest, "¿Venden helados de mango?");
+  await expect(guest.getByRole("dialog").locator(".chat-msg-assistant").last()).toBeVisible({
+    timeout: 15_000,
+  });
+  await context.close();
+
+  await host.goto(`/es/properties/${guide.propertyId}/analytics`);
+  await expect(host.locator(".unanswered-item").first()).toBeVisible();
+  await expectNoViolations(host, "property analytics");
+  await host.goto("/en/analytics");
+  await expect(host.getByRole("table")).toBeVisible();
+  await host.getByRole("button", { name: "Questions" }).click();
+  await expectNoViolations(host, "workspace analytics");
+});

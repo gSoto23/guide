@@ -132,6 +132,12 @@ export const stay = pgTable(
     createdAt: createdAt(),
     updatedAt: updatedAt(),
     cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+    /**
+     * Feature 010 (research R4): the first time a stay link of this stay started a guest session.
+     * Not personal data; kept as long as the stay, because stay links and sessions are deleted 30
+     * days after checkout.
+     */
+    guideOpenedAt: timestamp("guide_opened_at", { withTimezone: true }),
   },
   (t) => [
     uniqueIndex("stay_feed_uid_uq").on(t.calendarFeedId, t.externalUid),
@@ -140,6 +146,9 @@ export const stay = pgTable(
       .where(sql`${t.pmsConnectionId} IS NOT NULL`),
     index("stay_property_dates_idx").on(t.propertyId, t.checkoutDate),
     index("stay_workspace_idx").on(t.workspaceId),
+    index("stay_property_opened_idx")
+      .on(t.propertyId, t.guideOpenedAt)
+      .where(sql`${t.guideOpenedAt} IS NOT NULL`),
     index("stay_guest_name_retention_idx")
       .on(t.checkoutDate)
       .where(sql`${t.guestName} IS NOT NULL`),

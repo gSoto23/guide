@@ -1,4 +1,5 @@
 import { setRequestLocale } from "next-intl/server";
+import { AnalyticsCard } from "@/components/analytics/analytics-card";
 import { AssistantCard } from "@/components/assistant/assistant-card";
 import { ExploreCard } from "@/components/explore/explore-card";
 import { ExtrasCard } from "@/components/extras/extras-card";
@@ -15,6 +16,7 @@ export default async function PropertyPage({
   return (
     <main>
       <PropertyFacts locale={locale} propertyId={propertyId} />
+      <AnalyticsCard locale={locale} propertyId={propertyId} />
       <AssistantCard locale={locale} propertyId={propertyId} />
       <ExploreCard locale={locale} propertyId={propertyId} />
       <ExtrasCard locale={locale} propertyId={propertyId} />

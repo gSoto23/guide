@@ -201,6 +201,10 @@ export const agentTrace = pgTable(
   (t) => [
     index("agent_trace_conversation_idx").on(t.conversationId),
     index("agent_trace_created_idx").on(t.createdAt),
+    // Feature 010 (research R5): period reads per workspace for guest questions.
+    index("agent_trace_workspace_created_idx")
+      .on(t.workspaceId, t.createdAt)
+      .where(sql`${t.conversationId} IS NOT NULL`),
     index("agent_trace_test_idx").on(t.assistantTestId),
     check("agent_trace_decision_valid", inList(t.decision, TRACE_DECISIONS)),
     index("agent_trace_copilot_idx").on(t.copilotRunId),
