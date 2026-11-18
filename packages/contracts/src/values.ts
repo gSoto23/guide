@@ -56,3 +56,68 @@ export const REQUIRED_FACT_VALUES = [
   "maxGuests",
   "guideLanguages",
 ] as const;
+
+/** Feature 003 value lists (data model §1–§5). */
+export const SECTION_KIND_VALUES = [
+  "arrival",
+  "wifi",
+  "house_rules",
+  "appliances",
+  "amenities",
+  "parking",
+  "local_recommendations",
+  "emergency",
+  "checkout",
+  "custom",
+] as const;
+export const DEFAULT_SECTION_KIND_VALUES = SECTION_KIND_VALUES.filter(
+  (kind): kind is Exclude<(typeof SECTION_KIND_VALUES)[number], "custom"> => kind !== "custom",
+);
+export const SECTION_STATUS_VALUES = ["missing", "needs_review", "ready"] as const;
+export const GUIDE_STATUS_VALUES = ["draft", "published", "unpublished"] as const;
+export const GUIDE_DRAFT_STATE_VALUES = [
+  "pending",
+  "drafting",
+  "ready",
+  "waiting_limit",
+  "failed",
+] as const;
+export const GUIDE_ITEM_KIND_VALUES = ["text", "image", "video", "recommendation", "fact"] as const;
+export const GUIDE_ITEM_SOURCE_VALUES = [
+  "host",
+  "listing",
+  "pms",
+  "document",
+  "interview",
+  "copy",
+] as const;
+export const FACT_KEY_VALUES = ["check_in_time", "checkout_time", "max_guests", "address"] as const;
+export const TEXT_ORIGIN_VALUES = ["source", "machine", "reviewed"] as const;
+export const TEXT_STATE_VALUES = ["current", "stale", "out_of_date", "pending", "failed"] as const;
+export const TEXT_PENDING_REASON_VALUES = [
+  "ai_limit",
+  "ai_unavailable",
+  "tokens_mismatch",
+] as const;
+export const RECOMMENDATION_CATEGORY_VALUES = [
+  "restaurant",
+  "grocery",
+  "beach",
+  "activity",
+  "shopping",
+  "transport",
+  "service",
+  "other",
+] as const;
+export const BENEFIT_VALUES = ["none", "commission", "discount", "other"] as const;
+export const MEDIA_KIND_VALUES = ["image", "video"] as const;
+export const MEDIA_STATUS_VALUES = ["uploading", "processing", "ready", "rejected"] as const;
+export const LOCKED_FIELD_KIND_VALUES = [
+  "door_code",
+  "gate_code",
+  "lockbox_code",
+  "alarm_code",
+  "wifi_password",
+  "other",
+] as const;
+export const TOPIC_MARK_VALUES = ["covered", "not_applicable"] as const;

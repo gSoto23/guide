@@ -2,8 +2,8 @@ import type { FastifyInstance } from "fastify";
 import { LocalObjectStorage, type ObjectStoragePort } from "@guidesk/integrations";
 import { LOCAL_UPLOAD_PATH } from "./storage.provider.js";
 
-/** A screenshot plus the form fields, with room for multipart framing. */
-const MAX_BODY_BYTES = 11 * 1024 * 1024;
+/** The largest upload (a 150 MB guide video, feature 003 FR-009) plus multipart framing. */
+const MAX_BODY_BYTES = 151 * 1024 * 1024;
 
 /**
  * The development-only stand-in for an S3 presigned POST (T021, STORAGE_MODE=local). It is

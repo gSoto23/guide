@@ -1,0 +1,21 @@
+{
+  "id": "msg_synthetic_answer",
+  "type": "message",
+  "role": "assistant",
+  "model": "claude-opus-5-5",
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"items\": [{\"sectionKind\": \"appliances\", \"text\": \"El aire acondicionado se enciende con el control remoto que está en la mesa de noche.\", \"topics\": [\"appliances.ac_heating\"]}], \"followUp\": null}"
+    }
+  ],
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "stop_details": null,
+  "usage": {
+    "input_tokens": 2100,
+    "output_tokens": 180,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 1800
+  }
+}

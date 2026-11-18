@@ -38,6 +38,7 @@ import {
   PURGE_WORKSPACES_CRON,
   PURGE_WORKSPACES_QUEUE,
 } from "./jobs/purge-workspaces.js";
+import { createGuideDraftHandler } from "./jobs/guide-draft.js";
 import { createWorkerServices } from "./services.js";
 
 function emailAdapter(config: WorkerConfig): EmailAdapter {
@@ -109,6 +110,13 @@ async function main(): Promise<void> {
       sandbox: services.sandbox,
       llm: services.llm,
     }),
+  );
+  // Feature 003 (research R15).
+  await createQueue(JOB_QUEUES.guideDraft);
+  await boss.work(
+    JOB_QUEUES.guideDraft,
+    { localConcurrency: 4 },
+    createGuideDraftHandler({ db: services.db.db, llm: services.llm }),
   );
   const scheduleCalendars = createCalendarScheduler({
     db: services.db.db,

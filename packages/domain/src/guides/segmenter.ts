@@ -230,3 +230,15 @@ export function docReferences(doc: SegDocument | null | undefined): {
   const { links, fields } = segmentDocument(doc);
   return { links: [...new Set(links)], fields: [...new Set(fields)] };
 }
+
+/** Plain text of each text block, in reading order, for per-block checks such as code warnings. */
+export function docBlockTexts(doc: SegDocument | null | undefined): string[] {
+  if (!doc) return [];
+  return textBlocks(doc).map((block) =>
+    (block.content ?? [])
+      .map((inline) =>
+        inline.type === "text" ? inline.text : inline.type === "hardBreak" ? "\n" : " ",
+      )
+      .join(""),
+  );
+}

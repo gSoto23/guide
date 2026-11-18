@@ -1,0 +1,21 @@
+{
+  "id": "msg_synthetic_invalid",
+  "type": "message",
+  "role": "assistant",
+  "model": "claude-opus-5-5",
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"items\": \"not a list\"}"
+    }
+  ],
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "stop_details": null,
+  "usage": {
+    "input_tokens": 2100,
+    "output_tokens": 180,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 1800
+  }
+}

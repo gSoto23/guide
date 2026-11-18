@@ -1,0 +1,21 @@
+{
+  "id": "msg_synthetic_draft",
+  "type": "message",
+  "role": "assistant",
+  "model": "claude-opus-5-5",
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"items\": [{\"sectionKind\": \"parking\", \"text\": \"Hay parqueo para un carro frente a la casa.\", \"topics\": [\"parking.where\"]}, {\"sectionKind\": \"local_recommendations\", \"text\": \"El supermercado está a 300 metros.\", \"topics\": [\"local.groceries\"]}]}"
+    }
+  ],
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "stop_details": null,
+  "usage": {
+    "input_tokens": 2100,
+    "output_tokens": 180,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 1800
+  }
+}

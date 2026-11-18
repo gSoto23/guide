@@ -57,6 +57,8 @@ export interface GuideDraftJob {
   workspaceId: string;
   /** Redraft one section from the listing content (FR-007); the whole draft when absent. */
   sectionId?: string;
+  /** The API already took this request from the daily AI limit (redraft). */
+  limitTaken?: boolean;
 }
 
 export interface GuideTranslateJob {
