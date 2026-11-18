@@ -15,6 +15,7 @@ import { GuideMediaModule } from "./guide-media/guide-media.module.js";
 import { GuidesModule } from "./guides/guides.module.js";
 import { GuideDocumentsModule } from "./guide-documents/guide-documents.module.js";
 import { InterviewsModule } from "./interviews/interviews.module.js";
+import { SharedBlocksModule } from "./shared-blocks/shared-blocks.module.js";
 import { LockedFieldsModule } from "./locked-fields/locked-fields.module.js";
 import { ImportRunsModule } from "./imports/import-runs.module.js";
 import { HealthController } from "./health/health.controller.js";
@@ -44,6 +45,7 @@ import { TenancyModule } from "./tenancy/tenancy.module.js";
     LockedFieldsModule,
     InterviewsModule,
     GuideDocumentsModule,
+    SharedBlocksModule,
     ListingContentModule,
     CalendarFeedsModule,
     StaysModule,

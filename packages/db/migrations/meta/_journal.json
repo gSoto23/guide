@@ -141,6 +141,13 @@
       "when": 1794959398757,
       "tag": "0019_guide_builder_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1794968825738,
+      "tag": "0020_guide_item_copied_from_block",
+      "breakpoints": true
     }
   ]
 }

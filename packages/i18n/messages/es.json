@@ -793,7 +793,8 @@
       "team": "Equipo",
       "security": "Seguridad",
       "home": "Inicio",
-      "settings": "Ajustes"
+      "settings": "Ajustes",
+      "shared": "Contenido compartido"
     },
     "loading": "Cargando…",
     "none": "Sin workspace: crea uno"
@@ -1388,6 +1389,51 @@
       "added": "Agregamos la foto a {section}.",
       "empty": "Todavía no has subido archivos.",
       "photoUnreadable": "No pudimos abrir la foto {name}. Prueba con otra foto."
+    },
+    "shared": {
+      "badge": "Compartido: {name}",
+      "override": "Sobrescribir para esta propiedad",
+      "exclude": "Excluir de esta propiedad",
+      "overridden": "Usas una copia propia de «{name}».",
+      "behind": "La versión compartida cambió desde que hiciste tu copia.",
+      "reset": "Restablecer al compartido",
+      "excluded": "Excluiste «{name}» de esta propiedad.",
+      "include": "Incluir de nuevo",
+      "resetConfirm": "Tu copia de «{name}» se reemplazará por la versión compartida. ¿Continuar?"
     }
+  },
+  "sharedContent": {
+    "title": "Contenido compartido",
+    "intro": "Escribe una vez lo que se repite en tus propiedades (políticas, contactos de emergencia, pasos de salida, recomendaciones de la zona). Cada guía lo hereda; puedes sobrescribirlo o excluirlo por propiedad.",
+    "create": "Crear bloque",
+    "name": "Nombre del bloque",
+    "section": "Sección",
+    "cancel": "Cancelar",
+    "limit": "Puedes tener hasta {limit} bloques.",
+    "empty": "Todavía no tienes contenido compartido.",
+    "status_draft": "Borrador",
+    "status_published": "Publicado",
+    "changes": "Cambios sin publicar",
+    "counts": "Lo heredan {inherit} · Copia propia {override} · Excluido {exclude}",
+    "back": "Volver al contenido compartido",
+    "items": "Contenido",
+    "addText": "Agregar texto",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "noLocked": "Los campos protegidos son de cada propiedad: no se pueden usar en contenido compartido.",
+    "publish": "Publicar",
+    "publishing": "Publicando…",
+    "published": "Publicado. Se actualizarán {count, plural, =0 {las guías cuando se publiquen} one {# guía publicada} other {# guías publicadas}}.",
+    "deleteBlock": "Eliminar bloque",
+    "deleteConfirm": "Se quitará de todas las guías, también de las publicadas. ¿Eliminar?",
+    "properties": "Propiedades",
+    "inherit": "Lo heredan",
+    "override": "Con copia propia",
+    "exclude": "Lo excluyen",
+    "behind": "la versión compartida cambió",
+    "none": "Ninguna",
+    "changed": "El bloque cambió. Recarga para ver lo último.",
+    "reload": "Recargar",
+    "textPlaceholder": "Escribe el contenido compartido…"
   }
 }

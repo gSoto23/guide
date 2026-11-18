@@ -134,9 +134,11 @@ Per property, relative to the guide prefix:
 
 | Method and path | Roles | Notes |
 |---|---|---|
-| `POST /shared-blocks/{blockId}/override` | O A | Copies the block into the property's section (FR-059) |
-| `POST /shared-blocks/{blockId}/exclude` | O A | — |
-| `DELETE /shared-blocks/{blockId}/link` | O A | "Reset to shared" or include again; deletes the override's items |
+| `POST /shared-blocks/{blockId}/override` | O A | Copies the block's published items into the property's section as reviewed `copy` items (marked with the block they came from) and records the revision copied (FR-059). Returns the section like other section writes |
+| `POST /shared-blocks/{blockId}/exclude` | O A | Removes any copies and stops inheriting. Returns the section |
+| `DELETE /shared-blocks/{blockId}/link` | O A | "Reset to shared" or include again; deletes the override's copies. Returns the section |
+
+The guide (`GET /`) lists the workspace's published blocks as `sharedBlocks: [{id, name, sectionKind, mode: inherit \| override \| exclude, behind}]`.
 
 ## Cross-cutting guarantees
 

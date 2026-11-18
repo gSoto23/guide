@@ -44,6 +44,7 @@ import {
   type UpdateItemBody,
   type UpdateSectionBody,
 } from "@guidesk/contracts";
+import { assertUuid } from "../common/ids.js";
 import { Idempotent } from "../common/idempotency.interceptor.js";
 import { ZodValidationPipe } from "../common/zod.pipe.js";
 import { callerOf } from "../properties/properties.controller.js";
@@ -286,6 +287,44 @@ export class GuidesController {
       itemId,
       body.revision,
     );
+  }
+
+  @Post("shared-blocks/:blockId/override")
+  @HttpCode(200)
+  @WorkspaceAction(MANAGE)
+  overrideBlock(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+    @Param("blockId") blockId: string,
+  ): Promise<SectionWriteResult> {
+    assertUuid(blockId);
+    return this.guides.overrideBlock(callerOf(request), workspaceId, propertyId, blockId);
+  }
+
+  @Post("shared-blocks/:blockId/exclude")
+  @HttpCode(200)
+  @WorkspaceAction(MANAGE)
+  excludeBlock(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+    @Param("blockId") blockId: string,
+  ): Promise<SectionWriteResult> {
+    assertUuid(blockId);
+    return this.guides.excludeBlock(callerOf(request), workspaceId, propertyId, blockId);
+  }
+
+  @Delete("shared-blocks/:blockId/link")
+  @WorkspaceAction(MANAGE)
+  resetBlock(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+    @Param("blockId") blockId: string,
+  ): Promise<SectionWriteResult> {
+    assertUuid(blockId);
+    return this.guides.resetBlock(callerOf(request), workspaceId, propertyId, blockId);
   }
 
   @Post("items/:itemId/translations/:language")

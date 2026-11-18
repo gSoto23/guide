@@ -75,6 +75,9 @@ export interface GuideContext {
   marks: Record<string, "covered" | "not_applicable">;
   sharedBlocks: SharedBlockSnapshot[];
   links: Record<string, SharedLinkMode>;
+  /** Names of the published shared blocks, and the revision each override was copied from. */
+  blockNames: Record<string, string>;
+  linkRevisions: Record<string, number | null>;
   publishedVersion: number | null;
 }
 
@@ -180,6 +183,7 @@ export class GuideViewService {
     const blockRows = await tx
       .select({
         id: sharedBlock.id,
+        name: sharedBlock.name,
         sectionKind: sharedBlock.sectionKind,
         position: sharedBlock.position,
         revision: sharedBlock.publishedRevision,
@@ -190,7 +194,11 @@ export class GuideViewService {
         and(eq(sharedBlock.workspaceId, workspaceId), isNotNull(sharedBlock.publishedSnapshot)),
       );
     const linkRows = await tx
-      .select({ blockId: guideSharedLink.sharedBlockId, mode: guideSharedLink.mode })
+      .select({
+        blockId: guideSharedLink.sharedBlockId,
+        mode: guideSharedLink.mode,
+        basedOnRevision: guideSharedLink.basedOnRevision,
+      })
       .from(guideSharedLink)
       .where(eq(guideSharedLink.guideId, row.id));
     let publishedVersion: number | null = null;
@@ -230,6 +238,10 @@ export class GuideViewService {
         items: (block.snapshot as { items?: SharedBlockSnapshot["items"] } | null)?.items ?? [],
       })),
       links: Object.fromEntries(linkRows.map((link) => [link.blockId, link.mode])),
+      blockNames: Object.fromEntries(blockRows.map((block) => [block.id, block.name])),
+      linkRevisions: Object.fromEntries(
+        linkRows.map((link) => [link.blockId, link.basedOnRevision]),
+      ),
       publishedVersion,
     };
   }
@@ -318,7 +330,7 @@ export class GuideViewService {
     };
   }
 
-  private textsOf(ctx: GuideContext, itemId: string): ItemView["texts"] {
+  private textsOf(ctx: Pick<GuideContext, "texts">, itemId: string): ItemView["texts"] {
     const texts: ItemView["texts"] = {};
     for (const text of ctx.texts.filter((candidate) => candidate.itemId === itemId)) {
       texts[text.language] = {
@@ -331,7 +343,8 @@ export class GuideViewService {
     return texts;
   }
 
-  async itemView(ctx: GuideContext, item: ItemRow): Promise<ItemView> {
+  /** An item as the portal sees it; shared blocks pass their own texts and media. */
+  async itemView(ctx: Pick<GuideContext, "texts" | "media">, item: ItemRow): Promise<ItemView> {
     const media = item.mediaId ? ctx.media.find((row) => row.id === item.mediaId) : undefined;
     return {
       id: item.id,
@@ -346,7 +359,7 @@ export class GuideViewService {
       media: media ? await this.mediaView(media) : null,
       recommendation: (item.recommendation as Recommendation | null) ?? null,
       texts: this.textsOf(ctx, item.id),
-      sharedBlockId: null,
+      sharedBlockId: item.sharedBlockId,
     };
   }
 
@@ -453,6 +466,17 @@ export class GuideViewService {
       lockedFields: this.lockedFieldViews(ctx, caller),
       missingTopics: completeness.missing,
       topicMarks: ctx.marks,
+      sharedBlocks: ctx.sharedBlocks.map((block) => {
+        const mode = ctx.links[block.blockId] ?? "inherit";
+        const basedOn = ctx.linkRevisions[block.blockId] ?? null;
+        return {
+          id: block.blockId,
+          name: ctx.blockNames[block.blockId] ?? "",
+          sectionKind: block.sectionKind,
+          mode,
+          behind: mode === "override" && basedOn !== null && basedOn < block.revision,
+        };
+      }),
       canEdit: caller.role === "owner" || caller.role === "admin",
     };
   }

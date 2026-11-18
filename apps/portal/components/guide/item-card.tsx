@@ -156,7 +156,13 @@ export function ItemCard({
             {item.reviewed ? label : `${label} · ${t("editor.needsReview")}`}
           </span>
         )}
-        {shared && <span className="badge">{t("source.host")}</span>}
+        {shared && (
+          <span className="badge">
+            {t("shared.badge", {
+              name: view.sharedBlocks.find((block) => block.id === item.sharedBlockId)?.name ?? "",
+            })}
+          </span>
+        )}
         {editable && state !== "saved" && (
           <span className="muted" aria-live="polite">
             {state === "saving"

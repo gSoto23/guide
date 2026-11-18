@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 import type {
   CompletenessView,
   CodeWarning,
@@ -21,6 +21,7 @@ import {
   guideItem,
   guideItemText,
   guideSection,
+  guideSharedLink,
   guideTopicMark,
   mediaObject,
 } from "@guidesk/db";
@@ -670,6 +671,144 @@ export class GuidesService {
         .where(and(eq(guideItemText.itemId, item.id), eq(guideItemText.language, language)));
     }
     return this.finish(workspaceId, propertyId, item.sectionId!, item.id);
+  }
+
+  /** The section a published shared block belongs to in this guide, or 404. */
+  private blockTarget(ctx: GuideContext, blockId: string) {
+    const block = ctx.sharedBlocks.find((candidate) => candidate.blockId === blockId);
+    const section = block
+      ? ctx.sections.find((candidate) => candidate.kind === block.sectionKind)
+      : undefined;
+    if (!block || !section) throw new ApiProblem(404, "not_found");
+    return { block, section };
+  }
+
+  private async deleteCopies(ctx: GuideContext, blockId: string): Promise<void> {
+    const sectionIds = ctx.sections.map((section) => section.id);
+    if (sectionIds.length === 0) return;
+    await this.tx
+      .delete(guideItem)
+      .where(
+        and(eq(guideItem.copiedFromBlockId, blockId), inArray(guideItem.sectionId, sectionIds)),
+      );
+  }
+
+  /**
+   * "Override for this property" (FR-059, research R14): the block's published items become the
+   * property's own reviewed copies, labeled "Copied from …", and the revision copied is kept for
+   * "The shared version changed" (FR-061).
+   */
+  async overrideBlock(
+    caller: Caller,
+    workspaceId: string,
+    propertyId: string,
+    blockId: string,
+  ): Promise<SectionWriteResult> {
+    const ctx = await this.views.load(workspaceId, propertyId);
+    const { block, section } = this.blockTarget(ctx, blockId);
+    await this.deleteCopies(ctx, blockId);
+    await this.bump(caller, section.id, section.revision);
+    const start =
+      Math.max(
+        -1,
+        ...ctx.items.filter((item) => item.sectionId === section.id).map((item) => item.position),
+      ) + 1;
+    const now = new Date();
+    for (const [index, copy] of block.items.entries()) {
+      const [row] = await this.tx
+        .insert(guideItem)
+        .values({
+          workspaceId,
+          sectionId: section.id,
+          kind: copy.kind,
+          position: start + index,
+          source: "copy",
+          sourceDetail: (ctx.blockNames[blockId] ?? "").slice(0, 120) || null,
+          reviewedAt: now,
+          reviewedBy: caller.userId,
+          sourceLanguage: copy.sourceLanguage,
+          mediaId: copy.mediaId ?? null,
+          recommendation: copy.recommendation ?? null,
+          copiedFromBlockId: blockId,
+          updatedBy: caller.userId,
+        })
+        .returning({ id: guideItem.id });
+      const sourceDoc = copy.texts[copy.sourceLanguage];
+      for (const [language, doc] of Object.entries(copy.texts) as [Language, SegDocument][]) {
+        const isSource = language === copy.sourceLanguage;
+        await this.tx.insert(guideItemText).values({
+          itemId: row!.id,
+          language,
+          workspaceId,
+          doc,
+          textLength: documentTextLength(doc as GuideDocument),
+          origin: isSource ? "source" : "machine",
+          state: "current",
+          sourceHash: !isSource && sourceDoc ? textHash(JSON.stringify(sourceDoc)) : null,
+        });
+      }
+    }
+    await this.tx
+      .insert(guideSharedLink)
+      .values({
+        guideId: ctx.guide.id,
+        sharedBlockId: blockId,
+        workspaceId,
+        mode: "override",
+        basedOnRevision: block.revision,
+        createdBy: caller.userId,
+      })
+      .onConflictDoUpdate({
+        target: [guideSharedLink.guideId, guideSharedLink.sharedBlockId],
+        set: { mode: "override", basedOnRevision: block.revision },
+      });
+    return this.finish(workspaceId, propertyId, section.id);
+  }
+
+  /** "Exclude": the property stops showing the block (FR-059). */
+  async excludeBlock(
+    caller: Caller,
+    workspaceId: string,
+    propertyId: string,
+    blockId: string,
+  ): Promise<SectionWriteResult> {
+    const ctx = await this.views.load(workspaceId, propertyId);
+    const { section } = this.blockTarget(ctx, blockId);
+    await this.deleteCopies(ctx, blockId);
+    await this.bump(caller, section.id, section.revision);
+    await this.tx
+      .insert(guideSharedLink)
+      .values({
+        guideId: ctx.guide.id,
+        sharedBlockId: blockId,
+        workspaceId,
+        mode: "exclude",
+        createdBy: caller.userId,
+      })
+      .onConflictDoUpdate({
+        target: [guideSharedLink.guideId, guideSharedLink.sharedBlockId],
+        set: { mode: "exclude", basedOnRevision: null },
+      });
+    return this.finish(workspaceId, propertyId, section.id);
+  }
+
+  /** "Reset to shared" or include again: the override's copies go, inheritance returns. */
+  async resetBlock(
+    caller: Caller,
+    workspaceId: string,
+    propertyId: string,
+    blockId: string,
+  ): Promise<SectionWriteResult> {
+    const ctx = await this.views.load(workspaceId, propertyId);
+    const { section } = this.blockTarget(ctx, blockId);
+    await this.deleteCopies(ctx, blockId);
+    await this.bump(caller, section.id, section.revision);
+    await this.tx
+      .delete(guideSharedLink)
+      .where(
+        and(eq(guideSharedLink.guideId, ctx.guide.id), eq(guideSharedLink.sharedBlockId, blockId)),
+      );
+    return this.finish(workspaceId, propertyId, section.id);
   }
 
   /** Checks and increments a section's revision in one statement (FR-012, research R17). */

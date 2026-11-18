@@ -188,9 +188,24 @@ export function applySharedBlock(
   return { ...snapshot, sections };
 }
 
+/**
+ * JSON with object keys sorted at every level, so a snapshot read back from `jsonb` (which
+ * reorders keys) compares and hashes like the one that was stored.
+ */
+export function canonicalJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+  if (value !== null && typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .filter(([, entry]) => entry !== undefined)
+      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+    return `{${entries.map(([key, entry]) => `${JSON.stringify(key)}:${canonicalJson(entry)}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
 /** Whether applying a block changed the snapshot, so a new version is needed. */
 export function snapshotsDiffer(a: GuideSnapshot, b: GuideSnapshot): boolean {
-  return JSON.stringify(a) !== JSON.stringify(b);
+  return canonicalJson(a) !== canonicalJson(b);
 }
 
 /** Every locked-field ID a snapshot references. */

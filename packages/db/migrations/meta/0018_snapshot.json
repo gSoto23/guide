@@ -97,12 +97,8 @@
           "name": "email_change_request_user_id_user_id_fk",
           "tableFrom": "email_change_request",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -181,12 +177,8 @@
           "name": "onboarding_profile_user_id_user_id_fk",
           "tableFrom": "onboarding_profile",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -325,12 +317,8 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -449,12 +437,8 @@
           "name": "passkey_user_id_user_id_fk",
           "tableFrom": "passkey",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -501,9 +485,7 @@
         "rate_limit_key_unique": {
           "name": "rate_limit_key_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "key"
-          ]
+          "columns": ["key"]
         }
       },
       "policies": {},
@@ -605,12 +587,8 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -620,9 +598,7 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       },
       "policies": {},
@@ -715,12 +691,8 @@
           "name": "two_factor_user_id_user_id_fk",
           "tableFrom": "two_factor",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -827,9 +799,7 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -1090,12 +1060,8 @@
           "name": "extraction_request_workspace_id_workspace_id_fk",
           "tableFrom": "extraction_request",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1103,12 +1069,8 @@
           "name": "extraction_request_property_id_property_id_fk",
           "tableFrom": "extraction_request",
           "tableTo": "property",
-          "columnsFrom": [
-            "property_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["property_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1116,12 +1078,8 @@
           "name": "extraction_request_retry_of_id_extraction_request_id_fk",
           "tableFrom": "extraction_request",
           "tableTo": "extraction_request",
-          "columnsFrom": [
-            "retry_of_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["retry_of_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1129,12 +1087,8 @@
           "name": "extraction_request_requested_by_user_id_fk",
           "tableFrom": "extraction_request",
           "tableTo": "user",
-          "columnsFrom": [
-            "requested_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["requested_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1341,12 +1295,8 @@
           "name": "upload_workspace_id_workspace_id_fk",
           "tableFrom": "upload",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1354,12 +1304,8 @@
           "name": "upload_extraction_request_id_extraction_request_id_fk",
           "tableFrom": "upload",
           "tableTo": "extraction_request",
-          "columnsFrom": [
-            "extraction_request_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["extraction_request_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1367,12 +1313,8 @@
           "name": "upload_import_run_id_import_run_id_fk",
           "tableFrom": "upload",
           "tableTo": "import_run",
-          "columnsFrom": [
-            "import_run_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["import_run_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1380,12 +1322,8 @@
           "name": "upload_media_object_id_media_object_id_fk",
           "tableFrom": "upload",
           "tableTo": "media_object",
-          "columnsFrom": [
-            "media_object_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["media_object_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1393,12 +1331,8 @@
           "name": "upload_guide_document_id_guide_document_id_fk",
           "tableFrom": "upload",
           "tableTo": "guide_document",
-          "columnsFrom": [
-            "guide_document_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guide_document_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1406,12 +1340,8 @@
           "name": "upload_interview_turn_id_interview_turn_id_fk",
           "tableFrom": "upload",
           "tableTo": "interview_turn",
-          "columnsFrom": [
-            "interview_turn_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["interview_turn_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1419,12 +1349,8 @@
           "name": "upload_created_by_user_id_fk",
           "tableFrom": "upload",
           "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1573,12 +1499,8 @@
           "name": "guide_workspace_id_workspace_id_fk",
           "tableFrom": "guide",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1586,12 +1508,8 @@
           "name": "guide_property_id_property_id_fk",
           "tableFrom": "guide",
           "tableTo": "property",
-          "columnsFrom": [
-            "property_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["property_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1599,12 +1517,8 @@
           "name": "guide_published_version_id_guide_version_id_fk",
           "tableFrom": "guide",
           "tableTo": "guide_version",
-          "columnsFrom": [
-            "published_version_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["published_version_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1612,12 +1526,8 @@
           "name": "guide_published_by_user_id_fk",
           "tableFrom": "guide",
           "tableTo": "user",
-          "columnsFrom": [
-            "published_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["published_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1739,12 +1649,8 @@
           "name": "guide_ai_request_workspace_id_workspace_id_fk",
           "tableFrom": "guide_ai_request",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1752,12 +1658,8 @@
           "name": "guide_ai_request_guide_id_guide_id_fk",
           "tableFrom": "guide_ai_request",
           "tableTo": "guide",
-          "columnsFrom": [
-            "guide_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guide_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1926,12 +1828,8 @@
           "name": "guide_document_workspace_id_workspace_id_fk",
           "tableFrom": "guide_document",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1939,12 +1837,8 @@
           "name": "guide_document_guide_id_guide_id_fk",
           "tableFrom": "guide_document",
           "tableTo": "guide",
-          "columnsFrom": [
-            "guide_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guide_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1952,12 +1846,8 @@
           "name": "guide_document_uploaded_by_user_id_fk",
           "tableFrom": "guide_document",
           "tableTo": "user",
-          "columnsFrom": [
-            "uploaded_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["uploaded_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -2214,12 +2104,8 @@
           "name": "guide_item_workspace_id_workspace_id_fk",
           "tableFrom": "guide_item",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2227,12 +2113,8 @@
           "name": "guide_item_section_id_guide_section_id_fk",
           "tableFrom": "guide_item",
           "tableTo": "guide_section",
-          "columnsFrom": [
-            "section_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["section_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2240,12 +2122,8 @@
           "name": "guide_item_shared_block_id_shared_block_id_fk",
           "tableFrom": "guide_item",
           "tableTo": "shared_block",
-          "columnsFrom": [
-            "shared_block_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["shared_block_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2253,12 +2131,8 @@
           "name": "guide_item_reviewed_by_user_id_fk",
           "tableFrom": "guide_item",
           "tableTo": "user",
-          "columnsFrom": [
-            "reviewed_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["reviewed_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -2266,12 +2140,8 @@
           "name": "guide_item_media_id_media_object_id_fk",
           "tableFrom": "guide_item",
           "tableTo": "media_object",
-          "columnsFrom": [
-            "media_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["media_id"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         },
@@ -2279,12 +2149,8 @@
           "name": "guide_item_interview_turn_id_interview_turn_id_fk",
           "tableFrom": "guide_item",
           "tableTo": "interview_turn",
-          "columnsFrom": [
-            "interview_turn_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["interview_turn_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -2292,12 +2158,8 @@
           "name": "guide_item_document_id_guide_document_id_fk",
           "tableFrom": "guide_item",
           "tableTo": "guide_document",
-          "columnsFrom": [
-            "document_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["document_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -2305,12 +2167,8 @@
           "name": "guide_item_updated_by_user_id_fk",
           "tableFrom": "guide_item",
           "tableTo": "user",
-          "columnsFrom": [
-            "updated_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["updated_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -2464,12 +2322,8 @@
           "name": "guide_item_text_item_id_guide_item_id_fk",
           "tableFrom": "guide_item_text",
           "tableTo": "guide_item",
-          "columnsFrom": [
-            "item_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["item_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2477,12 +2331,8 @@
           "name": "guide_item_text_workspace_id_workspace_id_fk",
           "tableFrom": "guide_item_text",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2490,10 +2340,7 @@
       "compositePrimaryKeys": {
         "guide_item_text_item_id_language_pk": {
           "name": "guide_item_text_item_id_language_pk",
-          "columns": [
-            "item_id",
-            "language"
-          ]
+          "columns": ["item_id", "language"]
         }
       },
       "uniqueConstraints": {},
@@ -2669,12 +2516,8 @@
           "name": "guide_section_workspace_id_workspace_id_fk",
           "tableFrom": "guide_section",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2682,12 +2525,8 @@
           "name": "guide_section_guide_id_guide_id_fk",
           "tableFrom": "guide_section",
           "tableTo": "guide",
-          "columnsFrom": [
-            "guide_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guide_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2695,12 +2534,8 @@
           "name": "guide_section_updated_by_user_id_fk",
           "tableFrom": "guide_section",
           "tableTo": "user",
-          "columnsFrom": [
-            "updated_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["updated_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -2817,12 +2652,8 @@
           "name": "guide_shared_link_guide_id_guide_id_fk",
           "tableFrom": "guide_shared_link",
           "tableTo": "guide",
-          "columnsFrom": [
-            "guide_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guide_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2830,12 +2661,8 @@
           "name": "guide_shared_link_shared_block_id_shared_block_id_fk",
           "tableFrom": "guide_shared_link",
           "tableTo": "shared_block",
-          "columnsFrom": [
-            "shared_block_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["shared_block_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2843,12 +2670,8 @@
           "name": "guide_shared_link_workspace_id_workspace_id_fk",
           "tableFrom": "guide_shared_link",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2856,12 +2679,8 @@
           "name": "guide_shared_link_created_by_user_id_fk",
           "tableFrom": "guide_shared_link",
           "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -2869,10 +2688,7 @@
       "compositePrimaryKeys": {
         "guide_shared_link_guide_id_shared_block_id_pk": {
           "name": "guide_shared_link_guide_id_shared_block_id_pk",
-          "columns": [
-            "guide_id",
-            "shared_block_id"
-          ]
+          "columns": ["guide_id", "shared_block_id"]
         }
       },
       "uniqueConstraints": {},
@@ -2949,12 +2765,8 @@
           "name": "guide_topic_mark_guide_id_guide_id_fk",
           "tableFrom": "guide_topic_mark",
           "tableTo": "guide",
-          "columnsFrom": [
-            "guide_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guide_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2962,12 +2774,8 @@
           "name": "guide_topic_mark_workspace_id_workspace_id_fk",
           "tableFrom": "guide_topic_mark",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2975,12 +2783,8 @@
           "name": "guide_topic_mark_set_by_user_id_fk",
           "tableFrom": "guide_topic_mark",
           "tableTo": "user",
-          "columnsFrom": [
-            "set_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["set_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -2988,10 +2792,7 @@
       "compositePrimaryKeys": {
         "guide_topic_mark_guide_id_topic_id_pk": {
           "name": "guide_topic_mark_guide_id_topic_id_pk",
-          "columns": [
-            "guide_id",
-            "topic_id"
-          ]
+          "columns": ["guide_id", "topic_id"]
         }
       },
       "uniqueConstraints": {},
@@ -3124,12 +2925,8 @@
           "name": "guide_version_workspace_id_workspace_id_fk",
           "tableFrom": "guide_version",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3137,12 +2934,8 @@
           "name": "guide_version_guide_id_guide_id_fk",
           "tableFrom": "guide_version",
           "tableTo": "guide",
-          "columnsFrom": [
-            "guide_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guide_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3150,12 +2943,8 @@
           "name": "guide_version_published_by_user_id_fk",
           "tableFrom": "guide_version",
           "tableTo": "user",
-          "columnsFrom": [
-            "published_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["published_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -3276,12 +3065,8 @@
           "name": "interview_session_workspace_id_workspace_id_fk",
           "tableFrom": "interview_session",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3289,12 +3074,8 @@
           "name": "interview_session_guide_id_guide_id_fk",
           "tableFrom": "interview_session",
           "tableTo": "guide",
-          "columnsFrom": [
-            "guide_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guide_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3302,12 +3083,8 @@
           "name": "interview_session_started_by_user_id_fk",
           "tableFrom": "interview_session",
           "tableTo": "user",
-          "columnsFrom": [
-            "started_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["started_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -3475,12 +3252,8 @@
           "name": "interview_turn_workspace_id_workspace_id_fk",
           "tableFrom": "interview_turn",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3488,12 +3261,8 @@
           "name": "interview_turn_session_id_interview_session_id_fk",
           "tableFrom": "interview_turn",
           "tableTo": "interview_session",
-          "columnsFrom": [
-            "session_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["session_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3501,12 +3270,8 @@
           "name": "interview_turn_upload_id_upload_id_fk",
           "tableFrom": "interview_turn",
           "tableTo": "upload",
-          "columnsFrom": [
-            "upload_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["upload_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -3514,12 +3279,8 @@
           "name": "interview_turn_created_by_user_id_fk",
           "tableFrom": "interview_turn",
           "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -3700,12 +3461,8 @@
           "name": "media_object_workspace_id_workspace_id_fk",
           "tableFrom": "media_object",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3713,12 +3470,8 @@
           "name": "media_object_upload_id_upload_id_fk",
           "tableFrom": "media_object",
           "tableTo": "upload",
-          "columnsFrom": [
-            "upload_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["upload_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -3726,12 +3479,8 @@
           "name": "media_object_created_by_user_id_fk",
           "tableFrom": "media_object",
           "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -3899,12 +3648,8 @@
           "name": "shared_block_workspace_id_workspace_id_fk",
           "tableFrom": "shared_block",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3912,12 +3657,8 @@
           "name": "shared_block_published_by_user_id_fk",
           "tableFrom": "shared_block",
           "tableTo": "user",
-          "columnsFrom": [
-            "published_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["published_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -3925,12 +3666,8 @@
           "name": "shared_block_created_by_user_id_fk",
           "tableFrom": "shared_block",
           "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -4002,12 +3739,8 @@
           "name": "idempotency_key_user_id_user_id_fk",
           "tableFrom": "idempotency_key",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4015,10 +3748,7 @@
       "compositePrimaryKeys": {
         "idempotency_key_user_id_key_pk": {
           "name": "idempotency_key_user_id_key_pk",
-          "columns": [
-            "user_id",
-            "key"
-          ]
+          "columns": ["user_id", "key"]
         }
       },
       "uniqueConstraints": {},
@@ -4169,12 +3899,8 @@
           "name": "import_item_workspace_id_workspace_id_fk",
           "tableFrom": "import_item",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4182,12 +3908,8 @@
           "name": "import_item_import_run_id_import_run_id_fk",
           "tableFrom": "import_item",
           "tableTo": "import_run",
-          "columnsFrom": [
-            "import_run_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["import_run_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4195,12 +3917,8 @@
           "name": "import_item_data_key_id_workspace_data_key_id_fk",
           "tableFrom": "import_item",
           "tableTo": "workspace_data_key",
-          "columnsFrom": [
-            "data_key_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["data_key_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -4208,12 +3926,8 @@
           "name": "import_item_property_id_property_id_fk",
           "tableFrom": "import_item",
           "tableTo": "property",
-          "columnsFrom": [
-            "property_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["property_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -4390,12 +4104,8 @@
           "name": "import_run_workspace_id_workspace_id_fk",
           "tableFrom": "import_run",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4403,12 +4113,8 @@
           "name": "import_run_pms_connection_id_pms_connection_id_fk",
           "tableFrom": "import_run",
           "tableTo": "pms_connection",
-          "columnsFrom": [
-            "pms_connection_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["pms_connection_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -4416,12 +4122,8 @@
           "name": "import_run_upload_id_upload_id_fk",
           "tableFrom": "import_run",
           "tableTo": "upload",
-          "columnsFrom": [
-            "upload_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["upload_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -4429,12 +4131,8 @@
           "name": "import_run_started_by_user_id_fk",
           "tableFrom": "import_run",
           "tableTo": "user",
-          "columnsFrom": [
-            "started_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["started_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -4487,10 +4185,7 @@
       "compositePrimaryKeys": {
         "rate_limit_bucket_key_window_start_pk": {
           "name": "rate_limit_bucket_key_window_start_pk",
-          "columns": [
-            "key",
-            "window_start"
-          ]
+          "columns": ["key", "window_start"]
         }
       },
       "uniqueConstraints": {},
@@ -4651,12 +4346,8 @@
           "name": "invitation_workspace_id_workspace_id_fk",
           "tableFrom": "invitation",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4664,12 +4355,8 @@
           "name": "invitation_invited_by_user_id_fk",
           "tableFrom": "invitation",
           "tableTo": "user",
-          "columnsFrom": [
-            "invited_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["invited_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -4677,12 +4364,8 @@
           "name": "invitation_accepted_by_user_id_fk",
           "tableFrom": "invitation",
           "tableTo": "user",
-          "columnsFrom": [
-            "accepted_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["accepted_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -4815,12 +4498,8 @@
           "name": "membership_workspace_id_workspace_id_fk",
           "tableFrom": "membership",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4828,12 +4507,8 @@
           "name": "membership_user_id_user_id_fk",
           "tableFrom": "membership",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4841,12 +4516,8 @@
           "name": "membership_invited_by_user_id_fk",
           "tableFrom": "membership",
           "tableTo": "user",
-          "columnsFrom": [
-            "invited_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["invited_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -4965,12 +4636,8 @@
           "name": "workspace_created_by_user_id_fk",
           "tableFrom": "workspace",
           "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -5123,12 +4790,8 @@
           "name": "known_device_user_id_user_id_fk",
           "tableFrom": "known_device",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -5188,12 +4851,8 @@
           "name": "session_assurance_session_id_session_id_fk",
           "tableFrom": "session_assurance",
           "tableTo": "session",
-          "columnsFrom": [
-            "session_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["session_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -5201,12 +4860,8 @@
           "name": "session_assurance_user_id_user_id_fk",
           "tableFrom": "session_assurance",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -5284,12 +4939,8 @@
           "name": "step_up_challenge_user_id_user_id_fk",
           "tableFrom": "step_up_challenge",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -5297,12 +4948,8 @@
           "name": "step_up_challenge_session_id_session_id_fk",
           "tableFrom": "step_up_challenge",
           "tableTo": "session",
-          "columnsFrom": [
-            "session_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["session_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -5342,12 +4989,8 @@
           "name": "used_totp_code_user_id_user_id_fk",
           "tableFrom": "used_totp_code",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -5355,10 +4998,7 @@
       "compositePrimaryKeys": {
         "used_totp_code_user_id_code_hash_pk": {
           "name": "used_totp_code_user_id_code_hash_pk",
-          "columns": [
-            "user_id",
-            "code_hash"
-          ]
+          "columns": ["user_id", "code_hash"]
         }
       },
       "uniqueConstraints": {},
@@ -5448,12 +5088,8 @@
           "name": "workspace_data_key_workspace_id_workspace_id_fk",
           "tableFrom": "workspace_data_key",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -5605,12 +5241,8 @@
           "name": "listing_content_workspace_id_workspace_id_fk",
           "tableFrom": "listing_content",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -5618,12 +5250,8 @@
           "name": "listing_content_property_id_property_id_fk",
           "tableFrom": "listing_content",
           "tableTo": "property",
-          "columnsFrom": [
-            "property_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["property_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -5631,12 +5259,8 @@
           "name": "listing_content_reviewed_by_user_id_fk",
           "tableFrom": "listing_content",
           "tableTo": "user",
-          "columnsFrom": [
-            "reviewed_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["reviewed_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -5644,12 +5268,8 @@
           "name": "listing_content_extraction_request_id_extraction_request_id_fk",
           "tableFrom": "listing_content",
           "tableTo": "extraction_request",
-          "columnsFrom": [
-            "extraction_request_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["extraction_request_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -5996,12 +5616,8 @@
           "name": "property_workspace_id_workspace_id_fk",
           "tableFrom": "property",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -6009,12 +5625,8 @@
           "name": "property_pms_connection_id_pms_connection_id_fk",
           "tableFrom": "property",
           "tableTo": "pms_connection",
-          "columnsFrom": [
-            "pms_connection_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["pms_connection_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -6022,12 +5634,8 @@
           "name": "property_duplicated_from_id_property_id_fk",
           "tableFrom": "property",
           "tableTo": "property",
-          "columnsFrom": [
-            "duplicated_from_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["duplicated_from_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -6035,12 +5643,8 @@
           "name": "property_removed_by_user_id_fk",
           "tableFrom": "property",
           "tableTo": "user",
-          "columnsFrom": [
-            "removed_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["removed_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -6048,12 +5652,8 @@
           "name": "property_created_by_user_id_fk",
           "tableFrom": "property",
           "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -6259,12 +5859,8 @@
           "name": "restricted_value_workspace_id_workspace_id_fk",
           "tableFrom": "restricted_value",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -6272,12 +5868,8 @@
           "name": "restricted_value_property_id_property_id_fk",
           "tableFrom": "restricted_value",
           "tableTo": "property",
-          "columnsFrom": [
-            "property_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["property_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -6285,12 +5877,8 @@
           "name": "restricted_value_data_key_id_workspace_data_key_id_fk",
           "tableFrom": "restricted_value",
           "tableTo": "workspace_data_key",
-          "columnsFrom": [
-            "data_key_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["data_key_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -6298,12 +5886,8 @@
           "name": "restricted_value_updated_by_user_id_fk",
           "tableFrom": "restricted_value",
           "tableTo": "user",
-          "columnsFrom": [
-            "updated_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["updated_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -6588,12 +6172,8 @@
           "name": "calendar_feed_workspace_id_workspace_id_fk",
           "tableFrom": "calendar_feed",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -6601,12 +6181,8 @@
           "name": "calendar_feed_property_id_property_id_fk",
           "tableFrom": "calendar_feed",
           "tableTo": "property",
-          "columnsFrom": [
-            "property_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["property_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -6614,12 +6190,8 @@
           "name": "calendar_feed_data_key_id_workspace_data_key_id_fk",
           "tableFrom": "calendar_feed",
           "tableTo": "workspace_data_key",
-          "columnsFrom": [
-            "data_key_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["data_key_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -6627,12 +6199,8 @@
           "name": "calendar_feed_created_by_user_id_fk",
           "tableFrom": "calendar_feed",
           "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -6923,12 +6491,8 @@
           "name": "stay_workspace_id_workspace_id_fk",
           "tableFrom": "stay",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -6936,12 +6500,8 @@
           "name": "stay_property_id_property_id_fk",
           "tableFrom": "stay",
           "tableTo": "property",
-          "columnsFrom": [
-            "property_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["property_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -6949,12 +6509,8 @@
           "name": "stay_calendar_feed_id_calendar_feed_id_fk",
           "tableFrom": "stay",
           "tableTo": "calendar_feed",
-          "columnsFrom": [
-            "calendar_feed_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["calendar_feed_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -6962,12 +6518,8 @@
           "name": "stay_pms_connection_id_pms_connection_id_fk",
           "tableFrom": "stay",
           "tableTo": "pms_connection",
-          "columnsFrom": [
-            "pms_connection_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["pms_connection_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -6975,12 +6527,8 @@
           "name": "stay_duplicate_of_id_stay_id_fk",
           "tableFrom": "stay",
           "tableTo": "stay",
-          "columnsFrom": [
-            "duplicate_of_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["duplicate_of_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -6988,12 +6536,8 @@
           "name": "stay_created_by_user_id_fk",
           "tableFrom": "stay",
           "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -7197,12 +6741,8 @@
           "name": "pms_connection_workspace_id_workspace_id_fk",
           "tableFrom": "pms_connection",
           "tableTo": "workspace",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -7210,12 +6750,8 @@
           "name": "pms_connection_data_key_id_workspace_data_key_id_fk",
           "tableFrom": "pms_connection",
           "tableTo": "workspace_data_key",
-          "columnsFrom": [
-            "data_key_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["data_key_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -7223,12 +6759,8 @@
           "name": "pms_connection_connected_by_user_id_fk",
           "tableFrom": "pms_connection",
           "tableTo": "user",
-          "columnsFrom": [
-            "connected_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["connected_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -7236,12 +6768,8 @@
           "name": "pms_connection_disconnected_by_user_id_fk",
           "tableFrom": "pms_connection",
           "tableTo": "user",
-          "columnsFrom": [
-            "disconnected_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["disconnected_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }

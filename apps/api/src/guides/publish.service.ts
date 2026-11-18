@@ -27,6 +27,7 @@ import {
 import {
   SNAPSHOT_SCHEMA,
   buildSnapshot,
+  canonicalJson,
   checkPublish,
   mainLanguage,
   type DraftSection,
@@ -40,18 +41,6 @@ import { RequestDb } from "../database/request-db.js";
 import { SecurityLogService } from "../security-log/security-log.service.js";
 import { GuideViewService, type Caller, type GuideContext } from "./guide-view.service.js";
 import { GuidesService } from "./guides.service.js";
-
-/** JSON with object keys sorted at every level. */
-function canonicalJson(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
-  if (value !== null && typeof value === "object") {
-    const entries = Object.entries(value as Record<string, unknown>)
-      .filter(([, entry]) => entry !== undefined)
-      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
-    return `{${entries.map(([key, entry]) => `${JSON.stringify(key)}:${canonicalJson(entry)}`).join(",")}}`;
-  }
-  return JSON.stringify(value);
-}
 
 /** The number of versions listed and kept per guide (FR-055). */
 export const KEPT_VERSIONS = 20;

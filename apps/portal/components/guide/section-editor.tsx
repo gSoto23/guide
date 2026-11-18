@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -21,6 +22,9 @@ import { useWorkspace } from "@/lib/use-workspace";
 import { ItemCard, type ItemActions } from "./item-card";
 import { MediaUploadButton } from "./media-upload";
 import { RecommendationForm } from "./recommendation-form";
+
+/** Loaded only in sections the workspace shares content into (US7). */
+const SharedBlocksPanel = dynamic(() => import("./shared-blocks-panel"), { ssr: false });
 
 /** Thrown inside a write when the host closes the step-up dialog; not an error to show. */
 const CANCELLED = Symbol("cancelled");
@@ -220,6 +224,18 @@ export function SectionEditor({
         {section.completeness !== null && ` · ${section.completeness} %`}
       </p>
       {section.hidden && <p className="alert alert-info">{t("editor.hiddenNotice")}</p>}
+      {view.sharedBlocks.some((block) => block.sectionKind === section.kind) && (
+        <SharedBlocksPanel
+          view={view}
+          section={section}
+          propertyId={propertyId}
+          onChanged={async (result) => {
+            setSection(result.section);
+            revisionRef.current = result.section.revision;
+            await load();
+          }}
+        />
+      )}
       {conflict && (
         <div className="alert alert-error" role="alert">
           {t("editor.conflict")}{" "}

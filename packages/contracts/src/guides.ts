@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { guideDocumentSchema, type GuideDocument } from "./guide-document.js";
+import {
+  guideDocumentSchema,
+  sharedBlockDocumentSchema,
+  type GuideDocument,
+} from "./guide-document.js";
 import {
   BENEFIT_VALUES,
   DEFAULT_SECTION_KIND_VALUES,
@@ -225,6 +229,8 @@ export interface GuideView {
   lockedFields: LockedFieldView[];
   missingTopics: MissingTopic[];
   topicMarks: Record<string, (typeof TOPIC_MARK_VALUES)[number]>;
+  /** The workspace's published shared blocks and how this guide uses each (US7). */
+  sharedBlocks: GuideSharedBlock[];
   canEdit: boolean;
 }
 
@@ -528,4 +534,102 @@ export interface DocumentView {
 
 export interface DocumentList {
   items: DocumentView[];
+}
+
+// Shared content (feature 003 contract "Shared content") ------------------------------------------
+
+export const createSharedBlockSchema = z
+  .object({
+    sectionKind: z.enum(DEFAULT_SECTION_KIND_VALUES),
+    name: z.string().trim().min(1).max(80),
+  })
+  .strict();
+export type CreateSharedBlockBody = z.infer<typeof createSharedBlockSchema>;
+
+export const updateSharedBlockSchema = z
+  .object({
+    revision,
+    name: z.string().trim().min(1).max(80).optional(),
+    position: z.int().min(0).max(200).optional(),
+  })
+  .strict();
+export type UpdateSharedBlockBody = z.infer<typeof updateSharedBlockSchema>;
+
+/** Items of a shared block: as in sections, but locked fields are refused (FR-057). */
+export const createBlockItemSchema = z
+  .object({
+    revision,
+    kind: z.enum(["text", "image", "video", "recommendation"]),
+    language,
+    doc: sharedBlockDocumentSchema.optional(),
+    mediaId: z.uuid().optional(),
+    recommendation: recommendationSchema.optional(),
+  })
+  .strict()
+  .refine((body) => (body.kind === "image" || body.kind === "video") === Boolean(body.mediaId), {
+    message: "Images and videos need their media, and only they",
+    path: ["mediaId"],
+  })
+  .refine((body) => (body.kind === "recommendation") === Boolean(body.recommendation), {
+    message: "Recommendations need their details, and only they",
+    path: ["recommendation"],
+  })
+  .refine((body) => body.kind !== "text" || Boolean(body.doc), {
+    message: "Text items need a document",
+    path: ["doc"],
+  });
+export type CreateBlockItemBody = z.infer<typeof createBlockItemSchema>;
+
+export const updateBlockItemSchema = z
+  .object({
+    revision,
+    language,
+    doc: sharedBlockDocumentSchema.optional(),
+    recommendation: recommendationSchema.optional(),
+  })
+  .strict();
+export type UpdateBlockItemBody = z.infer<typeof updateBlockItemSchema>;
+
+export interface SharedBlockSummary {
+  id: string;
+  name: string;
+  sectionKind: (typeof DEFAULT_SECTION_KIND_VALUES)[number];
+  position: number;
+  status: "draft" | "published";
+  revision: number;
+  hasUnpublishedChanges: boolean;
+  publishedRevision: number | null;
+  counts: { inherit: number; override: number; exclude: number };
+}
+
+export interface SharedBlockList {
+  items: SharedBlockSummary[];
+  limit: number;
+}
+
+export interface SharedBlockView extends SharedBlockSummary {
+  items: ItemView[];
+  languages: Language[];
+  canEdit: boolean;
+}
+
+export interface SharedBlockPublishResult {
+  publishedRevision: number;
+  guidesToUpdate: number;
+}
+
+export interface SharedBlockProperties {
+  inherit: { propertyId: string; name: string }[];
+  override: { propertyId: string; name: string; behind: boolean }[];
+  exclude: { propertyId: string; name: string }[];
+}
+
+/** A published shared block as one property's guide sees it (FR-058, FR-059, FR-061). */
+export interface GuideSharedBlock {
+  id: string;
+  name: string;
+  sectionKind: (typeof DEFAULT_SECTION_KIND_VALUES)[number];
+  mode: "inherit" | "override" | "exclude";
+  /** An override made from an older published revision: "The shared version changed". */
+  behind: boolean;
 }

@@ -218,6 +218,10 @@ export const guideItem = pgTable(
     documentId: uuid("document_id").references((): AnyPgColumn => guideDocument.id, {
       onDelete: "set null",
     }),
+    /** For an override's copies: the shared block they came from, so "Reset to shared" finds them (FR-059). */
+    copiedFromBlockId: uuid("copied_from_block_id").references((): AnyPgColumn => sharedBlock.id, {
+      onDelete: "set null",
+    }),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
     updatedBy: text("updated_by").references(() => user.id, { onDelete: "set null" }),
@@ -228,6 +232,7 @@ export const guideItem = pgTable(
     index("guide_item_workspace_idx").on(t.workspaceId),
     index("guide_item_media_idx").on(t.mediaId),
     index("guide_item_document_idx").on(t.documentId),
+    index("guide_item_copied_from_block_idx").on(t.copiedFromBlockId),
     check("guide_item_one_owner", sql`(${t.sectionId} IS NULL) <> (${t.sharedBlockId} IS NULL)`),
     check("guide_item_kind_valid", inList(t.kind, GUIDE_ITEM_KINDS)),
     check("guide_item_source_valid", inList(t.source, GUIDE_ITEM_SOURCES)),

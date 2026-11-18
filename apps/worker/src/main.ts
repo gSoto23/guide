@@ -47,6 +47,7 @@ import {
 } from "./jobs/guide-translate.js";
 import { createGuideDocumentHandler } from "./jobs/guide-document.js";
 import { createInterviewAnswerHandler } from "./jobs/interview-answer.js";
+import { createSharedBlockPublishHandler } from "./jobs/shared-block-publish.js";
 import { createMediaProcessHandler } from "./jobs/media-process.js";
 import { createWorkerServices } from "./services.js";
 
@@ -162,6 +163,13 @@ async function main(): Promise<void> {
       llm: services.llm,
       requireScan: services.mediaRequireScan,
     }),
+  );
+  // Shared-block fan-out (research R14): one job per publish or delete.
+  await createQueue(JOB_QUEUES.sharedBlockPublish);
+  await boss.work(
+    JOB_QUEUES.sharedBlockPublish,
+    { localConcurrency: 2 },
+    createSharedBlockPublishHandler({ db: services.db.db }),
   );
   // Translation per section and language (research R7): saves schedule their own debounced job;
   // the sweep picks up texts nothing scheduled, such as drafts from the worker and restores.

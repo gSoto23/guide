@@ -793,7 +793,8 @@
       "team": "Team",
       "security": "Security",
       "home": "Home",
-      "settings": "Settings"
+      "settings": "Settings",
+      "shared": "Shared content"
     },
     "loading": "Loading…",
     "none": "No workspace: create one"
@@ -1388,6 +1389,51 @@
       "added": "We added the photo to {section}.",
       "empty": "You haven't uploaded files yet.",
       "photoUnreadable": "We couldn't open the photo {name}. Try another photo."
+    },
+    "shared": {
+      "badge": "Shared: {name}",
+      "override": "Override for this property",
+      "exclude": "Exclude from this property",
+      "overridden": "You use your own copy of “{name}”.",
+      "behind": "The shared version changed since you made your copy.",
+      "reset": "Reset to shared",
+      "excluded": "You excluded “{name}” from this property.",
+      "include": "Include again",
+      "resetConfirm": "Your copy of “{name}” will be replaced with the shared version. Continue?"
     }
+  },
+  "sharedContent": {
+    "title": "Shared content",
+    "intro": "Write once what repeats across your properties (policies, emergency contacts, checkout steps, area recommendations). Every guide inherits it; you can override or exclude it per property.",
+    "create": "Create block",
+    "name": "Block name",
+    "section": "Section",
+    "cancel": "Cancel",
+    "limit": "You can have up to {limit} blocks.",
+    "empty": "You don't have shared content yet.",
+    "status_draft": "Draft",
+    "status_published": "Published",
+    "changes": "Unpublished changes",
+    "counts": "Inherited by {inherit} · Own copy {override} · Excluded {exclude}",
+    "back": "Back to shared content",
+    "items": "Content",
+    "addText": "Add text",
+    "save": "Save",
+    "delete": "Delete",
+    "noLocked": "Locked fields belong to each property: they can't be used in shared content.",
+    "publish": "Publish",
+    "publishing": "Publishing…",
+    "published": "Published. {count, plural, =0 {Guides update when they are published} one {# published guide will update} other {# published guides will update}}.",
+    "deleteBlock": "Delete block",
+    "deleteConfirm": "It will be removed from every guide, published ones too. Delete?",
+    "properties": "Properties",
+    "inherit": "Inherit it",
+    "override": "Have their own copy",
+    "exclude": "Exclude it",
+    "behind": "the shared version changed",
+    "none": "None",
+    "changed": "The block changed. Reload to see the latest.",
+    "reload": "Reload",
+    "textPlaceholder": "Write the shared content…"
   }
 }

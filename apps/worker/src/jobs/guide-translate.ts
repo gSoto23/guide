@@ -5,6 +5,7 @@ import {
   guideItemText,
   guideSection,
   property,
+  sharedBlock,
   type Database,
 } from "@guidesk/db";
 import {
@@ -67,24 +68,42 @@ export async function runGuideTranslate(
   job: GuideTranslateJob,
 ): Promise<GuideTranslateOutcome> {
   const { db } = deps;
-  if (!job.sectionId) return "nothing_to_do";
-  const [section] = await db
-    .select({
-      id: guideSection.id,
-      guideId: guideSection.guideId,
-      languages: property.guideLanguages,
-    })
-    .from(guideSection)
-    .innerJoin(guide, eq(guide.id, guideSection.guideId))
-    .innerJoin(property, eq(property.id, guide.propertyId))
-    .where(and(eq(guideSection.id, job.sectionId), eq(guideSection.workspaceId, job.workspaceId)))
-    .limit(1);
-  // A single-language guide, or a language the guide no longer has, needs nothing (US5 scenario 6).
-  if (!section || section.languages.length < 2 || !section.languages.includes(job.language)) {
+  let owner: { sectionId: string } | { sharedBlockId: string };
+  let guideId: string | null = null;
+  if (job.sectionId) {
+    const [section] = await db
+      .select({
+        id: guideSection.id,
+        guideId: guideSection.guideId,
+        languages: property.guideLanguages,
+      })
+      .from(guideSection)
+      .innerJoin(guide, eq(guide.id, guideSection.guideId))
+      .innerJoin(property, eq(property.id, guide.propertyId))
+      .where(and(eq(guideSection.id, job.sectionId), eq(guideSection.workspaceId, job.workspaceId)))
+      .limit(1);
+    // A single-language guide, or a language it no longer has, needs nothing (US5 scenario 6).
+    if (!section || section.languages.length < 2 || !section.languages.includes(job.language)) {
+      return "nothing_to_do";
+    }
+    owner = { sectionId: section.id };
+    guideId = section.guideId;
+  } else if (job.sharedBlockId) {
+    // Shared blocks are kept in both languages, once per workspace (research R7, R14).
+    const [block] = await db
+      .select({ id: sharedBlock.id })
+      .from(sharedBlock)
+      .where(
+        and(eq(sharedBlock.id, job.sharedBlockId), eq(sharedBlock.workspaceId, job.workspaceId)),
+      )
+      .limit(1);
+    if (!block) return "nothing_to_do";
+    owner = { sharedBlockId: block.id };
+  } else {
     return "nothing_to_do";
   }
 
-  const candidates = await loadCandidates(db, section.id, job.language);
+  const candidates = await loadCandidates(db, owner, job.language);
   if (candidates.length === 0) return "nothing_to_do";
 
   const limit = await takeGuideAi(db, job.workspaceId);
@@ -98,23 +117,30 @@ export async function runGuideTranslate(
   for (const from of ["es", "en"] as const) {
     const group = candidates.filter((candidate) => candidate.sourceLanguage === from);
     if (group.length === 0 || from === job.language) continue;
-    const result = await translateGroup(deps, job, section.guideId, from, group);
+    const result = await translateGroup(deps, job, guideId, from, group);
     if (result === "ai_unavailable") return "ai_unavailable";
     if (result !== "translated") outcome = result;
   }
   return outcome;
 }
 
-/** Items of the section that need a text in `language`, with their masked blocks. */
+/** Items of the section or block that need a text in `language`, with their masked blocks. */
 async function loadCandidates(
   db: Database,
-  sectionId: string,
+  owner: { sectionId: string } | { sharedBlockId: string },
   language: "es" | "en",
 ): Promise<Candidate[]> {
   const items = await db
     .select({ id: guideItem.id, sourceLanguage: guideItem.sourceLanguage })
     .from(guideItem)
-    .where(and(eq(guideItem.sectionId, sectionId), sql`${guideItem.kind} <> 'fact'`));
+    .where(
+      and(
+        "sectionId" in owner
+          ? eq(guideItem.sectionId, owner.sectionId)
+          : eq(guideItem.sharedBlockId, owner.sharedBlockId),
+        sql`${guideItem.kind} <> 'fact'`,
+      ),
+    );
   if (items.length === 0) return [];
   const texts = await db
     .select({
@@ -156,7 +182,7 @@ async function loadCandidates(
 async function translateGroup(
   deps: GuideTranslateDeps,
   job: GuideTranslateJob,
-  guideId: string,
+  guideId: string | null,
   from: "es" | "en",
   group: Candidate[],
 ): Promise<"translated" | "partial" | "ai_unavailable" | "failed"> {
@@ -357,14 +383,16 @@ export function createGuideTranslateHandler(deps: GuideTranslateDeps) {
       const data = job.data as Partial<GuideTranslateJob>;
       if (
         typeof data.workspaceId !== "string" ||
-        typeof data.sectionId !== "string" ||
+        (typeof data.sectionId !== "string" && typeof data.sharedBlockId !== "string") ||
         (data.language !== "es" && data.language !== "en")
       ) {
         continue;
       }
       const payload: GuideTranslateJob = {
         workspaceId: data.workspaceId,
-        sectionId: data.sectionId,
+        ...(typeof data.sectionId === "string"
+          ? { sectionId: data.sectionId }
+          : { sharedBlockId: data.sharedBlockId as string }),
         language: data.language,
       };
       await runInJobSpan(
