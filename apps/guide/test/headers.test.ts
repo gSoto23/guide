@@ -20,7 +20,7 @@ describe("guest app headers", () => {
     const body = await response.text();
     expect(body).toContain('<meta name="robots" content="noindex, nofollow"/>');
     // Every script is an external file or a JSON data block: nothing inline runs.
-    const scripts = body.match(/<script[^>]*>/g) ?? [];
+    const scripts = body.match(/<script\b[^>]*>/gi) ?? [];
     expect(scripts.length).toBeGreaterThan(0);
     for (const tag of scripts) expect(tag).toMatch(/\bsrc="|type="application\/json"/);
     expect(body).not.toMatch(/\sstyle="/);
