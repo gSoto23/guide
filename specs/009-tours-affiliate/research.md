@@ -168,4 +168,26 @@ Decisions for spec 009, building on specs 002 to 007.
   `CIVITATIS_AFFILIATE_ID`; ask Civitatis for its feed or API; confirm each partner's content terms and
   Viator's Spanish support with the live key; curate Civitatis entries for the pilot destinations; the
   legal review of the disclosure (OQ-35); a staging check on a phone.
-- **Notes:** filled in during implementation.
+- **Notes (implementation, 2026-11-18):**
+  - Ranking: Guidesk's curated entries come first (they are hand-picked), then partner products by
+    rating and reviews; ranking unrated curated entries last would have hidden them behind any full
+    Viator list (R7 updated).
+  - The Explore pointer is a knowledge line, not a section: section IDs are stored as UUIDs, so the
+    assistant can't cite it. Answer rule 13 allows sharing the link for tour questions as a "general"
+    answer; the fake model can't exercise the wording, so a worker test checks the knowledge and the
+    copilot's absence of it, and 3 eval cases (plus 1 copilot case) gate the real model.
+  - Explore opens from a tile on the guide home; the guide has no bottom bar yet (FR-001 updated).
+  - Partner photos show only from hosts in `EXPERIENCE_IMAGE_ORIGINS`; others fall back to the
+    category illustration, so a missing or wrong setting never shows a broken image. Confirm Viator's
+    image hosts with the live key.
+  - The worker runs one refresh at start, so a deploy or a fresh local stack has experiences at once.
+  - `ViatorApiKey` is an SST secret with the placeholder `unset` (treated as absent), so deploys work
+    before the account exists; `EXPERIENCES_MODE=live` and the optional `CIVITATIS_AFFILIATE_ID` and
+    `EXPERIENCE_IMAGE_ORIGINS` come from the stage configuration. The curated file ships empty; tests
+    use their own synthetic catalog.
+  - Timings (local, Testcontainers): the guest Explore route, the redirect, and the settings routes
+    stay within budget with 60 products in two languages (`apps/api/test/integration/explore.perf.test.ts`).
+  - Local quickstart (2026-11-18, fixtures): scenarios 1 to 3 ran as `e2e/specs/explore-us1.spec.ts`
+    to `explore-us3.spec.ts` and passed, with the accessibility checks for Explore, the detail, and the
+    settings screens; scenario 4 is covered by the worker's refresh tests and scenario 5 by the
+    pointer tests and evals. The live partner checks remain for staging.

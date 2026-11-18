@@ -23,7 +23,7 @@ relevant spec as `[NEEDS CLARIFICATION]` items.
 | OQ-05 | Guest languages: Spanish and English are confirmed. Add Portuguese (Brazil)? | P1 | NFR-06, Phase 3 scope | Open |
 | OQ-06 | Founder insight: what motivated Guidesk, and which existing tools do you know and dislike? | P2 | Positioning, messaging | Open |
 | OQ-07 | Confirm the MVP prioritization in [PRD §4](product/prd.md#4-feature-catalog-and-prioritization) | P0 | Phase 1 scope | Answered 2026-11-14. Confirmed, with changes: online payments for add-ons (F13) join the MVP as a month-4 milestone; read-only PMS import, CSV import, basic analytics, and voice notes are in; the pilot is free and billing waits until after it; reservations stay in Phase 2 and insurance in Phase 3. Phase 1 grows to 4 months. |
-| OQ-08 | Do hosts receive a share of affiliate commissions (tours, reservations) as an incentive? | P1 | F09, business model | Open |
+| OQ-08 | Do hosts receive a share of affiliate commissions (tours, reservations) as an incentive? | P1 | F09, business model | Decided for the pilot in [spec 009](../specs/009-tours-affiliate/spec.md) (2026-11-18): no host share; the disclosure names Guidesk. Revisit after the pilot with its own disclosure text. |
 | OQ-09 | Who absorbs payment processing fees on add-ons: the guest (service fee), the host, or Guidesk? | P1 | F13 (MVP, month 4) | Open |
 | OQ-10 | Pricing: Free-plan caps (properties, AI replies) and the Pro price point | P1 | F11 | Hypothesis in the [business model](product/business-model.md); validate in the pilot |
 | OQ-11 | Brand: trademark search and domain availability for "Guidesk" in the target markets; visual identity | P1 | Public launch | Open. Visual identity answered 2026-11-17 ([brand guide](brand/README.md)); trademark search and domain still open. |
@@ -51,7 +51,7 @@ relevant spec as `[NEEDS CLARIFICATION]` items.
 | OQ-31 | Apply to the Hostaway partner program and marketplace | P0 | Not started |
 | OQ-32 | Contact Guesty partnerships (Open API is not for marketplace partners) | P1 | Not started |
 | OQ-33 | Contact Smoobu for partner OAuth access | P1 | Not started |
-| OQ-34 | Join affiliate programs: Viator, Civitatis, GetYourGuide | P1 | Not started |
+| OQ-34 | Join affiliate programs: Viator, Civitatis, GetYourGuide | P1 | Not started. Spec 009 is built and waits on it: the Viator basic-access API key (`ViatorApiKey` secret), the Civitatis affiliate number, and Civitatis's feed or API on request ([research R13](../specs/009-tours-affiliate/research.md)). |
 | OQ-35 | Legal review covering: Airbnb policies (commercial messages under the API terms, links in messages, disclosures); whether early check-in and late checkout may be sold through Guidesk checkout on each OTA (FR-13.6); receipts and guest contact data at checkout; privacy policy and terms of service; GDPR, CCPA, and LATAM data-protection laws; insurance distribution | P1 (payments part needed before month 4) | Not started |
 | OQ-36 | Ask Channex in writing whether it supports a messaging-only Airbnb connection | P2 | Not started |
 | OQ-37 | Confirm with Tilopay: split settlement for hosts under the payment-facilitator model, host onboarding requirements, coverage for hosts outside Costa Rica and Central America, acceptance of international cards, refunds through the API, the webhook signature scheme for card payments, and fees | P0 (before F13, by week 10) | Not started |

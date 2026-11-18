@@ -199,6 +199,11 @@ async function main(): Promise<void> {
   const queuePush = async (job: NotificationPushJob): Promise<void> => {
     await boss.send(JOB_QUEUES.notificationPush, job, { retryLimit: 2, expireInSeconds: 300 });
   };
+  // Feature 009 (research R11): the guide chat's Explore pointer follows the guest route's rules.
+  const exploreKnowledge = {
+    curated: loadCuratedCatalog(config.integrations.experiences.catalogFile ?? undefined),
+    civitatisAffiliateId: config.integrations.experiences.civitatisAffiliateId,
+  };
   await createQueue(JOB_QUEUES.chatReply);
   await boss.work(
     JOB_QUEUES.chatReply,
@@ -210,6 +215,7 @@ async function main(): Promise<void> {
       queuePush,
       portalUrl: services.portalUrl,
       guideUrl: config.guideUrl,
+      explore: exploreKnowledge,
     }),
   );
   await createQueue(JOB_QUEUES.agentCostCheck);
@@ -224,6 +230,7 @@ async function main(): Promise<void> {
       db: services.db.db,
       llm: services.llm,
       guideUrl: config.guideUrl,
+      explore: exploreKnowledge,
     }),
   );
   await createQueue(JOB_QUEUES.chatQuietDigest);
@@ -258,11 +265,13 @@ async function main(): Promise<void> {
   const exploreDeps = {
     db: services.db.db,
     partner: createExperiencePartner(config.integrations.experiences),
-    curated: loadCuratedCatalog(config.integrations.experiences.catalogFile ?? undefined),
+    curated: exploreKnowledge.curated,
   };
   await createQueue(JOB_QUEUES.exploreRefresh);
   await boss.work(JOB_QUEUES.exploreRefresh, createExploreRefreshHandler(exploreDeps));
   await boss.schedule(JOB_QUEUES.exploreRefresh, EXPLORE_REFRESH_CRON, null, { tz: "UTC" });
+  // One run at start, so a deploy or a fresh local stack has current experiences right away.
+  await boss.send(JOB_QUEUES.exploreRefresh, {});
   await createQueue(JOB_QUEUES.exploreReferences);
   await boss.work(JOB_QUEUES.exploreReferences, createExploreReferencesHandler(exploreDeps));
   await boss.schedule(JOB_QUEUES.exploreReferences, EXPLORE_REFERENCES_CRON, null, { tz: "UTC" });

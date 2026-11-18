@@ -18,6 +18,11 @@ export const feedUrlPepper = new sst.Secret("FeedUrlPepper");
  */
 export const vapidPublicKey = new sst.Secret("VapidPublicKey");
 export const vapidPrivateKey = new sst.Secret("VapidPrivateKey");
+/**
+ * Viator Partner API key, basic affiliate access (feature 009 research R1). The placeholder `unset`
+ * keeps deploys working before the founder joins the program; the services treat it as absent.
+ */
+export const viatorApiKey = new sst.Secret("ViatorApiKey", "unset");
 
 export const allSecrets = [
   betterAuthSecret,
@@ -28,4 +33,5 @@ export const allSecrets = [
   feedUrlPepper,
   vapidPublicKey,
   vapidPrivateKey,
+  viatorApiKey,
 ];

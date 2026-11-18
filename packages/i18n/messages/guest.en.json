@@ -145,5 +145,37 @@
     "unavailable": "The chat isn't available for this guide right now.",
     "loading": "Loading the chat…",
     "offline": "You're offline. The chat works again when you reconnect."
+  },
+  "explore": {
+    "nav": "Explore",
+    "tile": "Explore the area",
+    "title": "Explore",
+    "tips": "Your host's recommendations",
+    "near": "Experiences near {city}",
+    "nearNoCity": "Experiences nearby",
+    "disclosure": "Guidesk may earn a commission if you book, at no extra cost to you.",
+    "categories": {
+      "tours": "Tours",
+      "food_drink": "Food and drink",
+      "outdoor": "Nature and adventure",
+      "water": "On the water",
+      "culture": "Culture",
+      "day_trips": "Day trips",
+      "other": "More experiences"
+    },
+    "partner": "By {partner}",
+    "from": "From {price}",
+    "duration": "{hours, plural, =0 {} one {# hour} other {# hours}}{minutes, plural, =0 {} other { # min}}",
+    "rating": "{rating} out of 5 ({count, plural, one {# review} other {# reviews}})",
+    "englishOnly": "Description available in English only.",
+    "machine": "Machine-translated by the partner.",
+    "open": "See details",
+    "book": "Book on {partner}",
+    "bookNote": "Opens {partner}'s site in a new tab. The final price and availability are confirmed there.",
+    "includes": "Includes",
+    "description": "Description",
+    "offline": "You need a connection to book.",
+    "empty": "No experiences for this area yet.",
+    "back": "Back to Explore"
   }
 }

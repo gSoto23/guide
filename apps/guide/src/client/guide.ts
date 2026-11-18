@@ -304,6 +304,58 @@ function countOpen(): void {
   void api("opens", { publicId, kind }).catch(() => undefined);
 }
 
+// Explore (feature 009 research R8, R9) -------------------------------------------------------------
+
+function onceToday(key: string): boolean {
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    if (localStorage.getItem(key) === today) return false;
+    localStorage.setItem(key, today);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function wireExplore(): void {
+  const page = document.querySelector<HTMLElement>("[data-explore-page]");
+  if (!page || !publicId) return;
+  if (page.dataset.explorePage === "list" && onceToday(`guidesk_explore_open:${publicId}`)) {
+    void api("opens", { publicId, kind: "explore" }).catch(() => undefined);
+  }
+  const links = document.querySelectorAll<HTMLAnchorElement>("a[data-experience-ref]");
+  links.forEach((link) => {
+    link.addEventListener("click", (event) => {
+      if (!navigator.onLine) {
+        event.preventDefault();
+        return;
+      }
+      // The first tap per experience and day is marked for counting; nothing about the guest is.
+      if (!onceToday(`guidesk_click:${publicId}:${link.dataset.experienceRef ?? ""}`)) return;
+      const url = new URL(link.href);
+      url.searchParams.set("c", "1");
+      link.href = url.toString();
+      setTimeout(() => {
+        url.searchParams.delete("c");
+        link.href = url.toString();
+      }, 0);
+    });
+  });
+  const sync = () => {
+    const offline = !navigator.onLine;
+    links.forEach((link) => {
+      if (offline) link.setAttribute("aria-disabled", "true");
+      else link.removeAttribute("aria-disabled");
+    });
+    document.querySelectorAll<HTMLElement>("[data-book-offline]").forEach((note) => {
+      note.hidden = !offline;
+    });
+  };
+  sync();
+  window.addEventListener("online", sync);
+  window.addEventListener("offline", sync);
+}
+
 function showNotice(): void {
   const box = document.getElementById("notice");
   let notice: string | null;
@@ -397,6 +449,7 @@ function start(): void {
   showNotice();
   offlineBanner();
   wireAsk();
+  wireExplore();
   void loadSession().then(countOpen);
   let hiddenAt = 0;
   document.addEventListener("visibilitychange", () => {

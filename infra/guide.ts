@@ -27,6 +27,10 @@ export const guideApp = new sst.aws.Function("GuideApp", {
     GUIDE_API_URL: guideUrl,
     GUIDE_PUBLIC_DIR: "public",
     GUIDE_MEDIA_URL: $interpolate`https://${media.domain}`,
+    // Feature 009: partner photo hosts the CSP allows (research R9).
+    ...(stageConfig.experienceImageOrigins
+      ? { EXPERIENCE_IMAGE_ORIGINS: stageConfig.experienceImageOrigins }
+      : {}),
     ...(stageConfig.sentryDsn ? { SENTRY_DSN: stageConfig.sentryDsn } : {}),
   },
   permissions: [],

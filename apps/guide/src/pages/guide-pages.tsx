@@ -147,6 +147,13 @@ export function HomePage(input: GuidePageInput) {
             </a>
           </li>
         ))}
+        {guide.explore.visible ? (
+          <li className="tile-wide tile-explore">
+            <a className="tile" href={`/g/${guide.publicId}/${input.locale}/explore`}>
+              {t("explore.tile")}
+            </a>
+          </li>
+        ) : null}
       </ul>
       {guide.facts.address ? (
         <section className="card address">

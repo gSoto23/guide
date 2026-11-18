@@ -26,6 +26,11 @@ export interface KnowledgeInput {
   publicValues: ReadonlyMap<string, string>;
   sectionTitle: (kind: string, customTitle: string | null) => string;
   emergencyNumber: string | null;
+  /**
+   * Feature 009 (research R11): the guide's Explore page when it shows, for guests asking about
+   * tours or things to do. Never set for copilot drafts (PC-10). No partner content enters here.
+   */
+  exploreUrl?: string | null;
 }
 
 export interface KnowledgeSection {
@@ -74,6 +79,13 @@ export function renderKnowledge(input: KnowledgeInput): Knowledge {
   if (facts.maxGuests !== null) lines.push(`Maximum guests: ${facts.maxGuests}`);
   if (facts.address) lines.push(`Address: ${facts.address}`);
   if (input.emergencyNumber) lines.push(`Local emergency number: ${input.emergencyNumber}`);
+  if (input.exploreUrl) {
+    lines.push(
+      "",
+      "## Explore",
+      `Tours and activities near the property are listed on the guide's Explore page: ${input.exploreUrl}`,
+    );
+  }
   lines.push("", "## Guide sections");
   const sections: KnowledgeSection[] = [];
   for (const section of input.snapshot.sections) {

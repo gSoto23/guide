@@ -19,6 +19,14 @@ export const stageConfig = {
   /** Sentry DSN for the services and the sandbox functions (optional). Not a secret. */
   sentryDsn: process.env.GUIDESK_SENTRY_DSN,
   /**
+   * Feature 009 (research R12): Guidesk's Civitatis affiliate number (public in every link; empty
+   * until the founder joins the program), and the HTTPS origins of partner photos the guide may
+   * show, comma-separated (confirm them with the live Viator key; photos from other hosts fall back
+   * to the category illustration).
+   */
+  civitatisAffiliateId: process.env.GUIDESK_CIVITATIS_AFFILIATE_ID ?? "",
+  experienceImageOrigins: process.env.GUIDESK_EXPERIENCE_IMAGE_ORIGINS ?? "",
+  /**
    * Feature flags (feature 002 research R15, feature 003 research R22). Off unless set to "true"
    * for the stage: the PMS flags wait for OQ-26 with each provider, screenshots for the R3
    * accuracy gate, voice answers for the Transcribe and opt-out gates, and scanned PDFs for R22.

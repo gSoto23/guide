@@ -14,6 +14,7 @@ export function fixtureHandler(overrides: { secure?: boolean } = {}) {
       secure: overrides.secure ?? false,
       fixtures: true,
       edgeSecret: null,
+      experienceImageOrigins: ["https://media.example-cdn.test"],
     },
     assets: {
       script: "/assets/guide.test.js",

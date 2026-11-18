@@ -77,7 +77,7 @@ export function MapLinks({ address, t }: { address: string; t: Translate }) {
   );
 }
 
-function Recommendation({ rec, t }: { rec: GuestRecommendation; t: Translate }) {
+export function Recommendation({ rec, t }: { rec: GuestRecommendation; t: Translate }) {
   const href = rec.url && /^https?:\/\//.test(rec.url) ? rec.url : null;
   return (
     <div className="card recommendation">

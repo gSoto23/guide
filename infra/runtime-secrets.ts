@@ -14,6 +14,7 @@ import {
   googleClientSecret,
   vapidPrivateKey,
   vapidPublicKey,
+  viatorApiKey,
 } from "./secrets";
 
 function runtimeSecret(name: string, value: $util.Input<string>): $util.Output<string> {
@@ -46,10 +47,12 @@ export const apiSecretArns = {
   ...vapidSecretArns,
 };
 
-/** The worker: the database, the feed-link pepper, the Claude key, and the push keys. */
+/** The worker: the database, the feed-link pepper, the Claude key, the push keys, and Viator. */
 export const workerSecretArns = {
   DATABASE_PASSWORD: databasePasswordArn,
   FEED_URL_PEPPER: feedUrlPepperArn,
   ANTHROPIC_API_KEY: runtimeSecret("AnthropicApiKey", anthropicApiKey.value),
   ...vapidSecretArns,
+  // Feature 009: only the worker calls Viator (research R2).
+  VIATOR_API_KEY: runtimeSecret("ViatorApiKey", viatorApiKey.value),
 };

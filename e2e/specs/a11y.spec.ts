@@ -410,3 +410,37 @@ test("inbox, conversation actions, copilot, and alerts screens have no WCAG A/AA
   await expect(host.getByRole("heading", { name: "Inbox", level: 1 })).toBeVisible();
   await expectNoViolations(host, "inbox (en)");
 });
+
+test("Explore, experience detail, and Explore settings have no WCAG A/AA violations (feature 009 T031)", async ({
+  browser,
+}) => {
+  test.setTimeout(180_000);
+  const { propertyLink, publishGuide, signIn } = await import("../helpers/guest");
+  const host = await newPage(browser);
+  await signIn(host, uniqueEmail("a11y-explore"));
+  const guide = await publishGuide(host);
+  const link = await propertyLink(host, guide);
+
+  for (const locale of ["es-CR", "en-US"]) {
+    const context = await browser.newContext({ locale, viewport: { width: 390, height: 844 } });
+    const guest = await context.newPage();
+    await guest.goto(link);
+    await guest.locator(".tile-explore a").click();
+    await expect(guest.locator(".experience").first()).toBeVisible({ timeout: 20_000 });
+    await expectNoViolations(guest, `Explore (${locale})`);
+    await guest.locator(".experience a").first().click();
+    await expect(guest.locator("[data-experience-ref]")).toBeVisible();
+    await expectNoViolations(guest, `experience detail (${locale})`);
+    await context.close();
+  }
+
+  await host.goto(`/es/properties/${guide.propertyId}/explore`);
+  await expect(host.locator(".explore-row").first()).toBeVisible({ timeout: 20_000 });
+  await host.getByLabel("Usar los valores del espacio de trabajo").uncheck();
+  await expectNoViolations(host, "property Explore settings");
+  await host.goto("/en/settings/explore");
+  await expect(
+    host.getByRole("heading", { name: "Explore: defaults for every property" }),
+  ).toBeVisible();
+  await expectNoViolations(host, "workspace Explore settings");
+});

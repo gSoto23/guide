@@ -32,6 +32,7 @@ const production = {
   SANDBOX_FEED_READER_FUNCTION: "feed-reader",
   SANDBOX_FILE_PROCESSOR_FUNCTION: "file-processor",
   PMS_MODE: "live",
+  EXPERIENCES_MODE: "live",
 };
 
 describe("loadApiConfig", () => {

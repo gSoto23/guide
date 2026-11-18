@@ -494,3 +494,76 @@ a {
 body:has(.ask:not([hidden])) .main {
   padding-bottom: max(5.5rem, env(safe-area-inset-bottom));
 }
+
+/* Feature 009: Explore (screens G-07, G-14). Photos keep their reserved size; no layout shift. */
+.tile-explore .tile {
+  border-left-color: var(--carbon);
+}
+
+.category-title {
+  font-size: 1rem;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.experiences {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.experience {
+  margin: 0;
+}
+
+.experience-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: var(--radius);
+  background: var(--arena);
+  margin-bottom: 0.75rem;
+}
+
+div.experience-photo {
+  border: 1px dashed var(--muted);
+}
+
+.experience-title {
+  font-size: 1.0625rem;
+  margin: 0 0 0.25rem;
+}
+
+.experience-title a {
+  color: var(--carbon);
+}
+
+.experience-meta {
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  font-size: 0.9375rem;
+  color: var(--muted);
+}
+
+.experience-description {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.experience-book .button-primary {
+  display: block;
+  text-align: center;
+  margin: 0.75rem 0;
+}
+
+.experience-book .button-primary[aria-disabled="true"] {
+  opacity: 0.55;
+  pointer-events: none;
+}

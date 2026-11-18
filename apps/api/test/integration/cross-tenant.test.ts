@@ -839,3 +839,103 @@ describe("feature 006 resources across workspaces (T036, AC-SEC-004)", () => {
     }
   });
 });
+
+describe("feature 009 resources across workspaces (T028, AC-SEC-004)", () => {
+  let foreignProperty: string;
+  let ownProperty: string;
+
+  beforeAll(async () => {
+    const insertProp = async (workspaceId: string, name: string) =>
+      (
+        await db.query<{ id: string }>(
+          `INSERT INTO property (workspace_id, name, guide_languages, setup_status, source, city, country)
+           VALUES ($1, $2, ARRAY['es'], 'ready', 'manual', 'Sámara', 'CR') RETURNING id`,
+          [workspaceId, name],
+        )
+      ).rows[0]!.id;
+    foreignProperty = await insertProp(bruno.workspaceId, "Casa Explorar de Bruno");
+    ownProperty = await insertProp(alice.workspaceId, "Casa Explorar de Alicia");
+    await db.query(
+      `INSERT INTO explore_settings (workspace_id, property_id, follows_default, hidden_categories, version)
+       VALUES ($1, $2, false, ARRAY['water'], 1)`,
+      [bruno.workspaceId, foreignProperty],
+    );
+  });
+
+  const body = {
+    version: 1,
+    followsDefault: true,
+    own: { experiencesEnabled: false, hiddenCategories: [] },
+    hiddenExperiences: [],
+  };
+
+  function call(method: string, url: string, payload: object | undefined) {
+    return ctx.fastify.inject({
+      method: method as "GET",
+      url,
+      headers: {
+        origin: "http://localhost:3000",
+        cookie: alice.cookie,
+        ...(payload ? { "content-type": "application/json" } : {}),
+      },
+      ...(payload ? { payload } : {}),
+    });
+  }
+
+  it("answers 404 for another workspace's Explore settings, logs each attempt, and changes nothing", async () => {
+    const routes = [
+      ["GET", `/api/v1/workspaces/${bruno.workspaceId}/explore`, undefined],
+      [
+        "PUT",
+        `/api/v1/workspaces/${bruno.workspaceId}/explore`,
+        { version: 0, experiencesEnabled: false, hiddenCategories: [] },
+      ],
+      [
+        "GET",
+        `/api/v1/workspaces/${bruno.workspaceId}/properties/${foreignProperty}/explore`,
+        undefined,
+      ],
+      [
+        "PUT",
+        `/api/v1/workspaces/${bruno.workspaceId}/properties/${foreignProperty}/explore`,
+        body,
+      ],
+      [
+        "GET",
+        `/api/v1/workspaces/${alice.workspaceId}/properties/${foreignProperty}/explore`,
+        undefined,
+      ],
+      [
+        "PUT",
+        `/api/v1/workspaces/${alice.workspaceId}/properties/${foreignProperty}/explore`,
+        body,
+      ],
+    ] as const;
+    for (const [method, url, payload] of routes) {
+      const before = await deniedCount();
+      const response = await call(method, url, payload);
+      expect(response.statusCode, `${method} ${url}`).toBe(404);
+      expect(await deniedCount(), `${method} ${url} logged`).toBe(before + 1);
+    }
+    const { rows } = await db.query<{ hidden: string[]; follows: boolean }>(
+      `SELECT hidden_categories AS hidden, follows_default AS follows FROM explore_settings WHERE property_id = $1`,
+      [foreignProperty],
+    );
+    expect(rows).toEqual([{ hidden: ["water"], follows: false }]);
+    const workspaceRows = await db.query(
+      `SELECT 1 FROM explore_settings WHERE workspace_id = $1 AND property_id IS NULL`,
+      [bruno.workspaceId],
+    );
+    expect(workspaceRows.rows).toEqual([]);
+  });
+
+  it("gives a missing property the same answer as a foreign one", async () => {
+    const url = (id: string) => `/api/v1/workspaces/${alice.workspaceId}/properties/${id}/explore`;
+    const foreign = await call("GET", url(foreignProperty), undefined);
+    const missing = await call("GET", url(MISSING), undefined);
+    expect(missing.statusCode).toBe(foreign.statusCode);
+    expect(missing.json()).toEqual(foreign.json());
+    const own = await call("GET", url(ownProperty), undefined);
+    expect(own.statusCode).toBe(200);
+  });
+});

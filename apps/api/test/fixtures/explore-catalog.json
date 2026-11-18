@@ -8,7 +8,10 @@
           "url": "https://www.civitatis.com/es/samara/kayak-de-prueba/",
           "category": "water",
           "title": { "es": "Kayak de prueba", "en": "Test kayak" },
-          "description": { "es": "Entrada ficticia para pruebas.", "en": "A fictional entry for tests." },
+          "description": {
+            "es": "Entrada ficticia para pruebas.",
+            "en": "A fictional entry for tests."
+          },
           "durationMinutes": 120,
           "priceFrom": 45,
           "currency": "USD"

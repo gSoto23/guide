@@ -226,8 +226,8 @@ reply includes a link to Explore, no partner experience or partner link, and pas
 
 **Explore in the guest guide**
 
-- **FR-001**: The guest guide MUST offer an Explore tab in its navigation when the property has host
-  tips or visible experiences, and MUST hide it when it has neither.
+- **FR-001**: The guest guide MUST offer an Explore entry in its navigation (a tile on the guide home)
+  when the property has host tips or visible experiences, and MUST hide it when it has neither.
 - **FR-002**: Explore MUST show the host's tips first (the recommendations of the published guide, in
   the guide's order, with their benefit disclosures), then the property's experiences grouped by
   category, at most 12 experiences.

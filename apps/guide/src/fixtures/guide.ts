@@ -1,4 +1,4 @@
-import type { GuestGuide } from "@guidesk/contracts";
+import type { GuestExplore, GuestGuide } from "@guidesk/contracts";
 
 /**
  * A fictional guide for Lighthouse CI and local design work (feature 004 research R19). Served
@@ -131,5 +131,50 @@ export function fixtureGuide(publicId: string, language: "es" | "en"): GuestGuid
       },
     ],
     wifi: { fieldId: null, password: null },
+    explore: { visible: true },
+  };
+}
+
+/** Feature 009: a fixture Explore page for Lighthouse CI only (synthetic, no partner images). */
+export function fixtureExplore(publicId: string, language: "es" | "en"): GuestExplore | null {
+  if (publicId !== FIXTURE_PUBLIC_ID) return null;
+  const card = (index: number, category: GuestExplore["categories"][number]["category"]) => ({
+    ref: `viator-FIXTURE${index}`,
+    partner: "viator" as const,
+    partnerName: "Viator",
+    category,
+    title: language === "es" ? `Experiencia de ejemplo ${index}` : `Sample experience ${index}`,
+    description:
+      language === "es"
+        ? "Una experiencia ficticia para pruebas."
+        : "A fictional experience for tests.",
+    includes: null,
+    durationMinutes: 120,
+    priceFrom: 45 + index,
+    currency: "USD",
+    rating: 4.8,
+    reviewCount: 120,
+    image: null,
+    language,
+    machineTranslated: false,
+  });
+  return {
+    city: "Sámara",
+    disclosure: "guidesk",
+    tips: [
+      {
+        name: language === "es" ? "Soda de ejemplo" : "Sample diner",
+        category: "restaurant",
+        url: null,
+        address: null,
+        benefit: false,
+        benefitKind: null,
+        personalTip: true,
+      },
+    ],
+    categories: [
+      { category: "tours", experiences: [card(1, "tours"), card(2, "tours")] },
+      { category: "water", experiences: [card(3, "water")] },
+    ],
   };
 }
