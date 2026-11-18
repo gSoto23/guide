@@ -241,3 +241,45 @@ test("guide builder screens have no WCAG A/AA violations (feature 003 T123)", as
   await expect(page.getByRole("heading", { name: "Contenido compartido" })).toBeVisible();
   await expectNoViolations(page, "shared content");
 });
+
+test("guest guide and Share screens have no WCAG A/AA violations (feature 004 T067)", async ({
+  browser,
+}) => {
+  test.setTimeout(180_000);
+  const { addStay, publishGuide, signIn } = await import("../helpers/guest");
+  const host = await newPage(browser);
+  await signIn(host, uniqueEmail("a11y-guest"));
+  const guide = await publishGuide(host);
+  const stay = await addStay(host, guide, 0);
+  await host.request.patch(`${guide.base}/share/settings`, { data: { requireConfirmationCode: true } });
+
+  await host.goto(`/es/properties/${guide.propertyId}/share`);
+  await expect(host.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(host.getByRole("heading", { name: "Estadías: enlaces que muestran los códigos" })).toBeVisible();
+  await expectNoViolations(host, "share screen");
+  await host.goto(`/es/properties/${guide.propertyId}/share/poster`);
+  await expect(host.getByRole("heading", { name: "Casa Colibrí" })).toBeVisible();
+  await expectNoViolations(host, "poster");
+
+  const copied = await host.request.post(`${guide.base}/share/stays/${stay.id}/link`, { data: {} });
+  const { url } = (await copied.json()) as { url: string };
+  for (const locale of ["es-CR", "en-US"]) {
+    const context = await browser.newContext({ locale, viewport: { width: 390, height: 844 } });
+    const guest = await context.newPage();
+    await guest.goto(url);
+    await expect(guest).toHaveURL(/\/g\/[a-z2-7]{26}\/(es|en)$/);
+    await expect(guest.getByRole("heading", { level: 1 })).toBeVisible();
+    await expectNoViolations(guest, `guest home (${locale})`);
+    await guest.locator(".tile").first().click();
+    await expect(guest.locator(".locked-show").first()).toBeVisible();
+    await expectNoViolations(guest, `arrival with a locked field (${locale})`);
+    await guest.locator(".locked-show").first().click();
+    await expect(guest.getByRole("dialog")).toBeVisible();
+    await expectNoViolations(guest, `confirmation form (${locale})`);
+    await guest.goto(guest.url().replace(/\/[0-9a-f-]{36}$/, "/emergency"));
+    await expectNoViolations(guest, `emergency (${locale})`);
+    await guest.goto(`${new URL(url).origin}/g/abcdefghijklmnopqrstuvwxyz/en`);
+    await expectNoViolations(guest, `unavailable (${locale})`);
+    await context.close();
+  }
+});

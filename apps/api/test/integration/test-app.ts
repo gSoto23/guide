@@ -62,6 +62,7 @@ export class CapturingEmailAdapter implements EmailAdapter {
 }
 
 export const PORTAL_URL = "http://localhost:3000";
+export const GUIDE_URL = "http://127.0.0.1:3001";
 
 export interface TestAppOptions {
   /** A fixed property count for the MFA threshold; omit it to count real active properties. */
@@ -78,6 +79,7 @@ export async function createTestApp(
     DATABASE_URL: databaseUrl,
     BETTER_AUTH_SECRET: "test-secret-".padEnd(48, "x"),
     PORTAL_URL,
+    GUIDE_URL,
     EMAIL_TRANSPORT: "smtp",
     // Feature 002 (T006): test-only key material, never used outside tests.
     LOCAL_KMS_KEY: Buffer.alloc(32, 11).toString("base64"),

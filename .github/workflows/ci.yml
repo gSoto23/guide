@@ -79,11 +79,20 @@ jobs:
       # LCP ≤ 2.5 s, CLS ≤ 0.1, and total blocking time ≤ 200 ms as the lab proxy for INP
       # (lighthouserc.json). Uses the runner's Chrome.
       - run: pnpm perf:lighthouse
+      # Guest guide (feature 004 plan, Performance Budget): script ≤ 15 KB gzip and the first
+      # visit ≤ 150 KB, then Lighthouse on the fixture guide (GUIDE_FIXTURES is never set in AWS).
+      - run: pnpm turbo run build --filter=@guidesk/guide
+      - run: pnpm --filter @guidesk/guide size:check
+      - run: pnpm perf:lighthouse:guide
+        env:
+          GUIDE_FIXTURES: "true"
       - if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: lighthouse-reports
-          path: .lighthouseci/
+          path: |
+            .lighthouseci/
+            .lighthouseci-guide/
           include-hidden-files: true
           retention-days: 14
 

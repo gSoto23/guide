@@ -93,6 +93,12 @@ const offPlatformPatterns = OFF_PLATFORM_PHRASES.map(
     new RegExp(`(?<![\\p{L}\\p{N}])${phrase.replace(/ /g, "\\s+")}(?![\\p{L}\\p{N}])`, "u"),
 );
 
+/** True when text asks guests to book or pay outside the platform (PC-06); also used by spec 004. */
+export function asksOffPlatform(text: string): boolean {
+  const folded = foldForMatch(text);
+  return offPlatformPatterns.some((pattern) => pattern.test(folded));
+}
+
 function linkIsOffPlatform(href: string): boolean {
   try {
     const host = new URL(href).hostname.toLowerCase();

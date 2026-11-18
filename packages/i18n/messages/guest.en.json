@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "title": "{property} guide",
+    "description": "The house guide for guests."
+  },
+  "nav": {
+    "home": "Home",
+    "emergency": "Emergency",
+    "language": "Language",
+    "switchTo": "Español",
+    "back": "Back to the guide"
+  },
+  "sections": {
+    "arrival": "Arrival and access",
+    "wifi": "Wi-Fi",
+    "house_rules": "House rules",
+    "appliances": "Appliances",
+    "amenities": "Amenities",
+    "parking": "Parking and transport",
+    "local_recommendations": "Recommendations",
+    "emergency": "Emergency",
+    "checkout": "Checkout",
+    "custom": "More information"
+  },
+  "facts": {
+    "checkIn": "Check-in",
+    "checkout": "Checkout",
+    "from": "from {time}",
+    "until": "by {time}",
+    "maxGuests": "Up to {count, plural, one {# guest} other {# guests}}",
+    "address": "Address",
+    "openMaps": "Open in Google Maps",
+    "openWaze": "Open in Waze"
+  },
+  "home": {
+    "intro": "Everything you need for your stay.",
+    "sections": "Sections"
+  },
+  "item": {
+    "notTranslated": "Not translated yet.",
+    "photo": "Photo of {section}",
+    "video": "Video of {section}",
+    "openSite": "Visit the website",
+    "personalTip": "Your host's personal tip",
+    "disclosure": "Your host may receive a commission or other benefit from this business."
+  },
+  "copy": {
+    "copy": "Copy",
+    "copied": "Copied"
+  },
+  "locked": {
+    "public": "Codes appear only with your stay link.",
+    "fallback": "Your access details are also in your booking messages.",
+    "before": "Available from {date}.",
+    "ended": "Your stay has ended.",
+    "offline": "Connect to the internet to show the code.",
+    "show": "Show code",
+    "showing": "Showing…",
+    "error": "We couldn't load the code. Try again.",
+    "viewed": "Your host can see when the code was viewed.",
+    "notSet": "Ask your host.",
+    "cookies": "To see codes, allow cookies in your browser.",
+    "spelled": "Code: {characters}"
+  },
+  "verify": {
+    "title": "Confirm your booking",
+    "body": "Enter the confirmation code from your booking messages.",
+    "label": "Confirmation code",
+    "submit": "Confirm",
+    "cancel": "Cancel",
+    "wrong": "That code isn't right. {count} tries left.",
+    "locked": "Too many tries. Try again in {minutes} min."
+  },
+  "stay": {
+    "title": "Your stay",
+    "dates": "{checkIn} → {checkout}",
+    "deviceTime": "Your phone's time: {time}"
+  },
+  "notice": {
+    "ended": "This stay link has ended. This is the house's public guide.",
+    "deviceLimit": "This stay link has been opened on too many devices. Ask your host for a new one."
+  },
+  "offline": {
+    "banner": "Offline. Saved copy from {time}.",
+    "pageTitle": "Offline",
+    "pageBody": "This page isn't saved for offline use."
+  },
+  "emergency": {
+    "title": "Emergency",
+    "number": "Emergency number",
+    "call": "Call {number}",
+    "hostSection": "Your host's instructions"
+  },
+  "unavailable": {
+    "title": "This guide isn't available",
+    "body": "Check your booking messages: they have the essentials for your stay."
+  },
+  "root": {
+    "title": "Guest guides",
+    "body": "Guides open from the link your host sent you."
+  },
+  "exchange": {
+    "opening": "Opening your guide…",
+    "noscript": "Turn on JavaScript to open your guide. The essentials for your stay are in your booking messages.",
+    "failed": "We couldn't open your guide. Check your connection and try again.",
+    "retry": "Try again"
+  },
+  "rateLimited": {
+    "title": "One moment",
+    "body": "Try again in a moment."
+  }
+}

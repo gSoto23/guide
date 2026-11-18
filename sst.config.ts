@@ -23,6 +23,7 @@ export default $config({
     const { email } = await import("./infra/email");
     const { api, worker } = await import("./infra/services");
     const { router, portal } = await import("./infra/web");
+    await import("./infra/guide");
 
     return {
       vpc: vpc.id,

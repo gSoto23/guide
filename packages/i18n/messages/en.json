@@ -58,7 +58,9 @@
     "shared_block_limit": "You can have up to 50 shared blocks.",
     "storage_limit_reached": "You reached your photo and video storage limit.",
     "ai_limit_reached": "You reached the daily AI limit. It resets at midnight (UTC).",
-    "reveal_limit_reached": "You revealed too many locked fields in an hour. Try again later."
+    "reveal_limit_reached": "You revealed too many locked fields in an hour. Try again later.",
+    "guide_not_published": "Publish the guide first.",
+    "stay_not_eligible": "That stay is no longer active."
   },
   "auth": {
     "signInCta": "Sign in or create an account",
@@ -1232,7 +1234,9 @@
       "historyItem": "{name} saw “{label}” on {date}",
       "insert": "Insert locked field",
       "move": "Move to a locked field",
-      "fromPms": "From {provider}"
+      "fromPms": "From {provider}",
+      "historyGuest": "A guest saw “{label}” with their stay link on {date}",
+      "historyExport": "{name} copied a stay message with the codes on {date}"
     },
     "publish": {
       "open": "Publish",
@@ -1435,5 +1439,97 @@
     "changed": "The block changed. Reload to see the latest.",
     "reload": "Reload",
     "textPlaceholder": "Write the shared content…"
+  },
+  "share": {
+    "link": "Share",
+    "title": "Share the {property} guide",
+    "intro": "Send the guide to your guests and download the QR code for the house.",
+    "back": "Back to the property",
+    "reminder": "Keep your check-in instructions in your platform messages too. The guide is optional for guests.",
+    "notPublished": "Publish the guide to share it. Guests only see the published version.",
+    "openGuide": "Go to the guide",
+    "propertyLink": {
+      "title": "Property link",
+      "body": "Shows public content only. Codes stay locked.",
+      "copy": "Copy link",
+      "copied": "Link copied",
+      "open": "Open as a guest",
+      "opens": "{count, plural, =0 {No opens in the last 30 days} one {Opened # time in the last 30 days} other {Opened # times in the last 30 days}}"
+    },
+    "qr": {
+      "title": "QR code",
+      "body": "To print and place in the house. It opens the public guide, never the codes.",
+      "svg": "Download SVG",
+      "png": "Download PNG",
+      "poster": "Print poster"
+    },
+    "regenerate": {
+      "action": "Create a new link",
+      "confirm": "The current link and printed QR codes will stop working. Create a new link?",
+      "done": "Done: the new link works and the old one stopped working."
+    },
+    "template": {
+      "title": "Scheduled message for every booking",
+      "body": "Paste it into your platform's scheduled messages, set to send when the booking is confirmed. It carries the property link, never codes.",
+      "copy": "Copy message",
+      "copied": "Message copied",
+      "spanish": "Spanish",
+      "english": "English",
+      "stepsTitle": "How to schedule it",
+      "airbnb": "Airbnb: Messages → Scheduled messages → Create. Send: when the booking is confirmed.",
+      "booking": "Booking.com: Messages → Message templates → Schedule after confirmation.",
+      "vrbo": "Vrbo: Inbox → Scheduled messages → After booking."
+    },
+    "poster": {
+      "title": "Scan to see the house guide",
+      "public": "Opens the public guide. Your access details are in your booking messages.",
+      "wifiLabel": "Wi-Fi network name (optional, poster only)",
+      "wifi": "Wi-Fi: {network}",
+      "print": "Print",
+      "hint": "Use Letter or A4. The network name is not saved."
+    },
+    "stays": {
+      "title": "Stays: links that show the codes",
+      "body": "Each stay has its own link. It shows the codes only from the check-in day until 2 hours after checkout. Send it in that booking's chat.",
+      "empty": "No upcoming stays. Connect your calendar or add a stay by hand on the property.",
+      "dates": "{checkIn} → {checkout}",
+      "mayBeBlock": "May be a block",
+      "copy": "Copy stay link",
+      "copied": "Stay link copied",
+      "regenerate": "Create a new link",
+      "regenerateConfirm": "The current link will stop working on every device. Create a new one?",
+      "revoke": "Revoke",
+      "revokeConfirm": "The link will stop showing the codes right away. Revoke it?",
+      "code": "Confirmation code: {code}",
+      "status": {
+        "not_created": "Not copied yet",
+        "active": "Active",
+        "device_limit": "Device limit reached",
+        "revoked": "Revoked",
+        "ended": "Ended"
+      },
+      "devices": "{count, plural, =0 {Not opened yet} one {Opened on # device} other {Opened on # devices}}",
+      "firstOpened": "First opened: {date}",
+      "valuesShown": "{count, plural, =0 {Codes not viewed} one {Codes viewed # time} other {Codes viewed # times}}",
+      "locked": "Verification paused until {time} after failed tries."
+    },
+    "confirmation": {
+      "title": "Confirmation code",
+      "body": "Ask guests for a 6-character code before showing access codes. Each stay gets its own code, shown next to its link and in the stay message.",
+      "toggle": "Ask for a confirmation code",
+      "on": "Guests must enter their stay's code the first time.",
+      "off": "The stay link alone shows the codes during the stay."
+    },
+    "message": {
+      "open": "Stay message",
+      "title": "Message for the booking chat",
+      "body": "It has the stay link, times, address, and the published arrival steps. Using the guide is optional for the guest: this message carries the essentials.",
+      "language": "Message language",
+      "withValues": "Include the access codes (recorded)",
+      "generate": "Prepare message",
+      "copy": "Copy message",
+      "copied": "Message copied",
+      "close": "Close"
+    }
   }
 }

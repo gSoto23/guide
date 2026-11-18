@@ -56,6 +56,14 @@ const TITLES: Record<ProblemCode, string> = {
   storage_limit_reached: "Media storage limit reached",
   ai_limit_reached: "Daily AI limit reached",
   reveal_limit_reached: "Reveal limit reached",
+  unavailable: "Guide not available",
+  no_session: "No stay session",
+  not_in_window: "Outside the stay window",
+  verification_required: "Confirmation code required",
+  invalid_code: "Wrong confirmation code",
+  verification_locked: "Too many tries",
+  guide_not_published: "Guide not published",
+  stay_not_eligible: "Stay not eligible",
 };
 
 const CODE_BY_STATUS: Record<number, ProblemCode> = {

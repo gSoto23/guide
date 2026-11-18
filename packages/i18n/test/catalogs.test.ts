@@ -22,6 +22,11 @@ describe("message catalogs (constitution, Principle IX)", () => {
     expect(keys(load("es")).sort()).toEqual(keys(load("en")).sort());
   });
 
+  // Feature 004: the guest guide has its own catalogs so portal pages never carry its strings.
+  it("have the same guest guide keys in Spanish and English", () => {
+    expect(keys(load("guest.es")).sort()).toEqual(keys(load("guest.en")).sort());
+  });
+
   it("cover every API error code", () => {
     const codes = [
       "unauthenticated",
@@ -49,6 +54,9 @@ describe("message catalogs (constitution, Principle IX)", () => {
       "storage_limit_reached",
       "ai_limit_reached",
       "reveal_limit_reached",
+      // Feature 004 (contracts/http-api.md, share routes).
+      "guide_not_published",
+      "stay_not_eligible",
       // Feature 002 (contracts/http-api.md, Feature-specific errors).
       "plan_limit_reached",
       "workspace_pending_deletion",

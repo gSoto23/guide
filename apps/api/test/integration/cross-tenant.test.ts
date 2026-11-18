@@ -485,3 +485,80 @@ describe("feature 003 resources across workspaces (T121, AC-SEC-011)", () => {
     }
   });
 });
+
+/**
+ * Feature 004 routes (T064, AC-SEC-015): another workspace's Share screen, QR code, settings, and
+ * stay links get the same `404` as a property that does not exist, under either workspace's path,
+ * and the attempt is logged.
+ */
+describe("feature 004 resources across workspaces (T064, AC-SEC-015)", () => {
+  let ids: { property: string; stay: string };
+
+  beforeAll(async () => {
+    // Inserted directly: the free plan's two properties are already used by the sections above.
+    const { rows: properties } = await db.query<{ id: string }>(
+      `INSERT INTO property (workspace_id, name, guide_languages, setup_status, source, time_zone, check_in_time, checkout_time)
+       VALUES ($1, 'Casa Compartida de Bruno', ARRAY['es'], 'ready', 'manual', 'America/Costa_Rica', '15:00', '11:00') RETURNING id`,
+      [bruno.workspaceId],
+    );
+    const property = properties[0]!.id;
+    const { rows: stays } = await db.query<{ id: string }>(
+      `INSERT INTO stay (workspace_id, property_id, source, check_in_date, checkout_date, channel)
+       VALUES ($1, $2, 'manual', current_date, current_date + 3, 'Directo') RETURNING id`,
+      [bruno.workspaceId, property],
+    );
+    ids = { property, stay: stays[0]!.id };
+  });
+
+  const routes = (ws: string) => {
+    const share = `/api/v1/workspaces/${ws}/properties/${ids.property}/share`;
+    const stay = `${share}/stays/${ids.stay}`;
+    return [
+      ["GET", share, undefined],
+      ["GET", `${share}/qr.svg`, undefined],
+      ["GET", `${share}/qr.png`, undefined],
+      ["POST", `${share}/property-link/regenerate`, { confirm: true }],
+      ["PATCH", `${share}/settings`, { requireConfirmationCode: true }],
+      ["POST", `${stay}/link`, undefined],
+      ["POST", `${stay}/link/regenerate`, undefined],
+      ["POST", `${stay}/link/revoke`, undefined],
+      ["POST", `${stay}/message`, { language: "es", withValues: true }],
+    ] as const;
+  };
+
+  function call(method: string, url: string, payload: object | undefined) {
+    return ctx.fastify.inject({
+      method: method as "GET",
+      url,
+      headers: {
+        origin: "http://localhost:3000",
+        cookie: alice.cookie,
+        ...(payload ? { "content-type": "application/json" } : {}),
+      },
+      ...(payload ? { payload } : {}),
+    });
+  }
+
+  it("answers 404 under either workspace's path, and logs each attempt", async () => {
+    for (const ws of [bruno.workspaceId, alice.workspaceId]) {
+      for (const [method, url, payload] of routes(ws)) {
+        const before = await deniedCount();
+        const response = await call(method, url, payload);
+        expect(response.statusCode, `${method} ${url}`).toBe(404);
+        expect(response.json(), `${method} ${url}`).toMatchObject({ code: "not_found" });
+        expect(await deniedCount(), `${method} ${url} logged`).toBe(before + 1);
+      }
+    }
+    const { rows } = await db.query(`SELECT 1 FROM stay_link WHERE stay_id = $1`, [ids.stay]);
+    expect(rows).toHaveLength(0);
+  });
+
+  it("gives a missing property the same answer as a foreign one", async () => {
+    for (const [method, url, payload] of routes(alice.workspaceId)) {
+      const foreign = await call(method, url, payload);
+      const missing = await call(method, url.replace(ids.property, MISSING), payload);
+      expect(missing.statusCode, `${method} ${url}`).toBe(foreign.statusCode);
+      expect(missing.json(), `${method} ${url}`).toEqual(foreign.json());
+    }
+  });
+});

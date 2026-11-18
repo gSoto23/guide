@@ -17,7 +17,7 @@ verified.
 | Guest guide | Cumulative Layout Shift (CLS) | ≤ 0.1 at p75 |
 | Guest guide | Time to First Byte (TTFB) | ≤ 800 ms at p75 (served from the CDN) |
 | Guest guide | Usability floor on slow 3G | Arrival, Wi-Fi network name, and house rules readable within 5 s |
-| Guest guide | Initial JavaScript | ≤ 100 KB gzip per route; the chat loads on demand |
+| Guest guide | Initial JavaScript | ≤ 100 KB gzip per route (spec 004 sets 15 KB for the guide script); the chat loads on demand |
 | Guest guide | Initial page weight | ≤ 500 KB, excluding lazy-loaded media |
 | Host portal | LCP and INP | ≤ 2.5 s and ≤ 200 ms at p75 on mobile |
 | API (excluding LLM calls) | Latency | p95 ≤ 300 ms, p99 ≤ 1 s |
@@ -33,15 +33,19 @@ measured on 4G.
 
 ## 2. Guest guide delivery
 
-- **Static first.** Published guides are pre-rendered per language and served from the CDN.
-  Publishing triggers on-demand revalidation. Most guide traffic never reaches the API or the
-  database, so the guide stays fast, cheap, and available when the API is down (NFR-02).
+- **Static first.** Published guide pages are rendered per language and cached by the CDN for 60
+  seconds (`s-maxage=60`), and served stale for a day if the origin fails (`stale-if-error`), so
+  most guide traffic never reaches the API or the database and the guide stays available when the
+  API is down (NFR-02). No `stale-while-revalidate`: browsers apply it too and would show an
+  unpublished guide once more (spec 004 research R9).
 - **Dynamic only where needed.** Three parts are dynamic:
   - the chat;
   - restricted sections, which are never cached ([SEC-04](security.md#4-controls));
   - stay-specific content.
-- **Lean JavaScript.** Server components by default. The chat widget loads when the guest taps
-  it, not in the initial bundle.
+- **Lean JavaScript.** Pages are rendered on the server with React and never hydrated
+  ([ADR-0010](adr/0010-guest-guide-server-rendered-without-client-framework.md)); one small script
+  (budget 15 KB gzip, 2.7 KB at spec 004) adds Show code, the confirmation form, and offline
+  reading. The chat widget loads when the guest taps it, not in the initial bundle.
 - **Media:**
   - Images are processed on upload into AVIF and WebP variants at several sizes.
   - Images below the fold are lazy-loaded.
@@ -49,8 +53,9 @@ measured on 4G.
   - Videos show a poster and stream only on tap.
 - **Fonts:** a system font stack, or one self-hosted, subset variable font with
   `font-display: swap`.
-- **Offline (PWA).** The service worker caches the published guide with stale-while-revalidate.
-  Restricted values are excluded (OQ-28).
+- **Offline (PWA).** The service worker saves guide pages network-first and images cache-first as
+  the guest views them, and marks saved copies with their time. Restricted values and every
+  personal guest response are never stored (OQ-28, decided in spec 004: no offline codes).
 - **Third-party scripts:** none on the guide besides essentials. Analytics are first-party and
   lightweight. Affiliate offers are links, not embedded widgets.
 

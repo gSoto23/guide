@@ -58,7 +58,9 @@
     "shared_block_limit": "Puedes tener hasta 50 bloques compartidos.",
     "storage_limit_reached": "Llegaste al límite de almacenamiento de fotos y videos.",
     "ai_limit_reached": "Llegaste al límite diario de IA. Se renueva a medianoche (UTC).",
-    "reveal_limit_reached": "Revelaste demasiados campos protegidos en una hora. Inténtalo más tarde."
+    "reveal_limit_reached": "Revelaste demasiados campos protegidos en una hora. Inténtalo más tarde.",
+    "guide_not_published": "Primero publica la guía.",
+    "stay_not_eligible": "Esa estadía ya no está activa."
   },
   "auth": {
     "signInCta": "Entrar o crear cuenta",
@@ -1232,7 +1234,9 @@
       "historyItem": "{name} vio «{label}» el {date}",
       "insert": "Insertar campo protegido",
       "move": "Mover a un campo protegido",
-      "fromPms": "De {provider}"
+      "fromPms": "De {provider}",
+      "historyGuest": "Un huésped vio «{label}» con su enlace de estadía el {date}",
+      "historyExport": "{name} copió un mensaje de estadía con los códigos el {date}"
     },
     "publish": {
       "open": "Publicar",
@@ -1435,5 +1439,97 @@
     "changed": "El bloque cambió. Recarga para ver lo último.",
     "reload": "Recargar",
     "textPlaceholder": "Escribe el contenido compartido…"
+  },
+  "share": {
+    "link": "Compartir",
+    "title": "Compartir la guía de {property}",
+    "intro": "Envía la guía a tus huéspedes y descarga el código QR para la casa.",
+    "back": "Volver a la propiedad",
+    "reminder": "Mantén también tus instrucciones de llegada en los mensajes de la plataforma. La guía es opcional para los huéspedes.",
+    "notPublished": "Publica la guía para compartirla. Los huéspedes solo ven la versión publicada.",
+    "openGuide": "Ir a la guía",
+    "propertyLink": {
+      "title": "Enlace de la propiedad",
+      "body": "Muestra solo el contenido público. Los códigos quedan bloqueados.",
+      "copy": "Copiar enlace",
+      "copied": "Enlace copiado",
+      "open": "Abrir como huésped",
+      "opens": "{count, plural, =0 {Sin aperturas en los últimos 30 días} one {Abierta # vez en los últimos 30 días} other {Abierta # veces en los últimos 30 días}}"
+    },
+    "qr": {
+      "title": "Código QR",
+      "body": "Para imprimir y poner en la casa. Abre la guía pública, nunca los códigos.",
+      "svg": "Descargar SVG",
+      "png": "Descargar PNG",
+      "poster": "Imprimir póster"
+    },
+    "regenerate": {
+      "action": "Crear un enlace nuevo",
+      "confirm": "El enlace actual y los códigos QR impresos dejarán de funcionar. ¿Crear un enlace nuevo?",
+      "done": "Listo: el enlace nuevo ya funciona y el anterior dejó de funcionar."
+    },
+    "template": {
+      "title": "Mensaje programado para cada reserva",
+      "body": "Pégalo en los mensajes programados de tu plataforma, para enviarse cuando la reserva esté confirmada. Lleva el enlace de la propiedad, nunca códigos.",
+      "copy": "Copiar mensaje",
+      "copied": "Mensaje copiado",
+      "spanish": "Español",
+      "english": "Inglés",
+      "stepsTitle": "Cómo programarlo",
+      "airbnb": "Airbnb: Mensajes → Mensajes programados → Crear. Envío: cuando la reserva esté confirmada.",
+      "booking": "Booking.com: Mensajes → Plantillas de mensajes → Programar después de la confirmación.",
+      "vrbo": "Vrbo: Bandeja → Mensajes programados → Después de la reserva."
+    },
+    "poster": {
+      "title": "Escanea para ver la guía de la casa",
+      "public": "Abre la guía pública. Tus datos de acceso están en los mensajes de tu reserva.",
+      "wifiLabel": "Nombre de la red wifi (opcional, solo para el póster)",
+      "wifi": "Wi-Fi: {network}",
+      "print": "Imprimir",
+      "hint": "Usa tamaño Carta o A4. El nombre de la red no se guarda."
+    },
+    "stays": {
+      "title": "Estadías: enlaces que muestran los códigos",
+      "body": "Cada estadía tiene su propio enlace. Muestra los códigos solo del día de llegada hasta 2 horas después de la salida. Envíalo en el chat de esa reserva.",
+      "empty": "No hay estadías próximas. Conecta tu calendario o agrega una estadía a mano en la propiedad.",
+      "dates": "{checkIn} → {checkout}",
+      "mayBeBlock": "Puede ser un bloqueo",
+      "copy": "Copiar enlace de estadía",
+      "copied": "Enlace de estadía copiado",
+      "regenerate": "Crear enlace nuevo",
+      "regenerateConfirm": "El enlace actual dejará de funcionar en todos los dispositivos. ¿Crear uno nuevo?",
+      "revoke": "Revocar",
+      "revokeConfirm": "El enlace dejará de mostrar los códigos de inmediato. ¿Revocarlo?",
+      "code": "Código de confirmación: {code}",
+      "status": {
+        "not_created": "Aún no se ha copiado",
+        "active": "Activo",
+        "device_limit": "Límite de dispositivos alcanzado",
+        "revoked": "Revocado",
+        "ended": "Terminado"
+      },
+      "devices": "{count, plural, =0 {Sin abrir todavía} one {Abierto en # dispositivo} other {Abierto en # dispositivos}}",
+      "firstOpened": "Primera apertura: {date}",
+      "valuesShown": "{count, plural, =0 {Códigos no vistos} one {Códigos vistos # vez} other {Códigos vistos # veces}}",
+      "locked": "Verificación en pausa hasta las {time} por intentos fallidos."
+    },
+    "confirmation": {
+      "title": "Código de confirmación",
+      "body": "Pide a los huéspedes un código de 6 caracteres antes de mostrar los códigos de acceso. Cada estadía recibe su propio código, que aparece junto a su enlace y en el mensaje de estadía.",
+      "toggle": "Pedir un código de confirmación",
+      "on": "Los huéspedes deben escribir el código de su estadía la primera vez.",
+      "off": "El enlace de estadía basta para ver los códigos dentro de la estadía."
+    },
+    "message": {
+      "open": "Mensaje de estadía",
+      "title": "Mensaje para el chat de la reserva",
+      "body": "Incluye el enlace de estadía, los horarios, la dirección y los pasos de llegada publicados. Usar la guía es opcional para el huésped: este mensaje lleva lo esencial.",
+      "language": "Idioma del mensaje",
+      "withValues": "Incluir los códigos de acceso (queda registrado)",
+      "generate": "Preparar mensaje",
+      "copy": "Copiar mensaje",
+      "copied": "Mensaje copiado",
+      "close": "Cerrar"
+    }
   }
 }

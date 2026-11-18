@@ -118,6 +118,8 @@ export const guide = pgTable(
     completeness: smallint("completeness").notNull().default(0),
     publishedAt: timestamp("published_at", { withTimezone: true }),
     publishedBy: text("published_by").references(() => user.id, { onDelete: "set null" }),
+    /** Guests enter the stay's confirmation code before the first reveal (feature 004 FR-033). */
+    requireConfirmationCode: boolean("require_confirmation_code").notNull().default(false),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },

@@ -13,6 +13,8 @@ export const stageConfig = {
   /** Custom domains (optional outside production). */
   portalDomain: process.env.GUIDESK_PORTAL_DOMAIN,
   apiDomain: process.env.GUIDESK_API_DOMAIN,
+  /** The guest guide's own origin (feature 004 research R2, SEC-11). */
+  guideDomain: process.env.GUIDESK_GUIDE_DOMAIN,
   emailSender: process.env.GUIDESK_EMAIL_SENDER,
   /** Sentry DSN for the services and the sandbox functions (optional). Not a secret. */
   sentryDsn: process.env.GUIDESK_SENTRY_DSN,
@@ -31,7 +33,12 @@ export const stageConfig = {
   },
 };
 
-if (isProduction && (!stageConfig.portalDomain || !stageConfig.apiDomain)) {
+if (
+  isProduction &&
+  (!stageConfig.portalDomain || !stageConfig.apiDomain || !stageConfig.guideDomain)
+) {
   // Production must use HTTPS end to end, which needs domains and certificates (SEC-11).
-  throw new Error("GUIDESK_PORTAL_DOMAIN and GUIDESK_API_DOMAIN are required for production");
+  throw new Error(
+    "GUIDESK_PORTAL_DOMAIN, GUIDESK_API_DOMAIN, and GUIDESK_GUIDE_DOMAIN are required for production",
+  );
 }

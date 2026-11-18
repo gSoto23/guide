@@ -317,7 +317,15 @@ export interface RevealedValue {
 }
 
 export interface RevealHistory {
-  items: { fieldId: string; kind: string; label: string; revealedBy: string | null; at: string }[];
+  items: {
+    fieldId: string;
+    kind: string;
+    label: string;
+    revealedBy: string | null;
+    at: string;
+    /** Feature 004: a member, a guest with a stay link, or a stay message copied with codes. */
+    source: "member" | "guest" | "export";
+  }[];
 }
 
 // Preview, publishing, and versions (feature 003 contract "Preview, publishing, and versions") -----
@@ -380,6 +388,8 @@ export interface PreviewItem {
   kind: (typeof GUIDE_ITEM_KIND_VALUES)[number];
   shared: boolean;
   doc: GuideDocument | null;
+  /** The language `doc` is in: the preview language, or the item's source when untranslated. */
+  docLanguage: Language;
   fact?: { key: (typeof FACT_KEY_VALUES)[number]; value: string | null };
   media?: MediaView | null;
   recommendation?: Recommendation;

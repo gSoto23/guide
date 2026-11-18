@@ -15,6 +15,7 @@ We record significant architecture and product-technical decisions as ADRs, usin
 | [0007](0007-tilopay-initial-payment-provider.md) | Tilopay as the initial payment provider | Accepted | 2026-11-14 |
 | [0008](0008-authentication-better-auth.md) | Authentication with Better Auth, tenancy in the domain | Accepted | 2026-11-14 |
 | [0009](0009-mvp-hosting-and-transactional-email.md) | AWS hosting and transactional email for the MVP | Accepted | 2026-11-14 |
+| [0010](0010-guest-guide-server-rendered-without-client-framework.md) | Guest guide rendered on the server without a client framework | Accepted | 2026-11-17 |
 
 **Statuses:**
 

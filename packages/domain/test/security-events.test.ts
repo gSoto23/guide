@@ -112,4 +112,25 @@ describe("feature 002 event metadata (T015)", () => {
     ).not.toThrow();
     expect(() => assertSafeMetadata({ title: "Salida" }, "shared_block.deleted")).toThrow();
   });
+
+  it("lets feature 004 events name properties, stays, and sessions, never links or codes", () => {
+    const ids = { propertyId: "11111111-1111-4111-8111-111111111111", stayId: "s-1" };
+    expect(() => assertSafeMetadata(ids, "guide.stay_link_copied")).not.toThrow();
+    expect(() =>
+      assertSafeMetadata(
+        { ...ids, fieldId: "f-1", kind: "lockbox_code", sessionId: "g-1" },
+        "restricted_value.guest_revealed",
+      ),
+    ).not.toThrow();
+    expect(() =>
+      assertSafeMetadata({ ...ids, lockedMinutes: 15, lockouts: 1 }, "guide.verification_locked"),
+    ).not.toThrow();
+    expect(() =>
+      assertSafeMetadata({ ...ids, fields: 2, language: "en" }, "restricted_value.exported"),
+    ).not.toThrow();
+    expect(() => assertSafeMetadata({ ...ids, url: "x" }, "guide.stay_link_copied")).toThrow();
+    expect(() =>
+      assertSafeMetadata({ ...ids, confirmationCode: "ABC234" }, "guide.stay_link_copied"),
+    ).toThrow();
+  });
 });

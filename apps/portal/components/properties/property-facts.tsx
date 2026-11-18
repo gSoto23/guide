@@ -33,6 +33,7 @@ const RemovePropertyDialog = dynamic(
 export function PropertyFacts({ locale, propertyId }: { locale: string; propertyId: string }) {
   const t = useTranslations("properties");
   const guide = useTranslations("guide");
+  const share = useTranslations("share");
   const errors = useTranslations("errors");
   const workspace = useWorkspace();
   const [property, setProperty] = useState<PropertyDetail | null>(null);
@@ -151,6 +152,12 @@ export function PropertyFacts({ locale, propertyId }: { locale: string; property
             href={`/${locale}/properties/${propertyId}/guide`}
           >
             {guide("review.open")}
+          </Link>{" "}
+          <Link
+            className="button button-secondary"
+            href={`/${locale}/properties/${propertyId}/share`}
+          >
+            {share("link")}
           </Link>
         </p>
       ) : null}

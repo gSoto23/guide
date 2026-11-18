@@ -12,6 +12,6 @@ import { PublishService } from "./publish.service.js";
   imports: [TenancyModule],
   controllers: [GuidesController, GuideLimitsController],
   providers: [GuideLimitsService, GuideViewService, GuidesService, PublishService],
-  exports: [GuideLimitsService, GuideViewService, GuidesService],
+  exports: [GuideLimitsService, GuideViewService, GuidesService, PublishService],
 })
 export class GuidesModule {}

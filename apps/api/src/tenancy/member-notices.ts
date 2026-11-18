@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { and, eq, ne } from "drizzle-orm";
+import { and, eq, inArray, ne } from "drizzle-orm";
 import { membership, user, type DbHandle } from "@guidesk/db";
 import { toEmailLocale, type EmailLocale, type Rendered } from "@guidesk/emails";
 import { DB_HANDLE } from "../database/database.module.js";
@@ -33,6 +33,21 @@ export class MemberNotices {
       .from(membership)
       .innerJoin(user, eq(user.id, membership.userId))
       .where(and(eq(membership.workspaceId, workspaceId), eq(membership.role, "owner")));
+    for (const recipient of recipients) {
+      const rendered = await render(toEmailLocale(recipient.language));
+      await this.outbox.enqueueEmail({ to: recipient.email, ...rendered, template });
+    }
+  }
+
+  /** The workspace's owners and admins (feature 004: the verification-locked alert, FR-035). */
+  async toOwnersAndAdmins(workspaceId: string, template: string, render: Render): Promise<void> {
+    const recipients = await this.handle.db
+      .select({ email: user.email, language: user.preferredLanguage })
+      .from(membership)
+      .innerJoin(user, eq(user.id, membership.userId))
+      .where(
+        and(eq(membership.workspaceId, workspaceId), inArray(membership.role, ["owner", "admin"])),
+      );
     for (const recipient of recipients) {
       const rendered = await render(toEmailLocale(recipient.language));
       await this.outbox.enqueueEmail({ to: recipient.email, ...rendered, template });

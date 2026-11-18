@@ -60,7 +60,7 @@ happens inside the guide. From Phase 2, PMS adapters bring in OTA messages.
 flowchart TB
     subgraph clients["Clients"]
         portal["Host Portal<br/>Next.js (apps/portal)"]
-        guide["Guest Guide PWA<br/>Next.js (apps/guide)"]
+        guide["Guest Guide PWA<br/>server-rendered React (apps/guide)"]
     end
 
     subgraph backend["Guidesk backend"]
@@ -87,7 +87,7 @@ flowchart TB
 | Container | Responsibility | Tech (see ADR-0004) |
 |---|---|---|
 | Host Portal | Onboarding, guide builder, inbox and copilot, agent settings, catalog, analytics, integrations wizard, billing | Next.js (App Router), React, Tailwind, shadcn/ui. Mobile-first, installable PWA with web push ([ADR-0006](adr/0006-web-first-pwa-no-native-apps.md)) |
-| Guest Guide PWA | Public, localized guide; gated sensitive section; chat; offers with disclosure | Next.js (SSR/ISR on CDN), PWA service worker |
+| Guest Guide PWA | Public, localized guide; gated sensitive section; chat; offers with disclosure | Server-rendered React without hydration on AWS Lambda behind its own CloudFront distribution, a small browser script, and a PWA service worker ([ADR-0010](adr/0010-guest-guide-server-rendered-without-client-framework.md)) |
 | API | Auth, tenancy, CRUD, guest chat endpoint (streaming), PMS webhooks, affiliate redirects, policy engine | NestJS (Fastify adapter), Zod contracts, OpenAPI |
 | Worker | Document extraction, translations, iCal sync, PMS sync, inbound message processing, agent runs for platform chats, notifications | Node.js and pg-boss, sharing the domain packages |
 | PostgreSQL | System of record, job queue, and vector search when needed | Managed Postgres 16+, Drizzle ORM, RLS |
@@ -325,7 +325,7 @@ guidesk/
 ├── infra/                    # ✓ SST: network, database, services, router, email, secrets
 ├── apps/
 │   ├── portal/               # ✓ Host portal (Next.js)
-│   ├── guide/                # Guest guide PWA (Next.js)
+│   ├── guide/                # Guest guide PWA (server-rendered React, ADR-0010)
 │   ├── api/                  # ✓ NestJS API + webhooks
 │   ├── worker/               # ✓ Background jobs (pg-boss)
 │   └── sandbox/              # ✓ Lambda functions for untrusted links and files (feed reader, file processor)

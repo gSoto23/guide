@@ -47,7 +47,16 @@ export type ProblemCode =
   | "shared_block_limit"
   | "storage_limit_reached"
   | "ai_limit_reached"
-  | "reveal_limit_reached";
+  | "reveal_limit_reached"
+  // Feature 004 (contracts/http-api.md).
+  | "unavailable"
+  | "no_session"
+  | "not_in_window"
+  | "verification_required"
+  | "invalid_code"
+  | "verification_locked"
+  | "guide_not_published"
+  | "stay_not_eligible";
 
 /**
  * Extra members of a problem body, such as `{limit, used}` or `{reason}`. Plain values only, and

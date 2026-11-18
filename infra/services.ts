@@ -7,7 +7,7 @@ import { database } from "./database";
 import { email } from "./email";
 import { restrictedDataKey, restrictedDataKeyPolicy } from "./keys";
 import { vpc } from "./network";
-import { portalUrl } from "./router";
+import { guideUrl, portalUrl } from "./router";
 import { apiSecretArns, workerSecretArns } from "./runtime-secrets";
 import { feedReader, fileProcessor } from "./sandbox";
 import { media, uploads } from "./storage";
@@ -84,6 +84,8 @@ export const api = new sst.aws.Service("Api", {
     NODE_ENV: "production",
     PORT: "4000",
     PORTAL_URL: portalUrl,
+    // The only origin allowed on guest routes (feature 004 research R2).
+    GUIDE_URL: guideUrl,
     // CloudFront and the load balancer: the only X-Forwarded-For hops the API trusts.
     TRUSTED_PROXY_HOPS: "2",
     ...databaseEnvironment,

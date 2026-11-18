@@ -42,18 +42,21 @@ function forbidden(reply: FastifyReply) {
 }
 
 /**
- * Cookie-authenticated state changes must come from the portal's own origin (SEC-11, T103).
- * Browsers send Origin on every non-GET request and Sec-Fetch-Site on modern versions; a
- * mismatch on either is refused. Requests without both (server-to-server tools) carry no browser
- * cookies to abuse. Better Auth applies its own origin check to /api/auth/*.
+ * Cookie-authenticated state changes must come from the portal's own origin (SEC-11, T103), and
+ * guest routes (feature 004 research R2) from the guide's origin only. Browsers send Origin on
+ * every non-GET request and Sec-Fetch-Site on modern versions; a mismatch on either is refused.
+ * Requests without both (server-to-server tools) carry no browser cookies to abuse. Better Auth
+ * applies its own origin check to /api/auth/*.
  */
-export function createOriginHook(portalUrl: string) {
+export function createOriginHook(portalUrl: string, guideUrl?: string) {
   const portalOrigin = new URL(portalUrl).origin;
+  const guideOrigin = guideUrl ? new URL(guideUrl).origin : undefined;
   return async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     if (SAFE_METHODS.has(request.method) || request.url.startsWith("/api/auth/")) return;
+    const expected = request.url.startsWith(GUEST_PREFIX) ? guideOrigin : portalOrigin;
     const origin = request.headers.origin;
     const site = request.headers["sec-fetch-site"];
-    if (origin !== undefined && origin !== portalOrigin) {
+    if (origin !== undefined && origin !== expected) {
       await forbidden(reply);
       return;
     }
@@ -62,6 +65,9 @@ export function createOriginHook(portalUrl: string) {
     }
   };
 }
+
+/** Guest routes (feature 004): no member session, reached only through the guide origin. */
+export const GUEST_PREFIX = "/api/v1/guest/";
 
 /** Response headers for every API response (SEC-04, SEC-11, T103). */
 export function createSecurityHeadersHook(secure: boolean) {
@@ -93,7 +99,7 @@ export function configureApp(app: NestFastifyApplication | INestApplication): vo
       enforce: config.NODE_ENV === "production",
     }),
   );
-  fastify.addHook("onRequest", createOriginHook(config.PORTAL_URL));
+  fastify.addHook("onRequest", createOriginHook(config.PORTAL_URL, config.GUIDE_URL));
   fastify.addHook("onSend", createSecurityHeadersHook(config.PORTAL_URL.startsWith("https://")));
   registerAuthRoutes(fastify, auth, config.PORTAL_URL);
   registerLocalUploadRoute(fastify, fastifyApp.get<ObjectStoragePort>(OBJECT_STORAGE));

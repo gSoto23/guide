@@ -33,6 +33,7 @@ export function GuideReview({
   restoredVersion?: number | null;
 }) {
   const t = useTranslations("guide");
+  const share = useTranslations("share");
   const errors = useTranslations("errors");
   const workspace = useWorkspace();
   const [view, setView] = useState<GuideView | null>(null);
@@ -172,6 +173,11 @@ export function GuideReview({
         <Link className="button button-secondary" href={`${base}/versions`}>
           {t("publish.versions")}
         </Link>
+        {view.status === "published" && (
+          <Link className="button button-secondary" href={`${base.replace(/\/guide$/, "")}/share`}>
+            {share("link")}
+          </Link>
+        )}
         <Link className="button button-secondary" href={`${base}/uploads`}>
           {t("uploads.link")}
         </Link>
