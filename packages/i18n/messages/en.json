@@ -1519,6 +1519,17 @@
       "toggle": "Ask for a confirmation code",
       "on": "Guests must enter their stay's code the first time.",
       "off": "The stay link alone shows the codes during the stay."
+    },
+    "message": {
+      "open": "Stay message",
+      "title": "Message for the booking chat",
+      "body": "It has the stay link, times, address, and the published arrival steps. Using the guide is optional for the guest: this message carries the essentials.",
+      "language": "Message language",
+      "withValues": "Include the access codes (recorded)",
+      "generate": "Prepare message",
+      "copy": "Copy message",
+      "copied": "Message copied",
+      "close": "Close"
     }
   }
 }

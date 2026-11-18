@@ -7,6 +7,7 @@ import type { ShareOverview } from "@guidesk/contracts";
 import { problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
 import { CopyButton } from "./copy-button";
+import { StayMessageDialog } from "./stay-message-dialog";
 import { StaysCard } from "./stays-card";
 
 /**
@@ -212,7 +213,13 @@ export function ShareScreen({ locale, propertyId }: { locale: string; propertyId
               stays={overview.stays}
               requireConfirmationCode={overview.settings?.requireConfirmationCode ?? false}
               onChange={load}
-            />
+            >
+              {(stay) =>
+                stay.link.status === "ended" ? null : (
+                  <StayMessageDialog locale={locale} propertyId={propertyId} stay={stay} />
+                )
+              }
+            </StaysCard>
           )}
         </>
       )}

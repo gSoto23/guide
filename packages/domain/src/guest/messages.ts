@@ -99,3 +99,45 @@ export function stayMessage(language: MessageLanguage, input: StayMessageInput):
   );
   return parts.join("\n\n");
 }
+
+interface TextNode {
+  type: string;
+  text?: string;
+  attrs?: { fieldId?: string; start?: number };
+  content?: TextNode[];
+}
+
+/**
+ * A guide document as plain text for a message (FR-039): paragraphs and headings on their own
+ * lines, list items with bullets or numbers, and each locked field as `field(id)` returns it.
+ */
+export function documentText(doc: unknown, field: (fieldId: string) => string): string {
+  const root = doc as TextNode | null;
+  if (!root || root.type !== "doc") return "";
+  const inline = (nodes: TextNode[] | undefined): string =>
+    (nodes ?? [])
+      .map((node) => {
+        if (node.type === "text") return node.text ?? "";
+        if (node.type === "hardBreak") return "\n";
+        if (node.type === "lockedField" && node.attrs?.fieldId) return field(node.attrs.fieldId);
+        return "";
+      })
+      .join("");
+  const blocks = (nodes: TextNode[] | undefined, depth: number): string[] =>
+    (nodes ?? []).flatMap((node) => {
+      if (node.type === "paragraph" || node.type === "heading") {
+        const text = inline(node.content).trim();
+        return text ? [text] : [];
+      }
+      if (node.type === "bulletList" || node.type === "orderedList") {
+        const start = node.attrs?.start ?? 1;
+        return (node.content ?? []).flatMap((item, index) => {
+          const marker = node.type === "bulletList" ? "•" : `${start + index}.`;
+          const [first = "", ...rest] = blocks(item.content, depth + 1);
+          return [`${"  ".repeat(depth)}${marker} ${first}`, ...rest];
+        });
+      }
+      return [];
+    });
+  return blocks(root.content, 0).join("\n");
+}

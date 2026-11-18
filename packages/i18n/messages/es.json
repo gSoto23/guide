@@ -1519,6 +1519,17 @@
       "toggle": "Pedir un código de confirmación",
       "on": "Los huéspedes deben escribir el código de su estadía la primera vez.",
       "off": "El enlace de estadía basta para ver los códigos dentro de la estadía."
+    },
+    "message": {
+      "open": "Mensaje de estadía",
+      "title": "Mensaje para el chat de la reserva",
+      "body": "Incluye el enlace de estadía, los horarios, la dirección y los pasos de llegada publicados. Usar la guía es opcional para el huésped: este mensaje lleva lo esencial.",
+      "language": "Idioma del mensaje",
+      "withValues": "Incluir los códigos de acceso (queda registrado)",
+      "generate": "Preparar mensaje",
+      "copy": "Copiar mensaje",
+      "copied": "Mensaje copiado",
+      "close": "Cerrar"
     }
   }
 }

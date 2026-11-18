@@ -193,15 +193,15 @@ step-up and recorded as an export.
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T050 [P] [US4] Domain test cases in `packages/domain/test/guest/messages.test.ts` (stay part): ES and EN messages with greeting, stay link, times, address, arrival steps as plain text, Wi-Fi network, the confirmation code when given, the optional-guide reminder; locked fields as `{label} (shown in your stay link)` without values and as values when given; no guest name; the off-platform phrase check passes
-- [ ] T051 [P] [US4] API integration test `apps/api/test/integration/stay-messages.test.ts`: owner and admin get the message without values without step-up; `withValues` needs step-up, includes the values, and records `restricted_value.exported`; agents `403`; the message uses the published version, not the draft; `guide_not_published` and `stay_not_eligible` cases
-- [ ] T052 [P] [US4] End-to-end test `e2e/specs/guest-us4.spec.ts`: the owner copies the stay message in English without codes and then with codes (step-up), and the clipboard text matches
+- [X] T050 [P] [US4] Domain test cases in `packages/domain/test/guest/messages.test.ts` (stay part): ES and EN messages with greeting, stay link, times, address, arrival steps as plain text, Wi-Fi network, the confirmation code when given, the optional-guide reminder; locked fields as `{label} (shown in your stay link)` without values and as values when given; no guest name; the off-platform phrase check passes
+- [X] T051 [P] [US4] API integration test `apps/api/test/integration/stay-messages.test.ts`: owner and admin get the message after a recent sign-in (it carries the stay link); `withValues`, includes the values, and records `restricted_value.exported`; agents `403`; the message uses the published version, not the draft; `guide_not_published` and `stay_not_eligible` cases
+- [X] T052 [P] [US4] End-to-end test `e2e/specs/guest-us4.spec.ts`: the owner copies the stay message in English without codes and then with codes (step-up), and the clipboard text matches
 
 ### Implementation for User Story 4
 
-- [ ] T053 [US4] Implement the stay part of `packages/domain/src/guest/messages.ts` (uses feature 003's `docPlainText` with a locked-field resolver) and its ES and EN strings
-- [ ] T054 [US4] Implement `POST /share/stays/:stayId/message` in the share module: the published Arrival and Wi-Fi sections in the chosen language, current facts, the stay link (decrypted after the checks), the code when required, values through `RevealService` only with `withValues` and step-up, and the export event
-- [ ] T055 [US4] Implement the "Copy stay message" dialog in `apps/portal/components/share/stay-message-dialog.tsx` (language, "Include access codes" with step-up, preview, Copy)
+- [X] T053 [US4] Implement the stay part of `packages/domain/src/guest/messages.ts` (uses feature 003's `docPlainText` with a locked-field resolver) and its ES and EN strings
+- [X] T054 [US4] Implement `POST /share/stays/:stayId/message` in the share module: the published Arrival and Wi-Fi sections in the chosen language, current facts, the stay link (decrypted after the checks), the code when required, values through `RevealService` only with `withValues` and step-up, and the export event
+- [X] T055 [US4] Implement the "Copy stay message" dialog in `apps/portal/components/share/stay-message-dialog.tsx` (language, "Include access codes" with step-up, preview, Copy)
 
 **Checkpoint**: US4 works with US2.
 

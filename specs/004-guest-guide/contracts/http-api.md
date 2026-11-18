@@ -160,7 +160,7 @@ Role columns: **O** owner, **A** admin, **Ag** agent. **SU** = re-authenticated 
 | `POST /stays/{stayId}/link` | ✓ | ✓ | | ✓ | Creates the stay link if none is active and returns `{url, confirmationCode?}`; records `guide.stay_link_copied` |
 | `POST /stays/{stayId}/link/regenerate` | ✓ | ✓ | | ✓ | Replaces the active link; returns the new `{url, confirmationCode?}` |
 | `POST /stays/{stayId}/link/revoke` | ✓ | ✓ | | | `204` |
-| `POST /stays/{stayId}/message` | ✓ | ✓ | | ✓ when `withValues` | Body `{language: "es" | "en", withValues: boolean}`. Returns `{text}` |
+| `POST /stays/{stayId}/message` | ✓ | ✓ | | ✓ | Body `{language: "es" | "en", withValues: boolean}`. Returns `{text}`. Step-up always: the text carries the stay link (FR-022); values are recorded as `restricted_value.exported` |
 
 Feature-specific errors:
 

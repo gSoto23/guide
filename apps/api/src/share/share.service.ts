@@ -18,6 +18,7 @@ import type { Caller } from "../guides/guide-view.service.js";
 import { SecurityLogService } from "../security-log/security-log.service.js";
 import { CrossTenantService } from "../tenancy/cross-tenant.js";
 import { StayLinksService } from "./stay-links.service.js";
+import { StayMessagesService } from "./stay-messages.service.js";
 
 export interface ShareTarget {
   propertyId: string;
@@ -57,6 +58,7 @@ export class ShareService {
     private readonly crossTenant: CrossTenantService,
     private readonly securityLog: SecurityLogService,
     private readonly stayLinks: StayLinksService,
+    private readonly stayMessages: StayMessagesService,
   ) {}
 
   private get tx() {
@@ -290,5 +292,17 @@ export class ShareService {
       });
     }
     return { requireConfirmationCode };
+  }
+
+  async stayMessage(
+    caller: Caller,
+    workspaceId: string,
+    propertyId: string,
+    stayId: string,
+    language: "es" | "en",
+    withValues: boolean,
+  ) {
+    const target = await this.target(workspaceId, propertyId);
+    return this.stayMessages.message(caller, workspaceId, target, stayId, language, withValues);
   }
 }

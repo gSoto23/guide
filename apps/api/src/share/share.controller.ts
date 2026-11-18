@@ -3,7 +3,10 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import {
   regeneratePropertyLinkSchema,
   shareSettingsSchema,
+  stayMessageSchema,
   type ShareOverview,
+  type StayMessage,
+  type StayMessageBody,
   type ShareSettingsBody,
   type StayLinkCopy,
 } from "@guidesk/contracts";
@@ -127,6 +130,28 @@ export class ShareController {
       workspaceId,
       propertyId,
       body.requireConfirmationCode,
+    );
+  }
+
+  /** The stay message carries the stay link, so it needs a recent sign-in like copying it. */
+  @Post("stays/:stayId/message")
+  @HttpCode(200)
+  @WorkspaceAction(STAY_LINKS)
+  stayMessage(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+    @Param("stayId") stayId: string,
+    @Body(new ZodValidationPipe(stayMessageSchema)) body: StayMessageBody,
+  ): Promise<StayMessage> {
+    assertUuid(stayId);
+    return this.share.stayMessage(
+      callerOf(request),
+      workspaceId,
+      propertyId,
+      stayId,
+      body.language,
+      body.withValues,
     );
   }
 }

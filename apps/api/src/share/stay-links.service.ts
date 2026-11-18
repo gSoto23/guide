@@ -162,6 +162,10 @@ export class StayLinksService {
   }
 
   /** The stay, if a link may be created or copied for it now (FR-020, FR-021). */
+  eligible(workspaceId: string, target: ShareTarget, stayId: string) {
+    return this.eligibleStay(workspaceId, target, stayId);
+  }
+
   private async eligibleStay(workspaceId: string, target: ShareTarget, stayId: string) {
     if (!target.published) throw new ApiProblem(409, "guide_not_published");
     const [row] = await this.tx

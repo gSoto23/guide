@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { asksOffPlatform } from "../../src/guides/publish-checks.js";
 import {
+  documentText,
   lockedFieldPlaceholder,
   scheduledMessageTemplate,
   stayMessage,
@@ -67,5 +68,43 @@ describe("stay message (feature 004 FR-039, FR-040)", () => {
     expect(text).not.toContain("Address:");
     expect(text).not.toContain("Getting in");
     expect(text).not.toContain("Wi-Fi:");
+  });
+});
+
+describe("documentText (feature 004 FR-039)", () => {
+  it("turns a document into lines, with locked fields resolved", () => {
+    const doc = {
+      type: "doc",
+      content: [
+        { type: "heading", attrs: { level: 3 }, content: [{ type: "text", text: "Llegada" }] },
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "Caja: " },
+            { type: "lockedField", attrs: { fieldId: "f1" } },
+            { type: "hardBreak" },
+            { type: "text", text: "Portón azul" },
+          ],
+        },
+        {
+          type: "orderedList",
+          attrs: { start: 1 },
+          content: [
+            {
+              type: "listItem",
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Abre" }] }],
+            },
+            {
+              type: "listItem",
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Entra" }] }],
+            },
+          ],
+        },
+      ],
+    };
+    expect(documentText(doc, (id) => (id === "f1" ? "2704" : "?"))).toBe(
+      "Llegada\nCaja: 2704\nPortón azul\n1. Abre\n2. Entra",
+    );
+    expect(documentText(null, () => "")).toBe("");
   });
 });
