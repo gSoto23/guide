@@ -99,8 +99,8 @@ test data only.
 - [X] T047 [P] Chat bundle size check in `apps/guide/scripts/check-size.ts`
 - [X] T048 [P] Timing tests: guest chat routes p95 and the job with simulated latency
 - [X] T049 CI: `evals-agent` job like `evals-guide` (skipped without the secret)
-- [ ] T050 Docs: security.md (SEC-07, SEC-08 as implemented), overview (flow 5.1 notes), UX README gap 3, ADR-0005 knowledge renderer note
-- [ ] T051 Run the quickstart locally and record the result in research R16
+- [X] T050 Docs: security.md (SEC-07, SEC-08 as implemented), overview (flow 5.1 notes), UX README gap 3, ADR-0005 knowledge renderer note
+- [X] T051 Run the quickstart locally and record the result in research R16
 
 ## Dependencies
 

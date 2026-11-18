@@ -183,6 +183,14 @@ sequenceDiagram
     end
 ```
 
+*As built in spec 005:* the API stores the guest's message (`POST /api/v1/guest/chat/messages`) and
+queues `chat.reply`; the worker runs the budget check, the classification, the policy, the answer from
+the published guide, and the output checks, then writes the reply, holding reply, or draft with a trace.
+The chat polls for messages (every 1.5 seconds while a reply is pending, every 5 seconds otherwise)
+instead of streaming, because a reply is shown only after its checks pass. There are no tools yet. With
+autonomy `draft` (the default) members send, edit, or replace drafts from the property's conversation
+page; the full inbox is spec 006.
+
 ### 5.2 Guest writes in the Airbnb chat (Phase 2, through a PMS)
 
 ```mermaid

@@ -57,7 +57,10 @@ design for each.
 3. **The `draft` default and the pilot target.** With autonomy at `draft` by default (FR-07.1),
    every guide-chat answer waits for the host, while the pilot targets ≥ 60% of questions answered
    without the host. The design adds a "choose how the assistant replies" onboarding step and a
-   suggestion after unchanged approvals; the default itself is unchanged.
+   suggestion after unchanged approvals; the default itself is unchanged. *Spec 005 keeps `draft`
+   as the default, adds `auto` as a workspace setting with a per-property override, and a
+   conversation page where one tap sends a draft; the onboarding step and the suggestion after
+   unchanged approvals come with spec 007.*
 4. **Codes typed into AI inputs.** *Resolved by spec 003: a detector masks or removes codes before
    any model call (research R5), and the editor offers "Move to a locked field".* FR-03.9 keeps imported sensitive values away from the AI, but a
    host can still type a door code into the interview or paste listing text or screenshots that

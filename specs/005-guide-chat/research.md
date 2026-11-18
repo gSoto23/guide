@@ -202,3 +202,16 @@ guest context, stay sessions, per-IP limits).
   tests, Anthropic in AWS). Founder gates before the pilot: the agent eval suite against the real model
   (needs the `ANTHROPIC_API_KEY` CI secret), the legal review of intro and holding texts (OQ-35), and the
   quickstart on staging.
+- **Local quickstart run (T051, 2026-11-18):** with the fake model on the local stack, scenarios 1 to 6
+  pass through `chat-us1` to `chat-us6` (one worker), axe finds no WCAG A/AA violation on the chat, the
+  conversation list and page, and the assistant card, and the feature 004 guest specs still pass with
+  the Ask button. Monorepo typecheck, lint, and unit tests pass; integration suites pass (API 383 tests,
+  worker 146, database 47); the chat loads 3.3 KB gzip of script and styles (budget 30 KB). The agent
+  eval suite runs with `EVAL_LLM=fake` (scores not meaningful); the real-model run and the staging items
+  above remain open.
+- **Implementation notes:** members read traces through column grants rather than a view (same
+  protection, one less object); daily budgets are checked by the worker before any model call (the API
+  only enforces the device limit), so an over-budget message still gets a holding reply; a per-address
+  backstop of 60 messages per 10 minutes covers devices that drop the chat cookie; the intro names the
+  host only once the workspace has a chosen name (default names such as "Espacio de Ana" read oddly to
+  guests).
