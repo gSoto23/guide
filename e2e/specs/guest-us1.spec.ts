@@ -7,6 +7,8 @@ import { GUIDE_URL, LOCKBOX, publishGuide, signIn, uniqueEmail, WIFI_PASSWORD } 
  * public Wi-Fi password, and the benefit disclosure, switches to Spanish, and keeps that choice.
  * After unpublishing, the link shows the unavailable page. All data is fictional.
  */
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 test("quickstart 1: property link and QR", async ({ page, browser }) => {
   test.setTimeout(180_000);
   await signIn(page, uniqueEmail("guest-us1"));
@@ -16,7 +18,7 @@ test("quickstart 1: property link and QR", async ({ page, browser }) => {
   await expect(page.getByRole("heading", { name: "Compartir la guía de Casa Colibrí" })).toBeVisible();
   await expect(page.getByText(/La guía es opcional para los huéspedes/)).toBeVisible();
   const link = (await page.locator(".share-url code").textContent()) ?? "";
-  expect(link).toMatch(new RegExp(`^${GUIDE_URL.replace(/\./g, "\\.")}/g/[a-z2-7]{26}$`));
+  expect(link).toMatch(new RegExp(`^${escapeRegExp(GUIDE_URL)}/g/[a-z2-7]{26}$`));
   const svg = await page.request.get(
     (await page.getByRole("link", { name: "Descargar SVG" }).getAttribute("href")) ?? "",
   );
