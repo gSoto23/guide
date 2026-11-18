@@ -38,6 +38,16 @@ export interface IntegrationSettings {
    * The private key is a secret: never log it.
    */
   push: { publicKey: string; privateKey: string; subject: string } | null;
+  /**
+   * Feature 009: partner experiences (research R12). `fixtures` answers Viator from synthetic data;
+   * a missing key or affiliate number turns that partner off. The Viator key is a secret.
+   */
+  experiences: {
+    mode: "live" | "fixtures";
+    viatorApiKey: string | null;
+    viatorApiUrl: string;
+    civitatisAffiliateId: string | null;
+  };
   flags: {
     pmsBeds24: boolean;
     pmsHostex: boolean;
@@ -91,6 +101,11 @@ const schema = z.object({
   VAPID_PUBLIC_KEY: optionalText,
   VAPID_PRIVATE_KEY: optionalText,
   VAPID_SUBJECT: optionalText,
+  EXPERIENCES_MODE: z.enum(["live", "fixtures"]).default("fixtures"),
+  // The SST placeholder `unset` means no account yet (research R12).
+  VIATOR_API_KEY: optionalText.transform((value) => (value === "unset" ? undefined : value)),
+  VIATOR_API_URL: z.url().default("https://api.viator.com/partner"),
+  CIVITATIS_AFFILIATE_ID: optionalText,
 });
 
 type Parsed = z.infer<typeof schema>;
@@ -141,8 +156,19 @@ function problems(env: Parsed, production: boolean, usesLlm: boolean): string[] 
     ), "VAPID_SUBJECT must be a mailto: or https: URL");
   }
 
+  if (env.CIVITATIS_AFFILIATE_ID) {
+    require(/^[0-9]{1,12}$/.test(
+      env.CIVITATIS_AFFILIATE_ID,
+    ), "CIVITATIS_AFFILIATE_ID must be the numeric affiliate number");
+  }
+  if (env.VIATOR_API_URL) {
+    require(env.VIATOR_API_URL.startsWith("https://"), "VIATOR_API_URL must use HTTPS");
+  }
+
   if (production) {
     require(env.KMS_MODE !== "local", "KMS_MODE=local is not allowed in production (research R5)");
+    require(env.EXPERIENCES_MODE !==
+      "fixtures", "EXPERIENCES_MODE=fixtures is not allowed in production");
     require(env.STORAGE_MODE !== "local", "STORAGE_MODE=local is not allowed in production");
     require(env.SANDBOX_MODE !==
       "in-process", "SANDBOX_MODE=in-process is not allowed in production (research R2)");
@@ -218,6 +244,12 @@ export function loadIntegrationSettings(
             subject: parsed.VAPID_SUBJECT,
           }
         : null,
+    experiences: {
+      mode: parsed.EXPERIENCES_MODE,
+      viatorApiKey: parsed.VIATOR_API_KEY ?? null,
+      viatorApiUrl: parsed.VIATOR_API_URL,
+      civitatisAffiliateId: parsed.CIVITATIS_AFFILIATE_ID ?? null,
+    },
     flags: {
       pmsBeds24: parsed.PMS_BEDS24,
       pmsHostex: parsed.PMS_HOSTEX,
