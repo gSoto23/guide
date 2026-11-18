@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import type { Recommendation } from "@guidesk/contracts";
-import { BENEFIT_VALUES, RECOMMENDATION_CATEGORY_VALUES } from "@guidesk/contracts/values";
+import { BENEFITS, RECOMMENDATION_CATEGORIES } from "@/lib/guide/values";
 
 /**
  * A local recommendation (FR-014, PC-07): the benefit question must be answered before saving, and
@@ -72,7 +72,7 @@ export function RecommendationForm({
         value={category}
         onChange={(event) => setCategory(event.target.value as Recommendation["category"])}
       >
-        {RECOMMENDATION_CATEGORY_VALUES.map((value) => (
+        {RECOMMENDATION_CATEGORIES.map((value) => (
           <option key={value} value={value}>
             {t(`categories.${value}`)}
           </option>
@@ -103,7 +103,7 @@ export function RecommendationForm({
       />
       <fieldset>
         <legend>{t("benefit")}</legend>
-        {BENEFIT_VALUES.map((value) => (
+        {BENEFITS.map((value) => (
           <label key={value} className="choice">
             <input
               type="radio"

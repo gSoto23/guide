@@ -177,5 +177,88 @@
     "offline": "You need a connection to book.",
     "empty": "No experiences for this area yet.",
     "back": "Back to Explore"
+  },
+  "extras": {
+    "tile": "Extra services",
+    "title": "Extra services",
+    "intro": "Services your host offers for your stay.",
+    "optional": "Extra services are optional. Nothing is charged in the guide: if your host confirms, they'll arrange payment with you.",
+    "offeredBy": "Offered by your host",
+    "free": "Free",
+    "empty": "There are no extra services for now.",
+    "back": "Back to Extra services",
+    "description": "Description",
+    "onlyIn": {
+      "es": "Text available in Spanish only.",
+      "en": "Text available in English only."
+    },
+    "rulesTitle": "How it works",
+    "rangeStay": "For a day of your stay.",
+    "rangeArrival": "For your arrival: from today until your check-in day.",
+    "earlyCheckIn": "For your arrival day, if no one checks out of the house that day.",
+    "lateCheckout": "For your checkout day, if no one checks in to the house that day.",
+    "weekdays": "Only on {days}.",
+    "lead": "Request it at least {hours, plural, one {# hour} other {# hours}} ahead.",
+    "max": "{count, plural, one {One per stay.} other {Up to # per stay.}}",
+    "requestTitle": "Request this service",
+    "blocked": {
+      "no_session": "To request it, open the guide from the stay link your host sent you.",
+      "ended": "Your stay has ended, so you can't request extra services.",
+      "verify": "Confirm your booking to request extra services."
+    },
+    "verify": "Confirm my booking",
+    "date": "Date",
+    "time": "Time",
+    "quantity": "Quantity",
+    "note": "Note for your host (optional)",
+    "noteHint": "Don't include phone numbers, emails, or documents.",
+    "request": "Request",
+    "payment": "Nothing is charged here. If your host confirms, they'll arrange payment with you.",
+    "sent": "Done. Your request is waiting for your host.",
+    "sentConfirmed": "Done. Your request is confirmed: your host will arrange payment with you.",
+    "offline": "You need a connection to request or cancel.",
+    "yourRequests": "Your requests",
+    "cancel": "Cancel request",
+    "cancelled": "You cancelled the request.",
+    "status": {
+      "waiting": "Waiting for your host",
+      "confirmed": "Confirmed: your host will arrange payment with you",
+      "declined": "Not available",
+      "cancelled": "Cancelled",
+      "host_cancelled": "Cancelled by your host",
+      "expired": "Expired without an answer"
+    },
+    "statusNote": {
+      "waiting": "Nothing has been charged.",
+      "declined": "Nothing was charged.",
+      "cancelled": "Nothing was charged.",
+      "expired": "Nothing was charged."
+    },
+    "reasons": {
+      "unavailable": "It isn't available on that date.",
+      "fully_booked": "It's fully booked.",
+      "too_late": "There isn't enough time to prepare it.",
+      "other": "Another reason.",
+      "stay": "Your booking changed or was cancelled."
+    },
+    "rules": {
+      "quantity": "Choose a valid quantity.",
+      "needs_date": "Choose a date.",
+      "needs_time": "Choose a time.",
+      "date_range": "That date is outside the allowed dates.",
+      "weekday": "It isn't offered on that day of the week.",
+      "lead_time": "It needs more notice: request it at least {hours} h ahead.",
+      "max_per_stay": "You've reached the most per stay.",
+      "turnover": "It isn't available for your booking: there's another stay that day."
+    },
+    "errors": {
+      "duplicate": "You just sent this same request.",
+      "too_many_requests": "You have many open requests. Wait for your host to answer.",
+      "not_requestable": "You can't request extra services for this stay any more.",
+      "no_session": "To request it, open the guide from your stay link.",
+      "not_waiting": "This request has already changed.",
+      "offline": "You need a connection to request or cancel.",
+      "generic": "We couldn't finish that. Please try again."
+    }
   }
 }

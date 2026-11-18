@@ -39,13 +39,24 @@ const REASONS: Record<EmailLocale, Record<ChatNeedsHostReason, string>> = {
 export type PushText =
   | { kind: "needs_host"; propertyName: string; reason: ChatNeedsHostReason }
   | { kind: "quiet_summary"; propertyName: string; count: number }
-  | { kind: "test" };
+  | { kind: "test" }
+  // Feature 008: a new add-on request; the extra's name is the host's own text.
+  | { kind: "service_request"; propertyName: string; extraName: string };
 
 export function renderPush(locale: EmailLocale, text: PushText): { title: string; body: string } {
   if (text.kind === "test") {
     return locale === "en"
       ? { title: "Guidesk", body: "Alerts are on for this device." }
       : { title: "Guidesk", body: "Las alertas están activadas en este dispositivo." };
+  }
+  if (text.kind === "service_request") {
+    return {
+      title: text.propertyName,
+      body:
+        locale === "en"
+          ? `New request: ${text.extraName}`.slice(0, 120)
+          : `Nueva solicitud: ${text.extraName}`.slice(0, 120),
+    };
   }
   if (text.kind === "quiet_summary") {
     const many = text.count !== 1;

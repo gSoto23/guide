@@ -939,3 +939,145 @@ describe("feature 009 resources across workspaces (T028, AC-SEC-004)", () => {
     expect(own.statusCode).toBe(200);
   });
 });
+
+describe("feature 008 resources across workspaces (T024, AC-SEC-004)", () => {
+  let foreignProperty: string;
+  let ownProperty: string;
+  let foreignExtra: string;
+  let ownExtra: string;
+  let foreignRequest: string;
+
+  beforeAll(async () => {
+    const insertProp = async (workspaceId: string, name: string) =>
+      (
+        await db.query<{ id: string }>(
+          `INSERT INTO property (workspace_id, name, guide_languages, setup_status, source, country)
+           VALUES ($1, $2, ARRAY['es'], 'ready', 'manual', 'CR') RETURNING id`,
+          [workspaceId, name],
+        )
+      ).rows[0]!.id;
+    const insertExtra = async (workspaceId: string, propertyId: string) =>
+      (
+        await db.query<{ id: string }>(
+          `INSERT INTO extra (workspace_id, property_id, source_language, name, price, currency)
+           VALUES ($1, $2, 'es', '{"es": "Recogida en el aeropuerto"}', 85, 'USD') RETURNING id`,
+          [workspaceId, propertyId],
+        )
+      ).rows[0]!.id;
+    foreignProperty = await insertProp(bruno.workspaceId, "Casa Extras de Bruno");
+    ownProperty = await insertProp(alice.workspaceId, "Casa Extras de Alicia");
+    foreignExtra = await insertExtra(bruno.workspaceId, foreignProperty);
+    ownExtra = await insertExtra(alice.workspaceId, ownProperty);
+    const stayId = (
+      await db.query<{ id: string }>(
+        `INSERT INTO stay (workspace_id, property_id, source, check_in_date, checkout_date, channel)
+         VALUES ($1, $2, 'manual', '2026-12-11', '2026-12-15', 'Directo') RETURNING id`,
+        [bruno.workspaceId, foreignProperty],
+      )
+    ).rows[0]!.id;
+    foreignRequest = (
+      await db.query<{ id: string }>(
+        `INSERT INTO service_request (workspace_id, property_id, stay_id, extra_id, extra_name,
+           source_language, price, currency, status, expires_at)
+         VALUES ($1, $2, $3, $4, '{"es": "Recogida en el aeropuerto"}', 'es', 85, 'USD', 'waiting',
+           now() + interval '2 days') RETURNING id`,
+        [bruno.workspaceId, foreignProperty, stayId, foreignExtra],
+      )
+    ).rows[0]!.id;
+  });
+
+  const extraBody = {
+    sourceLanguage: "es",
+    name: { es: "Limpieza adicional" },
+    description: {},
+    price: 30,
+    currency: "USD",
+    leadTimeHours: 24,
+    weekdays: [1, 2, 3, 4, 5, 6, 7],
+    needsDate: true,
+    needsTime: false,
+    dateRange: "stay",
+    maxPerStay: 1,
+    preApproved: false,
+    turnover: null,
+    visible: true,
+  };
+
+  function call(method: string, url: string, payload: object | undefined) {
+    return ctx.fastify.inject({
+      method: method as "GET",
+      url,
+      headers: {
+        origin: "http://localhost:3000",
+        cookie: alice.cookie,
+        ...(payload ? { "content-type": "application/json" } : {}),
+      },
+      ...(payload ? { payload } : {}),
+    });
+  }
+
+  it("answers 404 for another workspace's extras and requests, logs each attempt, and changes nothing", async () => {
+    const routes: [string, string, object | undefined][] = [];
+    for (const ws of [bruno.workspaceId, alice.workspaceId]) {
+      const base = `/api/v1/workspaces/${ws}/properties/${foreignProperty}/extras`;
+      routes.push(
+        ["GET", base, undefined],
+        ["POST", base, extraBody],
+        ["PUT", `${base}/order`, { ids: [foreignExtra] }],
+        ["PUT", `${base}/${foreignExtra}`, { version: 1, extra: extraBody }],
+        ["DELETE", `${base}/${foreignExtra}`, undefined],
+        ["POST", `${base}/${foreignExtra}/copy`, { propertyIds: [ownProperty] }],
+      );
+      const requests = `/api/v1/workspaces/${ws}/service-requests/${foreignRequest}`;
+      routes.push(
+        ["POST", `${requests}/confirm`, {}],
+        ["POST", `${requests}/decline`, { reasonCode: "unavailable" }],
+        ["POST", `${requests}/cancel`, { reasonCode: "other" }],
+      );
+    }
+    routes.push(["GET", `/api/v1/workspaces/${bruno.workspaceId}/service-requests`, undefined]);
+    // Copying Alicia's own extra into Bruno's property.
+    routes.push([
+      "POST",
+      `/api/v1/workspaces/${alice.workspaceId}/properties/${ownProperty}/extras/${ownExtra}/copy`,
+      { propertyIds: [foreignProperty] },
+    ]);
+    for (const [method, url, payload] of routes) {
+      const before = await deniedCount();
+      const response = await call(method, url, payload);
+      expect(response.statusCode, `${method} ${url}`).toBe(404);
+      expect(await deniedCount(), `${method} ${url} logged`).toBe(before + 1);
+    }
+    const extras = await db.query<{ n: number }>(
+      `SELECT count(*)::int AS n FROM extra WHERE property_id = $1`,
+      [foreignProperty],
+    );
+    expect(extras.rows[0]!.n).toBe(1);
+    const copies = await db.query<{ n: number }>(
+      `SELECT count(*)::int AS n FROM extra WHERE property_id = $1`,
+      [ownProperty],
+    );
+    expect(copies.rows[0]!.n).toBe(1);
+    const request = await db.query<{ status: string; answered_by: string | null }>(
+      `SELECT status, answered_by FROM service_request WHERE id = $1`,
+      [foreignRequest],
+    );
+    expect(request.rows).toEqual([{ status: "waiting", answered_by: null }]);
+  });
+
+  it("filters Alicia's Requests by Bruno's property to nothing, and a missing extra looks foreign", async () => {
+    const list = await call(
+      "GET",
+      `/api/v1/workspaces/${alice.workspaceId}/service-requests?propertyId=${foreignProperty}`,
+      undefined,
+    );
+    expect(list.statusCode).toBe(200);
+    expect(list.json()).toMatchObject({ items: [], waiting: 0 });
+    const url = (id: string) =>
+      `/api/v1/workspaces/${alice.workspaceId}/properties/${ownProperty}/extras/${id}`;
+    const foreign = await call("DELETE", url(foreignExtra), undefined);
+    const missing = await call("DELETE", url(MISSING), undefined);
+    expect(missing.statusCode).toBe(foreign.statusCode);
+    expect(missing.json()).toEqual(foreign.json());
+  });
+});

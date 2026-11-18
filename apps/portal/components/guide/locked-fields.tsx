@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import type { LockedFieldView, RevealedValue, RevealHistory } from "@guidesk/contracts";
-import { LOCKED_FIELD_KIND_VALUES } from "@guidesk/contracts/values";
+import { LOCKED_FIELD_KINDS } from "@/lib/guide/values";
 import { problemOf } from "@/lib/properties-api";
 import { useStepUp } from "@/lib/use-step-up";
 import { useWorkspace } from "@/lib/use-workspace";
@@ -34,7 +34,7 @@ export function LockedFields({ locale, propertyId }: { locale: string; propertyI
   );
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
-  const [kind, setKind] = useState<(typeof LOCKED_FIELD_KIND_VALUES)[number]>("door_code");
+  const [kind, setKind] = useState<(typeof LOCKED_FIELD_KINDS)[number]>("door_code");
   const [label, setLabel] = useState("");
   const [value, setValue] = useState("");
   const [changing, setChanging] = useState<string | null>(null);
@@ -281,7 +281,7 @@ export function LockedFields({ locale, propertyId }: { locale: string; propertyI
               value={kind}
               onChange={(event) => setKind(event.target.value as typeof kind)}
             >
-              {LOCKED_FIELD_KIND_VALUES.map((option) => (
+              {LOCKED_FIELD_KINDS.map((option) => (
                 <option key={option} value={option}>
                   {guide(`lockedKinds.${option}`)}
                 </option>

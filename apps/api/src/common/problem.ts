@@ -70,7 +70,15 @@ export type ProblemCode =
   // Feature 006 (contracts/http-api.md).
   | "conversation_done"
   | "copilot_paused"
-  | "push_unavailable";
+  | "push_unavailable"
+  // Feature 008 (contracts/http-api.md).
+  | "extra_changed"
+  | "not_waiting"
+  | "not_confirmed"
+  | "not_requestable"
+  | "rule_failed"
+  | "duplicate"
+  | "too_many_requests";
 
 /**
  * Extra members of a problem body, such as `{limit, used}` or `{reason}`. Plain values only, and

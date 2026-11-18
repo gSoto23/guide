@@ -189,7 +189,10 @@ async function reveal(field: HTMLElement, button: HTMLButtonElement): Promise<vo
     }
     const problem = (await response.json().catch(() => ({}))) as { code?: string };
     if (problem.code === "verification_required") {
-      openVerify(field);
+      openVerify(() => {
+        const button = field.querySelector<HTMLButtonElement>(".locked-show");
+        if (button) void reveal(field, button);
+      });
     } else if (problem.code === "not_in_window" || problem.code === "no_session") {
       await loadSession();
       return;
@@ -205,7 +208,7 @@ async function reveal(field: HTMLElement, button: HTMLButtonElement): Promise<vo
 
 // Confirmation code (G-04) ---------------------------------------------------------------------------
 
-function openVerify(field: HTMLElement): void {
+function openVerify(onVerified: () => void): void {
   document.getElementById("verify")?.remove();
   const sheet = el("div", "sheet");
   sheet.id = "verify";
@@ -252,8 +255,7 @@ function openVerify(field: HTMLElement): void {
       submit.disabled = false;
       if (response?.status === 204) {
         sheet.remove();
-        const button = field.querySelector<HTMLButtonElement>(".locked-show");
-        if (button) void reveal(field, button);
+        onVerified();
         return;
       }
       const problem = response
@@ -356,6 +358,228 @@ function wireExplore(): void {
   window.addEventListener("offline", sync);
 }
 
+// Extras (feature 008 research R6): the stay's requests, the form, and Cancel -----------------------
+
+interface ExtraRequest {
+  id: string;
+  extraId: string | null;
+  name: string;
+  price: number;
+  currency: string;
+  requestedDate: string | null;
+  requestedTime: string | null;
+  quantity: number;
+  status: string;
+  reasonCode: string | null;
+  reasonText: string | null;
+}
+
+interface ExtraRequests {
+  canRequest: boolean;
+  reason: string | null;
+  requests: ExtraRequest[];
+}
+
+function money(price: number, currency: string): string {
+  if (price === 0) return text("extras.free");
+  try {
+    return new Intl.NumberFormat(lang === "es" ? "es-CR" : "en-US", {
+      style: "currency",
+      currency,
+      maximumFractionDigits: price % 1 === 0 ? 0 : 2,
+    }).format(price);
+  } catch {
+    return `${price} ${currency}`;
+  }
+}
+
+/** Keeps the date picker inside the stay (the API checks every rule again). */
+function extraDates(): void {
+  const card = document.querySelector<HTMLElement>("[data-extra-request]");
+  const input = card?.querySelector<HTMLInputElement>("input[name=date]");
+  const stay = session?.stay;
+  if (!card || !input || !stay) return;
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: session?.timeZone }).format(
+    new Date(),
+  );
+  const arrival = card.dataset.dateRange === "before_arrival";
+  input.min = arrival || stay.checkInDate < today ? today : stay.checkInDate;
+  input.max = arrival ? stay.checkInDate : stay.checkoutDate;
+}
+
+function wireExtras(): void {
+  if (!document.querySelector("[data-extras-page]") || !publicId) return;
+  const box = document.querySelector<HTMLElement>("[data-extra-requests]");
+  const card = document.querySelector<HTMLElement>("[data-extra-request]");
+  const form = card?.querySelector<HTMLFormElement>("form");
+  const note = card?.querySelector<HTMLElement>("[data-request-note]");
+  const verify = card?.querySelector<HTMLButtonElement>("[data-request-verify]");
+  const error = card?.querySelector<HTMLElement>("[data-request-error]");
+  const done = card?.querySelector<HTMLElement>("[data-request-status]");
+  const submit = form?.querySelector<HTMLButtonElement>("button[type=submit]");
+  let state: ExtraRequests | null = null;
+  const offline = () => !navigator.onLine || Boolean(root.dataset.offlineAt);
+
+  const cancelButton = (request: ExtraRequest, message: HTMLElement) => {
+    const button = el("button", "button-secondary", text("extras.cancel"));
+    button.type = "button";
+    button.disabled = offline();
+    button.addEventListener("click", () => {
+      button.disabled = true;
+      void api(`extras/requests/${request.id}/cancel?lang=${lang}`, { publicId })
+        .then(async (response) => {
+          if (response.ok) {
+            const updated = (await response.json()) as ExtraRequest;
+            state!.requests = state!.requests.map((r) => (r.id === updated.id ? updated : r));
+            render();
+            if (done) done.textContent = text("extras.cancelled");
+            return;
+          }
+          const problem = (await response.json().catch(() => ({}))) as { code?: string };
+          if (problem.code === "not_waiting") await load();
+          message.textContent =
+            text(`extras.errors.${problem.code ?? ""}`) || text("extras.errors.generic");
+          button.disabled = false;
+        })
+        .catch(() => {
+          message.textContent = text(offline() ? "extras.errors.offline" : "extras.errors.generic");
+          button.disabled = false;
+        });
+    });
+    return button;
+  };
+
+  const item = (request: ExtraRequest) => {
+    const li = el("li", "card request");
+    li.dataset.status = request.status;
+    const name = request.quantity > 1 ? `${request.name} × ${request.quantity}` : request.name;
+    const when = request.requestedDate
+      ? `${formatDay(request.requestedDate)}${request.requestedTime ? `, ${request.requestedTime}` : ""}`
+      : "";
+    li.append(
+      el("h3", "request-name", name),
+      el("p", "muted", [when, money(request.price, request.currency)].filter(Boolean).join(" · ")),
+      el("p", "request-status", text(`extras.status.${request.status}`)),
+    );
+    const reason = [
+      request.reasonCode ? text(`extras.reasons.${request.reasonCode}`) : "",
+      request.reasonText ?? "",
+    ].filter(Boolean);
+    if (reason.length > 0) li.append(el("p", "", reason.join(" ")));
+    const charged = text(`extras.statusNote.${request.status}`);
+    if (charged) li.append(el("p", "muted", charged));
+    if (request.status === "waiting" && state?.canRequest) {
+      const message = el("p", "error");
+      message.setAttribute("role", "alert");
+      li.append(cancelButton(request, message), message);
+    }
+    return li;
+  };
+
+  const render = () => {
+    if (!box) return;
+    const only = box.dataset.extraFilter;
+    const shown = (state?.requests ?? []).filter((request) => !only || request.extraId === only);
+    box.querySelector("ul")?.replaceChildren(...shown.map(item));
+    box.hidden = shown.length === 0;
+  };
+
+  const applyForm = () => {
+    if (!form || !note || !submit) return;
+    const allowed = Boolean(state?.canRequest);
+    form.hidden = !allowed;
+    note.hidden = allowed;
+    note.textContent =
+      !state && offline()
+        ? text("extras.offline")
+        : text(`extras.blocked.${state?.reason ?? ""}`) || text("extras.blocked.no_session");
+    if (verify) verify.hidden = state?.reason !== "verify";
+    submit.disabled = offline();
+    const offlineNote = form.querySelector<HTMLElement>("[data-request-offline]");
+    if (offlineNote) offlineNote.hidden = !offline();
+  };
+
+  async function load(): Promise<void> {
+    try {
+      const response = await api(`extras/requests?publicId=${publicId}&lang=${lang}`);
+      state = response.ok ? ((await response.json()) as ExtraRequests) : null;
+    } catch {
+      state = null;
+    }
+    render();
+    applyForm();
+  }
+
+  verify?.addEventListener("click", () => openVerify(() => void load()));
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!card || !error || !submit) return;
+    if (offline()) {
+      error.textContent = text("extras.errors.offline");
+      return;
+    }
+    const data = new FormData(form);
+    const body: Record<string, unknown> = {
+      publicId,
+      extraId: card.dataset.extraId,
+      quantity: Number(data.get("quantity") ?? 1),
+    };
+    for (const key of ["date", "time", "note"]) {
+      const value = String(data.get(key) ?? "").trim();
+      if (value) body[key] = value;
+    }
+    submit.disabled = true;
+    error.textContent = "";
+    if (done) done.textContent = "";
+    void api(`extras/requests?lang=${lang}`, body)
+      .then(async (response) => {
+        if (response.status === 201) {
+          const created = (await response.json()) as ExtraRequest;
+          form.reset();
+          state = {
+            canRequest: true,
+            reason: null,
+            requests: [created, ...(state?.requests ?? [])],
+          };
+          render();
+          if (done) {
+            done.textContent = text(
+              created.status === "confirmed" ? "extras.sentConfirmed" : "extras.sent",
+            );
+          }
+          return;
+        }
+        const problem = (await response.json().catch(() => ({}))) as {
+          code?: string;
+          rule?: string;
+        };
+        if (problem.code === "verification_required") {
+          openVerify(() => void load());
+        } else if (problem.code === "rule_failed") {
+          error.textContent =
+            text(`extras.rules.${problem.rule ?? ""}`, { hours: card.dataset.lead ?? "" }) ||
+            text("extras.errors.generic");
+        } else {
+          if (problem.code === "no_session" || problem.code === "not_requestable") await load();
+          error.textContent =
+            text(`extras.errors.${problem.code ?? ""}`) || text("extras.errors.generic");
+        }
+      })
+      .catch(() => {
+        error.textContent = text(offline() ? "extras.errors.offline" : "extras.errors.generic");
+      })
+      .finally(() => {
+        submit.disabled = offline();
+      });
+  });
+  window.addEventListener("online", () => void load());
+  window.addEventListener("offline", () => {
+    applyForm();
+    render();
+  });
+  void load();
+}
+
 function showNotice(): void {
   const box = document.getElementById("notice");
   let notice: string | null;
@@ -450,7 +674,11 @@ function start(): void {
   offlineBanner();
   wireAsk();
   wireExplore();
-  void loadSession().then(countOpen);
+  wireExtras();
+  void loadSession().then(() => {
+    countOpen();
+    extraDates();
+  });
   let hiddenAt = 0;
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) hiddenAt = Date.now();

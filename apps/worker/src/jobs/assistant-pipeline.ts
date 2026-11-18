@@ -40,6 +40,7 @@ import {
 } from "@guidesk/domain";
 import type { AgentCallResult, AgentLlmPort, AgentUsage, ChatTurn } from "@guidesk/integrations";
 import { exploreUrlFor, type ExploreKnowledgeDeps } from "./explore-pointer.js";
+import { extrasFor } from "./extras-pointer.js";
 
 /**
  * The assistant's decision pipeline, shared by the guest chat reply (feature 005) and "test the
@@ -417,6 +418,10 @@ export async function decideReply(deps: PipelineDeps, input: DecideInput): Promi
     deps.guideUrl,
     deps.explore,
   );
+  // Feature 008 (research R8): the host's extras and the Extras page; copilot drafts never get them.
+  const extras = await extrasFor(db, context, language, deps.guideUrl);
+  knowledgeIn.extras = extras?.extras ?? null;
+  knowledgeIn.extrasUrl = extras?.extrasUrl ?? null;
   if (input.takenOver && !(before.kind === "hold" && before.emergency)) {
     return silent({ ...base, usage: spent });
   }

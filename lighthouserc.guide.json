@@ -9,7 +9,9 @@
         "http://127.0.0.1:3001/g/demoguidedemoguidedemoguid/en",
         "http://127.0.0.1:3001/g/demoguidedemoguidedemoguid/es/00000000-0000-4000-8000-000000000001",
         "http://127.0.0.1:3001/g/demoguidedemoguidedemoguid/en/emergency",
-        "http://127.0.0.1:3001/g/demoguidedemoguidedemoguid/es/explore"
+        "http://127.0.0.1:3001/g/demoguidedemoguidedemoguid/es/explore",
+        "http://127.0.0.1:3001/g/demoguidedemoguidedemoguid/es/extras",
+        "http://127.0.0.1:3001/g/demoguidedemoguidedemoguid/es/extras/00000000-0000-4000-8000-0000000000e1"
       ],
       "numberOfRuns": 3,
       "settings": {

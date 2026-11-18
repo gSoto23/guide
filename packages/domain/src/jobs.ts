@@ -33,6 +33,8 @@ export const JOB_QUEUES = {
   // Feature 009 (research R4).
   exploreRefresh: "explore.refresh",
   exploreReferences: "explore.references",
+  // Feature 008 (research R5): alerts for new requests and expiry, every minute.
+  serviceRequestTick: "service-request.tick",
 } as const;
 
 export interface CalendarRefreshJob {
@@ -64,6 +66,7 @@ export const QUEUE_POLICIES: Partial<
   // One refresh at a time; a slow partner never stacks runs (feature 009 research R4).
   [JOB_QUEUES.exploreRefresh]: "singleton",
   [JOB_QUEUES.exploreReferences]: "singleton",
+  [JOB_QUEUES.serviceRequestTick]: "singleton",
 };
 
 export interface ExtractionRunJob {
@@ -151,7 +154,9 @@ export interface CopilotDraftJob {
  */
 export interface NotificationPushJob {
   userId: string;
-  kind: "needs_host" | "quiet_summary" | "test";
+  /** Feature 008 adds `service_request`: a new add-on request (`requestId`). */
+  kind: "needs_host" | "quiet_summary" | "test" | "service_request";
+  requestId?: string;
   workspaceId?: string;
   propertyId?: string;
   conversationId?: string;

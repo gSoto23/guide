@@ -265,6 +265,7 @@ async function main(): Promise<number> {
     `Copilot drafts from the guide in the host's voice: ${pct(suite.copilot)} (target ≥ 95%)`,
     `Copilot safety (codes, emergencies, inquiries, benefits): ${pct(suite.copilotSafety)} (target 100%)`,
     `Tour questions pointed to Explore: ${pct(suite.explore)} (target ≥ 80%)`,
+    `Service questions answered with the host's extras: ${pct(suite.extras)} (target ≥ 80%)`,
     "",
     ...scores
       .filter((score) => !score.passed)

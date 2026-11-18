@@ -14,6 +14,13 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import {
   exploreQuerySchema,
+  guestCancelRequestSchema,
+  guestRequestsQuerySchema,
+  guestServiceRequestSchema,
+  type GuestExtras,
+  type GuestServiceRequest,
+  type GuestServiceRequestBody,
+  type GuestServiceRequests,
   guestGuideQuerySchema,
   guestOpenSchema,
   guestRevealSchema,
@@ -34,6 +41,7 @@ import { Public } from "../auth/public.decorator.js";
 import { assertUuid } from "../common/ids.js";
 import { ZodValidationPipe } from "../common/zod.pipe.js";
 import { GuestExploreService } from "./explore.service.js";
+import { GuestExtrasService } from "./extras.service.js";
 import { GuestGuideService, GUEST_MEDIA_VARIANTS } from "./guest-guide.service.js";
 import { guestIpKey, GuestInterceptor } from "./guest.interceptor.js";
 import { unavailable } from "./guest-context.js";
@@ -64,6 +72,7 @@ export class GuestController {
     private readonly verification: GuestVerification,
     private readonly opens: GuestOpens,
     private readonly explore: GuestExploreService,
+    private readonly extras: GuestExtrasService,
   ) {}
 
   @Get("guides/:publicId")
@@ -114,6 +123,60 @@ export class GuestController {
       .header("cache-control", "no-store")
       .header("referrer-policy", "no-referrer")
       .redirect(location, 302);
+  }
+
+  /** Feature 008: the property's visible extras (contracts/http-api.md). */
+  @Get("guides/:publicId/extras")
+  async extrasList(
+    @Param("publicId") publicId: string,
+    @Query(new ZodValidationPipe(exploreQuerySchema)) query: z.infer<typeof exploreQuerySchema>,
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ): Promise<GuestExtras> {
+    const result = await this.extras.list(publicId, query.lang);
+    void reply.header("cache-control", PUBLIC_EXPLORE_CACHE);
+    return result;
+  }
+
+  /** Feature 008: this stay's requests and whether this device may request (stay session). */
+  @Get("extras/requests")
+  async extrasRequests(
+    @Req() request: FastifyRequest,
+    @Query(new ZodValidationPipe(guestRequestsQuerySchema.extend(exploreQuerySchema.shape)))
+    query: { publicId: string; lang?: "es" | "en" },
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ): Promise<GuestServiceRequests> {
+    void reply.header("cache-control", "no-store");
+    return this.extras.requests(query.publicId, request.headers.cookie, query.lang);
+  }
+
+  @Post("extras/requests")
+  @HttpCode(201)
+  async extrasRequest(
+    @Req() request: FastifyRequest,
+    @Query(new ZodValidationPipe(exploreQuerySchema)) query: z.infer<typeof exploreQuerySchema>,
+    @Body(new ZodValidationPipe(guestServiceRequestSchema)) body: GuestServiceRequestBody,
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ): Promise<GuestServiceRequest> {
+    void reply.header("cache-control", "no-store");
+    return this.extras.create(body, request.headers.cookie, query.lang);
+  }
+
+  @Post("extras/requests/:requestId/cancel")
+  @HttpCode(200)
+  async extrasCancel(
+    @Req() request: FastifyRequest,
+    @Param("requestId") requestId: string,
+    @Query(new ZodValidationPipe(exploreQuerySchema)) query: z.infer<typeof exploreQuerySchema>,
+    @Body(new ZodValidationPipe(guestCancelRequestSchema)) body: { publicId: string },
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ): Promise<GuestServiceRequest> {
+    try {
+      assertUuid(requestId);
+    } catch {
+      throw unavailable();
+    }
+    void reply.header("cache-control", "no-store");
+    return this.extras.cancel(requestId, body.publicId, request.headers.cookie, query.lang);
   }
 
   @Get("media/:publicId/:mediaId/:variant")

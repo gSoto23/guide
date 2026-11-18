@@ -92,6 +92,8 @@ export interface GuestGuide {
   wifi: { fieldId: string | null; password: string | null };
   /** Feature 009: whether the Explore tab shows (host tips or selected experiences). */
   explore: { visible: boolean };
+  /** Feature 008: whether the property has visible extras. */
+  extras: { visible: boolean };
 }
 
 export const stayExchangeSchema = z.object({ token: stayTokenSchema }).strict();

@@ -14,6 +14,7 @@ import type { MediaStoragePort } from "@guidesk/integrations";
 import { PublishService } from "../guides/publish.service.js";
 import { MEDIA_STORAGE } from "../uploads/media.provider.js";
 import { ExploreSelection } from "../explore/explore-selection.js";
+import { GuestExtrasService } from "./extras.service.js";
 import { GuestContext, unavailable, type GuestTarget } from "./guest-context.js";
 
 /** Image and video variants a guest page may request (research R11). */
@@ -38,6 +39,7 @@ export class GuestGuideService {
     private readonly publish: PublishService,
     @Inject(MEDIA_STORAGE) private readonly media: MediaStoragePort,
     private readonly explore: ExploreSelection,
+    private readonly extras: GuestExtrasService,
   ) {}
 
   async guide(publicId: string, lang: GuideLanguage | undefined): Promise<GuestGuide> {
@@ -180,6 +182,8 @@ export class GuestGuideService {
         password: publicWifi?.publicValue ?? null,
       },
       explore,
+      // Feature 008: the Extras entry shows when the property has visible extras (FR-007).
+      extras: { visible: (await this.extras.visible(db, target)).length > 0 },
     };
   }
 

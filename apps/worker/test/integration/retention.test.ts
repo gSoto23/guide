@@ -13,6 +13,7 @@ import {
   copilotRun,
   createDb,
   createGuideForProperty,
+  extra,
   extractionRequest,
   guide,
   guideAiRequest,
@@ -29,6 +30,8 @@ import {
   importRun,
   membership,
   property,
+  serviceRequest,
+  serviceRequestDaily,
   stay,
   stayLink,
   upload,
@@ -839,5 +842,73 @@ describe("retention.daily for the inbox and copilot (feature 006 T038)", () => {
       .from(conversationPresence)
       .where(eq(conversationPresence.conversationId, conv!.id));
     expect(left).toEqual([{ userId: otherId }]);
+  });
+});
+
+describe("retention.daily for add-on requests (feature 008 T026)", () => {
+  it("deletes requests 12 months after their stay's checkout, and keeps newer ones and the counts", async () => {
+    const [ex] = await handle.db
+      .insert(extra)
+      .values({
+        workspaceId,
+        propertyId,
+        sourceLanguage: "es",
+        name: { es: "Recogida en el aeropuerto" },
+        price: 85,
+        currency: "USD",
+      })
+      .returning({ id: extra.id });
+    const stays = await handle.db
+      .insert(stay)
+      .values(
+        [370, 300].map((checkout) => ({
+          workspaceId,
+          propertyId,
+          source: "manual" as const,
+          checkInDate: dateDaysAgo(checkout + 3),
+          checkoutDate: dateDaysAgo(checkout),
+          channel: "Direct",
+        })),
+      )
+      .returning({ id: stay.id });
+    const requests = await handle.db
+      .insert(serviceRequest)
+      .values(
+        stays.map((row) => ({
+          workspaceId,
+          propertyId,
+          stayId: row.id,
+          extraId: ex!.id,
+          extraName: { es: "Recogida en el aeropuerto" },
+          sourceLanguage: "es",
+          price: 85,
+          currency: "USD",
+          note: "Llegamos tarde",
+          status: "confirmed" as const,
+          expiresAt: daysAgo(380),
+        })),
+      )
+      .returning({ id: serviceRequest.id });
+    const day = dateDaysAgo(370);
+    await handle.db
+      .insert(serviceRequestDaily)
+      .values({ workspaceId, propertyId, day, status: "confirmed", count: 1 })
+      .onConflictDoNothing();
+    await run();
+    const left = await handle.db
+      .select({ id: serviceRequest.id })
+      .from(serviceRequest)
+      .where(
+        inArray(
+          serviceRequest.id,
+          requests.map((row) => row.id),
+        ),
+      );
+    expect(left).toEqual([{ id: requests[1]!.id }]);
+    const counts = await handle.db
+      .select({ count: serviceRequestDaily.count })
+      .from(serviceRequestDaily)
+      .where(eq(serviceRequestDaily.day, day));
+    expect(counts.length).toBeGreaterThan(0);
   });
 });

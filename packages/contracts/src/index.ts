@@ -21,3 +21,4 @@ export * from "./chat.js";
 export * from "./assistant.js";
 export * from "./inbox.js";
 export * from "./explore.js";
+export * from "./extras.js";

@@ -256,7 +256,9 @@ legend {
 
 .app-header nav {
   display: flex;
-  gap: var(--space);
+  flex-wrap: wrap;
+  column-gap: var(--space);
+  row-gap: 0;
   margin-top: 6px;
   font-size: 0.9rem;
 }

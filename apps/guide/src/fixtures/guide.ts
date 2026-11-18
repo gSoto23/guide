@@ -1,4 +1,4 @@
-import type { GuestExplore, GuestGuide } from "@guidesk/contracts";
+import type { GuestExplore, GuestExtras, GuestGuide } from "@guidesk/contracts";
 
 /**
  * A fictional guide for Lighthouse CI and local design work (feature 004 research R19). Served
@@ -132,6 +132,7 @@ export function fixtureGuide(publicId: string, language: "es" | "en"): GuestGuid
     ],
     wifi: { fieldId: null, password: null },
     explore: { visible: true },
+    extras: { visible: true },
   };
 }
 
@@ -175,6 +176,63 @@ export function fixtureExplore(publicId: string, language: "es" | "en"): GuestEx
     categories: [
       { category: "tours", experiences: [card(1, "tours"), card(2, "tours")] },
       { category: "water", experiences: [card(3, "water")] },
+    ],
+  };
+}
+
+/** Feature 008: fixture extras for Lighthouse CI only (synthetic). */
+export function fixtureExtras(publicId: string, language: "es" | "en"): GuestExtras | null {
+  if (publicId !== FIXTURE_PUBLIC_ID) return null;
+  const es = language === "es";
+  return {
+    extras: [
+      {
+        id: "00000000-0000-4000-8000-0000000000e1",
+        name: es ? "Recogida en el aeropuerto" : "Airport pickup",
+        description: es
+          ? "Te esperamos en el aeropuerto con un letrero y te llevamos a la casa."
+          : "We meet you at the airport with a sign and drive you to the house.",
+        language,
+        price: 85,
+        currency: "USD",
+        leadTimeHours: 24,
+        needsDate: true,
+        needsTime: true,
+        dateRange: "before_arrival",
+        weekdays: [1, 2, 3, 4, 5, 6, 7],
+        maxPerStay: 1,
+        turnover: null,
+      },
+      {
+        id: "00000000-0000-4000-8000-0000000000e2",
+        name: es ? "Bicicletas" : "Bikes",
+        description: es ? "Dos bicicletas de paseo por día." : "Two cruiser bikes per day.",
+        language,
+        price: 0,
+        currency: "USD",
+        leadTimeHours: 0,
+        needsDate: true,
+        needsTime: false,
+        dateRange: "stay",
+        weekdays: [1, 3, 5],
+        maxPerStay: 4,
+        turnover: null,
+      },
+      {
+        id: "00000000-0000-4000-8000-0000000000e3",
+        name: es ? "Salida tarde" : "Late checkout",
+        description: es ? "Quédate hasta las 2 pm." : "Stay until 2 pm.",
+        language,
+        price: 15000,
+        currency: "CRC",
+        leadTimeHours: 12,
+        needsDate: false,
+        needsTime: false,
+        dateRange: "stay",
+        weekdays: [1, 2, 3, 4, 5, 6, 7],
+        maxPerStay: 1,
+        turnover: "late_checkout",
+      },
     ],
   };
 }
