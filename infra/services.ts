@@ -48,6 +48,11 @@ const integrationEnvironment = {
   PMS_MODE: "live",
   SPEECH_MODE: "transcribe",
   MEDIA_REQUIRE_SCAN: "true",
+  // Feature 009: live partner data; the Civitatis number appears in every Civitatis link.
+  EXPERIENCES_MODE: "live",
+  ...(stageConfig.civitatisAffiliateId
+    ? { CIVITATIS_AFFILIATE_ID: stageConfig.civitatisAffiliateId }
+    : {}),
   ...stageConfig.flags,
 };
 

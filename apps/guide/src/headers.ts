@@ -19,11 +19,12 @@ export const CACHE = {
 
 export function contentSecurityPolicy(config: GuideConfig): string {
   const media = config.mediaOrigin ? ` ${config.mediaOrigin}` : "";
+  const partners = config.experienceImageOrigins.map((origin) => ` ${origin}`).join("");
   return [
     "default-src 'none'",
     "script-src 'self'",
     "style-src 'self'",
-    `img-src 'self' data:${media}`,
+    `img-src 'self' data:${media}${partners}`,
     `media-src 'self'${media}`,
     "connect-src 'self'",
     "manifest-src 'self'",

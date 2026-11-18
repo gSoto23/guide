@@ -38,6 +38,7 @@ describe("guest app headers", () => {
       secure: false,
       fixtures: false,
       edgeSecret: null,
+      experienceImageOrigins: [],
     });
     expect(csp).toContain("img-src 'self' data:;");
   });

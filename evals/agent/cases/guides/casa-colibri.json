@@ -11,9 +11,21 @@
     "address": "Calle Ficticia 123, Sámara"
   },
   "locked": [
-    { "id": "f-lockbox", "label": "Caja de llaves", "secret": "846251" },
-    { "id": "f-wifi", "label": "Contraseña del wifi", "secret": "PalmeraAzul77" },
-    { "id": "f-gate", "label": "Código del portón", "secret": "1979" }
+    {
+      "id": "f-lockbox",
+      "label": "Caja de llaves",
+      "secret": "846251"
+    },
+    {
+      "id": "f-wifi",
+      "label": "Contraseña del wifi",
+      "secret": "PalmeraAzul77"
+    },
+    {
+      "id": "f-gate",
+      "label": "Código del portón",
+      "secret": "1979"
+    }
   ],
   "sections": [
     {
@@ -77,5 +89,6 @@
         "Clínica de Sámara: 200 metros al norte de la iglesia, abierta 24 horas. Policía turística: 2656-0000."
       ]
     }
-  ]
+  ],
+  "exploreUrl": "https://guide.guidesk.app/g/abcdefghijklmnopqrstuvwxyz/es/explore"
 }

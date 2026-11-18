@@ -13,12 +13,14 @@ import {
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import {
+  exploreQuerySchema,
   guestGuideQuerySchema,
   guestOpenSchema,
   guestRevealSchema,
   guestSessionQuerySchema,
   guestVerifySchema,
   stayExchangeSchema,
+  type GuestExplore,
   type GuestGuide,
   type GuestOpenBody,
   type GuestRevealBody,
@@ -31,6 +33,7 @@ import {
 import { Public } from "../auth/public.decorator.js";
 import { assertUuid } from "../common/ids.js";
 import { ZodValidationPipe } from "../common/zod.pipe.js";
+import { GuestExploreService } from "./explore.service.js";
 import { GuestGuideService, GUEST_MEDIA_VARIANTS } from "./guest-guide.service.js";
 import { guestIpKey, GuestInterceptor } from "./guest.interceptor.js";
 import { unavailable } from "./guest-context.js";
@@ -44,6 +47,8 @@ import { GuestVerification } from "./verification.service.js";
  * the origin fails. It never carries session state or locked values, so sharing it is safe.
  */
 export const PUBLIC_GUIDE_CACHE = "public, max-age=0, s-maxage=60, stale-if-error=86400";
+/** Explore keeps partner content at most an hour (Viator's limit), so stale copies stay short. */
+export const PUBLIC_EXPLORE_CACHE = "public, max-age=0, s-maxage=60, stale-if-error=600";
 
 const variantSchema = z.enum(GUEST_MEDIA_VARIANTS);
 
@@ -58,6 +63,7 @@ export class GuestController {
     private readonly reveals: GuestReveals,
     private readonly verification: GuestVerification,
     private readonly opens: GuestOpens,
+    private readonly explore: GuestExploreService,
   ) {}
 
   @Get("guides/:publicId")
@@ -70,6 +76,44 @@ export class GuestController {
     const result = await this.guides.guide(publicId, query.lang);
     void reply.header("cache-control", PUBLIC_GUIDE_CACHE);
     return result;
+  }
+
+  /** Feature 009: the host's tips and the selected experiences (contracts/http-api.md). */
+  @Get("guides/:publicId/explore")
+  async exploreList(
+    @Param("publicId") publicId: string,
+    @Query(new ZodValidationPipe(exploreQuerySchema)) query: z.infer<typeof exploreQuerySchema>,
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ): Promise<GuestExplore> {
+    const result = await this.explore.explore(publicId, query.lang);
+    void reply.header("cache-control", PUBLIC_EXPLORE_CACHE);
+    return result;
+  }
+
+  /**
+   * Feature 009: "Book on {partner}" (research R8). Always a redirect; only `lang` and `c` are read,
+   * and no parameter can choose where it leads.
+   */
+  @Get("guides/:publicId/experiences/:ref/go")
+  async experienceRedirect(
+    @Param("publicId") publicId: string,
+    @Param("ref") ref: string,
+    @Query() query: Record<string, unknown>,
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ): Promise<void> {
+    const location = await this.explore.redirect(
+      publicId,
+      ref,
+      query.lang === "en" ? "en" : "es",
+      query.c === "1",
+      request.headers["user-agent"],
+      guestIpKey(request),
+    );
+    await reply
+      .header("cache-control", "no-store")
+      .header("referrer-policy", "no-referrer")
+      .redirect(location, 302);
   }
 
   @Get("media/:publicId/:mediaId/:variant")

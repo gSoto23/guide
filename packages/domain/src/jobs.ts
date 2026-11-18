@@ -30,6 +30,9 @@ export const JOB_QUEUES = {
   // Feature 006 (research R5, R7).
   copilotDraft: "copilot.draft",
   notificationPush: "notification.push",
+  // Feature 009 (research R4).
+  exploreRefresh: "explore.refresh",
+  exploreReferences: "explore.references",
 } as const;
 
 export interface CalendarRefreshJob {
@@ -58,6 +61,9 @@ export const QUEUE_POLICIES: Partial<
   [JOB_QUEUES.chatReply]: "stately",
   // The every-minute digest never overlaps itself (feature 007 research R7).
   [JOB_QUEUES.chatQuietDigest]: "singleton",
+  // One refresh at a time; a slow partner never stacks runs (feature 009 research R4).
+  [JOB_QUEUES.exploreRefresh]: "singleton",
+  [JOB_QUEUES.exploreReferences]: "singleton",
 };
 
 export interface ExtractionRunJob {

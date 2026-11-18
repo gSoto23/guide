@@ -85,6 +85,8 @@ export const SECURITY_EVENT_TYPES = [
   "conversation.reopened",
   "push.subscribed",
   "push.unsubscribed",
+  // Feature 009 (data model).
+  "explore.settings_changed",
 ] as const;
 
 export type SecurityEventType = (typeof SECURITY_EVENT_TYPES)[number];
@@ -177,6 +179,15 @@ const METADATA_ALLOWLIST: Partial<Record<SecurityEventType, readonly string[]>> 
   "conversation.reopened": ["propertyId", "conversationId"],
   "push.subscribed": ["device"],
   "push.unsubscribed": ["device"],
+  // One `true` flag per changed field, never the values (feature 009 data model).
+  "explore.settings_changed": [
+    "scope",
+    "propertyId",
+    "experiencesEnabled",
+    "hiddenCategories",
+    "hiddenExperiences",
+    "follows",
+  ],
 };
 
 /** Short labels, numbers, booleans, and calendar dates; nothing that could carry free text. */

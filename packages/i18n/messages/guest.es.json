@@ -145,5 +145,37 @@
     "unavailable": "El chat no está disponible para esta guía en este momento.",
     "loading": "Cargando el chat…",
     "offline": "Estás sin conexión. El chat vuelve a funcionar cuando te reconectes."
+  },
+  "explore": {
+    "nav": "Explorar",
+    "tile": "Explorar la zona",
+    "title": "Explorar",
+    "tips": "Recomendaciones de tu anfitrión",
+    "near": "Experiencias cerca de {city}",
+    "nearNoCity": "Experiencias cerca",
+    "disclosure": "Guidesk podría recibir una comisión si reservas, sin costo extra para ti.",
+    "categories": {
+      "tours": "Tours",
+      "food_drink": "Comida y bebida",
+      "outdoor": "Naturaleza y aventura",
+      "water": "Actividades en el agua",
+      "culture": "Cultura",
+      "day_trips": "Excursiones de un día",
+      "other": "Otras experiencias"
+    },
+    "partner": "Con {partner}",
+    "from": "Desde {price}",
+    "duration": "{hours, plural, =0 {} one {# hora} other {# horas}}{minutes, plural, =0 {} other { # min}}",
+    "rating": "{rating} de 5 ({count, plural, one {# reseña} other {# reseñas}})",
+    "englishOnly": "Descripción disponible solo en inglés.",
+    "machine": "Traducción automática del sitio del socio.",
+    "open": "Ver detalles",
+    "book": "Reservar en {partner}",
+    "bookNote": "Se abre el sitio de {partner} en otra pestaña. El precio final y la disponibilidad se confirman ahí.",
+    "includes": "Incluye",
+    "description": "Descripción",
+    "offline": "Necesitas conexión para reservar.",
+    "empty": "Todavía no hay experiencias para esta zona.",
+    "back": "Volver a Explorar"
   }
 }

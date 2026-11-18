@@ -121,3 +121,14 @@ export const LOCKED_FIELD_KIND_VALUES = [
   "other",
 ] as const;
 export const TOPIC_MARK_VALUES = ["covered", "not_applicable"] as const;
+
+/** Feature 009: Explore categories, in display order (research R6). Zod-free for portal clients. */
+export const EXPLORE_CATEGORY_VALUES = [
+  "tours",
+  "food_drink",
+  "outdoor",
+  "water",
+  "culture",
+  "day_trips",
+  "other",
+] as const;

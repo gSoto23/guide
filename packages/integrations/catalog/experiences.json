@@ -1,0 +1,4 @@
+{
+  "$comment": "Curated Explore entries per destination key (feature 009 research R3). Civitatis entries are product URLs without a query string; the affiliate number is added at redirect time. Titles and descriptions are written by Guidesk in Spanish and English. viatorDestinationId pins Viator's destination when the name match is ambiguous. Empty until the founder curates the pilot destinations (research R13).",
+  "destinations": {}
+}

@@ -13,6 +13,8 @@ export interface GuideConfig {
   fixtures: boolean;
   /** Sent to the API so it accepts the renderer's direct calls in AWS (feature 002 research R7). */
   edgeSecret: string | null;
+  /** Feature 009: HTTPS origins of partner photos, allowed by the CSP (research R9). */
+  experienceImageOrigins: string[];
 }
 
 function originOf(url: string | undefined): string | null {
@@ -32,5 +34,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): GuideConfig {
     secure: (env.GUIDE_URL ?? "").startsWith("https://"),
     fixtures: env.GUIDE_FIXTURES === "true",
     edgeSecret: env.EDGE_SHARED_SECRET || null,
+    experienceImageOrigins: (env.EXPERIENCE_IMAGE_ORIGINS ?? "")
+      .split(",")
+      .map((value) => originOf(value.trim()))
+      .filter((origin): origin is string => origin !== null && origin.startsWith("https://")),
   };
 }

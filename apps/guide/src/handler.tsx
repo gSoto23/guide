@@ -2,12 +2,13 @@ import { readFile } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import type { ReactElement } from "react";
 import { renderToString } from "react-dom/server";
-import { fetchGuide } from "./api-client.js";
+import { fetchExplore, fetchGuide } from "./api-client.js";
 import type { Assets } from "./assets.js";
 import type { PageChrome } from "./components/layout.js";
 import type { GuideConfig } from "./config.js";
 import { CACHE, securityHeaders } from "./headers.js";
 import { isGuestLocale, preferredLocale, translator, type GuestLocale } from "./i18n.js";
+import { allowImages, ExperiencePage, ExplorePage, findCard } from "./pages/explore-pages.js";
 import { EmergencyPage, HomePage, SectionPage } from "./pages/guide-pages.js";
 import {
   ExchangePage,
@@ -121,6 +122,7 @@ export function createHandler({ config, assets }: HandlerDeps) {
     publicId: string,
     lang: string,
     rest: string | undefined,
+    detail?: string,
   ): Promise<Response> {
     if (!isGuestLocale(lang)) return unavailable(requestLocale(request));
     const result = await fetchGuide(
@@ -140,11 +142,47 @@ export function createHandler({ config, assets }: HandlerDeps) {
     if (guide.language !== lang) {
       // A language the guide does not publish: its primary language (FR-013).
       return respond(null, 302, {
-        location: `/g/${publicId}/${guide.language}${rest ? `/${rest}` : ""}`,
+        location: `/g/${publicId}/${guide.language}${rest ? `/${rest}` : ""}${detail ? `/${detail}` : ""}`,
         "cache-control": CACHE.guide,
       });
     }
     const input = { ...chrome(lang), guide };
+    if (rest === "explore") {
+      // Feature 009: Explore and one experience (screens G-07, G-14).
+      if (!guide.explore.visible) {
+        return respond(null, 302, {
+          location: `/g/${publicId}/${lang}`,
+          "cache-control": CACHE.guide,
+        });
+      }
+      const explored = await fetchExplore(
+        config,
+        publicId,
+        lang,
+        request.headers.get("x-forwarded-for") ?? undefined,
+      );
+      if (explored.kind === "unavailable") return unavailable(lang);
+      if (explored.kind !== "ok") {
+        return html(
+          <RateLimitedPage {...chrome(lang)} />,
+          explored.kind === "rate_limited" ? 429 : 503,
+          CACHE.noStore,
+        );
+      }
+      const explore = allowImages(explored.explore, config.experienceImageOrigins);
+      if (!detail) {
+        return html(<ExplorePage {...input} explore={explore} />, 200, CACHE.guide);
+      }
+      const card = findCard(explore, detail);
+      if (!card) {
+        return respond(null, 302, {
+          location: `/g/${publicId}/${lang}/explore`,
+          "cache-control": CACHE.guide,
+        });
+      }
+      return html(<ExperiencePage {...input} explore={explore} card={card} />, 200, CACHE.guide);
+    }
+    if (detail) return unavailable(lang);
     if (!rest) return html(<HomePage {...input} />, 200, CACHE.guide);
     if (rest === "emergency") return html(<EmergencyPage {...input} />, 200, CACHE.guide);
     if (UUID.test(rest) && guide.sections.some((section) => section.id === rest)) {
@@ -183,6 +221,10 @@ export function createHandler({ config, assets }: HandlerDeps) {
     }
     if (parts[0] === "g" && (parts.length === 3 || parts.length === 4)) {
       return guidePage(request, parts[1]!, parts[2]!, parts[3]);
+    }
+    // Feature 009: one experience, `/g/{publicId}/{lang}/explore/{ref}`.
+    if (parts[0] === "g" && parts.length === 5 && parts[3] === "explore") {
+      return guidePage(request, parts[1]!, parts[2]!, parts[3], parts[4]);
     }
     return unavailable(requestLocale(request));
   };

@@ -39,6 +39,7 @@ import {
   type QuietWindow,
 } from "@guidesk/domain";
 import type { AgentCallResult, AgentLlmPort, AgentUsage, ChatTurn } from "@guidesk/integrations";
+import { exploreUrlFor, type ExploreKnowledgeDeps } from "./explore-pointer.js";
 
 /**
  * The assistant's decision pipeline, shared by the guest chat reply (feature 005) and "test the
@@ -54,6 +55,8 @@ export interface PipelineDeps {
   guideUrl: string;
   classifyTimeoutMs?: number;
   answerTimeoutMs?: number;
+  /** Feature 009: curated entries, so the Explore pointer follows the guest route's rules. */
+  explore?: ExploreKnowledgeDeps;
 }
 
 export type ReplyLanguage = "es" | "en";
@@ -405,6 +408,15 @@ export async function decideReply(deps: PipelineDeps, input: DecideInput): Promi
   }
   const snapshot = version.snapshot as GuideSnapshot;
   const knowledgeIn = await knowledgeInput(db, context, language, snapshot);
+  // Feature 009 (research R11): the guide chat may point to Explore; copilot drafts never do.
+  knowledgeIn.exploreUrl = await exploreUrlFor(
+    db,
+    context,
+    language,
+    snapshot,
+    deps.guideUrl,
+    deps.explore,
+  );
   if (input.takenOver && !(before.kind === "hold" && before.emergency)) {
     return silent({ ...base, usage: spent });
   }

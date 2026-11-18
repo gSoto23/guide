@@ -90,6 +90,8 @@ export interface GuestGuide {
   lockedFields: GuestLockedField[];
   /** The Wi-Fi password only when the host made it public (FR-018). */
   wifi: { fieldId: string | null; password: string | null };
+  /** Feature 009: whether the Explore tab shows (host tips or selected experiences). */
+  explore: { visible: boolean };
 }
 
 export const stayExchangeSchema = z.object({ token: stayTokenSchema }).strict();
@@ -130,7 +132,8 @@ export interface RevealResponse {
   value: string;
 }
 
+/** Feature 009 adds `explore`: one Explore open per property and day (FR-011). */
 export const guestOpenSchema = z
-  .object({ publicId: publicIdSchema, kind: z.enum(["property", "stay"]) })
+  .object({ publicId: publicIdSchema, kind: z.enum(["property", "stay", "explore"]) })
   .strict();
 export type GuestOpenBody = z.infer<typeof guestOpenSchema>;

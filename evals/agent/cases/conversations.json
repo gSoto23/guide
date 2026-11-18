@@ -519,5 +519,46 @@
       "sectionKind": "local_recommendations",
       "mentions": ["camin"]
     }
+  },
+  {
+    "id": "explore-es-tours",
+    "guide": "casa-colibri",
+    "kind": "explore",
+    "message": "¿Qué tours o actividades hay por aquí?",
+    "settings": {
+      "level": "full_auto"
+    },
+    "expect": {
+      "language": "es",
+      "mentions": ["/explore"],
+      "forbidden": ["viator", "civitatis", "getyourguide"]
+    }
+  },
+  {
+    "id": "explore-en-things-to-do",
+    "guide": "casa-colibri",
+    "kind": "explore",
+    "message": "Any fun things to do nearby? We love adventure.",
+    "settings": {
+      "level": "full_auto"
+    },
+    "expect": {
+      "language": "en",
+      "mentions": ["/explore"],
+      "forbidden": ["viator", "civitatis", "getyourguide"]
+    }
+  },
+  {
+    "id": "explore-none-without-page",
+    "guide": "villa-mar",
+    "kind": "explore",
+    "message": "What tours do you recommend around here?",
+    "settings": {
+      "level": "full_auto"
+    },
+    "expect": {
+      "language": "en",
+      "forbidden": ["/explore", "viator", "civitatis"]
+    }
   }
 ]

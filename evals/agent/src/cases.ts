@@ -29,6 +29,8 @@ export interface EvalGuide {
     address: string | null;
   };
   locked: { id: string; label: string; secret: string }[];
+  /** Feature 009: the guide's Explore page, given to the guide chat (never the copilot). */
+  exploreUrl?: string;
   sections: {
     kind: string;
     texts: string[];
@@ -51,7 +53,9 @@ export type CaseKind =
   | "instructions"
   // Feature 006 (research R5, R6): the copilot's host-voice drafts for the booking platform.
   | "copilot"
-  | "copilot_safety";
+  | "copilot_safety"
+  // Feature 009 (research R11): pointing guests to Explore.
+  | "explore";
 
 export interface EvalCase {
   id: string;
@@ -153,7 +157,7 @@ export function loadGuideKnowledge(guide: EvalGuide): LoadedGuide {
   const titles = TITLES[guide.language];
   const sectionTitle = (kind: string, custom?: string | null) => custom ?? titles[kind] ?? kind;
   const emergencyNumber = emergencyNumberFor(guide.country);
-  const render = (from: GuideSnapshot) =>
+  const render = (from: GuideSnapshot, explore: boolean) =>
     renderKnowledge({
       snapshot: from,
       language: guide.language,
@@ -163,9 +167,10 @@ export function loadGuideKnowledge(guide: EvalGuide): LoadedGuide {
       publicValues: new Map(),
       sectionTitle,
       emergencyNumber,
+      exploreUrl: explore ? (guide.exploreUrl ?? null) : null,
     });
-  const knowledge = render(snapshot);
-  const copilotKnowledge = render(withoutBenefitRecommendations(snapshot));
+  const knowledge = render(snapshot, true);
+  const copilotKnowledge = render(withoutBenefitRecommendations(snapshot), false);
   for (const field of guide.locked) {
     if (knowledge.text.includes(field.secret) || copilotKnowledge.text.includes(field.secret)) {
       throw new CaseError(`Guide ${guide.id}: a locked value reached the knowledge`);

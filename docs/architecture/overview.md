@@ -212,6 +212,17 @@ contact details for inquiries, and counts the usage toward the daily budget. Ale
 worker renders a title and a short reason, never guest text. The portal registers `/sw.js` and a web
 app manifest so it can be added to an iPhone home screen (ADR-0006).
 
+*As built in spec 009:* the guest guide has an Explore page (a tile on the guide home): the host's
+recommendations first, then up to 12 partner experiences near the property, grouped by category, each
+with a commission disclosure. A worker job (`explore.refresh`, every 30 minutes and at start) searches
+Viator's affiliate API for each destination with published guides and keeps the results at most an hour,
+Viator's limit; Civitatis entries come from a curated file in the repository. Guest requests read only
+stored results. "Book on {partner}" goes through `/api/v1/guest/guides/{publicId}/experiences/{ref}/go`
+on the guide origin, which redirects only to the stored partner page of an experience the property
+shows and counts marked taps per day without personal data. Owners and admins choose what guests see
+per property and as a workspace default. The guide chat may point guests to Explore; copilot drafts
+never do.
+
 ### 5.2 Guest writes in the Airbnb chat (Phase 2, through a PMS)
 
 ```mermaid
