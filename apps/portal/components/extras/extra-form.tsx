@@ -3,7 +3,7 @@
 import { useId, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import type { ExtraCurrency, ExtraInput } from "@guidesk/contracts";
-import { EXTRA_CURRENCY_VALUES } from "@guidesk/contracts/values";
+import { CURRENCIES } from "@/lib/extras";
 
 /** What the guest picks: no date, a date, a date and a time, or a turnover day (FR-002). */
 type When = "none" | "date" | "dateTime" | "early_check_in" | "late_checkout";
@@ -240,7 +240,7 @@ export function ExtraForm({
             value={fields.currency}
             onChange={(event) => set("currency", event.target.value as ExtraCurrency)}
           >
-            {EXTRA_CURRENCY_VALUES.map((currency) => (
+            {CURRENCIES.map((currency) => (
               <option key={currency} value={currency}>
                 {currency}
               </option>

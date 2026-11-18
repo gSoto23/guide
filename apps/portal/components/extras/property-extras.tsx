@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useId, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import type { ExtraInput, MemberExtra, MemberExtras, PropertyList } from "@guidesk/contracts";
-import { EXTRA_SUGGESTION_VALUES } from "@guidesk/contracts/values";
+import { SUGGESTIONS } from "@/lib/extras";
 import { problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
 import { blankExtra, ExtraForm, WEEKDAYS } from "./extra-form";
 
-type Suggestion = (typeof EXTRA_SUGGESTION_VALUES)[number];
+type Suggestion = (typeof SUGGESTIONS)[number];
 
 /** Suggested rules; the names and descriptions come from the catalog texts (FR-004). */
 const SUGGESTED: Record<Suggestion, Partial<ExtraInput>> = {
@@ -242,7 +242,7 @@ export function PropertyExtras({ locale, propertyId }: { locale: string; propert
               <h2>{t("suggestionsTitle")}</h2>
               <p className="field-hint">{t("suggestionsHint")}</p>
               <ul className="list-plain extra-suggestions">
-                {EXTRA_SUGGESTION_VALUES.map((key) => (
+                {SUGGESTIONS.map((key) => (
                   <li key={key}>
                     <button
                       type="button"

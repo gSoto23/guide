@@ -8,7 +8,7 @@ import type {
   ServiceRequestPage,
   ServiceRequestReason,
 } from "@guidesk/contracts";
-import { SERVICE_REQUEST_REASON_VALUES } from "@guidesk/contracts/values";
+import { ANSWER_REASONS } from "@/lib/extras";
 import { problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
 import { formatPrice } from "../extras/property-extras";
@@ -315,7 +315,7 @@ function ReasonForm({
     >
       <fieldset className="choices">
         <legend>{t("reasonLegend")}</legend>
-        {SERVICE_REQUEST_REASON_VALUES.map((value) => (
+        {ANSWER_REASONS.map((value) => (
           <label key={value} className="checkbox">
             <input
               type="radio"

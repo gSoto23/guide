@@ -1,11 +1,34 @@
 import { z } from "zod";
-import {
-  EXTRA_CURRENCY_VALUES,
-  EXTRA_DATE_RANGE_VALUES,
-  EXTRA_TURNOVER_VALUES,
-  SERVICE_REQUEST_REASON_VALUES,
-  SERVICE_REQUEST_STATUS_VALUES,
-} from "./values.js";
+
+/**
+ * Feature 008 value lists (data model). Kept out of `values.ts`, which every portal route that
+ * imports a value downloads; the portal keeps its own copies in `apps/portal/lib/extras.ts`, checked
+ * against these types (plan Performance Budget).
+ */
+export const EXTRA_CURRENCY_VALUES = ["USD", "CRC", "MXN", "EUR", "COP", "GTQ"] as const;
+export const EXTRA_DATE_RANGE_VALUES = ["stay", "before_arrival"] as const;
+export const EXTRA_TURNOVER_VALUES = ["early_check_in", "late_checkout"] as const;
+export const SERVICE_REQUEST_STATUS_VALUES = [
+  "waiting",
+  "confirmed",
+  "declined",
+  "cancelled",
+  "host_cancelled",
+  "expired",
+] as const;
+/** Reasons a member picks; `stay` is set by the system when a stay is cancelled. */
+export const SERVICE_REQUEST_REASON_VALUES = [
+  "unavailable",
+  "fully_booked",
+  "too_late",
+  "other",
+] as const;
+export const EXTRA_SUGGESTION_VALUES = [
+  "airport_pickup",
+  "extra_cleaning",
+  "grocery_stocking",
+  "late_checkout",
+] as const;
 
 /**
  * Extras and add-on requests (feature 008 contracts/http-api.md). Prices and names in a request
@@ -16,6 +39,8 @@ export type ExtraDateRange = (typeof EXTRA_DATE_RANGE_VALUES)[number];
 export type ExtraTurnover = (typeof EXTRA_TURNOVER_VALUES)[number];
 export type ServiceRequestStatus = (typeof SERVICE_REQUEST_STATUS_VALUES)[number];
 export type ServiceRequestReason = (typeof SERVICE_REQUEST_REASON_VALUES)[number] | "stay";
+export type ServiceRequestAnswerReason = (typeof SERVICE_REQUEST_REASON_VALUES)[number];
+export type ExtraSuggestion = (typeof EXTRA_SUGGESTION_VALUES)[number];
 
 const publicIdSchema = z.string().regex(/^[a-z2-7]{26}$/);
 const languageSchema = z.enum(["es", "en"]);
