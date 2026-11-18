@@ -14,7 +14,7 @@ import { unavailable } from "./guest-context.js";
  * the origin fails. It never carries session state or locked values, so sharing it is safe.
  */
 export const PUBLIC_GUIDE_CACHE =
-  "public, max-age=0, s-maxage=60, stale-while-revalidate=300, stale-if-error=86400";
+  "public, max-age=0, s-maxage=60, stale-if-error=86400";
 
 const variantSchema = z.enum(GUEST_MEDIA_VARIANTS);
 

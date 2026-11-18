@@ -173,9 +173,11 @@ of feature 002. Facts measured in this repository on 2026-11-17 are marked **mea
 
 - **Decision:**
   - **CDN:** public guide pages and the public guide data are served with
-    `Cache-Control: public, max-age=0, s-maxage=60, stale-while-revalidate=300, stale-if-error=86400`,
+    `Cache-Control: public, max-age=0, s-maxage=60, stale-if-error=86400`,
     so a published change reaches guests within about 1 minute, and the guide still opens from the
-    CDN for a day if the API or the guide app is down (performance.md §2, NFR-02). Everything
+    CDN for a day if the API or the guide app is down (performance.md §2, NFR-02). No
+    `stale-while-revalidate`: browsers apply it as well and would show an unpublished guide once
+    more (found in the US1 end-to-end test). Everything
     personal (`/api/v1/guest/session`, `reveals`, `verify`, `stay-sessions`, `opens`) is
     `no-store`. The guide pages never contain session state, so caching them is safe.
   - **Service worker** (`/sw.js`, scope `/`, plain JavaScript): pages under `/g/` are

@@ -58,7 +58,9 @@
     "shared_block_limit": "You can have up to 50 shared blocks.",
     "storage_limit_reached": "You reached your photo and video storage limit.",
     "ai_limit_reached": "You reached the daily AI limit. It resets at midnight (UTC).",
-    "reveal_limit_reached": "You revealed too many locked fields in an hour. Try again later."
+    "reveal_limit_reached": "You revealed too many locked fields in an hour. Try again later.",
+    "guide_not_published": "Publish the guide first.",
+    "stay_not_eligible": "That stay is no longer active."
   },
   "auth": {
     "signInCta": "Sign in or create an account",
@@ -1436,5 +1438,53 @@
     "reload": "Reload",
     "textPlaceholder": "Write the shared content…"
   },
-  "share": {}
+  "share": {
+    "link": "Share",
+    "title": "Share the {property} guide",
+    "intro": "Send the guide to your guests and download the QR code for the house.",
+    "back": "Back to the property",
+    "reminder": "Keep your check-in instructions in your platform messages too. The guide is optional for guests.",
+    "notPublished": "Publish the guide to share it. Guests only see the published version.",
+    "openGuide": "Go to the guide",
+    "propertyLink": {
+      "title": "Property link",
+      "body": "Shows public content only. Codes stay locked.",
+      "copy": "Copy link",
+      "copied": "Link copied",
+      "open": "Open as a guest",
+      "opens": "{count, plural, =0 {No opens in the last 30 days} one {Opened # time in the last 30 days} other {Opened # times in the last 30 days}}"
+    },
+    "qr": {
+      "title": "QR code",
+      "body": "To print and place in the house. It opens the public guide, never the codes.",
+      "svg": "Download SVG",
+      "png": "Download PNG",
+      "poster": "Print poster"
+    },
+    "regenerate": {
+      "action": "Create a new link",
+      "confirm": "The current link and printed QR codes will stop working. Create a new link?",
+      "done": "Done: the new link works and the old one stopped working."
+    },
+    "template": {
+      "title": "Scheduled message for every booking",
+      "body": "Paste it into your platform's scheduled messages, set to send when the booking is confirmed. It carries the property link, never codes.",
+      "copy": "Copy message",
+      "copied": "Message copied",
+      "spanish": "Spanish",
+      "english": "English",
+      "stepsTitle": "How to schedule it",
+      "airbnb": "Airbnb: Messages → Scheduled messages → Create. Send: when the booking is confirmed.",
+      "booking": "Booking.com: Messages → Message templates → Schedule after confirmation.",
+      "vrbo": "Vrbo: Inbox → Scheduled messages → After booking."
+    },
+    "poster": {
+      "title": "Scan to see the house guide",
+      "public": "Opens the public guide. Your access details are in your booking messages.",
+      "wifiLabel": "Wi-Fi network name (optional, poster only)",
+      "wifi": "Wi-Fi: {network}",
+      "print": "Print",
+      "hint": "Use Letter or A4. The network name is not saved."
+    }
+  }
 }

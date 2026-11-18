@@ -134,7 +134,7 @@ describe("public guide (feature 004 US1)", () => {
   it("is cacheable by the CDN, never indexed, and sends no referrer (R9, SEC-02)", async () => {
     const { response } = await read(published.publicId);
     expect(response.headers["cache-control"]).toBe(
-      "public, max-age=0, s-maxage=60, stale-while-revalidate=300, stale-if-error=86400",
+      "public, max-age=0, s-maxage=60, stale-if-error=86400",
     );
     expect(response.headers["x-robots-tag"]).toBe("noindex, nofollow");
     expect(response.headers["referrer-policy"]).toBe("no-referrer");

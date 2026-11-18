@@ -54,6 +54,9 @@ describe("message catalogs (constitution, Principle IX)", () => {
       "storage_limit_reached",
       "ai_limit_reached",
       "reveal_limit_reached",
+      // Feature 004 (contracts/http-api.md, share routes).
+      "guide_not_published",
+      "stay_not_eligible",
       // Feature 002 (contracts/http-api.md, Feature-specific errors).
       "plan_limit_reached",
       "workspace_pending_deletion",

@@ -58,7 +58,9 @@
     "shared_block_limit": "Puedes tener hasta 50 bloques compartidos.",
     "storage_limit_reached": "Llegaste al límite de almacenamiento de fotos y videos.",
     "ai_limit_reached": "Llegaste al límite diario de IA. Se renueva a medianoche (UTC).",
-    "reveal_limit_reached": "Revelaste demasiados campos protegidos en una hora. Inténtalo más tarde."
+    "reveal_limit_reached": "Revelaste demasiados campos protegidos en una hora. Inténtalo más tarde.",
+    "guide_not_published": "Primero publica la guía.",
+    "stay_not_eligible": "Esa estadía ya no está activa."
   },
   "auth": {
     "signInCta": "Entrar o crear cuenta",
@@ -1436,5 +1438,53 @@
     "reload": "Recargar",
     "textPlaceholder": "Escribe el contenido compartido…"
   },
-  "share": {}
+  "share": {
+    "link": "Compartir",
+    "title": "Compartir la guía de {property}",
+    "intro": "Envía la guía a tus huéspedes y descarga el código QR para la casa.",
+    "back": "Volver a la propiedad",
+    "reminder": "Mantén también tus instrucciones de llegada en los mensajes de la plataforma. La guía es opcional para los huéspedes.",
+    "notPublished": "Publica la guía para compartirla. Los huéspedes solo ven la versión publicada.",
+    "openGuide": "Ir a la guía",
+    "propertyLink": {
+      "title": "Enlace de la propiedad",
+      "body": "Muestra solo el contenido público. Los códigos quedan bloqueados.",
+      "copy": "Copiar enlace",
+      "copied": "Enlace copiado",
+      "open": "Abrir como huésped",
+      "opens": "{count, plural, =0 {Sin aperturas en los últimos 30 días} one {Abierta # vez en los últimos 30 días} other {Abierta # veces en los últimos 30 días}}"
+    },
+    "qr": {
+      "title": "Código QR",
+      "body": "Para imprimir y poner en la casa. Abre la guía pública, nunca los códigos.",
+      "svg": "Descargar SVG",
+      "png": "Descargar PNG",
+      "poster": "Imprimir póster"
+    },
+    "regenerate": {
+      "action": "Crear un enlace nuevo",
+      "confirm": "El enlace actual y los códigos QR impresos dejarán de funcionar. ¿Crear un enlace nuevo?",
+      "done": "Listo: el enlace nuevo ya funciona y el anterior dejó de funcionar."
+    },
+    "template": {
+      "title": "Mensaje programado para cada reserva",
+      "body": "Pégalo en los mensajes programados de tu plataforma, para enviarse cuando la reserva esté confirmada. Lleva el enlace de la propiedad, nunca códigos.",
+      "copy": "Copiar mensaje",
+      "copied": "Mensaje copiado",
+      "spanish": "Español",
+      "english": "Inglés",
+      "stepsTitle": "Cómo programarlo",
+      "airbnb": "Airbnb: Mensajes → Mensajes programados → Crear. Envío: cuando la reserva esté confirmada.",
+      "booking": "Booking.com: Mensajes → Plantillas de mensajes → Programar después de la confirmación.",
+      "vrbo": "Vrbo: Bandeja → Mensajes programados → Después de la reserva."
+    },
+    "poster": {
+      "title": "Escanea para ver la guía de la casa",
+      "public": "Abre la guía pública. Tus datos de acceso están en los mensajes de tu reserva.",
+      "wifiLabel": "Nombre de la red wifi (opcional, solo para el póster)",
+      "wifi": "Wi-Fi: {network}",
+      "print": "Imprimir",
+      "hint": "Usa tamaño Carta o A4. El nombre de la red no se guarda."
+    }
+  }
 }

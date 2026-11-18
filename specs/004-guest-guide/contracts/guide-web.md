@@ -22,8 +22,8 @@ origin. `/api/v1/guest/*` on the same origin goes to the API (contracts/http-api
 | `/manifest.webmanifest` | `public, max-age=86400` | Name "Guidesk guide", icons, `display: standalone`, `start_url: /` |
 | `/assets/{name}.{hash}.{js,css,svg,png}` | `public, max-age=31536000, immutable` | Script, styles, icons |
 
-"Public guide" caching: `public, max-age=0, s-maxage=60, stale-while-revalidate=300,
-stale-if-error=86400`. An unavailable guide answers `404` with the unavailable page (`G-13`) and
+"Public guide" caching: `public, max-age=0, s-maxage=60, stale-if-error=86400`. No
+`stale-while-revalidate`: browsers honor it too and would show an unpublished guide once more. An unavailable guide answers `404` with the unavailable page (`G-13`) and
 `public, s-maxage=60`.
 
 A language the guide does not publish answers `302` to the primary language's page. An unknown

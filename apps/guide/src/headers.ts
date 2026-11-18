@@ -7,7 +7,7 @@ import type { GuideConfig } from "./config.js";
  */
 export const CACHE = {
   /** Public guide pages: a minute at the CDN, stale for a day if the origin fails (R9). */
-  guide: "public, max-age=0, s-maxage=60, stale-while-revalidate=300, stale-if-error=86400",
+  guide: "public, max-age=0, s-maxage=60, stale-if-error=86400",
   unavailable: "public, max-age=0, s-maxage=60",
   private: "private, no-store",
   noStore: "no-store",

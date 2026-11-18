@@ -39,7 +39,7 @@ Shapes are Zod schemas in `packages/contracts/src/guest.ts` and `packages/contra
 ### `GET /api/v1/guest/guides/{publicId}?lang={es|en}`
 
 The public guide for one language (research R11). Cacheable:
-`Cache-Control: public, max-age=0, s-maxage=60, stale-while-revalidate=300, stale-if-error=86400`.
+`Cache-Control: public, max-age=0, s-maxage=60, stale-if-error=86400`.
 
 `200` `GuestGuide`:
 
