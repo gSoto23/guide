@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { Inject, Injectable } from "@nestjs/common";
 import {
   and,
@@ -39,7 +40,10 @@ import {
   guideItem,
   guideItemText,
   guideSection,
+  guideSharedLink,
   LISTING_CONTENT_KINDS,
+  mediaObject,
+  restrictedValuePublic,
   listingContent,
   onboardingProfile,
   upsertListingContent,
@@ -68,6 +72,7 @@ import {
   type CoreFacts,
   type GuideDraftJob,
   type GuideTranslateJob,
+  type MediaCopyJob,
   type PmsOption,
   type Role,
   type StartOption,
@@ -350,6 +355,8 @@ export class PropertiesService {
       guideLanguages: row!.guideLanguages,
     });
     if (original) {
+      // Feature 003 FR-067: the guide's draft comes along, labeled as copied, to review.
+      await this.copyGuide(workspaceId, original, row!, newGuide.guideId, caller.userId);
       // The listing content, labeled as copied until the host edits or approves it (FR-043).
       for (const item of await this.contentOf(original.id)) {
         await upsertListingContent(tx, {
@@ -391,12 +398,15 @@ export class PropertiesService {
         .where(eq(extractionRequest.id, extraction.id));
     }
     // The AI part of the draft runs in the worker once this transaction has committed (research
-    // R16); `startAfter` leaves it time, and the job retries if the guide is not visible yet.
-    await this.jobs.send(
-      JOB_QUEUES.guideDraft,
-      { guideId: newGuide.guideId, workspaceId } satisfies GuideDraftJob,
-      { startAfter: 2, retryLimit: 3, retryBackoff: true, singletonKey: newGuide.guideId },
-    );
+    // R16); `startAfter` leaves it time, and the job retries if the guide is not visible yet. A
+    // copy brings its guide with it instead (FR-067).
+    if (!original) {
+      await this.jobs.send(
+        JOB_QUEUES.guideDraft,
+        { guideId: newGuide.guideId, workspaceId } satisfies GuideDraftJob,
+        { startAfter: 2, retryLimit: 3, retryBackoff: true, singletonKey: newGuide.guideId },
+      );
+    }
     return this.detail(caller, row!);
   }
 
@@ -484,6 +494,222 @@ export class PropertiesService {
       );
     }
     return this.detail(caller, row);
+  }
+
+  /**
+   * Copies a guide for a duplicated property (feature 003 FR-067, research R16): sections (custom
+   * ones too), items labeled "Copied from …" and left to review, media copied to new keys by the
+   * worker, shared-block overrides and exclusions, and locked fields with their labels and no
+   * value. Published versions, translations' review state, and reveal history stay behind.
+   */
+  private async copyGuide(
+    workspaceId: string,
+    original: PropertyRow,
+    copy: typeof property.$inferSelect,
+    guideId: string,
+    userId: string,
+  ): Promise<void> {
+    const tx = this.requestDb.current();
+    const [source] = await tx
+      .select({ id: guide.id })
+      .from(guide)
+      .where(eq(guide.propertyId, original.id))
+      .limit(1);
+    if (!source) return;
+    const label = original.name.slice(0, 120);
+    const targetSections = await tx
+      .select({ id: guideSection.id, kind: guideSection.kind })
+      .from(guideSection)
+      .where(eq(guideSection.guideId, guideId));
+    const sourceSections = await tx
+      .select()
+      .from(guideSection)
+      .where(eq(guideSection.guideId, source.id))
+      .orderBy(asc(guideSection.position));
+
+    // Locked fields: labels without values, and a map for the references in copied texts.
+    const fields = await tx
+      .select({
+        id: restrictedValuePublic.id,
+        kind: restrictedValuePublic.kind,
+        label: restrictedValuePublic.label,
+        sectionKind: restrictedValuePublic.sectionKind,
+      })
+      .from(restrictedValuePublic)
+      .where(eq(restrictedValuePublic.propertyId, original.id));
+    const fieldMap = new Map<string, string>();
+    for (const field of fields) {
+      const [created] = await tx
+        .insert(restrictedValue)
+        .values({
+          workspaceId,
+          propertyId: copy.id,
+          kind: field.kind,
+          label: field.label,
+          sectionKind: field.sectionKind,
+          source: "copy",
+          updatedBy: userId,
+        })
+        .returning({ id: restrictedValue.id });
+      fieldMap.set(field.id, created!.id);
+    }
+    const remap = (doc: unknown): unknown => {
+      if (Array.isArray(doc)) return doc.map(remap);
+      if (doc && typeof doc === "object") {
+        const node = doc as Record<string, unknown>;
+        if (node.type === "lockedField") {
+          const attrs = node.attrs as { fieldId?: string } | undefined;
+          const mapped = attrs?.fieldId ? fieldMap.get(attrs.fieldId) : undefined;
+          return mapped ? { ...node, attrs: { fieldId: mapped } } : null;
+        }
+        return Object.fromEntries(
+          Object.entries(node).map(([key, value]) => [
+            key,
+            key === "content" && Array.isArray(value)
+              ? (value.map(remap).filter((entry) => entry !== null) as unknown[])
+              : remap(value),
+          ]),
+        );
+      }
+      return doc;
+    };
+
+    const sectionMap = new Map<string, string>();
+    for (const section of sourceSections) {
+      if (section.kind === "custom") {
+        const [created] = await tx
+          .insert(guideSection)
+          .values({
+            workspaceId,
+            guideId,
+            kind: "custom",
+            title: section.title,
+            position: section.position,
+            updatedBy: userId,
+          })
+          .returning({ id: guideSection.id });
+        sectionMap.set(section.id, created!.id);
+        continue;
+      }
+      const target = targetSections.find((candidate) => candidate.kind === section.kind);
+      if (!target) continue;
+      sectionMap.set(section.id, target.id);
+      await tx
+        .update(guideSection)
+        .set({ hidden: section.hidden, position: section.position })
+        .where(eq(guideSection.id, target.id));
+    }
+
+    const items = sourceSections.length
+      ? await tx
+          .select()
+          .from(guideItem)
+          .where(
+            and(
+              inArray(
+                guideItem.sectionId,
+                sourceSections.map((section) => section.id),
+              ),
+              ne(guideItem.kind, "fact"),
+            ),
+          )
+          .orderBy(asc(guideItem.position))
+      : [];
+    const texts = items.length
+      ? await tx
+          .select()
+          .from(guideItemText)
+          .where(
+            inArray(
+              guideItemText.itemId,
+              items.map((item) => item.id),
+            ),
+          )
+      : [];
+    const mediaMap = new Map<string, string>();
+    for (const item of items) {
+      const sectionId = item.sectionId ? sectionMap.get(item.sectionId) : undefined;
+      if (!sectionId) continue;
+      let mediaId: string | null = null;
+      if (item.mediaId) {
+        mediaId = mediaMap.get(item.mediaId) ?? null;
+        if (!mediaId) {
+          const [media] = await tx
+            .select()
+            .from(mediaObject)
+            .where(eq(mediaObject.id, item.mediaId))
+            .limit(1);
+          if (!media || media.status !== "ready") continue;
+          const id = randomUUID();
+          await tx.insert(mediaObject).values({
+            id,
+            workspaceId,
+            kind: media.kind,
+            status: "processing",
+            objectPrefix: `media/${workspaceId}/${id}/`,
+            createdBy: userId,
+          });
+          await this.jobs.send(
+            JOB_QUEUES.mediaCopy,
+            { workspaceId, mediaId: id, sourceMediaId: media.id } satisfies MediaCopyJob,
+            { startAfter: 1, retryLimit: 3, retryBackoff: true },
+          );
+          mediaMap.set(item.mediaId, id);
+          mediaId = id;
+        }
+      }
+      const [created] = await tx
+        .insert(guideItem)
+        .values({
+          workspaceId,
+          sectionId,
+          kind: item.kind,
+          position: item.position,
+          source: "copy",
+          sourceDetail: label,
+          sourceLanguage: item.sourceLanguage,
+          topics: item.topics,
+          mediaId,
+          recommendation: item.recommendation,
+          copiedFromBlockId: item.copiedFromBlockId,
+          updatedBy: userId,
+        })
+        .returning({ id: guideItem.id });
+      for (const text of texts.filter((candidate) => candidate.itemId === item.id)) {
+        if (!text.doc) continue;
+        const isSource = text.language === item.sourceLanguage;
+        await tx.insert(guideItemText).values({
+          itemId: created!.id,
+          language: text.language,
+          workspaceId,
+          doc: remap(text.doc),
+          textLength: text.textLength,
+          // A translation's review state stays with the original (FR-067).
+          origin: isSource ? "source" : "machine",
+          state: "current",
+          sourceHash: isSource ? null : text.sourceHash,
+        });
+      }
+    }
+
+    const links = await tx
+      .select()
+      .from(guideSharedLink)
+      .where(eq(guideSharedLink.guideId, source.id));
+    for (const link of links) {
+      await tx
+        .insert(guideSharedLink)
+        .values({
+          guideId,
+          sharedBlockId: link.sharedBlockId,
+          workspaceId,
+          mode: link.mode,
+          basedOnRevision: link.basedOnRevision,
+          createdBy: userId,
+        })
+        .onConflictDoNothing();
+    }
+    await tx.update(guide).set({ draftState: "ready" }).where(eq(guide.id, guideId));
   }
 
   /**

@@ -366,13 +366,13 @@ to every inheriting guide at once.
 ## Phase 10: Polish & Cross-Cutting Concerns
 
 - [X] T118 Production gates (founder): record each gate of [research R22](research.md#r22-rollout-flags-and-production-gates) and its status in research.md; flags stay off in production until they close
-- [ ] T119 [P] Duplicate and remove (FR-067, FR-068): extend `apps/api/test/integration/property-lifecycle.test.ts` and `apps/worker/test/purge-jobs.test.ts` first, then copy the guide on duplication (sections, items labeled `copy`, media objects copied to new keys, links, locked fields with labels and no values) in the property service, and delete guide data, media, and locked fields in `apps/worker/src/jobs/purge-properties.ts`
-- [ ] T120 [P] Retention (data model §6): extend `apps/worker/test/integration/retention.test.ts` first, then add the voice, document, transcript, answer, document-text, version (beyond 20), unreferenced media (24 hours), and AI-request (12 months) rules to `apps/worker/src/jobs/retention.ts`
-- [ ] T121 [P] Security review: `apps/api/test/integration/security-review-003.test.ts` covering AC-SEC-001 to AC-SEC-013 end to end, including a log and span capture that searches for every code used in the tests (SC-004), and an extension of `apps/api/test/integration/cross-tenant.test.ts` to every guide route (AC-SEC-011)
+- [X] T119 [P] Duplicate and remove (FR-067, FR-068): extend `apps/api/test/integration/property-lifecycle.test.ts` and `apps/worker/test/purge-jobs.test.ts` first, then copy the guide on duplication (sections, items labeled `copy`, media objects copied to new keys, links, locked fields with labels and no values) in the property service, and delete guide data, media, and locked fields in `apps/worker/src/jobs/purge-properties.ts`
+- [X] T120 [P] Retention (data model §6): extend `apps/worker/test/integration/retention.test.ts` first, then add the voice, document, transcript, answer, document-text, version (beyond 20), unreferenced media (24 hours), and AI-request (12 months) rules to `apps/worker/src/jobs/retention.ts`
+- [X] T121 [P] Security review: `apps/api/test/integration/security-review-003.test.ts` covering AC-SEC-001 to AC-SEC-013 end to end, including a log and span capture that searches for every code used in the tests (SC-004), and an extension of `apps/api/test/integration/cross-tenant.test.ts` to every guide route (AC-SEC-011)
 - [X] T122 [P] Performance: `perf/k6/guides.js` (guide read, item save, approve, topic mark, publish check; p95 ≤ 300 ms); add the guide pages to `lighthouserc.json`; confirm the bundle check covers the guide routes and the editor chunk
 - [X] T123 [P] Accessibility: extend `e2e/specs/a11y.spec.ts` to the guide screens (review, editor, locked fields, interview, uploads, translations, publish, shared content)
 - [X] T124 [P] Documentation (R21): the public Wi-Fi note in `docs/architecture/security.md` §1 and the reveal service in SEC-06; Amazon Transcribe and the media bucket in ADR-0009's service table; the subprocessor note; UX gaps 4, 5, and 8 marked resolved in `docs/ux/README.md`; the repository layout in `docs/architecture/overview.md` §8
-- [ ] T125 Run the [quickstart](quickstart.md) locally end to end and record the results in this file's Implementation notes
+- [X] T125 Run the [quickstart](quickstart.md) locally end to end and record the results in this file's Implementation notes
 
 ---
 
@@ -505,3 +505,22 @@ _Recorded during implementation._
   every guide route and the editor chunk. axe finds no WCAG 2.2 A/AA violations on the guide review,
   publish dialog, section editor, locked fields, interview, uploads, translations, versions,
   preview, and shared content screens.
+- **Duplicate, remove, retention (T119, T120).** Duplicating a property copies its guide in the
+  same request (sections, custom sections, hidden flags, items as unreviewed `copy` items labeled
+  with the original's name, shared-block links, and locked fields with labels and no values, with
+  every `lockedField` reference remapped); media is copied to new keys by a new `media.copy` job,
+  and the copy gets no `guide.draft`. Purging a property removes its guide by cascade; its media
+  becomes unused and `retention.daily` deletes it a day later, with the other feature 003 rules
+  (interview content and document text after 7 days, versions beyond 20 except the current one, AI
+  rows after 12 months).
+- **Security review (T121).** `security-review-003.test.ts` runs the API-owned criteria in one
+  guide and searches every captured log line, response, and security-log row for the codes used;
+  `cross-tenant.test.ts` covers 31 feature 003 routes. A code the host keeps as text in the editor
+  comes back to the host by design (FR-023) but never reaches a log.
+- **Quickstart run (T125), 2026-11-17, locally with the fake model and fake speech:** scenarios 1
+  to 8 pass as the end-to-end specs `guide-us1` to `guide-us7` (with `GUIDE_INTERVIEW_VOICE=true`
+  for the voice note), scenario 9 as `property-lifecycle.test.ts` and `purge-properties.test.ts`,
+  and scenario 10 as `cross-tenant.test.ts` and `security-review-003.test.ts`; axe passes on every
+  guide screen. Run the end-to-end specs with `--workers=1`: in parallel they reach the limit of
+  20 sign-in codes per hour per IP. The scanned-PDF step needs `GUIDE_SCANNED_PDF=true` and is
+  covered by the sandbox test. The real-model eval run and the staging run stay open (R22).

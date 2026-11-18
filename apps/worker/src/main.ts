@@ -48,6 +48,7 @@ import {
 import { createGuideDocumentHandler } from "./jobs/guide-document.js";
 import { createInterviewAnswerHandler } from "./jobs/interview-answer.js";
 import { createSharedBlockPublishHandler } from "./jobs/shared-block-publish.js";
+import { createMediaCopyHandler } from "./jobs/media-copy.js";
 import { createMediaProcessHandler } from "./jobs/media-process.js";
 import { createWorkerServices } from "./services.js";
 
@@ -164,6 +165,12 @@ async function main(): Promise<void> {
       requireScan: services.mediaRequireScan,
     }),
   );
+  await createQueue(JOB_QUEUES.mediaCopy);
+  await boss.work(
+    JOB_QUEUES.mediaCopy,
+    { localConcurrency: 2 },
+    createMediaCopyHandler({ db: services.db.db, media: services.media }),
+  );
   // Shared-block fan-out (research R14): one job per publish or delete.
   await createQueue(JOB_QUEUES.sharedBlockPublish);
   await boss.work(
@@ -263,7 +270,11 @@ async function main(): Promise<void> {
   await createQueue(JOB_QUEUES.retentionDaily);
   await boss.work(
     JOB_QUEUES.retentionDaily,
-    createRetentionHandler({ db: services.db.db, storage: services.storage }),
+    createRetentionHandler({
+      db: services.db.db,
+      storage: services.storage,
+      media: services.media,
+    }),
   );
   await boss.schedule(JOB_QUEUES.retentionDaily, RETENTION_CRON, null, { tz: "UTC" });
   console.warn("Guidesk worker started");

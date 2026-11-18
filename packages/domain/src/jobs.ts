@@ -20,6 +20,7 @@ export const JOB_QUEUES = {
   guideDocument: "guide.document",
   mediaProcess: "media.process",
   sharedBlockPublish: "shared-block.publish",
+  mediaCopy: "media.copy",
 } as const;
 
 export interface CalendarRefreshJob {
@@ -85,6 +86,14 @@ export interface GuideDocumentJob {
 export interface MediaProcessJob {
   workspaceId: string;
   mediaId: string;
+}
+
+/** A duplicated property's media, copied to the new object's own keys (feature 003 FR-067). */
+export interface MediaCopyJob {
+  workspaceId: string;
+  /** The new media object, in `processing` until its objects are copied. */
+  mediaId: string;
+  sourceMediaId: string;
 }
 
 export interface SharedBlockPublishJob {

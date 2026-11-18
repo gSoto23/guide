@@ -7,8 +7,10 @@ import { runInJobSpan, type JobSpanDeps } from "./span.js";
 /**
  * Daily permanent deletion of properties removed more than 30 days ago (FR-045, data model §6,
  * T118). Deleting the property deletes its stays, listing content, feeds, and restricted values
- * with it (`ON DELETE CASCADE`); import items and extractions only lose the link. Each deletion
- * is logged as `property.purged`.
+ * with it (`ON DELETE CASCADE`); import items and extractions only lose the link. Feature 003
+ * (FR-068): the guide goes too, with its sections, items, versions, shared-block links, interview
+ * sessions, and documents; its media becomes unused and `retention.daily` deletes it a day later.
+ * Each deletion is logged as `property.purged`.
  */
 export const PURGE_PROPERTIES_CRON = "45 3 * * *";
 
