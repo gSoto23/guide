@@ -75,6 +75,13 @@ const TITLES: Record<ProblemCode, string> = {
   conversation_done: "Conversation already done",
   copilot_paused: "Too many copilot drafts",
   push_unavailable: "Push alerts aren't available",
+  extra_changed: "The extra changed since you loaded it",
+  not_waiting: "The request isn't waiting any more",
+  not_confirmed: "The request isn't confirmed",
+  not_requestable: "Requests aren't available for this stay now",
+  rule_failed: "The request doesn't meet the extra's rules",
+  duplicate: "You just made the same request",
+  too_many_requests: "Too many requests for this stay",
 };
 
 const CODE_BY_STATUS: Record<number, ProblemCode> = {

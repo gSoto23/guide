@@ -4,6 +4,7 @@ import { GuidesModule } from "../guides/guides.module.js";
 import { LockedFieldsModule } from "../locked-fields/locked-fields.module.js";
 import { TenancyModule } from "../tenancy/tenancy.module.js";
 import { GuestExploreService } from "./explore.service.js";
+import { GuestExtrasService } from "./extras.service.js";
 import { GuestContext } from "./guest-context.js";
 import { GuestGuideService } from "./guest-guide.service.js";
 import { GuestController } from "./guest.controller.js";
@@ -28,6 +29,7 @@ import { GuestVerification } from "./verification.service.js";
     GuestVerification,
     GuestOpens,
     GuestExploreService,
+    GuestExtrasService,
   ],
   exports: [GuestContext, GuestSessions, StayLinkSecrets],
 })

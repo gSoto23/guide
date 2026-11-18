@@ -22,6 +22,8 @@ import {
   sharedBlock,
   stay,
   type DbHandle,
+  extra,
+  serviceRequest,
   type Transaction,
 } from "@guidesk/db";
 import { ApiProblem } from "../common/problem.js";
@@ -55,6 +57,9 @@ const TABLES = {
   assistant_test: assistantTest,
   // Feature 006 (AC-SEC-004).
   copilot_run: copilotRun,
+  // Feature 008 (AC-SEC-004).
+  extra,
+  service_request: serviceRequest,
 } as const;
 export type TenantResource = keyof typeof TABLES;
 

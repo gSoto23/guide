@@ -132,3 +132,29 @@ export const EXPLORE_CATEGORY_VALUES = [
   "day_trips",
   "other",
 ] as const;
+
+/** Feature 008: extras and requests, zod-free for portal clients (data model). */
+export const EXTRA_CURRENCY_VALUES = ["USD", "CRC", "MXN", "EUR", "COP", "GTQ"] as const;
+export const EXTRA_DATE_RANGE_VALUES = ["stay", "before_arrival"] as const;
+export const EXTRA_TURNOVER_VALUES = ["early_check_in", "late_checkout"] as const;
+export const SERVICE_REQUEST_STATUS_VALUES = [
+  "waiting",
+  "confirmed",
+  "declined",
+  "cancelled",
+  "host_cancelled",
+  "expired",
+] as const;
+/** Reasons a member picks; `stay` is set by the system when a stay is cancelled. */
+export const SERVICE_REQUEST_REASON_VALUES = [
+  "unavailable",
+  "fully_booked",
+  "too_late",
+  "other",
+] as const;
+export const EXTRA_SUGGESTION_VALUES = [
+  "airport_pickup",
+  "extra_cleaning",
+  "grocery_stocking",
+  "late_checkout",
+] as const;
