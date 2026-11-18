@@ -324,17 +324,17 @@ date, pending, or failed.
 
 ### Tests for User Story 6 ⚠️
 
-- [ ] T104 [P] [US6] Sandbox tests for the `document` mode in `apps/sandbox/test/document.test.ts`: text PDF read per page; more than 60 pages `too_many_pages`; encrypted PDF `password_protected`; a scanned PDF read by recognition only with the flag; a renamed archive `unsupported_type` (AC-SEC-009)
-- [ ] T105 [P] [US6] Worker and API tests in `apps/worker/test/integration/guide-document.test.ts` and `apps/api/test/integration/guide-documents.test.ts`: up to 10 files (FR-039); scan wait; text after the detector stored and sent to the fake model, with no code in the recorder and no image ever sent (AC-SEC-005); suggestions as unreviewed `document` items labeled with the file name; accept, edit, discard; `nothing_found`; the file deleted after reading; "ignore previous instructions…" treated as text (AC-SEC-007); the AI limit
-- [ ] T106 [P] [US6] Contract test for `suggestFromDocument` in `packages/integrations/test/llm/suggest-from-document.contract.test.ts`
-- [ ] T107 [P] [US6] End-to-end test `e2e/specs/guide-us6-uploads.spec.ts` (quickstart 7)
+- [X] T104 [P] [US6] Sandbox tests for the `document` mode in `apps/sandbox/test/document.test.ts`: text PDF read per page; more than 60 pages `too_many_pages`; encrypted PDF `password_protected`; a scanned PDF read by recognition only with the flag; a renamed archive `unsupported_type` (AC-SEC-009)
+- [X] T105 [P] [US6] Worker and API tests in `apps/worker/test/integration/guide-document.test.ts` and `apps/api/test/integration/guide-documents.test.ts`: up to 10 files (FR-039); scan wait; text after the detector stored and sent to the fake model, with no code in the recorder and no image ever sent (AC-SEC-005); suggestions as unreviewed `document` items labeled with the file name; accept, edit, discard; `nothing_found`; the file deleted after reading; "ignore previous instructions…" treated as text (AC-SEC-007); the AI limit
+- [X] T106 [P] [US6] Contract test for `suggestFromDocument` in `packages/integrations/test/llm/suggest-from-document.contract.test.ts`
+- [X] T107 [P] [US6] End-to-end test `e2e/specs/guide-us6-uploads.spec.ts` (quickstart 7)
 
 ### Implementation for User Story 6
 
-- [ ] T108 [US6] Implement the sandbox `document` mode in `apps/sandbox/src/file-processor/pdf.ts` (R9: `pdfjs-dist`, encryption detection, page limits, scanned pages rendered with `@napi-rs/canvas` and read with the existing recognizer behind the flag; only text leaves the sandbox, never an image, FR-042). Make T104 pass
-- [ ] T109 [US6] Implement `suggestFromDocument` in the Anthropic adapter (`packages/integrations/src/llm/guide/suggest-document.ts`), the `guide-documents` module, and the `guide.document` job (`apps/worker/src/jobs/guide-document.ts`). Make T105 and T106 pass
-- [ ] T110 [US6] Build the uploads screen (H-15) in `apps/portal/app/[locale]/(app)/properties/[propertyId]/guide/uploads/page.tsx`: pick or take photos, per-file status, what was learned, links to suggestions with accept, edit, and discard, "add this photo to a section", and the reminder to keep codes out (FR-028)
-- [ ] T111 [US6] Make T107 pass
+- [X] T108 [US6] Implement the sandbox `document` mode in `apps/sandbox/src/file-processor/pdf.ts` (R9: `pdfjs-dist`, encryption detection, page limits, scanned pages rendered with `@napi-rs/canvas` and read with the existing recognizer behind the flag; only text leaves the sandbox, never an image, FR-042). Make T104 pass
+- [X] T109 [US6] Implement `suggestFromDocument` in the Anthropic adapter (`packages/integrations/src/llm/guide/suggest-document.ts`), the `guide-documents` module, and the `guide.document` job (`apps/worker/src/jobs/guide-document.ts`). Make T105 and T106 pass
+- [X] T110 [US6] Build the uploads screen (H-15) in `apps/portal/app/[locale]/(app)/properties/[propertyId]/guide/uploads/page.tsx`: pick or take photos, per-file status, what was learned, links to suggestions with accept, edit, and discard, "add this photo to a section", and the reminder to keep codes out (FR-028)
+- [X] T111 [US6] Make T107 pass
 
 **Checkpoint**: manuals and photos speed up the appliance and access sections.
 
@@ -485,3 +485,10 @@ _Recorded during implementation._
   restored versions, and added guide languages, and retries `pending` texts after 10 minutes.
   Empty texts schedule nothing. Removing a guide language keeps texts written in that language as
   their item's source.
+- **Documents (US6).** `suggestFromDocument` landed with the foundations (T026), and its contract
+  test lives in `guide.contract.test.ts`. The sandbox reads PDFs with `pdfjs-dist` 6 (no eval, no
+  fonts, no XFA) and renders scanned pages with `@napi-rs/canvas` only when
+  `GUIDE_SCANNED_PDF=true` (the Lambda has it `false` until the R22 gate). The reading takes one
+  request from the daily AI limit only when it reaches the model; a refused one ends `rejected`
+  with `ai_limit`. Photos that the browser cannot open never upload. A photo read in this visit can
+  be added to a section as an image through the media flow.

@@ -8,6 +8,7 @@ import {
 } from "../protocol.js";
 import { checkAudio } from "./audio.js";
 import { parseCsvFile } from "./csv.js";
+import { readPdf } from "./pdf.js";
 import { processMediaImage, type MediaSink } from "./media-image.js";
 import { MEDIA_VIDEO_MAX_BYTES, processMediaVideo } from "./media-video.js";
 import { S3MediaSink } from "./s3-media-sink.js";
@@ -39,6 +40,8 @@ export const FILE_MAX_BYTES = 10 * 1024 * 1024;
  * (infra/sandbox.ts, FR-016) to delete the object and answer.
  */
 export const RECOGNITION_TIMEOUT_MS = 45_000;
+/** A 60-page PDF with up to 20 scanned pages fits in the function's 2 minutes (feature 003). */
+export const DOCUMENT_TIMEOUT_MS = 100_000;
 
 /** Where uploaded objects are read from and deleted: S3 in AWS, injected by the worker locally. */
 export interface ObjectSource {
@@ -57,6 +60,8 @@ export interface FileProcessorDeps {
   maxBytes?: number;
   /** Defaults to `RECOGNITION_TIMEOUT_MS`. */
   recognitionTimeoutMs?: number;
+  /** `guide.scannedPdf`: read scanned PDF pages by recognition (feature 003 research R9). */
+  readScannedPdfPages?: boolean;
 }
 
 /**
@@ -100,7 +105,13 @@ export function createFileProcessor(
           ? await processMediaImage(bytes, mediaPrefix, deps.mediaSink)
           : await processMediaVideo(bytes, mediaPrefix, deps.mediaSink);
       }
-      // Feature 003 modes that arrive with later user stories (T108).
+      if (purpose === "document") {
+        return await readPdf(bytes, {
+          recognizer: deps.recognizer,
+          readScannedPages: deps.readScannedPdfPages ?? false,
+          signal: AbortSignal.timeout(DOCUMENT_TIMEOUT_MS),
+        });
+      }
       return { error: "unsupported_type" };
     } finally {
       if (!keep) await deps.storage.delete(objectKey);
@@ -164,6 +175,7 @@ function processorFromEnvironment(): (request: FileProcessRequest) => Promise<Fi
     storage: new S3ObjectSource({ bucket, maxBytes: MEDIA_VIDEO_MAX_BYTES }),
     recognizer: new TesseractRecognizer(),
     ...(mediaBucket ? { mediaSink: new S3MediaSink({ bucket: mediaBucket }) } : {}),
+    readScannedPdfPages: process.env.GUIDE_SCANNED_PDF === "true",
   });
   return lambdaProcessor;
 }

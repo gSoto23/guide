@@ -45,6 +45,7 @@ import {
   GUIDE_TRANSLATE_SWEEP_CRON,
   GUIDE_TRANSLATE_SWEEP_QUEUE,
 } from "./jobs/guide-translate.js";
+import { createGuideDocumentHandler } from "./jobs/guide-document.js";
 import { createInterviewAnswerHandler } from "./jobs/interview-answer.js";
 import { createMediaProcessHandler } from "./jobs/media-process.js";
 import { createWorkerServices } from "./services.js";
@@ -148,6 +149,18 @@ async function main(): Promise<void> {
       speech: services.speech,
       sandbox: services.sandbox,
       storage: services.storage,
+    }),
+  );
+  await createQueue(JOB_QUEUES.guideDocument);
+  await boss.work(
+    JOB_QUEUES.guideDocument,
+    { localConcurrency: 2 },
+    createGuideDocumentHandler({
+      db: services.db.db,
+      sandbox: services.sandbox,
+      storage: services.storage,
+      llm: services.llm,
+      requireScan: services.mediaRequireScan,
     }),
   );
   // Translation per section and language (research R7): saves schedule their own debounced job;

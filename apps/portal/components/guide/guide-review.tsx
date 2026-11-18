@@ -172,6 +172,9 @@ export function GuideReview({
         <Link className="button button-secondary" href={`${base}/versions`}>
           {t("publish.versions")}
         </Link>
+        <Link className="button button-secondary" href={`${base}/uploads`}>
+          {t("uploads.link")}
+        </Link>
         {view.languages.length > 1 && (
           <Link className="button button-secondary" href={`${base}/translations`}>
             {t("translations.link")}

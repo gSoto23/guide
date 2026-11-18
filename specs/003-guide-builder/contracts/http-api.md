@@ -98,9 +98,9 @@ properties. Agents calling a write route get `403 role_denied`, logged as `acces
 
 | Method and path | Roles | Notes |
 |---|---|---|
-| `POST /documents` | O A | Body: `{files: [{fileName, contentType, size}]}`, 1–10 files (FR-039). Returns one `{documentId, upload}` per file |
+| `POST /documents` | O A | Body: `{files: [{fileName, contentType, size}]}`, 1–10 files (FR-039): `application/pdf` up to 20 MB, or `image/jpeg`, `image/png`, `image/webp` up to 10 MB. File names lose paths and control characters. Returns one `{documentId, upload}` per file |
 | `POST /documents/{documentId}/complete` | O A | Sends `guide.document`. `202`. Counts toward the AI limit when the reading reaches the model |
-| `GET /documents` | O A Ag | Per file: status, reject reason, pages, redaction counts, and its suggestion item IDs (FR-040) |
+| `GET /documents` | O A Ag | Per file: `{id, fileName, kind, status, rejectReason, pages, scannedPages, redactions, suggestionItemIds, createdAt}`, newest first; `suggestionItemIds` are the unreviewed suggestions still in the guide (FR-040). `rejectReason` includes `nothing_found`, `ai_limit`, and `ai_unavailable` |
 | `DELETE /documents/{documentId}` | O A | Removes the file record and its unreviewed suggestions |
 
 ## Interview

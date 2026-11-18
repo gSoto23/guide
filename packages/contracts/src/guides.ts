@@ -473,3 +473,59 @@ export interface CompletenessView {
   missing: MissingTopic[];
   marks: Record<string, (typeof TOPIC_MARK_VALUES)[number]>;
 }
+
+// Documents (feature 003 contract "Documents") ---------------------------------------------------
+
+/** PDF manuals and photos read for knowledge, 1–10 per request (FR-039). */
+export const createDocumentsSchema = z
+  .object({
+    files: z
+      .array(
+        z
+          .object({
+            fileName: z.string().trim().min(1).max(200),
+            contentType: z.enum(["application/pdf", "image/jpeg", "image/png", "image/webp"]),
+            size: z
+              .int()
+              .min(1)
+              .max(20 * 1024 * 1024),
+          })
+          .strict()
+          .refine(
+            (file) => file.contentType === "application/pdf" || file.size <= 10 * 1024 * 1024,
+            {
+              message: "Photos are at most 10 MB",
+              path: ["size"],
+            },
+          ),
+      )
+      .min(1)
+      .max(10),
+  })
+  .strict();
+export type CreateDocumentsBody = z.infer<typeof createDocumentsSchema>;
+
+export interface DocumentUpload {
+  documentId: string;
+  upload: { url: string; fields: Record<string, string> };
+}
+
+export interface DocumentView {
+  id: string;
+  fileName: string;
+  kind: "pdf" | "photo";
+  status: "checking" | "reading" | "done" | "rejected";
+  /** Why it was not read, or `nothing_found` when nothing useful was in it. */
+  rejectReason: string | null;
+  pages: number | null;
+  scannedPages: number | null;
+  /** How many codes the detector removed, by kind; never values. */
+  redactions: Record<string, number>;
+  /** Unreviewed suggestions still in the guide (FR-041). */
+  suggestionItemIds: string[];
+  createdAt: string;
+}
+
+export interface DocumentList {
+  items: DocumentView[];
+}

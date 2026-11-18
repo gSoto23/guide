@@ -117,6 +117,7 @@ function createSandbox(
         storage,
         recognizer,
         mediaSink: { put: (key, bytes, contentType) => media.put(key, bytes, contentType) },
+        readScannedPdfPages: config.integrations.flags.guideScannedPdf,
       }),
     }),
     close: () => recognizer.terminate(),
