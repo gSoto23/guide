@@ -11,6 +11,7 @@ import { ConfigModule } from "./config/config.module.js";
 import { DatabaseModule } from "./database/database.module.js";
 import { EmailModule } from "./email/email.module.js";
 import { ExtractionsModule } from "./extractions/extractions.module.js";
+import { GuidesModule } from "./guides/guides.module.js";
 import { ImportRunsModule } from "./imports/import-runs.module.js";
 import { HealthController } from "./health/health.controller.js";
 import { IntegrationsModule } from "./integrations/integrations.module.js";
@@ -34,6 +35,7 @@ import { TenancyModule } from "./tenancy/tenancy.module.js";
     IntegrationsModule,
     UploadsModule,
     PropertiesModule,
+    GuidesModule,
     ListingContentModule,
     CalendarFeedsModule,
     StaysModule,

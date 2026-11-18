@@ -454,6 +454,19 @@ importers:
         specifier: workspace:*
         version: link:../../packages/config
 
+  evals/guide:
+    dependencies:
+      '@guidesk/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      '@guidesk/integrations':
+        specifier: workspace:*
+        version: link:../../packages/integrations
+    devDependencies:
+      '@guidesk/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+
   packages/config:
     devDependencies:
       '@eslint/js':
@@ -553,6 +566,9 @@ importers:
         specifier: 3.1169.0
         version: 3.1169.0
       '@aws-sdk/s3-presigned-post':
+        specifier: 3.1169.0
+        version: 3.1169.0
+      '@aws-sdk/s3-request-presigner':
         specifier: 3.1169.0
         version: 3.1169.0
       '@opentelemetry/api':
@@ -719,6 +735,10 @@ packages:
 
   '@aws-sdk/s3-presigned-post@3.1169.0':
     resolution: {integrity: sha512-11ly8qb9q2yRVl/gxlF9RZQ7tb6s68v1vbA5Jhvd+AP8nBHPf/zucRc8M6zbaRrIjlbbn3M82AQ4XF3xc7m8Cg==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/s3-request-presigner@3.1169.0':
+    resolution: {integrity: sha512-ydc+uJnL8s1rMyPgEWjjiV6C/UFqrQhsAHOhEW5GerQtB0zpgpENupEY3AeeXunWxdQakdDLrNJetimZ0wbhRw==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/signature-v4-multi-region@3.996.52':
@@ -6552,6 +6572,15 @@ snapshots:
       '@aws-sdk/types': 3.975.1
       '@smithy/core': 3.40.0
       '@smithy/signature-v4': 5.7.5
+      '@smithy/types': 4.20.0
+      tslib: 2.9.1
+
+  '@aws-sdk/s3-request-presigner@3.1169.0':
+    dependencies:
+      '@aws-sdk/core': 3.981.0
+      '@aws-sdk/signature-v4-multi-region': 3.996.52
+      '@aws-sdk/types': 3.975.1
+      '@smithy/core': 3.40.0
       '@smithy/types': 4.20.0
       tslib: 2.9.1
 

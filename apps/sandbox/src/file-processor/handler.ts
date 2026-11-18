@@ -78,7 +78,9 @@ export function createFileProcessor(
     if (bytes === null) return { error: "not_found" };
     try {
       if (purpose === "csv") return parseCsvFile(bytes);
-      return await recognizeScreenshot(bytes, deps);
+      if (purpose === "screenshot") return await recognizeScreenshot(bytes, deps);
+      // Feature 003 modes arrive with their user stories (T050, T088, T108).
+      return { error: "unsupported_type" };
     } finally {
       await deps.storage.delete(objectKey);
     }

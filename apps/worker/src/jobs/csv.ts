@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { and, asc, eq, sql } from "drizzle-orm";
 import {
+  createGuideForProperty,
   calendarFeed,
   importItem,
   importRun,
@@ -239,6 +240,13 @@ async function createRow(
         createdBy: input.startedBy,
       })
       .returning({ id: property.id });
+    // Feature 003: the guide and its sections exist from the start (FR-001); the AI part of the
+    // draft runs the first time the guide is opened (research R16).
+    await createGuideForProperty(tx, {
+      workspaceId: input.workspaceId,
+      propertyId: created!.id,
+      guideLanguages: [...(facts.guideLanguages ?? ["es", "en"])],
+    });
     return {
       outcome: setupStatus === "needs_details" ? "needs_details" : "created",
       propertyId: created!.id,

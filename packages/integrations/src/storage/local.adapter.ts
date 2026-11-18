@@ -6,6 +6,7 @@ import {
   type ObjectStoragePort,
   type PresignedPost,
   type PresignedPostInput,
+  type ScanStatus,
 } from "./port.js";
 
 export interface LocalStorageOptions {
@@ -113,5 +114,10 @@ export class LocalObjectStorage implements ObjectStoragePort {
 
   async delete(key: string): Promise<void> {
     await rm(this.pathFor(key), { force: true });
+  }
+
+  /** No scanner runs locally (feature 003 research R9). */
+  async scanStatus(): Promise<ScanStatus> {
+    return "unscanned";
   }
 }

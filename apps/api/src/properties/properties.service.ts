@@ -30,6 +30,7 @@ import type {
   UpdatePropertyBody,
 } from "@guidesk/contracts";
 import {
+  createGuideForProperty,
   countActiveProperties,
   extractionRequest,
   LISTING_CONTENT_KINDS,
@@ -51,6 +52,7 @@ import {
   extractionLimitKey,
   initialSetupStatus,
   isKnownTimeZone,
+  JOB_QUEUES,
   missingFacts,
   normalizeAddressKey,
   orderStartOptions,
@@ -58,12 +60,14 @@ import {
   setupStatusAfterEdit,
   todayIn,
   type CoreFacts,
+  type GuideDraftJob,
   type PmsOption,
   type Role,
   type StartOption,
   type SupportedPms,
 } from "@guidesk/domain";
 import { ApiProblem } from "../common/problem.js";
+import { JobQueueService } from "../jobs/job-queue.service.js";
 import { API_CONFIG, type ApiConfig } from "../config/config.js";
 import { DB_HANDLE } from "../database/database.module.js";
 import { RequestDb } from "../database/request-db.js";
@@ -162,6 +166,7 @@ export class PropertiesService {
     private readonly securityLog: SecurityLogService,
     @Inject(DB_HANDLE) private readonly handle: DbHandle,
     @Inject(API_CONFIG) private readonly config: ApiConfig,
+    private readonly jobs: JobQueueService,
   ) {}
 
   async list(
@@ -318,6 +323,12 @@ export class PropertiesService {
         createdBy: caller.userId,
       })
       .returning();
+    // Feature 003: every property starts with its guide (FR-001, research R16).
+    const guide = await createGuideForProperty(tx, {
+      workspaceId,
+      propertyId: row!.id,
+      guideLanguages: row!.guideLanguages,
+    });
     if (original) {
       // The listing content, labeled as copied until the host edits or approves it (FR-043).
       for (const item of await this.contentOf(original.id)) {
@@ -359,6 +370,13 @@ export class PropertiesService {
         })
         .where(eq(extractionRequest.id, extraction.id));
     }
+    // The AI part of the draft runs in the worker once this transaction has committed (research
+    // R16); `startAfter` leaves it time, and the job retries if the guide is not visible yet.
+    await this.jobs.send(
+      JOB_QUEUES.guideDraft,
+      { guideId: guide.guideId, workspaceId } satisfies GuideDraftJob,
+      { startAfter: 2, retryLimit: 3, retryBackoff: true, singletonKey: guide.guideId },
+    );
     return this.detail(caller, row!);
   }
 

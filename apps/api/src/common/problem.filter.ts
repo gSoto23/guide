@@ -42,6 +42,20 @@ const TITLES: Record<ProblemCode, string> = {
   invalid_credential: "The PMS rejected the credential",
   extraction_limit_reached: "Daily extraction limit reached",
   provider_unavailable: "The PMS did not answer",
+  section_changed: "The section changed since you opened it",
+  not_ready_to_publish: "The property's core facts are not confirmed",
+  locked_field_referenced: "A published version uses this locked field",
+  interview_active: "An interview is already in progress",
+  section_limit: "Section limit reached",
+  item_limit: "Media limit for this section reached",
+  text_too_long: "The section is too long",
+  invalid_document: "The content has unsupported formatting",
+  benefit_required: "Say whether you get a benefit from this business",
+  wifi_only: "Only the Wi-Fi password can be public",
+  shared_block_limit: "Shared block limit reached",
+  storage_limit_reached: "Media storage limit reached",
+  ai_limit_reached: "Daily AI limit reached",
+  reveal_limit_reached: "Reveal limit reached",
 };
 
 const CODE_BY_STATUS: Record<number, ProblemCode> = {

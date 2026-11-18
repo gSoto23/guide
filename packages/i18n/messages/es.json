@@ -44,7 +44,21 @@
     "feed_rejected": "No pudimos leer ese enlace de calendario. Revisa que sea un enlace de exportación iCal que empiece con https.",
     "invalid_credential": "Tu PMS no aceptó esa credencial. No guardamos nada.",
     "extraction_limit_reached": "Ya usaste las importaciones de anuncios de hoy. Vuelve a intentarlo mañana.",
-    "provider_unavailable": "Tu PMS no respondió. Inténtalo de nuevo en unos minutos."
+    "provider_unavailable": "Tu PMS no respondió. Inténtalo de nuevo en unos minutos.",
+    "section_changed": "La sección cambió desde que la abriste. Compara y elige qué guardar.",
+    "not_ready_to_publish": "Confirma los datos de la propiedad antes de publicar.",
+    "locked_field_referenced": "Una versión publicada usa este campo protegido.",
+    "interview_active": "Ya hay una entrevista en curso.",
+    "section_limit": "Puedes tener hasta 10 secciones propias.",
+    "item_limit": "Esta sección ya tiene el máximo de fotos o videos.",
+    "text_too_long": "La sección pasa de 20.000 caracteres.",
+    "invalid_document": "El contenido tiene un formato que no se puede guardar.",
+    "benefit_required": "Indica si recibes una comisión, descuento u otro beneficio de este negocio.",
+    "wifi_only": "Solo la contraseña de Wi-Fi puede ser pública.",
+    "shared_block_limit": "Puedes tener hasta 50 bloques compartidos.",
+    "storage_limit_reached": "Llegaste al límite de almacenamiento de fotos y videos.",
+    "ai_limit_reached": "Llegaste al límite diario de IA. Se renueva a medianoche (UTC).",
+    "reveal_limit_reached": "Revelaste demasiados campos protegidos en una hora. Inténtalo más tarde."
   },
   "auth": {
     "signInCta": "Entrar o crear cuenta",
@@ -873,5 +887,207 @@
       "howToDelete": "Cómo borrarlo",
       "connect": "Conectar un PMS"
     }
+  },
+  "guide": {
+    "title": "Guía",
+    "sections": {
+      "arrival": "Llegada y acceso",
+      "wifi": "Wi-Fi",
+      "house_rules": "Normas de la casa",
+      "appliances": "Electrodomésticos y cómo usarlos",
+      "amenities": "Comodidades",
+      "parking": "Parqueo y transporte",
+      "local_recommendations": "Recomendaciones locales",
+      "emergency": "Emergencias y contactos",
+      "checkout": "Salida"
+    },
+    "status": {
+      "missing": "Falta",
+      "needs_review": "Por revisar",
+      "ready": "Lista"
+    },
+    "guideStatus": {
+      "draft": "Borrador",
+      "published": "Publicada",
+      "published_changes": "Publicada · cambios sin publicar",
+      "unpublished": "No publicada"
+    },
+    "source": {
+      "host": "Escrito por ti",
+      "listing": "De tu anuncio",
+      "pms": "De {provider}",
+      "document": "De {file}",
+      "interview": "De tu entrevista",
+      "copy": "Copiado de {name}",
+      "reviewed": "Revisado"
+    },
+    "facts": {
+      "check_in_time": "Entrada desde las {time}",
+      "checkout_time": "Salida antes de las {time}",
+      "max_guests": "Máximo {count} huéspedes",
+      "address": "Dirección: {address}",
+      "editInProperty": "Cambiar en los datos de la propiedad"
+    },
+    "lockedKinds": {
+      "door_code": "Código de puerta",
+      "gate_code": "Código de portón",
+      "lockbox_code": "Código de caja de llaves",
+      "alarm_code": "Código de alarma",
+      "wifi_password": "Contraseña de Wi-Fi",
+      "other": "Otro código"
+    },
+    "topics": {
+      "arrival.check_in_time": {
+        "name": "Hora de entrada",
+        "question": "¿A qué hora pueden entrar los huéspedes?"
+      },
+      "arrival.access_steps": {
+        "name": "Cómo entrar",
+        "question": "¿Cómo entran los huéspedes a la propiedad, paso a paso?"
+      },
+      "arrival.access_code": {
+        "name": "Código de acceso",
+        "question": "Agrega el código de la puerta, el portón o la caja de llaves en un campo protegido."
+      },
+      "arrival.access_photo": {
+        "name": "Foto de la entrada",
+        "question": "¿Puedes agregar una foto de la entrada o de la caja de llaves?"
+      },
+      "arrival.directions": {
+        "name": "Cómo llegar",
+        "question": "¿Cómo se llega a la propiedad? Puntos de referencia, Waze o Google Maps."
+      },
+      "arrival.early_check_in": {
+        "name": "Entrada temprana y maletas",
+        "question": "¿Pueden llegar antes o dejar las maletas?"
+      },
+      "wifi.network": {
+        "name": "Nombre de la red",
+        "question": "¿Cómo se llama la red de Wi-Fi?"
+      },
+      "wifi.password": {
+        "name": "Contraseña de Wi-Fi",
+        "question": "Agrega la contraseña del Wi-Fi en un campo protegido."
+      },
+      "wifi.troubleshooting": {
+        "name": "Si el Wi-Fi falla",
+        "question": "¿Qué deben hacer los huéspedes si el Wi-Fi no funciona?"
+      },
+      "house_rules.quiet_hours": {
+        "name": "Horas de silencio",
+        "question": "¿Hay horas de silencio o reglas sobre el ruido?"
+      },
+      "house_rules.smoking": {
+        "name": "Fumar",
+        "question": "¿Se puede fumar? ¿Dónde?"
+      },
+      "house_rules.pets": {
+        "name": "Mascotas",
+        "question": "¿Se permiten mascotas?"
+      },
+      "house_rules.parties": {
+        "name": "Fiestas y visitas",
+        "question": "¿Se permiten fiestas o visitas?"
+      },
+      "house_rules.max_guests": {
+        "name": "Máximo de huéspedes",
+        "question": "¿Cuántos huéspedes como máximo?"
+      },
+      "house_rules.trash": {
+        "name": "Basura y reciclaje",
+        "question": "¿Qué hacen los huéspedes con la basura y el reciclaje?"
+      },
+      "appliances.ac_heating": {
+        "name": "Aire acondicionado",
+        "question": "¿Cómo funciona el aire acondicionado o la calefacción?"
+      },
+      "appliances.hot_water": {
+        "name": "Agua caliente",
+        "question": "¿Cómo funciona el agua caliente?"
+      },
+      "appliances.kitchen": {
+        "name": "Cocina",
+        "question": "¿Hay algo que saber de la cocina, la cafetera o la estufa?"
+      },
+      "appliances.laundry": {
+        "name": "Lavadora y secadora",
+        "question": "¿Cómo se usan la lavadora y la secadora?"
+      },
+      "appliances.tv": {
+        "name": "Televisor",
+        "question": "¿Cómo se usa el televisor o el streaming?"
+      },
+      "appliances.how_to_media": {
+        "name": "Foto o video de cómo usar",
+        "question": "¿Puedes agregar una foto o un video corto de cómo usar un aparato?"
+      },
+      "amenities.list": {
+        "name": "Lista de comodidades",
+        "question": "¿Qué comodidades tiene la propiedad?"
+      },
+      "amenities.pool_beach": {
+        "name": "Piscina y playa",
+        "question": "¿Hay piscina, toallas de playa o sombrillas?"
+      },
+      "parking.where": {
+        "name": "Dónde parquear",
+        "question": "¿Dónde pueden parquear los huéspedes?"
+      },
+      "parking.transport": {
+        "name": "Transporte",
+        "question": "¿Cómo se mueven sin carro? Taxi, bus o traslado."
+      },
+      "local.groceries": {
+        "name": "Supermercado",
+        "question": "¿Dónde compran comida los huéspedes?"
+      },
+      "local.restaurants": {
+        "name": "Restaurantes",
+        "question": "¿Qué restaurantes recomiendas cerca?"
+      },
+      "local.activities": {
+        "name": "Actividades",
+        "question": "¿Qué pueden hacer cerca? Playas, tours o caminatas."
+      },
+      "local.recommendations": {
+        "name": "Al menos tres recomendaciones",
+        "question": "Agrega al menos tres lugares que recomiendas."
+      },
+      "local.personal_tip": {
+        "name": "Tu consejo personal",
+        "question": "¿Cuál es tu lugar favorito que pocos turistas conocen?"
+      },
+      "emergency.contacts": {
+        "name": "Cómo contactarte",
+        "question": "¿Cómo te contactan los huéspedes si necesitan ayuda?"
+      },
+      "emergency.number": {
+        "name": "Número de emergencias",
+        "question": "¿Cuál es el número de emergencias del país?"
+      },
+      "emergency.medical": {
+        "name": "Hospital y farmacia",
+        "question": "¿Dónde está el hospital, la clínica o la farmacia más cercana?"
+      },
+      "emergency.safety_equipment": {
+        "name": "Extintor y botiquín",
+        "question": "¿Dónde están el extintor y el botiquín?"
+      },
+      "checkout.time": {
+        "name": "Hora de salida",
+        "question": "¿A qué hora deben salir los huéspedes?"
+      },
+      "checkout.steps": {
+        "name": "Pasos de salida",
+        "question": "¿Qué deben hacer los huéspedes antes de salir? Llaves, basura, platos."
+      },
+      "checkout.late_checkout": {
+        "name": "Salida tardía",
+        "question": "¿Se puede salir más tarde?"
+      }
+    },
+    "keepCodesOut": "No escribas códigos de puertas aquí. Agrégalos en los campos protegidos.",
+    "drafting": "Preparando el borrador desde tu anuncio…",
+    "draftWaiting": "El borrador sigue a las {time}, cuando se renueva el límite diario de IA."
   }
 }

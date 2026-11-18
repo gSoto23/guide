@@ -44,7 +44,21 @@
     "feed_rejected": "We couldn't read that calendar link. Check that it's an iCal export link that starts with https.",
     "invalid_credential": "Your PMS didn't accept that credential. Nothing was saved.",
     "extraction_limit_reached": "You've used today's listing imports. Try again tomorrow.",
-    "provider_unavailable": "Your PMS didn't answer. Try again in a few minutes."
+    "provider_unavailable": "Your PMS didn't answer. Try again in a few minutes.",
+    "section_changed": "The section changed since you opened it. Compare and choose what to keep.",
+    "not_ready_to_publish": "Confirm the property's details before publishing.",
+    "locked_field_referenced": "A published version uses this locked field.",
+    "interview_active": "An interview is already in progress.",
+    "section_limit": "You can have up to 10 sections of your own.",
+    "item_limit": "This section already has the most photos or videos allowed.",
+    "text_too_long": "The section is longer than 20,000 characters.",
+    "invalid_document": "The content has formatting that cannot be saved.",
+    "benefit_required": "Say whether you get a commission, discount, or other benefit from this business.",
+    "wifi_only": "Only the Wi-Fi password can be public.",
+    "shared_block_limit": "You can have up to 50 shared blocks.",
+    "storage_limit_reached": "You reached your photo and video storage limit.",
+    "ai_limit_reached": "You reached the daily AI limit. It resets at midnight (UTC).",
+    "reveal_limit_reached": "You revealed too many locked fields in an hour. Try again later."
   },
   "auth": {
     "signInCta": "Sign in or create an account",
@@ -873,5 +887,207 @@
       "howToDelete": "How to delete it",
       "connect": "Connect a PMS"
     }
+  },
+  "guide": {
+    "title": "Guide",
+    "sections": {
+      "arrival": "Arrival and access",
+      "wifi": "Wi-Fi",
+      "house_rules": "House rules",
+      "appliances": "Appliances and how-tos",
+      "amenities": "Amenities",
+      "parking": "Parking and transport",
+      "local_recommendations": "Local recommendations",
+      "emergency": "Emergency and contacts",
+      "checkout": "Checkout"
+    },
+    "status": {
+      "missing": "Missing",
+      "needs_review": "Needs review",
+      "ready": "Ready"
+    },
+    "guideStatus": {
+      "draft": "Draft",
+      "published": "Published",
+      "published_changes": "Published · unpublished changes",
+      "unpublished": "Unpublished"
+    },
+    "source": {
+      "host": "Written by you",
+      "listing": "From your listing",
+      "pms": "From {provider}",
+      "document": "From {file}",
+      "interview": "From your interview",
+      "copy": "Copied from {name}",
+      "reviewed": "Reviewed"
+    },
+    "facts": {
+      "check_in_time": "Check-in from {time}",
+      "checkout_time": "Checkout by {time}",
+      "max_guests": "Up to {count} guests",
+      "address": "Address: {address}",
+      "editInProperty": "Change in property details"
+    },
+    "lockedKinds": {
+      "door_code": "Door code",
+      "gate_code": "Gate code",
+      "lockbox_code": "Lockbox code",
+      "alarm_code": "Alarm code",
+      "wifi_password": "Wi-Fi password",
+      "other": "Other code"
+    },
+    "topics": {
+      "arrival.check_in_time": {
+        "name": "Check-in time",
+        "question": "What time can guests check in?"
+      },
+      "arrival.access_steps": {
+        "name": "How to get in",
+        "question": "How do guests get into the property, step by step?"
+      },
+      "arrival.access_code": {
+        "name": "Access code",
+        "question": "Add the door, gate, or lockbox code in a locked field."
+      },
+      "arrival.access_photo": {
+        "name": "Photo of the entrance",
+        "question": "Can you add a photo of the entrance or the lockbox?"
+      },
+      "arrival.directions": {
+        "name": "Directions",
+        "question": "How do guests find the property? Landmarks, Waze, or Google Maps."
+      },
+      "arrival.early_check_in": {
+        "name": "Early check-in and luggage",
+        "question": "Can guests arrive early or leave their luggage?"
+      },
+      "wifi.network": {
+        "name": "Network name",
+        "question": "What is the Wi-Fi network called?"
+      },
+      "wifi.password": {
+        "name": "Wi-Fi password",
+        "question": "Add the Wi-Fi password in a locked field."
+      },
+      "wifi.troubleshooting": {
+        "name": "If the Wi-Fi fails",
+        "question": "What should guests do if the Wi-Fi stops working?"
+      },
+      "house_rules.quiet_hours": {
+        "name": "Quiet hours",
+        "question": "Are there quiet hours or rules about noise?"
+      },
+      "house_rules.smoking": {
+        "name": "Smoking",
+        "question": "Is smoking allowed? Where?"
+      },
+      "house_rules.pets": {
+        "name": "Pets",
+        "question": "Are pets allowed?"
+      },
+      "house_rules.parties": {
+        "name": "Parties and visitors",
+        "question": "Are parties or visitors allowed?"
+      },
+      "house_rules.max_guests": {
+        "name": "Maximum guests",
+        "question": "How many guests at most?"
+      },
+      "house_rules.trash": {
+        "name": "Trash and recycling",
+        "question": "What do guests do with trash and recycling?"
+      },
+      "appliances.ac_heating": {
+        "name": "Air conditioning",
+        "question": "How does the air conditioning or heating work?"
+      },
+      "appliances.hot_water": {
+        "name": "Hot water",
+        "question": "How does the hot water work?"
+      },
+      "appliances.kitchen": {
+        "name": "Kitchen",
+        "question": "Anything to know about the kitchen, coffee maker, or stove?"
+      },
+      "appliances.laundry": {
+        "name": "Washer and dryer",
+        "question": "How do guests use the washer and dryer?"
+      },
+      "appliances.tv": {
+        "name": "TV",
+        "question": "How do guests use the TV or streaming?"
+      },
+      "appliances.how_to_media": {
+        "name": "Photo or video how-to",
+        "question": "Can you add a photo or short video of how to use an appliance?"
+      },
+      "amenities.list": {
+        "name": "Amenities list",
+        "question": "What amenities does the property have?"
+      },
+      "amenities.pool_beach": {
+        "name": "Pool and beach",
+        "question": "Is there a pool, beach towels, or umbrellas?"
+      },
+      "parking.where": {
+        "name": "Where to park",
+        "question": "Where can guests park?"
+      },
+      "parking.transport": {
+        "name": "Transport",
+        "question": "How do guests get around without a car? Taxi, bus, or shuttle."
+      },
+      "local.groceries": {
+        "name": "Groceries",
+        "question": "Where do guests buy groceries?"
+      },
+      "local.restaurants": {
+        "name": "Restaurants",
+        "question": "Which restaurants nearby do you recommend?"
+      },
+      "local.activities": {
+        "name": "Activities",
+        "question": "What can guests do nearby? Beaches, tours, or hikes."
+      },
+      "local.recommendations": {
+        "name": "At least three recommendations",
+        "question": "Add at least three places you recommend."
+      },
+      "local.personal_tip": {
+        "name": "Your personal tip",
+        "question": "What is your favorite spot that few visitors know?"
+      },
+      "emergency.contacts": {
+        "name": "How to reach you",
+        "question": "How can guests reach you if they need help?"
+      },
+      "emergency.number": {
+        "name": "Emergency number",
+        "question": "What is the country's emergency number?"
+      },
+      "emergency.medical": {
+        "name": "Hospital and pharmacy",
+        "question": "Where is the nearest hospital, clinic, or pharmacy?"
+      },
+      "emergency.safety_equipment": {
+        "name": "Extinguisher and first aid",
+        "question": "Where are the fire extinguisher and first-aid kit?"
+      },
+      "checkout.time": {
+        "name": "Checkout time",
+        "question": "What time do guests check out?"
+      },
+      "checkout.steps": {
+        "name": "Checkout steps",
+        "question": "What should guests do before leaving? Keys, trash, dishes."
+      },
+      "checkout.late_checkout": {
+        "name": "Late checkout",
+        "question": "Can guests check out later?"
+      }
+    },
+    "keepCodesOut": "Don't add door codes here. Add them in the locked fields.",
+    "drafting": "Drafting from your listing…",
+    "draftWaiting": "Drafting continues at {time}, when the daily AI limit resets."
   }
 }

@@ -102,11 +102,29 @@ export type FeedReadResponse = z.infer<typeof feedReadResponseSchema>;
 /** The key of an uploaded object: `uploads/{workspace_id}/{upload_id}` (data model §2). */
 export const UPLOAD_OBJECT_KEY = /^uploads\/[0-9a-f-]{36}\/[0-9a-f-]{36}$/;
 
-/** Processes one uploaded object: text recognition for a screenshot, parsing for a CSV file. */
-export const fileProcessRequestSchema = z.strictObject({
-  objectKey: z.string().regex(UPLOAD_OBJECT_KEY),
-  purpose: z.enum(["screenshot", "csv"]),
-});
+/** Where the file processor writes a cleaned guide media file (feature 003 data model §5). */
+export const MEDIA_OBJECT_PREFIX = /^media\/[0-9a-f-]{36}\/[0-9a-f-]{36}\/$/;
+
+/**
+ * Processes one uploaded object: text recognition for a screenshot or a photo, parsing for a CSV
+ * file, and, for feature 003 (research R9), reading a PDF, cleaning guide media into the media
+ * bucket, or checking a voice note.
+ */
+export const fileProcessRequestSchema = z
+  .strictObject({
+    objectKey: z.string().regex(UPLOAD_OBJECT_KEY),
+    purpose: z.enum(["screenshot", "csv", "document", "media_image", "media_video", "audio"]),
+    /** Media only: where the cleaned file goes. */
+    mediaPrefix: z.string().regex(MEDIA_OBJECT_PREFIX).optional(),
+    /** Documents only: read scanned pages with text recognition (flag `GUIDE_SCANNED_PDF`). */
+    scannedPdf: z.boolean().optional(),
+  })
+  .refine(
+    (request) =>
+      (request.purpose === "media_image" || request.purpose === "media_video") ===
+      (request.mediaPrefix !== undefined),
+    { message: "mediaPrefix is required for media and only for media" },
+  );
 export type FileProcessRequest = z.infer<typeof fileProcessRequestSchema>;
 
 export const FILE_ERROR_CODES = [
@@ -116,6 +134,11 @@ export const FILE_ERROR_CODES = [
   "too_many_rows",
   "not_found",
   "internal",
+  // Feature 003 (research R9).
+  "password_protected",
+  "too_many_pages",
+  "too_long",
+  "unsupported_codec",
 ] as const;
 
 /** Why a file was not processed; stored as `upload.reject_reason` (data model §2). */
@@ -141,5 +164,44 @@ export const fileRowsSchema = z
 
 export const fileErrorSchema = z.strictObject({ error: fileErrorCodeSchema });
 
-export const fileProcessResponseSchema = z.union([fileTextSchema, fileRowsSchema, fileErrorSchema]);
+/** Text read from a PDF, with page counts (feature 003 research R9). */
+export const fileDocumentSchema = z.strictObject({
+  text: z.string().max(FILE_MAX_TEXT_LENGTH),
+  pages: z.int().min(0),
+  scannedPages: z.int().min(0),
+});
+
+const mediaVariantSchema = z.strictObject({
+  key: z.string().min(1).max(300),
+  bytes: z.int().min(0),
+  width: z.int().min(1).optional(),
+  height: z.int().min(1).optional(),
+});
+
+/** A cleaned guide image or video written to the media bucket (feature 003 research R9). */
+export const fileMediaSchema = z.strictObject({
+  media: z.strictObject({
+    kind: z.enum(["image", "video"]),
+    variants: z.record(z.string(), mediaVariantSchema),
+    bytes: z.int().min(0),
+    width: z.int().min(1).optional(),
+    height: z.int().min(1).optional(),
+    durationMs: z.int().min(0).optional(),
+    codec: z.enum(["h264", "hevc"]).optional(),
+  }),
+});
+
+/** A voice note's container, checked by its magic bytes (feature 003 research R8). */
+export const fileAudioSchema = z.strictObject({
+  audio: z.strictObject({ container: z.enum(["webm", "ogg", "mp4", "wav"]) }),
+});
+
+export const fileProcessResponseSchema = z.union([
+  fileTextSchema,
+  fileRowsSchema,
+  fileDocumentSchema,
+  fileMediaSchema,
+  fileAudioSchema,
+  fileErrorSchema,
+]);
 export type FileProcessResponse = z.infer<typeof fileProcessResponseSchema>;
