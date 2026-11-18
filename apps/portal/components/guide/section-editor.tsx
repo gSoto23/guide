@@ -21,7 +21,12 @@ import { useStepUp } from "@/lib/use-step-up";
 import { useWorkspace } from "@/lib/use-workspace";
 import { ItemCard, type ItemActions } from "./item-card";
 import { MediaUploadButton } from "./media-upload";
-import { RecommendationForm } from "./recommendation-form";
+
+// Opened only when adding or editing a recommendation (Performance Budget, 150 KB per route).
+const RecommendationForm = dynamic(
+  () => import("./recommendation-form").then((m) => m.RecommendationForm),
+  { ssr: false },
+);
 
 /** Loaded only in sections the workspace shares content into (US7). */
 const SharedBlocksPanel = dynamic(() => import("./shared-blocks-panel"), { ssr: false });
