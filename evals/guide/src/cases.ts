@@ -75,3 +75,55 @@ export async function loadDrafting(casesDir: string): Promise<DraftingCase[]> {
   }
   return cases;
 }
+
+/** An interview answer (feature 003 T092, research R11): typed text or a voice transcript. */
+export interface InterviewCase {
+  id: string;
+  file: string;
+  language: "es" | "en";
+  kind: "text" | "transcript";
+  topicId: string;
+  sectionKind: GuideSectionKindValue;
+  answer: string;
+  forbidden: string[];
+}
+
+function parseInterview(file: string, raw: unknown): InterviewCase {
+  if (!isRecord(raw)) throw new CaseError(`${file}: not an object`);
+  const { id, language, kind, topicId, sectionKind, answer, forbidden = [] } = raw;
+  if (
+    typeof id !== "string" ||
+    (language !== "es" && language !== "en") ||
+    (kind !== "text" && kind !== "transcript") ||
+    typeof topicId !== "string" ||
+    typeof answer !== "string" ||
+    typeof sectionKind !== "string" ||
+    !(GUIDE_SECTION_KINDS as readonly string[]).includes(sectionKind) ||
+    !Array.isArray(forbidden)
+  ) {
+    throw new CaseError(
+      `${file}: id, language, kind, topicId, sectionKind, and answer are required`,
+    );
+  }
+  return {
+    id,
+    file,
+    language,
+    kind,
+    topicId,
+    sectionKind: sectionKind as GuideSectionKindValue,
+    answer,
+    forbidden: forbidden.filter((value): value is string => typeof value === "string"),
+  };
+}
+
+/** Loads `cases/interview`. */
+export async function loadInterview(casesDir: string): Promise<InterviewCase[]> {
+  const dir = path.join(casesDir, "interview");
+  const cases: InterviewCase[] = [];
+  for (const name of (await readdir(dir)).filter((file) => file.endsWith(".json")).sort()) {
+    const file = `interview/${name}`;
+    cases.push(parseInterview(file, JSON.parse(await readFile(path.join(dir, name), "utf8"))));
+  }
+  return cases;
+}

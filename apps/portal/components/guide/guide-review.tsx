@@ -104,6 +104,21 @@ export function GuideReview({
     }
   }
 
+  /** Marks a topic as not applying to this property; it stays until removed (FR-032). */
+  async function markTopic(topicId: string) {
+    if (!workspace) return;
+    setError(null);
+    try {
+      setView(
+        await workspace.api.put<GuideView>(`/properties/${propertyId}/guide/topics/${topicId}`, {
+          mark: "not_applicable",
+        }),
+      );
+    } catch {
+      setError(errors("internal_error"));
+    }
+  }
+
   async function unpublish() {
     if (!workspace || !window.confirm(t("publish.unpublishConfirm"))) return;
     setError(null);
@@ -192,6 +207,14 @@ export function GuideReview({
 
       <div className="card" aria-labelledby="missing-title">
         <h2 id="missing-title">{t("review.completenessHint")}</h2>
+        {view.canEdit && view.missingTopics.length > 0 && (
+          <p>
+            {/* A full page load, so the interview's microphone policy applies (FR-037). */}
+            <a className="button button-primary" href={`${base}/interview`}>
+              {t("interview.start")}
+            </a>
+          </p>
+        )}
         {view.missingTopics.length === 0 ? (
           <p>{t("review.noMissing")}</p>
         ) : (
@@ -203,10 +226,27 @@ export function GuideReview({
               return (
                 <li key={topic.topicId}>
                   <span>{t(`topics.${topic.topicId}.name`)}</span>
-                  {section && view.canEdit && (
-                    <Link className="button-link" href={`${base}/sections/${section.id}`}>
-                      {t("review.editSection")}
-                    </Link>
+                  {view.canEdit && (
+                    <span className="actions">
+                      <a
+                        className="button-link"
+                        href={`${base}/interview?section=${topic.sectionKind}`}
+                      >
+                        {t("interview.answerInInterview")}
+                      </a>
+                      {section && (
+                        <Link className="button-link" href={`${base}/sections/${section.id}`}>
+                          {t("review.editSection")}
+                        </Link>
+                      )}
+                      <button
+                        type="button"
+                        className="button-link"
+                        onClick={() => void markTopic(topic.topicId)}
+                      >
+                        {t("interview.notApplicable")}
+                      </button>
+                    </span>
                   )}
                 </li>
               );

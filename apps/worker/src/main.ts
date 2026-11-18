@@ -39,6 +39,7 @@ import {
   PURGE_WORKSPACES_QUEUE,
 } from "./jobs/purge-workspaces.js";
 import { createGuideDraftHandler } from "./jobs/guide-draft.js";
+import { createInterviewAnswerHandler } from "./jobs/interview-answer.js";
 import { createMediaProcessHandler } from "./jobs/media-process.js";
 import { createWorkerServices } from "./services.js";
 
@@ -129,6 +130,18 @@ async function main(): Promise<void> {
       storage: services.storage,
       media: services.media,
       requireScan: services.mediaRequireScan,
+    }),
+  );
+  await createQueue(JOB_QUEUES.interviewAnswer);
+  await boss.work(
+    JOB_QUEUES.interviewAnswer,
+    { localConcurrency: 4 },
+    createInterviewAnswerHandler({
+      db: services.db.db,
+      llm: services.llm,
+      speech: services.speech,
+      sandbox: services.sandbox,
+      storage: services.storage,
     }),
   );
   const scheduleCalendars = createCalendarScheduler({

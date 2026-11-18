@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import type {
+  CompletenessView,
   CodeWarning,
   CreateItemBody,
   CreateSectionBody,
@@ -85,6 +86,20 @@ export class GuidesService {
   }
 
   // Sections -----------------------------------------------------------------------------------
+
+  /** Scores and the missing topics, heaviest first, with the host's marks (FR-030, FR-033). */
+  async completeness(workspaceId: string, propertyId: string): Promise<CompletenessView> {
+    const ctx = await this.views.load(workspaceId, propertyId);
+    const result = this.views.completeness(ctx);
+    return {
+      guide: result.guide,
+      sections: Object.fromEntries(
+        Object.entries(result.sections).map(([kind, section]) => [kind, section?.score ?? 0]),
+      ),
+      missing: result.missing,
+      marks: ctx.marks,
+    };
+  }
 
   async createSection(
     caller: Caller,

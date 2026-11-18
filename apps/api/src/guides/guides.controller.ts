@@ -16,6 +16,7 @@ import type { FastifyRequest } from "fastify";
 import {
   previewQuerySchema,
   publishSchema,
+  type CompletenessView,
   type GuidePreview,
   type GuideVersionList,
   type PreviewQuery,
@@ -67,6 +68,15 @@ export class GuidesController {
     @Query(new ZodValidationPipe(previewQuerySchema)) query: PreviewQuery,
   ): Promise<GuidePreview> {
     return this.publishing.preview(workspaceId, propertyId, query);
+  }
+
+  @Get("completeness")
+  @WorkspaceAction()
+  completeness(
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+  ): Promise<CompletenessView> {
+    return this.guides.completeness(workspaceId, propertyId);
   }
 
   @Get("publish-check")

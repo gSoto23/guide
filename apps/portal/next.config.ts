@@ -30,18 +30,20 @@ const apiProxy = process.env.API_PROXY_URL;
 
 const production = process.env.NODE_ENV === "production";
 
+function permissionsPolicy(microphone: "()" | "(self)"): string {
+  return (
+    `camera=(), microphone=${microphone}, geolocation=(), payment=(), usb=(), interest-cohort=(), ` +
+    "publickey-credentials-get=(self), publickey-credentials-create=(self)"
+  );
+}
+
 /** Headers for every portal response (SEC-11, security review T103). The CSP is set in proxy.ts. */
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-  {
-    key: "Permissions-Policy",
-    value:
-      "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=(), " +
-      "publickey-credentials-get=(self), publickey-credentials-create=(self)",
-  },
+  { key: "Permissions-Policy", value: permissionsPolicy("()") },
   ...(production
     ? [{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" }]
     : []),
@@ -51,7 +53,15 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      // The interview records voice notes (feature 003 FR-037): the microphone, on that page only.
+      // A later rule with the same key wins.
+      {
+        source: "/:locale/properties/:propertyId/guide/interview",
+        headers: [{ key: "Permissions-Policy", value: permissionsPolicy("(self)") }],
+      },
+    ];
   },
   ...(apiProxy
     ? {

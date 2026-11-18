@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@guidesk/domain": "workspace:*",
+    "@guidesk/i18n": "workspace:*",
     "@guidesk/integrations": "workspace:*"
   },
   "devDependencies": {

@@ -11,6 +11,7 @@ import {
   S3MediaStorage,
   S3ObjectStorage,
   FakeSpeechToText,
+  TranscribeSpeechToText,
   type EmailMessage,
   type KeyManagementPort,
   type LlmPort,
@@ -146,10 +147,12 @@ export function createWorkerServices(
     sandbox,
     storage,
     media,
-    // Amazon Transcribe arrives with US4 (T087); until then the fake answers everywhere.
-    speech: new FakeSpeechToText({
-      read: async (key) => (await storage.get(key)) ?? Buffer.alloc(0),
-    }),
+    speech:
+      config.integrations.speech.mode === "transcribe" && config.integrations.storage.mode === "s3"
+        ? new TranscribeSpeechToText({ bucket: config.integrations.storage.bucket })
+        : new FakeSpeechToText({
+            read: async (key) => (await storage.get(key)) ?? Buffer.alloc(0),
+          }),
     // Local storage has no scanner, so there is nothing to wait for (research R9).
     mediaRequireScan:
       config.integrations.mediaRequireScan && config.integrations.storage.mode === "s3",

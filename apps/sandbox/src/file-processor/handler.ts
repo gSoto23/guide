@@ -6,6 +6,7 @@ import {
   type FileProcessRequest,
   type FileProcessResponse,
 } from "../protocol.js";
+import { checkAudio } from "./audio.js";
 import { parseCsvFile } from "./csv.js";
 import { processMediaImage, type MediaSink } from "./media-image.js";
 import { MEDIA_VIDEO_MAX_BYTES, processMediaVideo } from "./media-video.js";
@@ -67,7 +68,8 @@ export interface FileProcessorDeps {
  * 3. processes it: a CSV file is parsed into rows (`csv.ts`, FR-038); a screenshot over
  *    `maxBytes` is `too_large`, one that is not JPEG, PNG, or WebP by its magic bytes is
  *    `unsupported_type`, and one that cannot be decoded or shows no text is `unreadable`;
- * 4. deletes the object, after success and after every failure, a thrown error included (FR-015).
+ * 4. deletes the object, after success and after every failure, a thrown error included (FR-015);
+ *    a voice note that passes the `audio` check stays for the transcription, which deletes it.
  *
  * A result is returned only once the object is deleted: when the delete fails, the call throws
  * and the bucket's 1-day lifecycle rule remains the backstop (research R9).
@@ -82,7 +84,14 @@ export function createFileProcessor(
 
     const bytes = await deps.storage.get(objectKey);
     if (bytes === null) return { error: "not_found" };
+    // A voice note that passes stays for the transcription, which deletes it (research R8).
+    let keep = false;
     try {
+      if (purpose === "audio") {
+        const result = checkAudio(bytes);
+        keep = !("error" in result);
+        return result;
+      }
       if (purpose === "csv") return parseCsvFile(bytes);
       if (purpose === "screenshot") return await recognizeScreenshot(bytes, deps);
       if (purpose === "media_image" || purpose === "media_video") {
@@ -91,10 +100,10 @@ export function createFileProcessor(
           ? await processMediaImage(bytes, mediaPrefix, deps.mediaSink)
           : await processMediaVideo(bytes, mediaPrefix, deps.mediaSink);
       }
-      // Feature 003 modes that arrive with later user stories (T088, T108).
+      // Feature 003 modes that arrive with later user stories (T108).
       return { error: "unsupported_type" };
     } finally {
-      await deps.storage.delete(objectKey);
+      if (!keep) await deps.storage.delete(objectKey);
     }
   };
 }

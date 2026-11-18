@@ -28,4 +28,5 @@ export * from "./pms/amenities.js";
 export * from "./pms/factory.js";
 export * from "./speech/port.js";
 export * from "./speech/fake.adapter.js";
+export * from "./speech/transcribe.adapter.js";
 export * from "./storage/media.js";

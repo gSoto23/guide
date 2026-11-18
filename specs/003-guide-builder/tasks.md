@@ -266,24 +266,24 @@ guide.
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T079 [P] [US4] Integration test for completeness in `apps/api/test/integration/guide-completeness.test.ts`: `GET /completeness` orders missing topics by weight; `PUT /topics/{topicId}` marks stay until removed (FR-032); the score keeps working when the AI limit is used (FR-031)
-- [ ] T080 [P] [US4] Integration test for the interview API in `apps/api/test/integration/interviews.test.ts`: one active session per guide (`409 interview_active`); the first question is the heaviest missing topic; code topics return `opensLockedField` (FR-038); text answers ≤ 2,000 characters; voice forms only with `GUIDE_INTERVIEW_VOICE`; skip and finish; resume returns the next question (FR-035); the AI limit refuses with no call; agents read only
-- [ ] T081 [P] [US4] Worker test for `interview.answer` in `apps/worker/test/integration/interview-answer.test.ts`: text and voice (fake speech) paths; "the door code is 4821" in the transcript and in a typed answer never reaches the fake model's recorder, and the turn reports the redaction (AC-SEC-004); the voice file is deleted after transcription (FR-037); items labeled `interview`, unreviewed, in the right section, in the main language; a follow-up question is stored; `not_understood` and `transcription_failed` keep the question open; timing within 15 and 30 seconds with simulated latency (FR-036)
-- [ ] T082 [P] [US4] Contract tests: `draftAnswer` in `packages/integrations/test/llm/draft-answer.contract.test.ts` (recorded responses), and the Transcribe adapter in `packages/integrations/test/speech/transcribe.contract.test.ts` (start, poll, result, language identification limited to `es-US` and `en-US`, failure, delete)
-- [ ] T083 [P] [US4] Sandbox test for the `audio` mode in `apps/sandbox/test/audio.test.ts`: WebM, Ogg, MP4, and M4A accepted by magic bytes; anything else `unsupported_type`
-- [ ] T084 [P] [US4] End-to-end test `e2e/specs/guide-us4-interview.spec.ts` (quickstart 5), with the fake model and fake speech, recording a voice note through a fixture media stream
+- [X] T079 [P] [US4] Integration test for completeness in `apps/api/test/integration/guide-completeness.test.ts`: `GET /completeness` orders missing topics by weight; `PUT /topics/{topicId}` marks stay until removed (FR-032); the score keeps working when the AI limit is used (FR-031)
+- [X] T080 [P] [US4] Integration test for the interview API in `apps/api/test/integration/interviews.test.ts`: one active session per guide (`409 interview_active`); the first question is the heaviest missing topic; code topics return `opensLockedField` (FR-038); text answers ≤ 2,000 characters; voice forms only with `GUIDE_INTERVIEW_VOICE`; skip and finish; resume returns the next question (FR-035); the AI limit refuses with no call; agents read only
+- [X] T081 [P] [US4] Worker test for `interview.answer` in `apps/worker/test/integration/interview-answer.test.ts`: text and voice (fake speech) paths; "the door code is 4821" in the transcript and in a typed answer never reaches the fake model's recorder, and the turn reports the redaction (AC-SEC-004); the voice file is deleted after transcription (FR-037); items labeled `interview`, unreviewed, in the right section, in the main language; a follow-up question is stored; `not_understood` and `transcription_failed` keep the question open; timing within 15 and 30 seconds with simulated latency (FR-036)
+- [X] T082 [P] [US4] Contract tests: `draftAnswer` in `packages/integrations/test/llm/draft-answer.contract.test.ts` (recorded responses), and the Transcribe adapter in `packages/integrations/test/speech/transcribe.contract.test.ts` (start, poll, result, language identification limited to `es-US` and `en-US`, failure, delete)
+- [X] T083 [P] [US4] Sandbox test for the `audio` mode in `apps/sandbox/test/audio.test.ts`: WebM, Ogg, MP4, and M4A accepted by magic bytes; anything else `unsupported_type`
+- [X] T084 [P] [US4] End-to-end test `e2e/specs/guide-us4-interview.spec.ts` (quickstart 5), with the fake model and fake speech, recording a voice note through a fixture media stream
 
 ### Implementation for User Story 4
 
-- [ ] T085 [US4] Implement the completeness route and topic marks in `apps/api/src/guides/completeness.controller.ts`. Make T079 pass
-- [ ] T086 [US4] Implement `draftAnswer` in the Anthropic adapter with its prompt and schema in `packages/integrations/src/llm/guide/draft-answer.ts` (R6, R11)
-- [ ] T087 [US4] Implement the Transcribe adapter in `packages/integrations/src/speech/transcribe.adapter.ts` (R8: batch job, language identification, output under `transcripts/`, read, delete job and output). Make T082 pass
-- [ ] T088 [US4] Implement the sandbox `audio` mode in `apps/sandbox/src/file-processor/audio.ts`. Make T083 pass
-- [ ] T089 [US4] Implement the `interviews` module (`apps/api/src/interviews/`) and the `interview.answer` job (`apps/worker/src/jobs/interview-answer.ts`), with questions from the catalog and turns stored as in the data model. Make T080 and T081 pass
-- [ ] T090 [US4] Add the interview questions for every topic in Spanish and English to the message catalogs
-- [ ] T091 [US4] Build the completeness panel on the review page (score, missing topics, "Answer in the interview", "Edit section", marks) and the interview screen (H-14) with one question at a time, the target section, text input, the voice recorder (`apps/portal/components/guide/voice-recorder.tsx`, `MediaRecorder`, 2-minute stop, upload), "Transcribing…", transcript next to the drafted text, skip, finish, the "type instead" error, and the reminder to keep codes out (FR-028)
-- [ ] T092 [US4] Add the interview suite to `evals/guide` (40 synthetic answers, half as transcripts, plus injection cases) with the scorer for section placement ≥ 90%, invented facts 0, and no code in outputs (SC-003)
-- [ ] T093 [US4] Make T084 pass
+- [X] T085 [US4] Implement the completeness route and topic marks in `apps/api/src/guides/completeness.controller.ts`. Make T079 pass
+- [X] T086 [US4] Implement `draftAnswer` in the Anthropic adapter with its prompt and schema in `packages/integrations/src/llm/guide/draft-answer.ts` (R6, R11)
+- [X] T087 [US4] Implement the Transcribe adapter in `packages/integrations/src/speech/transcribe.adapter.ts` (R8: batch job, language identification, output under `transcripts/`, read, delete job and output). Make T082 pass
+- [X] T088 [US4] Implement the sandbox `audio` mode in `apps/sandbox/src/file-processor/audio.ts`. Make T083 pass
+- [X] T089 [US4] Implement the `interviews` module (`apps/api/src/interviews/`) and the `interview.answer` job (`apps/worker/src/jobs/interview-answer.ts`), with questions from the catalog and turns stored as in the data model. Make T080 and T081 pass
+- [X] T090 [US4] Add the interview questions for every topic in Spanish and English to the message catalogs
+- [X] T091 [US4] Build the completeness panel on the review page (score, missing topics, "Answer in the interview", "Edit section", marks) and the interview screen (H-14) with one question at a time, the target section, text input, the voice recorder (`apps/portal/components/guide/voice-recorder.tsx`, `MediaRecorder`, 2-minute stop, upload), "Transcribing…", transcript next to the drafted text, skip, finish, the "type instead" error, and the reminder to keep codes out (FR-028)
+- [X] T092 [US4] Add the interview suite to `evals/guide` (40 synthetic answers, half as transcripts, plus injection cases) with the scorer for section placement ≥ 90%, invented facts 0, and no code in outputs (SC-003)
+- [X] T093 [US4] Make T084 pass
 
 **Checkpoint**: hosts can fill gaps on a phone, by text or voice.
 
@@ -466,3 +466,15 @@ _Recorded during implementation._
   version. Unpublishing clears `published_version_id`. `GET /versions/{number}` answers in the
   preview's shape. Restore hides default sections the version did not show and removes custom
   ones. Publish p95 for 50 items measured 33 ms locally. The section editor route is 149.6 KB.
+- **Interview (US4).** `draftAnswer` and its prompt landed with the foundations (T026), so T086
+  is covered by `anthropic.adapter.ts` and `llm/guide/prompts.ts`; the catalog questions (T090)
+  landed with US1. Typed answers pass the detector in the API before they are stored; transcripts
+  pass it in the worker. The API takes the request from the daily AI limit, so the job does not.
+  The worker and the eval runner read the catalog questions from `@guidesk/i18n`. A voice note
+  that passes the sandbox `audio` check stays in the uploads bucket for Transcribe and is deleted
+  by the worker right after transcription. Starting an interview twice at once (React runs effects
+  twice in development) returns one session.
+- **Microphone policy.** The portal's `Permissions-Policy` blocks the microphone everywhere except
+  the interview page, and links to the interview load the page fully so its policy applies. The
+  end-to-end test records from a Web Audio fixture stream, because headless Chromium on macOS
+  waits on the system microphone prompt.

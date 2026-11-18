@@ -389,3 +389,81 @@ export interface GuidePreview {
   /** Labels for the placeholders; never values. */
   lockedFields: { id: string; kind: (typeof LOCKED_FIELD_KIND_VALUES)[number]; label: string }[];
 }
+
+// Interview (feature 003 contract "Interview") -----------------------------------------------------
+
+const topicIdSchema = z
+  .string()
+  .regex(/^[a-z_]+\.[a-z_]+$/)
+  .max(80);
+
+export const startInterviewSchema = z
+  .object({ sectionKind: z.enum(DEFAULT_SECTION_KIND_VALUES).optional() })
+  .strict();
+export type StartInterviewBody = z.infer<typeof startInterviewSchema>;
+
+/** A typed answer (at most 2,000 characters) or an uploaded voice note (FR-035, FR-037). */
+export const interviewAnswerSchema = z.union([
+  z.object({ topicId: topicIdSchema, text: z.string().trim().min(1).max(2000) }).strict(),
+  z.object({ topicId: topicIdSchema, voiceUploadId: z.uuid() }).strict(),
+]);
+export type InterviewAnswerBody = z.infer<typeof interviewAnswerSchema>;
+
+export const VOICE_CONTENT_TYPES = ["audio/webm", "audio/ogg", "audio/mp4", "audio/x-m4a"] as const;
+
+export const interviewVoiceSchema = z
+  .object({
+    contentType: z.enum(VOICE_CONTENT_TYPES),
+    size: z
+      .int()
+      .min(1)
+      .max(10 * 1024 * 1024),
+  })
+  .strict();
+export type InterviewVoiceBody = z.infer<typeof interviewVoiceSchema>;
+
+export const interviewTopicSchema = z.object({ topicId: topicIdSchema }).strict();
+export type InterviewTopicBody = z.infer<typeof interviewTopicSchema>;
+
+/** The next question: from the catalog, or the model's one follow-up for the topic (R11). */
+export interface InterviewQuestion {
+  topicId: string;
+  sectionKind: (typeof DEFAULT_SECTION_KIND_VALUES)[number];
+  followUp?: string;
+  /** A code topic: the portal opens the locked-field form instead of asking (FR-038). */
+  opensLockedField?: (typeof LOCKED_FIELD_KIND_VALUES)[number];
+}
+
+export interface InterviewTurnView {
+  id: string;
+  topicId: string;
+  answerKind: "text" | "voice";
+  status: "queued" | "transcribing" | "drafting" | "done" | "failed";
+  /** `not_understood`, `transcription_failed`, `ai_unavailable`, or `unsupported_type`. */
+  errorCode: string | null;
+  /** The answer and transcript after the restricted-value detector; kept 7 days. */
+  answerText: string | null;
+  transcript: string | null;
+  /** How many codes the detector removed, by kind (AC-SEC-004). */
+  redactions: Record<string, number>;
+  followUp: string | null;
+  itemIds: string[];
+  createdAt: string;
+}
+
+export interface InterviewView {
+  sessionId: string;
+  status: "active" | "finished";
+  scopeSectionKind: (typeof DEFAULT_SECTION_KIND_VALUES)[number] | null;
+  question: InterviewQuestion | null;
+  turns: InterviewTurnView[];
+  /** Voice notes are on (`guide.interviewVoice`). */
+  voiceEnabled: boolean;
+}
+
+export interface CompletenessView {
+  guide: number;
+  sections: Partial<Record<(typeof DEFAULT_SECTION_KIND_VALUES)[number], number>>;
+  missing: MissingTopic[];
+  marks: Record<string, (typeof TOPIC_MARK_VALUES)[number]>;
+}

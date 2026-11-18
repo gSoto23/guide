@@ -107,11 +107,11 @@ properties. Agents calling a write route get `403 role_denied`, logged as `acces
 
 | Method and path | Roles | Notes |
 |---|---|---|
-| `POST /interview` | O A | Body: `{sectionKind?}`. Starts or returns the active session with the next question: `{sessionId, question: {topicId, sectionKind, followUp?} \| null, opensLockedField?: kind}` (FR-034, FR-038) |
+| `POST /interview` | O A | Body: `{sectionKind?}`. Starts the session, or returns the caller's active one; another member's active session answers `409 interview_active` with its `sessionId`. Returns `{sessionId, status, scopeSectionKind, question: {topicId, sectionKind, followUp?, opensLockedField?} \| null, turns, voiceEnabled}` (FR-034, FR-038). Concurrent starts give one session |
 | `GET /interview/{sessionId}` | O A Ag | The session, the next question, and its turns |
-| `POST /interview/{sessionId}/voice` | O A | Body: `{contentType, size}`. Returns a presigned POST for a voice note ≤ 10 MB (purpose `voice`). `guide.interviewVoice` flag |
+| `POST /interview/{sessionId}/voice` | O A | Body: `{contentType, size}` with `audio/webm`, `audio/ogg`, `audio/mp4`, or `audio/x-m4a`. Returns `{uploadId, url, fields}`, a presigned POST for a voice note ≤ 10 MB (purpose `voice`). `404` unless `guide.interviewVoice` is on |
 | `POST /interview/{sessionId}/answers` | O A | Body: `{topicId, text}` (≤ 2,000 characters) or `{topicId, voiceUploadId}`. Sends `interview.answer`. Returns the turn, `202`. Refused at the AI limit with no call made |
-| `GET /interview/{sessionId}/turns/{turnId}` | O A | `{status, errorCode?, transcript?, redactions, itemIds}`; the portal polls every 2 seconds |
+| `GET /interview/{sessionId}/turns/{turnId}` | O A | `{id, topicId, answerKind, status, errorCode, answerText, transcript, redactions, followUp, itemIds, createdAt}`; the portal polls every 2 seconds. `errorCode` is `not_understood`, `transcription_failed`, `unsupported_type`, or `ai_unavailable` |
 | `POST /interview/{sessionId}/skip` | O A | Body: `{topicId}` |
 | `POST /interview/{sessionId}/finish` | O A | — |
 
