@@ -55,8 +55,11 @@ const promisePatterns = PROMISES.map(
 const URL_PATTERN = /https?:\/\/[^\s<>"')\]]+/gi;
 const DIGIT_RUN = /\d{4,}/g;
 
+/** Drops trailing punctuation without a regular expression (linear on any input). */
 function trimUrl(url: string): string {
-  return url.replace(/[.,;:!?]+$/, "");
+  let end = url.length;
+  while (end > 0 && ".,;:!?".includes(url[end - 1]!)) end -= 1;
+  return url.slice(0, end);
 }
 
 function codesPass(text: string, knowledge: string): boolean {
