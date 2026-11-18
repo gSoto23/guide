@@ -20,6 +20,8 @@ const schema = z
     DATABASE_POOL_SIZE: z.coerce.number().int().positive().max(50).default(10),
     BETTER_AUTH_SECRET: z.string().min(32, "BETTER_AUTH_SECRET must be at least 32 characters"),
     PORTAL_URL: z.url(),
+    /** The guest guide's origin (feature 004 research R2): the only origin allowed on guest routes. */
+    GUIDE_URL: z.url().default("http://127.0.0.1:3001"),
     GOOGLE_CLIENT_ID: z.string().optional(),
     GOOGLE_CLIENT_SECRET: z.string().optional(),
     EDGE_SHARED_SECRET: z.string().optional(),
@@ -42,6 +44,10 @@ const schema = z
   .refine((env) => env.NODE_ENV !== "production" || env.PORTAL_URL.startsWith("https://"), {
     message: "PORTAL_URL must use HTTPS in production (SEC-11)",
     path: ["PORTAL_URL"],
+  })
+  .refine((env) => env.NODE_ENV !== "production" || env.GUIDE_URL.startsWith("https://"), {
+    message: "GUIDE_URL must use HTTPS in production (SEC-11)",
+    path: ["GUIDE_URL"],
   });
 
 export type ApiConfig = z.infer<typeof schema> & {

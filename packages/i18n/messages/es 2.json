@@ -1,0 +1,319 @@
+{
+  "app": {
+    "name": "Guidesk",
+    "tagline": "La guía de tu propiedad y un concierge con IA"
+  },
+  "common": {
+    "continue": "Continuar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "back": "Atrás",
+    "skip": "Omitir",
+    "retry": "Reintentar",
+    "loading": "Cargando…",
+    "signOut": "Cerrar sesión"
+  },
+  "errors": {
+    "unauthenticated": "Inicia sesión para continuar.",
+    "forbidden": "No tienes permiso para hacer esto.",
+    "step_up_required": "Por seguridad, confirma tu identidad otra vez.",
+    "mfa_enrollment_required": "Agrega un segundo factor para continuar.",
+    "not_found": "No encontramos lo que buscas.",
+    "conflict": "Esta acción entra en conflicto con el estado actual.",
+    "gone": "Este enlace ya no es válido.",
+    "validation_failed": "Revisa los campos marcados.",
+    "rate_limited": "Demasiados intentos. Espera un momento y vuelve a intentarlo.",
+    "internal_error": "Algo salió mal. Inténtalo de nuevo.",
+    "network": "Sin conexión. Revisa tu internet e inténtalo de nuevo.",
+    "seat_limit_reached": "Ya usaste todos los asientos de este workspace. Quita a alguien o revoca una invitación primero.",
+    "already_member": "Esa persona ya forma parte del workspace.",
+    "already_invited": "Ese email ya tiene una invitación abierta.",
+    "email_mismatch": "Esta invitación es para otra dirección de email.",
+    "idempotency_conflict": "Esta solicitud ya se está procesando.",
+    "owner_must_transfer": "Primero transfiere la propiedad a un administrador.",
+    "target_not_admin": "La propiedad solo puede pasar a un administrador.",
+    "target_mfa_required": "La persona debe agregar primero una passkey o una app de autenticación.",
+    "owns_shared_workspace": "Primero transfiere la propiedad o elimina los workspaces que compartes con otras personas.",
+    "email_in_use": "Otra cuenta de Guidesk ya usa ese email.",
+    "workspace_pending_deletion": "Este workspace se va a eliminar. Restáuralo primero."
+  },
+  "auth": {
+    "signInCta": "Entrar o crear cuenta",
+    "title": "Entra a Guidesk",
+    "subtitle": "Usa tu cuenta de Google, una passkey o un código por email.",
+    "google": "Continuar con Google",
+    "passkey": "Entrar con passkey",
+    "passkeyFailed": "No pudimos usar tu passkey. Intenta con Google o con un código por email.",
+    "or": "o",
+    "emailLabel": "Tu email",
+    "sendCode": "Enviarme un código",
+    "sending": "Enviando…",
+    "noPasswords": "Guidesk no usa contraseñas.",
+    "verifyTitle": "Revisa tu email",
+    "verifySubtitle": "Enviamos un código de 6 dígitos a {email}. Vence en 10 minutos.",
+    "codeLabel": "Código",
+    "verify": "Entrar",
+    "verifying": "Verificando…",
+    "invalidCode": "El código no es válido o ya venció. Pide uno nuevo.",
+    "resend": "Reenviar código",
+    "resendIn": "Reenviar código en {seconds} s",
+    "codeResent": "Te enviamos un código nuevo."
+  },
+  "onboarding": {
+    "loading": "Cargando…",
+    "title": "Cuéntanos un poco",
+    "subtitle": "Son 3 preguntas opcionales. Nos ayudan a mostrarte primero lo que necesitas.",
+    "propertiesQuestion": "¿Cuántas propiedades administras?",
+    "buckets": {
+      "1_2": "1 o 2",
+      "3_10": "De 3 a 10",
+      "10_plus": "Más de 10"
+    },
+    "pmsQuestion": "¿Usas un sistema de gestión (PMS)?",
+    "pmsOtherLabel": "¿Cuál?",
+    "pms": {
+      "hostaway": "Hostaway",
+      "guesty": "Guesty",
+      "hospitable": "Hospitable",
+      "smoobu": "Smoobu",
+      "ownerrez": "OwnerRez",
+      "hostfully": "Hostfully",
+      "beds24": "Beds24",
+      "hostex": "Hostex",
+      "lodgify": "Lodgify",
+      "uplisting": "Uplisting",
+      "stays_net": "Stays.net",
+      "other": "Otro",
+      "none": "No uso ninguno"
+    },
+    "countryQuestion": "¿En qué país están tus propiedades?",
+    "countries": {
+      "CR": "Costa Rica",
+      "MX": "México",
+      "CO": "Colombia",
+      "PA": "Panamá",
+      "GT": "Guatemala",
+      "DO": "República Dominicana",
+      "PE": "Perú",
+      "AR": "Argentina",
+      "CL": "Chile",
+      "BR": "Brasil",
+      "US": "Estados Unidos"
+    },
+    "choose": "Elige una opción",
+    "continue": "Continuar",
+    "skip": "Omitir por ahora"
+  },
+  "properties": {
+    "loading": "Cargando…",
+    "firstTitle": "Crea tu primera propiedad",
+    "managerSubtitle": "Trae todas tus propiedades de una vez.",
+    "individualSubtitle": "Empieza con lo que ya escribiste en tu anuncio.",
+    "options": {
+      "pms": {
+        "title": "Importar desde tu PMS",
+        "body": "Beds24, Hostex y más: traemos tus propiedades y armamos un borrador de cada guía."
+      },
+      "csv": {
+        "title": "Importar un archivo CSV",
+        "body": "Crea muchas propiedades a la vez con una plantilla."
+      },
+      "paste": {
+        "title": "Pegar tu anuncio",
+        "body": "Pega el texto o sube capturas de tu anuncio y la IA arma el borrador."
+      },
+      "manual": {
+        "title": "Empezar desde cero",
+        "body": "Escribe los datos básicos y completa la guía paso a paso."
+      }
+    },
+    "comingSoon": "La creación de propiedades llega con la próxima función (002)."
+  },
+  "security": {
+    "loading": "Cargando…",
+    "title": "Seguridad de tu cuenta",
+    "mfaRequired": "Tu workspace necesita un segundo factor. Agrega una passkey o una app de autenticación.",
+    "passkeysTitle": "Passkeys",
+    "passkeysBody": "Entra con tu huella, rostro o el bloqueo de tu teléfono. Es la opción más segura.",
+    "passkeyDefaultName": "Passkey",
+    "addPasskey": "Agregar passkey",
+    "passkeyAdded": "Passkey agregada.",
+    "passkeyAddFailed": "No pudimos agregar la passkey.",
+    "remove": "Quitar",
+    "totpTitle": "App de autenticación",
+    "enableTotp": "Activar app de autenticación",
+    "totpSecret": "Agrega esta clave en tu app de autenticación:",
+    "backupCodes": "Códigos de recuperación (guárdalos en un lugar seguro):",
+    "totpEnabled": "App de autenticación activada.",
+    "totpFailed": "No pudimos activar la app de autenticación.",
+    "codeLabel": "Código de 6 dígitos",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "sessionsTitle": "Dispositivos con sesión abierta",
+    "unknownDevice": "Dispositivo desconocido",
+    "thisDevice": "este dispositivo",
+    "signOutDevice": "Cerrar sesión",
+    "signOutOthers": "Cerrar sesión en los demás dispositivos",
+    "signOut": "Cerrar sesión",
+    "stepUpTitle": "Confirma que eres tú",
+    "stepUpBody": "Por seguridad, confirma tu identidad para continuar.",
+    "stepUpFailed": "No pudimos confirmar tu identidad.",
+    "methods": {
+      "passkey": "Usar mi passkey",
+      "totp": "Usar mi app de autenticación",
+      "email_otp": "Enviarme un código por email"
+    }
+  },
+  "team": {
+    "title": "Equipo",
+    "loading": "Cargando…",
+    "notAllowed": "Solo el dueño y los administradores pueden ver y gestionar el equipo.",
+    "membersTitle": "Miembros",
+    "you": "tú",
+    "roles": {
+      "owner": "Dueño",
+      "admin": "Administrador",
+      "agent": "Agente"
+    },
+    "roleHelp": {
+      "admin": "Gestiona propiedades, guías y el equipo.",
+      "agent": "Atiende las conversaciones con huéspedes. No ve códigos de acceso."
+    },
+    "inviteTitle": "Invitar a alguien",
+    "emailLabel": "Email",
+    "roleLabel": "Rol",
+    "send": "Enviar invitación",
+    "sending": "Enviando…",
+    "sent": "Invitación enviada a {email}. El enlace vence en 7 días.",
+    "seats": "{used} de {limit} asientos en uso",
+    "invitationsTitle": "Invitaciones",
+    "noInvitations": "Todavía no hay invitaciones.",
+    "status": {
+      "pending": "Pendiente",
+      "accepted": "Aceptada",
+      "revoked": "Revocada",
+      "expired": "Vencida"
+    },
+    "expires": "Vence el {date}",
+    "resend": "Reenviar",
+    "resent": "Reenviamos la invitación con un enlace nuevo.",
+    "revoke": "Revocar",
+    "revoked": "Invitación revocada; el enlace dejó de funcionar.",
+    "securityLink": "Seguridad de tu cuenta",
+    "makeAdmin": "Hacer administrador",
+    "makeAgent": "Hacer agente",
+    "remove": "Quitar",
+    "removeConfirm": "¿Quitar a {name} del workspace? Pierde el acceso de inmediato.",
+    "removed": "{name} ya no forma parte del workspace.",
+    "roleChanged": "Ahora {name} es {role}."
+  },
+  "invite": {
+    "loading": "Cargando invitación…",
+    "title": "Te invitaron a {workspace}",
+    "body": "{inviter} te invitó a unirte con el rol de {role}.",
+    "bodyNoInviter": "Te invitaron a unirte con el rol de {role}.",
+    "signInToAccept": "Inicia sesión o crea tu cuenta con el email al que llegó la invitación.",
+    "continue": "Continuar",
+    "accept": "Aceptar invitación",
+    "accepting": "Aceptando…",
+    "accepted": "¡Listo! Ya formas parte de {workspace}.",
+    "goToTeam": "Ir al equipo",
+    "goHome": "Ir al inicio",
+    "mismatch": "Esta invitación a {workspace} es para otra dirección de email. Cierra sesión y entra con el email al que llegó la invitación.",
+    "signOut": "Cerrar sesión",
+    "gone": "Esta invitación ya no es válida. Puede que haya vencido, que la hayan revocado o que ya se haya usado. Pide una nueva a quien te invitó.",
+    "roles": {
+      "admin": "administrador",
+      "agent": "agente"
+    }
+  },
+  "workspace": {
+    "current": "Workspace actual",
+    "switchLabel": "Cambiar de workspace",
+    "listTitle": "Tus workspaces",
+    "roles": {
+      "owner": "Dueño",
+      "admin": "Administrador",
+      "agent": "Agente"
+    },
+    "pendingDeletion": "por eliminarse",
+    "create": "Crear workspace",
+    "nameLabel": "Nombre del nuevo workspace",
+    "creating": "Creando…",
+    "createSubmit": "Crear",
+    "switchFailed": "No pudimos cambiar de workspace. Inténtalo de nuevo.",
+    "nav": {
+      "team": "Equipo",
+      "security": "Seguridad",
+      "home": "Inicio",
+      "settings": "Ajustes"
+    },
+    "loading": "Cargando…",
+    "none": "Sin workspace: crea uno"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "loading": "Cargando…",
+    "sections": {
+      "workspace": "Workspace",
+      "team": "Equipo",
+      "account": "Tu cuenta",
+      "security": "Seguridad",
+      "log": "Registro de seguridad"
+    },
+    "workspace": {
+      "title": "Workspace",
+      "nameLabel": "Nombre",
+      "save": "Guardar",
+      "saved": "Nombre guardado.",
+      "transferTitle": "Transferir la propiedad",
+      "transferBody": "El nuevo dueño debe ser un administrador. Tú quedas como administrador.",
+      "transferLabel": "Nuevo dueño",
+      "transferNone": "Primero haz administrador a alguien del equipo.",
+      "transfer": "Transferir",
+      "transferred": "Transferiste la propiedad.",
+      "leaveTitle": "Salir del workspace",
+      "leaveBody": "Pierdes el acceso a este workspace. Tus otros workspaces no cambian.",
+      "leave": "Salir",
+      "leaveOwner": "Como dueño, primero transfiere la propiedad a un administrador.",
+      "deleteTitle": "Eliminar el workspace",
+      "deleteBody": "Avisamos a todo el equipo. Puedes restaurarlo durante 30 días; después se borra para siempre. Escribe el nombre del workspace para confirmar.",
+      "deleteLabel": "Nombre del workspace",
+      "delete": "Eliminar workspace",
+      "deleted": "El workspace se eliminará el {date}.",
+      "pendingTitle": "Este workspace se va a eliminar",
+      "pendingBody": "Se borrará el {date}. Hasta entonces puedes restaurarlo.",
+      "restore": "Restaurar workspace",
+      "restored": "Workspace restaurado.",
+      "readOnly": "Solo el dueño y los administradores pueden cambiar el workspace.",
+      "renameTitle": "Cambiar el nombre"
+    },
+    "account": {
+      "title": "Tu cuenta",
+      "emailTitle": "Email",
+      "current": "Email actual: {email}",
+      "newEmail": "Nuevo email",
+      "sendCode": "Enviar código",
+      "codeSent": "Te enviamos un código a {email}. Vence en 10 minutos.",
+      "codeLabel": "Código de 6 dígitos",
+      "confirm": "Confirmar",
+      "changed": "Listo: tu cuenta ahora usa {email}. Cerramos la sesión en tus otros dispositivos.",
+      "exportTitle": "Tus datos",
+      "exportBody": "Descarga un archivo con tu perfil, tus workspaces, tus dispositivos y tu actividad de seguridad.",
+      "export": "Descargar mis datos",
+      "deleteTitle": "Eliminar tu cuenta",
+      "deleteBody": "Cerramos tu sesión en todos lados y borramos tu cuenta en 30 días. Si vuelves a entrar antes, se cancela.",
+      "delete": "Eliminar mi cuenta",
+      "deleteConfirm": "¿Seguro? Tu cuenta se eliminará en 30 días."
+    },
+    "log": {
+      "title": "Registro de seguridad",
+      "workspaceTab": "Este workspace",
+      "mineTab": "Mi cuenta",
+      "empty": "Todavía no hay eventos.",
+      "more": "Ver más",
+      "noAccess": "Solo el dueño y los administradores ven el registro del workspace.",
+      "unknownActor": "Sistema o cuenta eliminada"
+    }
+  }
+}

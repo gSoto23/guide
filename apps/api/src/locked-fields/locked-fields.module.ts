@@ -10,6 +10,6 @@ import { RevealService } from "./reveal.service.js";
   imports: [TenancyModule, GuidesModule],
   controllers: [LockedFieldsController, MoveToLockedFieldController],
   providers: [LockedFieldsService, RevealService],
-  exports: [LockedFieldsService],
+  exports: [LockedFieldsService, RevealService],
 })
 export class LockedFieldsModule {}

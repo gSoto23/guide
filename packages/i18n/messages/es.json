@@ -1435,5 +1435,6 @@
     "changed": "El bloque cambió. Recarga para ver lo último.",
     "reload": "Recargar",
     "textPlaceholder": "Escribe el contenido compartido…"
-  }
+  },
+  "share": {}
 }

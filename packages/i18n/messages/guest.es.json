@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "title": "Guía de {property}",
+    "description": "La guía de la casa para huéspedes."
+  },
+  "nav": {
+    "home": "Inicio",
+    "emergency": "Emergencia",
+    "language": "Idioma",
+    "switchTo": "English",
+    "back": "Volver a la guía"
+  },
+  "sections": {
+    "arrival": "Llegada y acceso",
+    "wifi": "Wi-Fi",
+    "house_rules": "Normas de la casa",
+    "appliances": "Electrodomésticos",
+    "amenities": "Comodidades",
+    "parking": "Parqueo y transporte",
+    "local_recommendations": "Recomendaciones",
+    "emergency": "Emergencias",
+    "checkout": "Salida",
+    "custom": "Más información"
+  },
+  "facts": {
+    "checkIn": "Llegada",
+    "checkout": "Salida",
+    "from": "desde las {time}",
+    "until": "hasta las {time}",
+    "maxGuests": "Máximo {count, plural, one {# huésped} other {# huéspedes}}",
+    "address": "Dirección",
+    "openMaps": "Abrir en Google Maps",
+    "openWaze": "Abrir en Waze"
+  },
+  "home": {
+    "intro": "Todo lo que necesitas para tu estadía.",
+    "sections": "Secciones"
+  },
+  "item": {
+    "notTranslated": "Todavía no está traducido.",
+    "photo": "Foto de {section}",
+    "video": "Video de {section}",
+    "openSite": "Ver el sitio",
+    "personalTip": "Recomendación personal de tu anfitrión",
+    "disclosure": "Tu anfitrión podría recibir una comisión u otro beneficio de este lugar."
+  },
+  "copy": {
+    "copy": "Copiar",
+    "copied": "Copiado"
+  },
+  "locked": {
+    "public": "Los códigos aparecen solo con tu enlace de estadía.",
+    "fallback": "Tus datos de acceso también están en los mensajes de tu reserva.",
+    "before": "Disponible desde el {date}.",
+    "ended": "Tu estadía terminó.",
+    "offline": "Conéctate a internet para ver el código.",
+    "show": "Mostrar código",
+    "showing": "Mostrando…",
+    "error": "No pudimos cargar el código. Inténtalo de nuevo.",
+    "viewed": "Tu anfitrión puede ver cuándo se vio el código.",
+    "notSet": "Pregúntale a tu anfitrión.",
+    "cookies": "Para ver los códigos, permite las cookies en tu navegador.",
+    "spelled": "Código: {characters}"
+  },
+  "verify": {
+    "title": "Confirma tu reserva",
+    "body": "Escribe el código de confirmación que está en los mensajes de tu reserva.",
+    "label": "Código de confirmación",
+    "submit": "Confirmar",
+    "cancel": "Cancelar",
+    "wrong": "Ese código no es correcto. Te quedan {count} intentos.",
+    "locked": "Demasiados intentos. Vuelve a intentarlo en {minutes} min."
+  },
+  "stay": {
+    "title": "Tu estadía",
+    "dates": "{checkIn} → {checkout}",
+    "deviceTime": "Hora de tu teléfono: {time}"
+  },
+  "notice": {
+    "ended": "Este enlace de estadía terminó. Esta es la guía pública de la casa.",
+    "deviceLimit": "Este enlace ya se abrió en demasiados dispositivos. Pídele uno nuevo a tu anfitrión."
+  },
+  "offline": {
+    "banner": "Sin conexión. Copia guardada de las {time}.",
+    "pageTitle": "Sin conexión",
+    "pageBody": "Esta página no está guardada para usarla sin conexión."
+  },
+  "emergency": {
+    "title": "Emergencias",
+    "number": "Número de emergencias",
+    "call": "Llamar al {number}",
+    "hostSection": "Indicaciones de tu anfitrión"
+  },
+  "unavailable": {
+    "title": "Esta guía no está disponible",
+    "body": "Revisa los mensajes de tu reserva: ahí está lo esencial para tu estadía."
+  },
+  "root": {
+    "title": "Guías para huéspedes",
+    "body": "Las guías se abren desde el enlace que te envió tu anfitrión."
+  },
+  "exchange": {
+    "opening": "Abriendo tu guía…",
+    "noscript": "Activa JavaScript para abrir tu guía. Lo esencial para tu estadía está en los mensajes de tu reserva.",
+    "failed": "No pudimos abrir tu guía. Revisa tu conexión e inténtalo de nuevo.",
+    "retry": "Intentar de nuevo"
+  },
+  "rateLimited": {
+    "title": "Un momento",
+    "body": "Inténtalo de nuevo en un momento."
+  }
+}

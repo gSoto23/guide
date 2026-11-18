@@ -380,6 +380,8 @@ export interface PreviewItem {
   kind: (typeof GUIDE_ITEM_KIND_VALUES)[number];
   shared: boolean;
   doc: GuideDocument | null;
+  /** The language `doc` is in: the preview language, or the item's source when untranslated. */
+  docLanguage: Language;
   fact?: { key: (typeof FACT_KEY_VALUES)[number]; value: string | null };
   media?: MediaView | null;
   recommendation?: Recommendation;

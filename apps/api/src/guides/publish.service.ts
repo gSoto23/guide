@@ -542,6 +542,7 @@ export class PublishService {
           doc: (item.texts[language] ??
             item.texts[item.sourceLanguage] ??
             null) as GuideDocument | null,
+          docLanguage: item.texts[language] ? language : item.sourceLanguage,
           ...(item.factKey ? { fact: { key: item.factKey, value: factValue(item.factKey) } } : {}),
           ...(item.mediaId ? { media: media.get(item.mediaId) ?? null } : {}),
           ...(item.recommendation

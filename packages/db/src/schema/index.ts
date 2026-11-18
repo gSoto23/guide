@@ -12,3 +12,4 @@ export * from "./stays.js";
 export * from "./pms.js";
 export * from "./imports.js";
 export * from "./guides.js";
+export * from "./guest.js";

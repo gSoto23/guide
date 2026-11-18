@@ -22,6 +22,11 @@ describe("message catalogs (constitution, Principle IX)", () => {
     expect(keys(load("es")).sort()).toEqual(keys(load("en")).sort());
   });
 
+  // Feature 004: the guest guide has its own catalogs so portal pages never carry its strings.
+  it("have the same guest guide keys in Spanish and English", () => {
+    expect(keys(load("guest.es")).sort()).toEqual(keys(load("guest.en")).sort());
+  });
+
   it("cover every API error code", () => {
     const codes = [
       "unauthenticated",

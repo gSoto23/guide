@@ -1435,5 +1435,6 @@
     "changed": "The block changed. Reload to see the latest.",
     "reload": "Reload",
     "textPlaceholder": "Write the shared content…"
-  }
+  },
+  "share": {}
 }

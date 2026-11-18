@@ -63,6 +63,15 @@ export const SECURITY_EVENT_TYPES = [
   "guide.version_restored",
   "shared_block.published",
   "shared_block.deleted",
+  // Feature 004 (data model §5).
+  "guide.property_link_regenerated",
+  "guide.stay_link_copied",
+  "guide.stay_link_regenerated",
+  "guide.stay_link_revoked",
+  "guide.confirmation_changed",
+  "guide.verification_locked",
+  "restricted_value.guest_revealed",
+  "restricted_value.exported",
 ] as const;
 
 export type SecurityEventType = (typeof SECURITY_EVENT_TYPES)[number];
@@ -90,6 +99,8 @@ const STAY_DATES = ["stayId", "checkInDate", "checkoutDate"];
 const LOCKED_FIELD = ["propertyId", "fieldId", "kind"];
 const GUIDE_VERSION = ["propertyId", "versionNumber"];
 const SHARED_BLOCK = ["sharedBlockId", "sectionKind", "guidesUpdated"];
+/** Stay link events name the property and stay, never the link, token, or code (feature 004). */
+const STAY_LINK = ["propertyId", "stayId"];
 
 /**
  * Metadata allowed per feature 002 event (data model §5, T015). Feed events carry the channel,
@@ -124,6 +135,15 @@ const METADATA_ALLOWLIST: Partial<Record<SecurityEventType, readonly string[]>> 
   "guide.version_restored": GUIDE_VERSION,
   "shared_block.published": SHARED_BLOCK,
   "shared_block.deleted": SHARED_BLOCK,
+  "guide.property_link_regenerated": ["propertyId"],
+  "guide.stay_link_copied": STAY_LINK,
+  "guide.stay_link_regenerated": STAY_LINK,
+  "guide.stay_link_revoked": STAY_LINK,
+  "guide.confirmation_changed": ["propertyId", "required"],
+  "guide.verification_locked": ["propertyId", "stayId", "lockedMinutes", "lockouts"],
+  // Guest reveals carry no actor, address, or device detail (feature 004 FR-032, SEC-20).
+  "restricted_value.guest_revealed": [...LOCKED_FIELD, "stayId", "sessionId"],
+  "restricted_value.exported": ["propertyId", "stayId", "fields", "language"],
 };
 
 /** Short labels, numbers, booleans, and calendar dates; nothing that could carry free text. */
