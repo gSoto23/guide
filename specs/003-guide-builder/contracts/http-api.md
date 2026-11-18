@@ -20,7 +20,7 @@ properties. Agents calling a write route get `403 role_denied`, logged as `acces
 | HTTP | `code` | When |
 |---|---|---|
 | 409 | `section_changed` | The `revision` sent is older than the section's or block's. Body: the current section with its items (FR-012) |
-| 409 | `not_ready_to_publish` | The property's setup status is not `ready`. Body: `{setupStatus, missingFacts}` (FR-049) |
+| 409 | `not_ready_to_publish` | The property's setup status is not `ready`. Body: `{setupStatus}` (FR-049) |
 | 409 | `workspace_pending_deletion` | Any write while the workspace is pending deletion |
 | 409 | `locked_field_referenced` | Deleting a locked field that a published version references, without `?confirm=true`. Body: `{versions}` (FR-024) |
 | 409 | `interview_active` | Starting an interview while one is active for the guide. Body: `{sessionId}` |
@@ -78,12 +78,12 @@ properties. Agents calling a write route get `403 role_denied`, logged as `acces
 | Method and path | Roles | Notes |
 |---|---|---|
 | `GET /preview?source=draft\|published\|{number}&lang=` | O A Ag | The guide as guests will see it: the snapshot of the draft (built on the fly with reviewed items only) or of a version, resolved for the language, locked fields as placeholders (FR-054) |
-| `GET /publish-check` | O A | `{ready: boolean, blockers: [not_ready \| pending_deletion], leftOut: [{sectionId, itemIds}], warnings: [{kind, sectionId?, itemId?, count?}]}` with kinds `missing_essential`, `unset_locked_field`, `code_like_text`, `off_platform`, `unreviewed_translations`, `out_of_date_translations` (FR-050) |
-| `POST /publish` | O A | Body: `{expectedRevisionHash}` from the publish check, so the host publishes what they reviewed; a newer draft answers `409 section_changed`. Creates version N, logs `guide.published`. `201 {versionNumber}` (FR-051) |
+| `GET /publish-check` | O A | `{ready: boolean, blockers: [not_ready \| pending_deletion], leftOut: [{sectionId, itemIds}], warnings: [{kind, sectionId?, itemId?, topicId?, fieldId?, count?}], revisionHash}` with kinds `missing_essential`, `unset_locked_field`, `code_like_text`, `off_platform`, `unreviewed_translations`, `out_of_date_translations` (FR-050). `revisionHash` is the SHA-256 of the draft snapshot with sorted keys |
+| `POST /publish` | O A | Body: `{expectedRevisionHash}` from the publish check, so the host publishes what they reviewed; a newer draft answers `409 section_changed`. Creates version N, logs `guide.published`. `201 {versionNumber}` (FR-051). Publishing content identical to the current version returns that version's number and creates nothing |
 | `POST /unpublish` | O A | Logs `guide.unpublished` (FR-056) |
 | `GET /versions` | O A Ag | Latest 20: `{number, cause, publishedBy, publishedAt}` (FR-055) |
-| `GET /versions/{number}` | O A Ag | The snapshot, for viewing |
-| `POST /versions/{number}/restore` | O A | Replaces the draft with the version; nothing goes live. Logs `guide.version_restored` |
+| `GET /versions/{number}?lang=` | O A Ag | The version for viewing, in the same shape as the preview |
+| `POST /versions/{number}/restore` | O A | Replaces the draft with the version; nothing goes live. Sections the version did not show are hidden (custom ones removed). Returns the guide. Logs `guide.version_restored` |
 
 ## Media
 

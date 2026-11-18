@@ -307,3 +307,85 @@ export interface RevealedValue {
 export interface RevealHistory {
   items: { fieldId: string; kind: string; label: string; revealedBy: string | null; at: string }[];
 }
+
+// Preview, publishing, and versions (feature 003 contract "Preview, publishing, and versions") -----
+
+/** What blocks publishing, what is left out, and warnings that never block (FR-049, FR-050). */
+export interface PublishCheck {
+  ready: boolean;
+  blockers: ("not_ready" | "pending_deletion")[];
+  leftOut: { sectionId: string; itemIds: string[] }[];
+  warnings: (
+    | {
+        kind: "missing_essential";
+        topicId: string;
+        sectionKind: (typeof DEFAULT_SECTION_KIND_VALUES)[number];
+      }
+    | { kind: "unset_locked_field"; fieldId: string }
+    | { kind: "code_like_text"; sectionId: string; itemId: string }
+    | { kind: "off_platform"; sectionId: string; itemId: string }
+    | { kind: "unreviewed_translations"; count: number }
+    | { kind: "out_of_date_translations"; count: number }
+  )[];
+  /** Sent back with the publish, so the host publishes what they reviewed (FR-051). */
+  revisionHash: string;
+}
+
+export const publishSchema = z
+  .object({ expectedRevisionHash: z.string().regex(/^[a-f0-9]{64}$/) })
+  .strict();
+export type PublishBody = z.infer<typeof publishSchema>;
+
+export interface PublishResult {
+  versionNumber: number;
+}
+
+export interface GuideVersionSummary {
+  number: number;
+  cause: "publish" | "shared_block" | "shared_block_removed";
+  publishedBy: string | null;
+  publishedAt: string;
+  current: boolean;
+}
+
+export interface GuideVersionList {
+  items: GuideVersionSummary[];
+}
+
+export const previewQuerySchema = z
+  .object({
+    source: z
+      .union([z.enum(["draft", "published"]), z.string().regex(/^[1-9]\d{0,5}$/)])
+      .default("draft"),
+    lang: language.optional(),
+  })
+  .strict();
+export type PreviewQuery = z.infer<typeof previewQuerySchema>;
+
+/** One item as guests will see it; locked fields stay references (FR-054). */
+export interface PreviewItem {
+  id: string;
+  kind: (typeof GUIDE_ITEM_KIND_VALUES)[number];
+  shared: boolean;
+  doc: GuideDocument | null;
+  fact?: { key: (typeof FACT_KEY_VALUES)[number]; value: string | null };
+  media?: MediaView | null;
+  recommendation?: Recommendation;
+}
+
+/** The guide as guests will see it, in one language (FR-054). */
+export interface GuidePreview {
+  source: "draft" | "published" | "version";
+  versionNumber: number | null;
+  language: Language;
+  languages: Language[];
+  propertyName: string;
+  sections: {
+    id: string;
+    kind: (typeof SECTION_KIND_VALUES)[number];
+    title: string | null;
+    items: PreviewItem[];
+  }[];
+  /** Labels for the placeholders; never values. */
+  lockedFields: { id: string; kind: (typeof LOCKED_FIELD_KIND_VALUES)[number]; label: string }[];
+}

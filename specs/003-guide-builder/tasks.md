@@ -241,17 +241,17 @@ from text, and never sent to the AI.
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T071 [P] [US3] Integration test for publishing in `apps/api/test/integration/guide-publish.test.ts`: `409 not_ready_to_publish` before the core facts are confirmed and in a workspace pending deletion (FR-049); the publish check lists left-out items and every warning kind (FR-050); publishing creates version N with only reviewed items and no locked value or `public_value` anywhere in the snapshot (SC-004); a draft edit after publishing leaves the version and `published_version_id` unchanged and sets `has_unpublished_changes` (SC-009); a stale `expectedRevisionHash` is `409`; restore replaces the draft without publishing; unpublish; versions beyond 20 are not listed; every action logs its event; agents get `403`
-- [ ] T072 [P] [US3] Integration test for the preview in `apps/api/test/integration/guide-preview.test.ts`: draft, published, and numbered previews per language with locked fields as placeholders and facts resolved from the property (FR-054)
-- [ ] T073 [P] [US3] Performance test in `apps/api/test/integration/guide-publish.perf.test.ts`: publishing a 50-item guide takes ≤ 1 second at p95 over 20 runs
-- [ ] T074 [P] [US3] End-to-end test `e2e/specs/guide-us3-publish.spec.ts` (quickstart 4)
+- [X] T071 [P] [US3] Integration test for publishing in `apps/api/test/integration/guide-publish.test.ts`: `409 not_ready_to_publish` before the core facts are confirmed and in a workspace pending deletion (FR-049); the publish check lists left-out items and every warning kind (FR-050); publishing creates version N with only reviewed items and no locked value or `public_value` anywhere in the snapshot (SC-004); a draft edit after publishing leaves the version and `published_version_id` unchanged and sets `has_unpublished_changes` (SC-009); a stale `expectedRevisionHash` is `409`; restore replaces the draft without publishing; unpublish; versions beyond 20 are not listed; every action logs its event; agents get `403`
+- [X] T072 [P] [US3] Integration test for the preview in `apps/api/test/integration/guide-preview.test.ts`: draft, published, and numbered previews per language with locked fields as placeholders and facts resolved from the property (FR-054)
+- [X] T073 [P] [US3] Performance test in `apps/api/test/integration/guide-publish.perf.test.ts`: publishing a 50-item guide takes ≤ 1 second at p95 over 20 runs
+- [X] T074 [P] [US3] End-to-end test `e2e/specs/guide-us3-publish.spec.ts` (quickstart 4)
 
 ### Implementation for User Story 3
 
-- [ ] T075 [US3] Implement `apps/api/src/guides/publish.service.ts`: publish check, publish (snapshot builder from the domain, version insert, `published_version_id`, status), unpublish, versions list and view, restore; routes in the guides controller. Make T071 and T073 pass
-- [ ] T076 [US3] Implement the preview route in `apps/api/src/guides/preview.service.ts`. Make T072 pass
-- [ ] T077 [US3] Build the publish dialog (left-out items with Review and Approve, warnings, confirm), the "Published · unpublished changes" status, the versions page with view and restore, unpublish, and the preview page using `packages/ui` guide renderer with a language switch, in `apps/portal/app/[locale]/(app)/properties/[propertyId]/guide/`
-- [ ] T078 [US3] Make T074 pass
+- [X] T075 [US3] Implement `apps/api/src/guides/publish.service.ts`: publish check, publish (snapshot builder from the domain, version insert, `published_version_id`, status), unpublish, versions list and view, restore; routes in the guides controller. Make T071 and T073 pass
+- [X] T076 [US3] Implement the preview route in `apps/api/src/guides/preview.service.ts`. Make T072 pass
+- [X] T077 [US3] Build the publish dialog (left-out items with Review and Approve, warnings, confirm), the "Published · unpublished changes" status, the versions page with view and restore, unpublish, and the preview page using `packages/ui` guide renderer with a language switch, in `apps/portal/app/[locale]/(app)/properties/[propertyId]/guide/`
+- [X] T078 [US3] Make T074 pass
 
 **Checkpoint**: the MVP slice (US1–US3) is complete: a host can build, protect, and publish a
 guide.
@@ -461,3 +461,8 @@ _Recorded during implementation._
   keep new section-editor code in on-demand chunks.
 - **Code-warning tests (T061)** live in `guides.test.ts` (warning and `keepCodeWarning`) and
   `locked-fields.test.ts` (move to a locked field) instead of a separate file.
+- **Publishing (US3).** The revision hash is the SHA-256 of the draft snapshot with sorted keys,
+  so a stored jsonb copy hashes alike; a repeated publish of identical content returns the current
+  version. Unpublishing clears `published_version_id`. `GET /versions/{number}` answers in the
+  preview's shape. Restore hides default sections the version did not show and removes custom
+  ones. Publish p95 for 50 items measured 33 ms locally. The section editor route is 149.6 KB.

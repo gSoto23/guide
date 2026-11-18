@@ -8,10 +8,20 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   Req,
 } from "@nestjs/common";
+import { z } from "zod";
 import type { FastifyRequest } from "fastify";
 import {
+  previewQuerySchema,
+  publishSchema,
+  type GuidePreview,
+  type GuideVersionList,
+  type PreviewQuery,
+  type PublishBody,
+  type PublishCheck,
+  type PublishResult,
   createItemSchema,
   createSectionSchema,
   orderItemsSchema,
@@ -36,13 +46,93 @@ import { ZodValidationPipe } from "../common/zod.pipe.js";
 import { callerOf } from "../properties/properties.controller.js";
 import { WorkspaceAction } from "../tenancy/workspace-access.guard.js";
 import { GuidesService } from "./guides.service.js";
+import { PublishService } from "./publish.service.js";
 
 const MANAGE = { capability: "properties.manage" } as const;
+const versionNumberSchema = z.string().regex(/^[1-9]\d{0,5}$/);
 
 /** /api/v1/workspaces/{workspaceId}/properties/{propertyId}/guide (feature 003 contract). */
 @Controller("v1/workspaces/:workspaceId/properties/:propertyId/guide")
 export class GuidesController {
-  constructor(private readonly guides: GuidesService) {}
+  constructor(
+    private readonly guides: GuidesService,
+    private readonly publishing: PublishService,
+  ) {}
+
+  @Get("preview")
+  @WorkspaceAction()
+  preview(
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+    @Query(new ZodValidationPipe(previewQuerySchema)) query: PreviewQuery,
+  ): Promise<GuidePreview> {
+    return this.publishing.preview(workspaceId, propertyId, query);
+  }
+
+  @Get("publish-check")
+  @WorkspaceAction(MANAGE)
+  publishCheck(
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+  ): Promise<PublishCheck> {
+    return this.publishing.check(workspaceId, propertyId);
+  }
+
+  @Post("publish")
+  @WorkspaceAction(MANAGE)
+  @Idempotent()
+  publish(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+    @Body(new ZodValidationPipe(publishSchema)) body: PublishBody,
+  ): Promise<PublishResult> {
+    return this.publishing.publish(callerOf(request), workspaceId, propertyId, body);
+  }
+
+  @Post("unpublish")
+  @WorkspaceAction(MANAGE)
+  @HttpCode(204)
+  async unpublish(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+  ): Promise<void> {
+    await this.publishing.unpublish(callerOf(request), workspaceId, propertyId);
+  }
+
+  @Get("versions")
+  @WorkspaceAction()
+  versions(
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+  ): Promise<GuideVersionList> {
+    return this.publishing.versions(workspaceId, propertyId);
+  }
+
+  @Get("versions/:number")
+  @WorkspaceAction()
+  version(
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+    @Param("number", new ZodValidationPipe(versionNumberSchema)) number: string,
+    @Query(new ZodValidationPipe(previewQuerySchema.pick({ lang: true })))
+    query: { lang?: "es" | "en" },
+  ): Promise<GuidePreview> {
+    return this.publishing.preview(workspaceId, propertyId, { source: number, ...query });
+  }
+
+  @Post("versions/:number/restore")
+  @WorkspaceAction(MANAGE)
+  @HttpCode(200)
+  restore(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+    @Param("number", new ZodValidationPipe(versionNumberSchema)) number: string,
+  ): Promise<GuideView> {
+    return this.publishing.restore(callerOf(request), workspaceId, propertyId, Number(number));
+  }
 
   @Get()
   @WorkspaceAction()

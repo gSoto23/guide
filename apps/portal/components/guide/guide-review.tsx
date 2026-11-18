@@ -1,12 +1,16 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import type { GuideView, SectionWriteResult } from "@guidesk/contracts";
 import { problemOf } from "@/lib/properties-api";
 import { guideStatusKey, sectionTitle } from "@/lib/guide/labels";
 import { useWorkspace } from "@/lib/use-workspace";
+
+/** Loaded when the host opens it, so the guide page keeps its initial JavaScript small. */
+const PublishDialog = dynamic(() => import("./publish-dialog"), { ssr: false });
 
 const STATUS_BADGE: Record<string, string> = {
   missing: "badge",
@@ -19,7 +23,15 @@ const STATUS_BADGE: Record<string, string> = {
  * ask about most (FR-030, FR-033), the sections with their status and size (FR-013), and links to
  * each section's editor. Agents read only (FR-063).
  */
-export function GuideReview({ locale, propertyId }: { locale: string; propertyId: string }) {
+export function GuideReview({
+  locale,
+  propertyId,
+  restoredVersion = null,
+}: {
+  locale: string;
+  propertyId: string;
+  restoredVersion?: number | null;
+}) {
   const t = useTranslations("guide");
   const errors = useTranslations("errors");
   const workspace = useWorkspace();
@@ -28,6 +40,19 @@ export function GuideReview({ locale, propertyId }: { locale: string; propertyId
   const [adding, setAdding] = useState(false);
   const [title, setTitle] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [publishing, setPublishing] = useState(false);
+  const [notice, setNotice] = useState<string | null>(
+    restoredVersion ? t("versions.restored", { number: restoredVersion }) : null,
+  );
+
+  const refresh = useCallback(
+    async (message?: string) => {
+      if (!workspace) return;
+      setView(await workspace.api.get<GuideView>(`/properties/${propertyId}/guide`));
+      if (message) setNotice(message);
+    },
+    [workspace, propertyId],
+  );
 
   useEffect(() => {
     if (!workspace) return;
@@ -79,6 +104,17 @@ export function GuideReview({ locale, propertyId }: { locale: string; propertyId
     }
   }
 
+  async function unpublish() {
+    if (!workspace || !window.confirm(t("publish.unpublishConfirm"))) return;
+    setError(null);
+    try {
+      await workspace.api.post(`/properties/${propertyId}/guide/unpublish`);
+      await refresh(t("publish.unpublished"));
+    } catch {
+      setError(errors("internal_error"));
+    }
+  }
+
   return (
     <section aria-labelledby="guide-title">
       <p>
@@ -89,6 +125,57 @@ export function GuideReview({ locale, propertyId }: { locale: string; propertyId
         <span className="badge">{t(`guideStatus.${statusKey}`)}</span>{" "}
         <strong>{t("review.completeness", { score: view.completeness })}</strong>
       </p>
+      {view.publishedVersion !== null && (
+        <p className="muted">{t("publish.liveVersion", { number: view.publishedVersion })}</p>
+      )}
+      {notice && (
+        <p className="alert alert-info" role="status">
+          {notice}
+        </p>
+      )}
+      {error && !adding && (
+        <p className="alert alert-error" role="alert">
+          {error}
+        </p>
+      )}
+      <div className="actions">
+        {view.canEdit && (
+          <button
+            type="button"
+            className="button button-primary"
+            onClick={() => {
+              setNotice(null);
+              setPublishing(true);
+            }}
+          >
+            {t("publish.open")}
+          </button>
+        )}
+        <Link className="button button-secondary" href={`${base}/preview`}>
+          {t("publish.preview")}
+        </Link>
+        <Link className="button button-secondary" href={`${base}/versions`}>
+          {t("publish.versions")}
+        </Link>
+        {view.canEdit && view.status === "published" && (
+          <button
+            type="button"
+            className="button button-secondary"
+            onClick={() => void unpublish()}
+          >
+            {t("publish.unpublish")}
+          </button>
+        )}
+      </div>
+      {publishing && (
+        <PublishDialog
+          locale={locale}
+          propertyId={propertyId}
+          view={view}
+          onClose={() => setPublishing(false)}
+          onChanged={refresh}
+        />
+      )}
       {!view.canEdit && <p className="alert alert-info">{t("review.readOnly")}</p>}
       <p>
         <Link href={`${base}/locked-fields`}>

@@ -569,7 +569,7 @@ export class GuidesService {
    * Stores statuses and scores (FR-013, FR-031), and, after a draft change, flags unpublished
    * changes (FR-053).
    */
-  private async recompute(
+  async recompute(
     ctx: GuideContext,
     { draftChanged }: { draftChanged: boolean } = { draftChanged: true },
   ): Promise<{ completeness: number; hasUnpublishedChanges: boolean }> {
