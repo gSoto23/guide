@@ -9,6 +9,7 @@ import { GuestInterceptor } from "./guest.interceptor.js";
 import { GuestReveals } from "./reveals.service.js";
 import { GuestSessions } from "./sessions.service.js";
 import { StayLinkSecrets } from "./stay-link-secrets.js";
+import { GuestVerification } from "./verification.service.js";
 
 /** The guest guide's public routes (feature 004 research R1, R12). */
 @Module({
@@ -21,6 +22,7 @@ import { StayLinkSecrets } from "./stay-link-secrets.js";
     GuestReveals,
     GuestSessions,
     StayLinkSecrets,
+    GuestVerification,
   ],
   exports: [GuestContext, StayLinkSecrets],
 })

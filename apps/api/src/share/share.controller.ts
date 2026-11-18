@@ -1,8 +1,10 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Req, Res } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Param, Patch, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import {
   regeneratePropertyLinkSchema,
+  shareSettingsSchema,
   type ShareOverview,
+  type ShareSettingsBody,
   type StayLinkCopy,
 } from "@guidesk/contracts";
 import { assertUuid } from "../common/ids.js";
@@ -110,5 +112,21 @@ export class ShareController {
   ): Promise<void> {
     assertUuid(stayId);
     await this.share.revokeStayLink(callerOf(request), workspaceId, propertyId, stayId);
+  }
+
+  @Patch("settings")
+  @WorkspaceAction(MANAGE)
+  settings(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+    @Body(new ZodValidationPipe(shareSettingsSchema)) body: ShareSettingsBody,
+  ): Promise<{ requireConfirmationCode: boolean }> {
+    return this.share.setSettings(
+      callerOf(request),
+      workspaceId,
+      propertyId,
+      body.requireConfirmationCode,
+    );
   }
 }

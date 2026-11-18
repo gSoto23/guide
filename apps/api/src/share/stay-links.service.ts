@@ -347,4 +347,44 @@ export class StayLinksService {
     if (revoked.length === 0) throw new ApiProblem(404, "not_found");
     await this.log("guide.stay_link_revoked", caller, workspaceId, target.propertyId, stayId);
   }
+
+  /**
+   * Gives every active link of the property a confirmation code (FR-033): codes are created once
+   * and kept, so turning the setting off and on again never changes a code already sent.
+   */
+  async ensureCodes(workspaceId: string, propertyId: string): Promise<void> {
+    const links = await this.handle.db
+      .select({
+        id: stayLink.id,
+        tokenCiphertext: stayLink.tokenCiphertext,
+        dataKeyId: stayLink.dataKeyId,
+      })
+      .from(stayLink)
+      .where(
+        and(
+          eq(stayLink.workspaceId, workspaceId),
+          eq(stayLink.propertyId, propertyId),
+          eq(stayLink.status, "active"),
+          sql`${stayLink.confirmationCiphertext} IS NULL`,
+        ),
+      );
+    for (const link of links) {
+      const token = await this.secrets.token(
+        workspaceId,
+        link.id,
+        link.dataKeyId,
+        link.tokenCiphertext,
+      );
+      // Re-encrypt both under the active data key, so one data key ID covers the row.
+      const secrets = await this.secrets.create(workspaceId, link.id, true, token);
+      await this.handle.db
+        .update(stayLink)
+        .set({
+          tokenCiphertext: secrets.tokenCiphertext,
+          confirmationCiphertext: secrets.confirmationCiphertext,
+          dataKeyId: secrets.dataKeyId,
+        })
+        .where(eq(stayLink.id, link.id));
+    }
+  }
 }

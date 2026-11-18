@@ -1512,6 +1512,13 @@
       "firstOpened": "First opened: {date}",
       "valuesShown": "{count, plural, =0 {Codes not viewed} one {Codes viewed # time} other {Codes viewed # times}}",
       "locked": "Verification paused until {time} after failed tries."
+    },
+    "confirmation": {
+      "title": "Confirmation code",
+      "body": "Ask guests for a 6-character code before showing access codes. Each stay gets its own code, shown next to its link and in the stay message.",
+      "toggle": "Ask for a confirmation code",
+      "on": "Guests must enter their stay's code the first time.",
+      "off": "The stay link alone shows the codes during the stay."
     }
   }
 }

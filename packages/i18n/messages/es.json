@@ -1512,6 +1512,13 @@
       "firstOpened": "Primera apertura: {date}",
       "valuesShown": "{count, plural, =0 {Códigos no vistos} one {Códigos vistos # vez} other {Códigos vistos # veces}}",
       "locked": "Verificación en pausa hasta las {time} por intentos fallidos."
+    },
+    "confirmation": {
+      "title": "Código de confirmación",
+      "body": "Pide a los huéspedes un código de 6 caracteres antes de mostrar los códigos de acceso. Cada estadía recibe su propio código, que aparece junto a su enlace y en el mensaje de estadía.",
+      "toggle": "Pedir un código de confirmación",
+      "on": "Los huéspedes deben escribir el código de su estadía la primera vez.",
+      "off": "El enlace de estadía basta para ver los códigos dentro de la estadía."
     }
   }
 }

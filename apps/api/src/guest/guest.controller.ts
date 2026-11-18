@@ -16,10 +16,12 @@ import {
   guestGuideQuerySchema,
   guestRevealSchema,
   guestSessionQuerySchema,
+  guestVerifySchema,
   stayExchangeSchema,
   type GuestGuide,
   type GuestRevealBody,
   type GuestSession,
+  type GuestVerifyBody,
   type RevealResponse,
   type StayExchangeBody,
   type StayExchangeResponse,
@@ -32,6 +34,7 @@ import { guestIpKey, GuestInterceptor } from "./guest.interceptor.js";
 import { unavailable } from "./guest-context.js";
 import { GuestReveals } from "./reveals.service.js";
 import { GuestSessions } from "./sessions.service.js";
+import { GuestVerification } from "./verification.service.js";
 
 /**
  * Public guide data (feature 004 R9): cached by the CDN for a minute, served stale for a day if
@@ -50,6 +53,7 @@ export class GuestController {
     private readonly guides: GuestGuideService,
     private readonly sessions: GuestSessions,
     private readonly reveals: GuestReveals,
+    private readonly verification: GuestVerification,
   ) {}
 
   @Get("guides/:publicId")
@@ -117,5 +121,19 @@ export class GuestController {
     const value = await this.reveals.reveal(body.publicId, body.fieldId, request.headers.cookie);
     void reply.header("cache-control", "no-store").header("pragma", "no-cache");
     return { value };
+  }
+
+  @Post("verify")
+  @HttpCode(204)
+  async verify(
+    @Req() request: FastifyRequest,
+    @Body(new ZodValidationPipe(guestVerifySchema)) body: GuestVerifyBody,
+  ): Promise<void> {
+    await this.verification.verify(
+      body.publicId,
+      body.code,
+      request.headers.cookie,
+      guestIpKey(request),
+    );
   }
 }

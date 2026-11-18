@@ -169,16 +169,16 @@ lockouts with backoff, and a host alert.
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T043 [P] [US3] API integration test `apps/api/test/integration/guest-verification.test.ts`: the setting by owner and admin only (event `guide.confirmation_changed`) generates codes for active stay links and shows them on copy; a reveal without verification `409 verification_required`; a wrong code `422` with `attemptsLeft`; 5 wrong codes from one device lock the stay for 15 minutes (`423`, `Retry-After`); 5 wrong codes spread over 5 devices also lock it; per-IP limit; the second lockout lasts 30 minutes; each lockout sends `guides.verification_locked` to owners and admins (Mailpit or the outbox table) and records `guide.verification_locked`; the right code verifies only that device; regenerating changes the code and unverifies earlier devices; turning the setting off removes the step; no code in any log line or event
-- [ ] T044 [P] [US3] End-to-end test `e2e/specs/guest-us3.spec.ts`: the owner turns on the confirmation code and copies a stay link with its code; the guest is asked for the code on Show code, a wrong code shows an error, the right code shows the value, and a reload does not ask again
+- [X] T043 [P] [US3] API integration test `apps/api/test/integration/guest-verification.test.ts`: the setting by owner and admin only (event `guide.confirmation_changed`) generates codes for active stay links and shows them on copy; a reveal without verification `409 verification_required`; a wrong code `422` with `attemptsLeft`; 5 wrong codes from one device lock the stay for 15 minutes (`423`, `Retry-After`); 5 wrong codes spread over 5 devices also lock it; per-IP limit; the second lockout lasts 30 minutes; each lockout sends `guides.verification_locked` to owners and admins (Mailpit or the outbox table) and records `guide.verification_locked`; the right code verifies only that device; regenerating changes the code and unverifies earlier devices; turning the setting off removes the step; no code in any log line or event
+- [X] T044 [P] [US3] End-to-end test `e2e/specs/guest-us3.spec.ts`: the owner turns on the confirmation code and copies a stay link with its code; the guest is asked for the code on Show code, a wrong code shows an error, the right code shows the value, and a reload does not ask again
 
 ### Implementation for User Story 3
 
-- [ ] T045 [US3] Implement `PATCH /share/settings` in the share module (generate codes for active links in the system context, event) and return `confirmationCode` from the copy and regenerate routes when required
-- [ ] T046 [US3] Implement `apps/api/src/guest/verification.service.ts` and `POST /api/v1/guest/verify`: per-session and per-IP limits through `RateLimitService`, the per-stay window and lockout on `stay_link` in one locked row update, backoff from the domain, `verified_at`, the event; switch the reveal gate on
-- [ ] T047 [US3] Add `MemberNotices.toOwnersAndAdmins` in `apps/api/src/tenancy/member-notices.ts` and the email `packages/emails/src/guides/verification-locked.tsx` (ES and EN, contracts/emails.md) with its render export; send it once per lockout
-- [ ] T048 [US3] Implement the confirmation form (`G-04`) in the guest app: markup in `apps/guide/src/components/locked-field.tsx`, submit, errors, and the countdown in `apps/guide/src/client/guide.ts`; ES and EN texts
-- [ ] T049 [US3] Add the "Ask for a confirmation code" switch to the Share screen and show the code next to a copied stay link in `apps/portal/components/share/`
+- [X] T045 [US3] Implement `PATCH /share/settings` in the share module (generate codes for active links in the system context, event) and return `confirmationCode` from the copy and regenerate routes when required
+- [X] T046 [US3] Implement `apps/api/src/guest/verification.service.ts` and `POST /api/v1/guest/verify`: per-session and per-IP limits through `RateLimitService`, the per-stay window and lockout on `stay_link` in one locked row update, backoff from the domain, `verified_at`, the event; switch the reveal gate on
+- [X] T047 [US3] Add `MemberNotices.toOwnersAndAdmins` in `apps/api/src/tenancy/member-notices.ts` and the email `packages/emails/src/guides/verification-locked.tsx` (ES and EN, contracts/emails.md) with its render export; send it once per lockout
+- [X] T048 [US3] Implement the confirmation form (`G-04`) in the guest app: markup in `apps/guide/src/components/locked-field.tsx`, submit, errors, and the countdown in `apps/guide/src/client/guide.ts`; ES and EN texts
+- [X] T049 [US3] Add the "Ask for a confirmation code" switch to the Share screen and show the code next to a copied stay link in `apps/portal/components/share/`
 
 **Checkpoint**: US3 works with US2; US1 is unaffected.
 

@@ -264,4 +264,31 @@ export class ShareService {
     const target = await this.target(workspaceId, propertyId);
     await this.stayLinks.revoke(caller, workspaceId, target, stayId);
   }
+
+  /** Turns the confirmation code on or off for the property (FR-033, FR-052). */
+  async setSettings(
+    caller: Caller,
+    workspaceId: string,
+    propertyId: string,
+    requireConfirmationCode: boolean,
+  ): Promise<{ requireConfirmationCode: boolean }> {
+    const target = await this.target(workspaceId, propertyId);
+    if (target.requireConfirmationCode !== requireConfirmationCode) {
+      await this.tx
+        .update(guide)
+        .set({ requireConfirmationCode })
+        .where(and(eq(guide.id, target.guideId), eq(guide.workspaceId, workspaceId)));
+      if (requireConfirmationCode) await this.stayLinks.ensureCodes(workspaceId, propertyId);
+      await this.securityLog.record({
+        type: "guide.confirmation_changed",
+        outcome: "success",
+        actorUserId: caller.userId,
+        workspaceId,
+        targetType: "property",
+        targetId: propertyId,
+        metadata: { propertyId, required: requireConfirmationCode },
+      });
+    }
+    return { requireConfirmationCode };
+  }
 }

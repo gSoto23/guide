@@ -57,6 +57,20 @@ export function ShareScreen({ locale, propertyId }: { locale: string; propertyId
     }
   }
 
+  async function setConfirmation(required: boolean) {
+    if (!workspace || !overview) return;
+    setError(null);
+    // Optimistic: the switch moves at once and returns if the change fails.
+    setOverview({ ...overview, settings: { requireConfirmationCode: required } });
+    try {
+      await workspace.api.patch(`${base}/settings`, { requireConfirmationCode: required });
+      await load();
+    } catch {
+      setOverview(overview);
+      setError(errors("internal_error"));
+    }
+  }
+
   const apiBase = `/api/v1/workspaces/${workspace.workspaceId}${base}`;
 
   return (
@@ -170,6 +184,25 @@ export function ShareScreen({ locale, propertyId }: { locale: string; propertyId
                 <li>{t("template.booking")}</li>
                 <li>{t("template.vrbo")}</li>
               </ul>
+            </div>
+          )}
+          {workspace.canManage && overview.settings && (
+            <div className="card">
+              <h2>{t("confirmation.title")}</h2>
+              <p className="muted">{t("confirmation.body")}</p>
+              <label className="checkbox">
+                <input
+                  type="checkbox"
+                  checked={overview.settings.requireConfirmationCode}
+                  onChange={(event) => void setConfirmation(event.target.checked)}
+                />{" "}
+                {t("confirmation.toggle")}
+              </label>
+              <p className="muted">
+                {overview.settings.requireConfirmationCode
+                  ? t("confirmation.on")
+                  : t("confirmation.off")}
+              </p>
             </div>
           )}
           {workspace.canManage && overview.stays && (
