@@ -20,8 +20,13 @@ import {
 } from "@/lib/guide/autosave";
 import { sourceLabel } from "@/lib/guide/labels";
 import { useOnline } from "@/lib/use-online";
-import { RecommendationForm } from "./recommendation-form";
 import type { TextItemEditorProps } from "./text-item-editor";
+
+// Opened only when adding or editing a recommendation (Performance Budget, 150 KB per route).
+const RecommendationForm = dynamic(
+  () => import("./recommendation-form").then((m) => m.RecommendationForm),
+  { ssr: false },
+);
 
 /** Loaded only when a section is open, so the editor never weighs on the guide pages (research R3). */
 const TextItemEditor = dynamic<TextItemEditorProps>(() => import("./text-item-editor"), {
