@@ -11,10 +11,11 @@ import type {
   OrderSectionsBody,
   SectionWriteResult,
   TopicMarkBody,
+  TranslationActionBody,
   UpdateItemBody,
   UpdateSectionBody,
 } from "@guidesk/contracts";
-import { documentTextLength } from "@guidesk/contracts";
+import { documentPlainText, documentTextLength } from "@guidesk/contracts";
 import {
   guide,
   guideItem,
@@ -24,7 +25,10 @@ import {
   mediaObject,
 } from "@guidesk/db";
 import {
+  afterHostReview,
+  afterKeep,
   afterSourceChange,
+  afterTranslateAgain,
   docBlockTexts,
   docPlainText,
   isGuideTopicId,
@@ -35,7 +39,9 @@ import {
   MAX_VIDEOS_PER_SECTION,
   redactRestrictedValues,
   textHash,
+  TRANSLATE_DEBOUNCE_SECONDS,
   type GuideDraftJob,
+  type GuideTranslateJob,
   type SegDocument,
 } from "@guidesk/domain";
 import { ApiProblem } from "../common/problem.js";
@@ -287,6 +293,7 @@ export class GuidesService {
         origin: "source",
         state: "current",
       });
+      await this.followSource(ctx, sectionId, row!.id, body.language, body.doc);
     }
     return this.finish(
       workspaceId,
@@ -349,19 +356,7 @@ export class GuidesService {
           .values({ itemId: item.id, language: body.language, workspaceId, ...values });
       }
       if (isSource) {
-        // Other languages follow the source (FR-046); the translation job picks stale texts (US5).
-        for (const text of ctx.texts.filter(
-          (candidate) => candidate.itemId === item.id && candidate.language !== body.language,
-        )) {
-          if (text.origin === "source") continue;
-          const next = afterSourceChange({ origin: text.origin, state: text.state });
-          await this.tx
-            .update(guideItemText)
-            .set({ state: next.state, origin: next.origin, pendingReason: null })
-            .where(
-              and(eq(guideItemText.itemId, text.itemId), eq(guideItemText.language, text.language)),
-            );
-        }
+        await this.followSource(ctx, item.sectionId!, item.id, body.language, body.doc);
       }
     }
     const sourceDoc =
@@ -554,6 +549,127 @@ export class GuidesService {
       const match = redactRestrictedValues(text).matches[0];
       return match ? [{ kind: match.kind, language, blockIndex }] : [];
     });
+  }
+
+  /**
+   * Other languages follow a source edit (FR-044, FR-046): machine texts become stale, reviewed
+   * ones out of date, missing ones wait for their first translation, and one debounced
+   * translation job per language is scheduled for the section (research R7).
+   */
+  private async followSource(
+    ctx: GuideContext,
+    sectionId: string,
+    itemId: string,
+    sourceLanguage: Language,
+    sourceDoc: GuideDocument,
+  ): Promise<void> {
+    // An empty text has nothing to translate yet; its first words will schedule it.
+    if (!documentPlainText(sourceDoc).trim()) return;
+    const others = ctx.property.guideLanguages.filter((language) => language !== sourceLanguage);
+    for (const language of others) {
+      const text = ctx.texts.find(
+        (candidate) => candidate.itemId === itemId && candidate.language === language,
+      );
+      if (!text) {
+        await this.tx
+          .insert(guideItemText)
+          .values({
+            itemId,
+            language,
+            workspaceId: ctx.workspaceId,
+            doc: null,
+            origin: "machine",
+            state: "stale",
+          })
+          .onConflictDoNothing();
+      } else if (text.origin !== "source") {
+        const next = afterSourceChange({ origin: text.origin, state: text.state });
+        await this.tx
+          .update(guideItemText)
+          .set({ state: next.state, origin: next.origin, pendingReason: null })
+          .where(and(eq(guideItemText.itemId, itemId), eq(guideItemText.language, language)));
+      }
+      await this.scheduleTranslation(ctx.workspaceId, sectionId, language);
+    }
+  }
+
+  /** One translation job per section and language, 20 seconds after the last save (R7). */
+  private async scheduleTranslation(
+    workspaceId: string,
+    sectionId: string,
+    language: Language,
+  ): Promise<void> {
+    await this.jobs.send(
+      JOB_QUEUES.guideTranslate,
+      { workspaceId, sectionId, language } satisfies GuideTranslateJob,
+      {
+        startAfter: TRANSLATE_DEBOUNCE_SECONDS,
+        singletonKey: `${sectionId}:${language}`,
+        retryLimit: 3,
+        retryBackoff: true,
+      },
+    );
+  }
+
+  /** Translate again, keep as is, or mark reviewed (FR-045, FR-046). */
+  async translationAction(
+    caller: Caller,
+    workspaceId: string,
+    propertyId: string,
+    itemId: string,
+    language: Language,
+    body: TranslationActionBody,
+  ): Promise<SectionWriteResult> {
+    const { ctx, item } = await this.itemOf(workspaceId, propertyId, itemId);
+    this.assertLanguage(ctx, language);
+    if (language === item.sourceLanguage) {
+      throw new ApiProblem(422, "validation_failed", "This is the item's own language.");
+    }
+    const text = ctx.texts.find(
+      (candidate) => candidate.itemId === item.id && candidate.language === language,
+    );
+    const source = ctx.texts.find(
+      (candidate) => candidate.itemId === item.id && candidate.language === item.sourceLanguage,
+    );
+    if (!source?.doc) throw new ApiProblem(422, "validation_failed", "Nothing to translate yet.");
+    await this.bump(caller, item.sectionId!, body.revision);
+    const current = {
+      origin: (text?.origin === "reviewed" ? "reviewed" : "machine") as "machine" | "reviewed",
+      state: text?.state ?? ("stale" as const),
+    };
+    if (body.action === "translate_again") {
+      const next = afterTranslateAgain(current);
+      await this.tx
+        .insert(guideItemText)
+        .values({
+          itemId: item.id,
+          language,
+          workspaceId,
+          doc: text?.doc ?? null,
+          origin: next.origin,
+          state: next.state,
+        })
+        .onConflictDoUpdate({
+          target: [guideItemText.itemId, guideItemText.language],
+          set: { state: next.state, pendingReason: null },
+        });
+      await this.scheduleTranslation(workspaceId, item.sectionId!, language);
+    } else {
+      if (!text?.doc) {
+        throw new ApiProblem(422, "validation_failed", "There is no translation to keep yet.");
+      }
+      const next = body.action === "keep" ? afterKeep(current) : afterHostReview();
+      await this.tx
+        .update(guideItemText)
+        .set({
+          origin: next.origin,
+          state: next.state,
+          pendingReason: null,
+          sourceHash: textHash(JSON.stringify(source.doc)),
+        })
+        .where(and(eq(guideItemText.itemId, item.id), eq(guideItemText.language, language)));
+    }
+    return this.finish(workspaceId, propertyId, item.sectionId!, item.id);
   }
 
   /** Checks and increments a section's revision in one statement (FR-012, research R17). */

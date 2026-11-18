@@ -39,6 +39,12 @@ import {
   PURGE_WORKSPACES_QUEUE,
 } from "./jobs/purge-workspaces.js";
 import { createGuideDraftHandler } from "./jobs/guide-draft.js";
+import {
+  createGuideTranslateHandler,
+  findTranslationWork,
+  GUIDE_TRANSLATE_SWEEP_CRON,
+  GUIDE_TRANSLATE_SWEEP_QUEUE,
+} from "./jobs/guide-translate.js";
 import { createInterviewAnswerHandler } from "./jobs/interview-answer.js";
 import { createMediaProcessHandler } from "./jobs/media-process.js";
 import { createWorkerServices } from "./services.js";
@@ -144,6 +150,25 @@ async function main(): Promise<void> {
       storage: services.storage,
     }),
   );
+  // Translation per section and language (research R7): saves schedule their own debounced job;
+  // the sweep picks up texts nothing scheduled, such as drafts from the worker and restores.
+  await createQueue(JOB_QUEUES.guideTranslate);
+  await boss.work(
+    JOB_QUEUES.guideTranslate,
+    { localConcurrency: 4 },
+    createGuideTranslateHandler({ db: services.db.db, llm: services.llm }),
+  );
+  await createQueue(GUIDE_TRANSLATE_SWEEP_QUEUE);
+  await boss.work(GUIDE_TRANSLATE_SWEEP_QUEUE, async () => {
+    for (const work of await findTranslationWork(services.db.db)) {
+      await boss.send(JOB_QUEUES.guideTranslate, work, {
+        singletonKey: `${work.sectionId}:${work.language}`,
+        retryLimit: 3,
+        retryBackoff: true,
+      });
+    }
+  });
+  await boss.schedule(GUIDE_TRANSLATE_SWEEP_QUEUE, GUIDE_TRANSLATE_SWEEP_CRON, null, { tz: "UTC" });
   const scheduleCalendars = createCalendarScheduler({
     db: services.db.db,
     send: (queue, data, options) => boss.send(queue, data, options),

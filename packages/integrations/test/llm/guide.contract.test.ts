@@ -128,4 +128,14 @@ describe("the other guide calls (T082, T096, T106)", () => {
     expect(result.result?.blocks).toHaveLength(2);
     expect(captured[0]!.body).toMatchObject({ output_config: { effort: "low" } });
   });
+
+  it("reports a different number of blocks as invalid, without a result (T096)", async () => {
+    const { adapter } = replay(fixture("guide-translate-ok"));
+    const result = await adapter.translateBlocks({
+      from: "es",
+      to: "en",
+      blocks: ["Uno.", "Dos.", "Tres."],
+    });
+    expect(result).toMatchObject({ outcome: "invalid", result: null });
+  });
 });

@@ -1326,6 +1326,33 @@
       "noMore": "¡Listo! No hay más preguntas por ahora.",
       "finished": "Terminaste la entrevista.",
       "busyElsewhere": "Otra persona tiene una entrevista abierta en esta guía. Puedes continuarla aquí."
+    },
+    "translations": {
+      "link": "Traducciones",
+      "title": "Traducciones",
+      "intro": "Cada texto se traduce solo. Revisa las traducciones y corrige lo que haga falta; las que revises no cambian sin ti.",
+      "singleLanguage": "Esta guía está en un solo idioma. Agrega otro idioma en los datos de la propiedad para traducirla.",
+      "openProperty": "Abrir la propiedad",
+      "empty": "Esta sección todavía no tiene textos.",
+      "source": "Original ({language})",
+      "translation": "Traducción ({language})",
+      "state_waiting": "Traduciendo…",
+      "state_machine": "Traducción automática",
+      "state_reviewed": "Revisada",
+      "state_out_of_date": "Desactualizada: el original cambió",
+      "state_failed": "No se pudo traducir",
+      "state_pending": "Pendiente",
+      "reason_ai_limit": "se alcanzó el límite diario de IA; sigue mañana",
+      "reason_ai_unavailable": "el asistente no está disponible; lo intentaremos de nuevo",
+      "reason_tokens_mismatch": "el formato no coincidió",
+      "edit": "Editar",
+      "save": "Guardar traducción",
+      "cancel": "Cancelar",
+      "markReviewed": "Marcar revisada",
+      "translateAgain": "Traducir de nuevo",
+      "keep": "Mantener como está",
+      "changed": "La sección cambió. Recarga para ver lo último.",
+      "reload": "Recargar"
     }
   }
 }

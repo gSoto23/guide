@@ -1,0 +1,10 @@
+{
+  "id": "tr-08",
+  "from": "es",
+  "to": "en",
+  "blocks": [
+    "Tomen el bus a Tamarindo frente a la panadería.",
+    "Un taxi al aeropuerto tarda 40 minutos."
+  ],
+  "keep": ["Tamarindo", "40"]
+}

@@ -29,7 +29,11 @@ async function addText(page: Page, guideUrl: string, section: string, text: stri
   await page.getByRole("button", { name: "Agregar texto" }).click();
   const editor = page.getByRole("textbox", { name: "Escribe para tus huéspedes…" }).last();
   await editor.click();
+  const saved = page.waitForResponse(
+    (response) => response.request().method() === "PATCH" && response.url().includes("/guide/items/"),
+  );
   await editor.pressSequentially(text);
+  expect((await saved).ok()).toBe(true);
   await expect(page.getByText("Guardando…")).toHaveCount(0, { timeout: 10_000 });
   await expect(page.getByText(/^Sin guardar/)).toHaveCount(0);
 }

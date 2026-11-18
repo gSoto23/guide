@@ -1,0 +1,7 @@
+{
+  "id": "tr-12",
+  "from": "es",
+  "to": "en",
+  "blocks": ["La piscina se cierra a las 20:00.", "<i>No hay salvavidas.</i>"],
+  "keep": ["20:00"]
+}

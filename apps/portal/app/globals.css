@@ -773,3 +773,18 @@ input[type="radio"] {
 .guide-document p {
   margin: 0.4rem 0;
 }
+
+/* Feature 003 US5: translations side by side, stacked on phones (H-19). */
+.translation-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--color-border, #e5e5e5);
+}
+
+@media (min-width: 720px) {
+  .translation-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}

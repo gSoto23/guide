@@ -298,19 +298,19 @@ date, pending, or failed.
 
 ### Tests for User Story 5 ⚠️
 
-- [ ] T094 [P] [US5] Worker test for `guide.translate` in `apps/worker/test/integration/guide-translate.test.ts`: one call per section and language for every stale item; tokens kept; a mismatch retried once then `failed` with `tokens_mismatch`; masked codes restored unchanged and absent from the recorder (FR-025); the AI limit sets `pending` with `ai_limit`; reviewed texts never overwritten; single-language guides make no call (US5 scenario 6); with simulated model latency, 90% of sections are translated within 2 minutes of the last save (SC-005)
-- [ ] T095 [P] [US5] Integration test for translation actions and triggers in `apps/api/test/integration/guide-translations.test.ts`: a source edit marks machine texts `stale` and reviewed ones `out_of_date` and schedules one debounced job; `translate_again`, `keep`, and `mark_reviewed`; editing a translation makes it `reviewed`; adding a guide language translates every section and removing one drops it from the draft but not from the published version (FR-048)
-- [ ] T096 [P] [US5] Contract test for `translateBlocks` in `packages/integrations/test/llm/translate-blocks.contract.test.ts` (recorded responses, count mismatch detected)
-- [ ] T097 [P] [US5] End-to-end test `e2e/specs/guide-us5-translation.spec.ts` (quickstart 6)
+- [X] T094 [P] [US5] Worker test for `guide.translate` in `apps/worker/test/integration/guide-translate.test.ts`: one call per section and language for every stale item; tokens kept; a mismatch retried once then `failed` with `tokens_mismatch`; masked codes restored unchanged and absent from the recorder (FR-025); the AI limit sets `pending` with `ai_limit`; reviewed texts never overwritten; single-language guides make no call (US5 scenario 6); with simulated model latency, 90% of sections are translated within 2 minutes of the last save (SC-005)
+- [X] T095 [P] [US5] Integration test for translation actions and triggers in `apps/api/test/integration/guide-translations.test.ts`: a source edit marks machine texts `stale` and reviewed ones `out_of_date` and schedules one debounced job; `translate_again`, `keep`, and `mark_reviewed`; editing a translation makes it `reviewed`; adding a guide language translates every section and removing one drops it from the draft but not from the published version (FR-048)
+- [X] T096 [P] [US5] Contract test for `translateBlocks` in `packages/integrations/test/llm/translate-blocks.contract.test.ts` (recorded responses, count mismatch detected)
+- [X] T097 [P] [US5] End-to-end test `e2e/specs/guide-us5-translation.spec.ts` (quickstart 6)
 
 ### Implementation for User Story 5
 
-- [ ] T098 [US5] Implement `translateBlocks` in the Anthropic adapter with its prompt in `packages/integrations/src/llm/guide/translate-blocks.ts` (R6, effort `low`). Make T096 pass
-- [ ] T099 [US5] Implement the `guide.translate` job in `apps/worker/src/jobs/guide-translate.ts` (R7) and the scheduling on saves in the item service (20-second `startAfter`, singleton per section and language). Make T094 pass
-- [ ] T100 [US5] Implement the translation action route and the guide-language change hook in the property service. Make T095 pass
-- [ ] T101 [US5] Build the translations screen (H-19) in `apps/portal/app/[locale]/(app)/properties/[propertyId]/guide/translations/page.tsx`: side by side per section, status badges, edit, mark reviewed, translate again, keep as is, pending and failed reasons
-- [ ] T102 [US5] Add the translation suite to `evals/guide` (30 items with formatting, links, and locked-field tokens) with the token and content scorer
-- [ ] T103 [US5] Make T097 pass
+- [X] T098 [US5] Implement `translateBlocks` in the Anthropic adapter with its prompt in `packages/integrations/src/llm/guide/translate-blocks.ts` (R6, effort `low`). Make T096 pass
+- [X] T099 [US5] Implement the `guide.translate` job in `apps/worker/src/jobs/guide-translate.ts` (R7) and the scheduling on saves in the item service (20-second `startAfter`, singleton per section and language). Make T094 pass
+- [X] T100 [US5] Implement the translation action route and the guide-language change hook in the property service. Make T095 pass
+- [X] T101 [US5] Build the translations screen (H-19) in `apps/portal/app/[locale]/(app)/properties/[propertyId]/guide/translations/page.tsx`: side by side per section, status badges, edit, mark reviewed, translate again, keep as is, pending and failed reasons
+- [X] T102 [US5] Add the translation suite to `evals/guide` (30 items with formatting, links, and locked-field tokens) with the token and content scorer
+- [X] T103 [US5] Make T097 pass
 
 **Checkpoint**: guides are bilingual with tracked translations.
 
@@ -478,3 +478,10 @@ _Recorded during implementation._
   the interview page, and links to the interview load the page fully so its policy applies. The
   end-to-end test records from a Web Audio fixture stream, because headless Chromium on macOS
   waits on the system microphone prompt.
+- **Translation (US5).** `translateBlocks` landed with the foundations (T026); the adapter now
+  answers `invalid` when the number of blocks differs. Saves schedule one job per section and
+  language 20 seconds later (pg-boss `stately`, singleton key `section:language`); a sweep every
+  minute (`guide.translate-sweep`) picks up texts nothing scheduled, such as drafts from the worker,
+  restored versions, and added guide languages, and retries `pending` texts after 10 minutes.
+  Empty texts schedule nothing. Removing a guide language keeps texts written in that language as
+  their item's source.

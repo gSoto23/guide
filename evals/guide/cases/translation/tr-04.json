@@ -1,0 +1,7 @@
+{
+  "id": "tr-04",
+  "from": "es",
+  "to": "en",
+  "blocks": ["Reserve una mesa en <a1>Soda Doña Ana</a1> para probar el gallo pinto."],
+  "keep": ["Soda Doña Ana"]
+}

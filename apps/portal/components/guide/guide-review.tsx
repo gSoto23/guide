@@ -172,6 +172,11 @@ export function GuideReview({
         <Link className="button button-secondary" href={`${base}/versions`}>
           {t("publish.versions")}
         </Link>
+        {view.languages.length > 1 && (
+          <Link className="button button-secondary" href={`${base}/translations`}>
+            {t("translations.link")}
+          </Link>
+        )}
         {view.canEdit && view.status === "published" && (
           <button
             type="button"

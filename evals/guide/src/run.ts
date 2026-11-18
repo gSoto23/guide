@@ -9,24 +9,27 @@ import {
   type GuideSectionKindValue,
   type LlmPort,
 } from "@guidesk/integrations";
-import { CaseError, loadDrafting, loadInterview } from "./cases.js";
+import { CaseError, loadDrafting, loadInterview, loadTranslation } from "./cases.js";
 import {
   scoreCase,
   scoreInterviewCase,
   scoreInterviewSuite,
   scoreSuite,
+  scoreTranslationCase,
+  scoreTranslationSuite,
   type CaseScore,
   type InterviewCaseScore,
+  type TranslationCaseScore,
 } from "./score.js";
 
 /**
  * Guide eval runner (feature 003 research R6, SC-002, SC-003, constitution V). Every change to a
- * guide prompt, schema, model, or effort must pass it before merge. The drafting and interview
- * suites run today; translation joins with its user story (T102).
+ * guide prompt, schema, model, or effort must pass it before merge.
  *
  * - `pnpm --filter @guidesk/evals-guide eval` calls the real model (`ANTHROPIC_API_KEY`; 33 calls
- *   for drafting and 43 for the interview) and exits 1 when a target is missed or the key is
- *   missing. `EVAL_SUITE=drafting` or `EVAL_SUITE=interview` runs one suite.
+ *   for drafting, 43 for the interview, and 30 for translation) and exits 1 when a target is
+ *   missed or the key is missing. `EVAL_SUITE=drafting`, `interview`, or `translation` runs one
+ *   suite.
  * - `EVAL_LLM=fake` checks the runner with `FakeLlmAdapter`; scores are printed but never fail.
  */
 const PACKAGE_DIR = fileURLToPath(new URL("..", import.meta.url));
@@ -140,13 +143,47 @@ async function runInterview(
   return { lines, passed: suite.passed, report: { suite, scores } };
 }
 
+async function runTranslation(
+  llm: LlmPort,
+): Promise<{ lines: string[]; passed: boolean; report: object }> {
+  const cases = await loadTranslation(CASES_DIR);
+  const scores: TranslationCaseScore[] = [];
+  for (const testCase of cases) {
+    try {
+      const result = await llm.translateBlocks(
+        { from: testCase.from, to: testCase.to, blocks: testCase.blocks },
+        { signal: AbortSignal.timeout(CALL_TIMEOUT_MS) },
+      );
+      scores.push(scoreTranslationCase(testCase, result.result, result.outcome));
+    } catch (error: unknown) {
+      scores.push(
+        scoreTranslationCase(testCase, null, error instanceof Error ? error.name : "error"),
+      );
+    }
+  }
+  const suite = scoreTranslationSuite(scores);
+  const lines = [
+    `Translation: tokens kept ${(suite.tokens * 100).toFixed(1)}% (target 100%), content issues ${suite.contentIssues} (target 0), failed calls ${suite.failedCalls}.`,
+    ...scores
+      .filter(
+        (score) =>
+          score.tokensKept < score.blocks || score.content.length || score.outcome !== "ok",
+      )
+      .map(
+        (score) =>
+          `- ${score.id}: ${[score.tokensKept < score.blocks ? `tokens ${score.tokensKept}/${score.blocks}` : "", ...score.content, score.outcome === "ok" ? "" : score.outcome].filter(Boolean).join("; ")}`,
+      ),
+  ];
+  return { lines, passed: suite.passed, report: { suite, scores } };
+}
+
 async function main(): Promise<number> {
   const mode = process.env.EVAL_LLM ?? "anthropic";
   if (mode !== "anthropic" && mode !== "fake")
     throw new CaseError(`EVAL_LLM must be "anthropic" or "fake"`);
   const which = process.env.EVAL_SUITE ?? "all";
-  if (which !== "all" && which !== "drafting" && which !== "interview")
-    throw new CaseError(`EVAL_SUITE must be "all", "drafting", or "interview"`);
+  if (!["all", "drafting", "interview", "translation"].includes(which))
+    throw new CaseError(`EVAL_SUITE must be "all", "drafting", "interview", or "translation"`);
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (mode === "anthropic" && !apiKey) {
     console.error("ANTHROPIC_API_KEY is required for the guide evals (or set EVAL_LLM=fake).");
@@ -155,8 +192,9 @@ async function main(): Promise<number> {
   const llm: LlmPort =
     mode === "fake" ? new FakeLlmAdapter() : new AnthropicLlmAdapter({ apiKey: apiKey! });
   const results: Record<string, { lines: string[]; passed: boolean; report: object }> = {};
-  if (which !== "interview") results.drafting = await runDrafting(llm);
-  if (which !== "drafting") results.interview = await runInterview(llm);
+  if (which === "all" || which === "drafting") results.drafting = await runDrafting(llm);
+  if (which === "all" || which === "interview") results.interview = await runInterview(llm);
+  if (which === "all" || which === "translation") results.translation = await runTranslation(llm);
 
   await mkdir(REPORT_DIR, { recursive: true });
   await writeFile(

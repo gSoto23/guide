@@ -127,3 +127,49 @@ export async function loadInterview(casesDir: string): Promise<InterviewCase[]> 
   }
   return cases;
 }
+
+/** Blocks to translate (feature 003 T102, research R7), with words that must stay as written. */
+export interface TranslationCase {
+  id: string;
+  file: string;
+  from: "es" | "en";
+  to: "es" | "en";
+  blocks: string[];
+  keep: string[];
+}
+
+function parseTranslation(file: string, raw: unknown): TranslationCase {
+  if (!isRecord(raw)) throw new CaseError(`${file}: not an object`);
+  const { id, from, to, blocks, keep = [] } = raw;
+  const language = (value: unknown): value is "es" | "en" => value === "es" || value === "en";
+  if (
+    typeof id !== "string" ||
+    !language(from) ||
+    !language(to) ||
+    from === to ||
+    !Array.isArray(blocks) ||
+    !blocks.every((block) => typeof block === "string" && block.trim()) ||
+    !Array.isArray(keep)
+  ) {
+    throw new CaseError(`${file}: id, from, to, and blocks are required`);
+  }
+  return {
+    id,
+    file,
+    from,
+    to,
+    blocks: blocks as string[],
+    keep: keep.filter((value): value is string => typeof value === "string"),
+  };
+}
+
+/** Loads `cases/translation`. */
+export async function loadTranslation(casesDir: string): Promise<TranslationCase[]> {
+  const dir = path.join(casesDir, "translation");
+  const cases: TranslationCase[] = [];
+  for (const name of (await readdir(dir)).filter((file) => file.endsWith(".json")).sort()) {
+    const file = `translation/${name}`;
+    cases.push(parseTranslation(file, JSON.parse(await readFile(path.join(dir, name), "utf8"))));
+  }
+  return cases;
+}

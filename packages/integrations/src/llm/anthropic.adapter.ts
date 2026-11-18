@@ -184,17 +184,22 @@ export class AnthropicLlmAdapter implements LlmPort {
     );
   }
 
-  translateBlocks(
+  async translateBlocks(
     input: TranslateBlocksInput,
     options: LlmCallOptions = {},
   ): Promise<LlmCallResult<TranslatedBlocks>> {
-    return this.structured(
+    const result = await this.structured(
       translatedBlocksSchema,
       TRANSLATE_SYSTEM_PROMPT,
       buildTranslateMessage(input),
       GUIDE_TRANSLATE_EFFORT,
       options,
     );
+    // One string per block, or the answer cannot be matched back to its blocks (research R7).
+    if (result.outcome === "ok" && result.result?.blocks.length !== input.blocks.length) {
+      return { ...result, outcome: "invalid", result: null };
+    }
+    return result;
   }
 
   /**

@@ -1,0 +1,10 @@
+{
+  "id": "tr-23",
+  "from": "en",
+  "to": "es",
+  "blocks": [
+    "The bus to the beach stops in front of the bakery.",
+    "A taxi to the airport takes 40 minutes."
+  ],
+  "keep": ["40"]
+}

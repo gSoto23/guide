@@ -1,0 +1,7 @@
+{
+  "id": "tr-13",
+  "from": "es",
+  "to": "en",
+  "blocks": ["Llamen a Marta al <f1/> si hay una emergencia."],
+  "keep": ["Marta"]
+}

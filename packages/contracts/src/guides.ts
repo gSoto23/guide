@@ -105,6 +105,12 @@ export const createItemSchema = z
   });
 export type CreateItemBody = z.infer<typeof createItemSchema>;
 
+/** Host actions on one translation (FR-045, FR-046). */
+export const translationActionSchema = z
+  .object({ revision, action: z.enum(["translate_again", "keep", "mark_reviewed"]) })
+  .strict();
+export type TranslationActionBody = z.infer<typeof translationActionSchema>;
+
 export const updateItemSchema = z
   .object({
     revision,

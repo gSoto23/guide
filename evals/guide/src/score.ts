@@ -1,6 +1,6 @@
-import { redactRestrictedValues } from "@guidesk/domain";
-import type { DraftAnswer, DraftItems } from "@guidesk/integrations";
-import type { DraftingCase, InterviewCase } from "./cases.js";
+import { redactRestrictedValues, tokensMatch } from "@guidesk/domain";
+import type { DraftAnswer, DraftItems, TranslatedBlocks } from "@guidesk/integrations";
+import type { DraftingCase, InterviewCase, TranslationCase } from "./cases.js";
 
 /**
  * Scoring for the drafting suite (feature 003 SC-002): placement of each expected sentence in its
@@ -164,5 +164,67 @@ export function scoreInterviewSuite(scores: InterviewCaseScore[]): InterviewSuit
     failedCalls,
     passed:
       placement >= 0.9 && invented === 0 && codes === 0 && forbidden === 0 && failedCalls === 0,
+  };
+}
+
+export interface TranslationCaseScore {
+  id: string;
+  blocks: number;
+  tokensKept: number;
+  content: string[];
+  outcome: string;
+}
+
+/**
+ * Scoring for the translation suite (feature 003 SC-005, research R7): every block keeps its tags
+ * and placeholders, comes back translated (not empty, not the source, a plausible length), and
+ * keeps the names and numbers listed in the case.
+ */
+export function scoreTranslationCase(
+  testCase: TranslationCase,
+  result: TranslatedBlocks | null,
+  outcome: string,
+): TranslationCaseScore {
+  const answer = result?.blocks ?? [];
+  let tokensKept = 0;
+  const content: string[] = [];
+  testCase.blocks.forEach((source, index) => {
+    const translated = answer[index];
+    if (translated === undefined) {
+      content.push(`block ${index + 1} missing`);
+      return;
+    }
+    if (tokensMatch(source, translated)) tokensKept += 1;
+    const ratio = translated.length / Math.max(1, source.length);
+    if (!translated.trim() || translated.trim() === source.trim()) {
+      content.push(`block ${index + 1} not translated`);
+    } else if (ratio < 0.4 || ratio > 2.5) {
+      content.push(`block ${index + 1} length ${ratio.toFixed(2)}x`);
+    }
+  });
+  const output = answer.join("\n");
+  for (const word of testCase.keep) if (!output.includes(word)) content.push(`lost "${word}"`);
+  if (answer.length !== testCase.blocks.length) content.push("block count differs");
+  return { id: testCase.id, blocks: testCase.blocks.length, tokensKept, content, outcome };
+}
+
+export interface TranslationSuiteScore {
+  tokens: number;
+  contentIssues: number;
+  failedCalls: number;
+  passed: boolean;
+}
+
+export function scoreTranslationSuite(scores: TranslationCaseScore[]): TranslationSuiteScore {
+  const blocks = scores.reduce((sum, score) => sum + score.blocks, 0);
+  const kept = scores.reduce((sum, score) => sum + score.tokensKept, 0);
+  const contentIssues = scores.reduce((sum, score) => sum + score.content.length, 0);
+  const failedCalls = scores.filter((score) => score.outcome !== "ok").length;
+  const tokens = blocks === 0 ? 1 : kept / blocks;
+  return {
+    tokens,
+    contentIssues,
+    failedCalls,
+    passed: tokens === 1 && contentIssues === 0 && failedCalls === 0,
   };
 }

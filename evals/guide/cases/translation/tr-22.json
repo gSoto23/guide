@@ -1,0 +1,7 @@
+{
+  "id": "tr-22",
+  "from": "en",
+  "to": "es",
+  "blocks": ["Disarm the alarm with {{R1}} on the panel by the door."],
+  "keep": []
+}

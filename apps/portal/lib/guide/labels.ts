@@ -47,3 +47,15 @@ export function formatBytes(bytes: number, locale: string): string {
   }
   return `${new Intl.NumberFormat(locale, { maximumFractionDigits: unit === 0 ? 0 : 1 }).format(value)} ${units[unit]}`;
 }
+
+/**
+ * Whether a document has any text, without loading the contracts package's schemas into the
+ * page (bundle budget).
+ */
+export function documentHasText(doc: unknown): boolean {
+  if (!doc || typeof doc !== "object") return false;
+  const node = doc as { type?: string; text?: string; content?: unknown[] };
+  if (node.type === "text") return Boolean(node.text?.trim());
+  if (node.type === "lockedField") return true;
+  return Array.isArray(node.content) && node.content.some(documentHasText);
+}

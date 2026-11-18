@@ -1326,6 +1326,33 @@
       "noMore": "Done! There are no more questions for now.",
       "finished": "You finished the interview.",
       "busyElsewhere": "Someone else has an interview open on this guide. You can continue it here."
+    },
+    "translations": {
+      "link": "Translations",
+      "title": "Translations",
+      "intro": "Every text is translated by itself. Review the translations and fix what's needed; the ones you review don't change without you.",
+      "singleLanguage": "This guide is in one language. Add another language in the property's details to translate it.",
+      "openProperty": "Open the property",
+      "empty": "This section has no texts yet.",
+      "source": "Original ({language})",
+      "translation": "Translation ({language})",
+      "state_waiting": "Translating…",
+      "state_machine": "Machine translation",
+      "state_reviewed": "Reviewed",
+      "state_out_of_date": "Out of date: the original changed",
+      "state_failed": "Couldn't translate",
+      "state_pending": "Pending",
+      "reason_ai_limit": "the daily AI limit was reached; it continues tomorrow",
+      "reason_ai_unavailable": "the assistant isn't available; we'll try again",
+      "reason_tokens_mismatch": "the formatting didn't match",
+      "edit": "Edit",
+      "save": "Save translation",
+      "cancel": "Cancel",
+      "markReviewed": "Mark reviewed",
+      "translateAgain": "Translate again",
+      "keep": "Keep as is",
+      "changed": "The section changed. Reload to see the latest.",
+      "reload": "Reload"
     }
   }
 }

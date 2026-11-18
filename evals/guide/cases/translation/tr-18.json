@@ -1,0 +1,7 @@
+{
+  "id": "tr-18",
+  "from": "en",
+  "to": "es",
+  "blocks": ["The Wi-Fi network is <i>Harbor House</i> and the password is <f1/>."],
+  "keep": ["Harbor House"]
+}

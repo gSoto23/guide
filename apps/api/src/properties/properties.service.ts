@@ -7,8 +7,10 @@ import {
   gte,
   ilike,
   inArray,
+  isNotNull,
   isNull,
   lt,
+  ne,
   or,
   sql,
   type SQL,
@@ -34,6 +36,9 @@ import {
   countActiveProperties,
   extractionRequest,
   guide,
+  guideItem,
+  guideItemText,
+  guideSection,
   LISTING_CONTENT_KINDS,
   listingContent,
   onboardingProfile,
@@ -62,6 +67,7 @@ import {
   todayIn,
   type CoreFacts,
   type GuideDraftJob,
+  type GuideTranslateJob,
   type PmsOption,
   type Role,
   type StartOption,
@@ -469,7 +475,103 @@ export class PropertiesService {
       .returning();
     if (!row)
       throw await this.crossTenant.notFound(caller.userId, workspaceId, "property", propertyId);
+    if (body.guideLanguages) {
+      await this.guideLanguagesChanged(
+        workspaceId,
+        propertyId,
+        current.guideLanguages,
+        row.guideLanguages,
+      );
+    }
     return this.detail(caller, row);
+  }
+
+  /**
+   * Guide languages changed (FR-048): a removed language leaves the draft (published versions keep
+   * it until the next publish), and an added one is translated for every section.
+   */
+  private async guideLanguagesChanged(
+    workspaceId: string,
+    propertyId: string,
+    before: readonly ("es" | "en")[],
+    after: readonly ("es" | "en")[],
+  ): Promise<void> {
+    const removed = before.filter((language) => !after.includes(language));
+    const added = after.filter((language) => !before.includes(language));
+    if (removed.length === 0 && added.length === 0) return;
+    const tx = this.requestDb.current();
+    const [row] = await tx
+      .select({ id: guide.id })
+      .from(guide)
+      .where(eq(guide.propertyId, propertyId))
+      .limit(1);
+    if (!row) return;
+    const items = await tx
+      .select({
+        id: guideItem.id,
+        sectionId: guideItem.sectionId,
+        sourceLanguage: guideItem.sourceLanguage,
+      })
+      .from(guideItem)
+      .innerJoin(guideSection, eq(guideSection.id, guideItem.sectionId))
+      .where(and(eq(guideSection.guideId, row.id), ne(guideItem.kind, "fact")));
+    for (const language of removed) {
+      // An item written in the removed language keeps its source text.
+      const translated = items
+        .filter((item) => item.sourceLanguage !== language)
+        .map((item) => item.id);
+      if (translated.length > 0) {
+        await tx
+          .delete(guideItemText)
+          .where(
+            and(eq(guideItemText.language, language), inArray(guideItemText.itemId, translated)),
+          );
+      }
+    }
+    if (after.length < 2 || added.length === 0 || items.length === 0) return;
+    const sources = await tx
+      .select({ itemId: guideItemText.itemId, language: guideItemText.language })
+      .from(guideItemText)
+      .where(
+        and(
+          inArray(
+            guideItemText.itemId,
+            items.map((item) => item.id),
+          ),
+          isNotNull(guideItemText.doc),
+        ),
+      );
+    const sections = new Set<string>();
+    for (const language of added) {
+      for (const item of items) {
+        if (item.sourceLanguage === language) continue;
+        if (
+          !sources.some((text) => text.itemId === item.id && text.language === item.sourceLanguage)
+        ) {
+          continue;
+        }
+        await tx
+          .insert(guideItemText)
+          .values({
+            itemId: item.id,
+            language,
+            workspaceId,
+            doc: null,
+            origin: "machine",
+            state: "stale",
+          })
+          .onConflictDoNothing();
+        if (item.sectionId) sections.add(`${item.sectionId}:${language}`);
+      }
+    }
+    for (const key of sections) {
+      const [sectionId, language] = key.split(":") as [string, "es" | "en"];
+      await this.jobs.send(
+        JOB_QUEUES.guideTranslate,
+        { workspaceId, sectionId, language } satisfies GuideTranslateJob,
+        { startAfter: 1, singletonKey: key, retryLimit: 3, retryBackoff: true },
+      );
+    }
   }
 
   async addressCheck(workspaceId: string, query: AddressCheckQuery): Promise<AddressCheck> {

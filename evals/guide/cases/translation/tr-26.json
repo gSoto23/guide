@@ -1,0 +1,7 @@
+{
+  "id": "tr-26",
+  "from": "en",
+  "to": "es",
+  "blocks": ["Quiet hours start at 22:00, please."],
+  "keep": ["22:00"]
+}

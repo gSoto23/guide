@@ -39,6 +39,8 @@ import {
   type RevisionBody,
   type SectionWriteResult,
   type TopicMarkBody,
+  translationActionSchema,
+  type TranslationActionBody,
   type UpdateItemBody,
   type UpdateSectionBody,
 } from "@guidesk/contracts";
@@ -283,6 +285,27 @@ export class GuidesController {
       propertyId,
       itemId,
       body.revision,
+    );
+  }
+
+  @Post("items/:itemId/translations/:language")
+  @HttpCode(200)
+  @WorkspaceAction(MANAGE)
+  translationAction(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+    @Param("itemId") itemId: string,
+    @Param("language", new ZodValidationPipe(z.enum(["es", "en"]))) language: "es" | "en",
+    @Body(new ZodValidationPipe(translationActionSchema)) body: TranslationActionBody,
+  ): Promise<SectionWriteResult> {
+    return this.guides.translationAction(
+      callerOf(request),
+      workspaceId,
+      propertyId,
+      itemId,
+      language,
+      body,
     );
   }
 
