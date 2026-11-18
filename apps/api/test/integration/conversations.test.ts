@@ -5,8 +5,6 @@ import type {
   ConversationSummary,
   GuestChat,
   MemberChatMessage,
-  PropertyAssistantSettings,
-  WorkspaceAssistantSettings,
 } from "@guidesk/contracts";
 import { systemQuery } from "./helpers.js";
 import { guest, publishedGuide, type PublishedGuide } from "./guest-helpers.js";
@@ -14,10 +12,10 @@ import { seedTeam, wsApi, type Member, type TeamWorkspace } from "./property-hel
 import { createTestApp } from "./test-app.js";
 
 /**
- * Conversations and assistant settings for members (feature 005 US3 and US4, T028, T033): list
- * order, the conversation page with the draft and the member trace, sending a draft unchanged or
- * edited, replies, warnings and their override, first send wins, roles, what guests see, and the
- * autonomy settings with their security events. The worker's output is seeded with SQL.
+ * Conversations for members (feature 005 US3, T028): list order, the conversation page with the
+ * draft and the member trace, sending a draft unchanged or edited, replies, warnings and their
+ * override, first send wins, roles, and what guests see. The worker's output is seeded with SQL.
+ * Assistant settings moved to feature 007 (`assistant-settings.test.ts`).
  */
 let ctx: Awaited<ReturnType<typeof createTestApp>>;
 let db: ReturnType<typeof systemQuery>;
@@ -150,6 +148,12 @@ describe("conversations (feature 005 US3)", () => {
       guideVersion: 1,
       sentBy: null,
       edited: false,
+      // Traces written before feature 007 carry no settings (feature 007 US6).
+      autonomySource: null,
+      answerKind: null,
+      tone: null,
+      quietHours: false,
+      instructions: { workspace: false, property: false },
     });
     const body = response.body;
     expect(body).not.toContain("claude-opus-5-5");
@@ -275,42 +279,30 @@ describe("conversations (feature 005 US3)", () => {
   });
 });
 
-describe("assistant settings (feature 005 US4)", () => {
-  it("defaults to draft; owners and admins change it, agents cannot; changes are logged", async () => {
-    const read = await call(team.agent, "GET", "/assistant-settings");
-    expect(read.statusCode).toBe(200);
-    expect(read.json()).toEqual({ autonomy: "draft" } satisfies WorkspaceAssistantSettings);
-    const denied = await call(team.agent, "PUT", "/assistant-settings", { autonomy: "auto" });
-    expect(denied.statusCode).toBe(403);
-    const changed = await call(team.admin, "PUT", "/assistant-settings", { autonomy: "auto" });
-    expect(changed.statusCode, changed.body).toBe(200);
-    expect(changed.json()).toEqual({ autonomy: "auto" });
-    const events = await db.query<{ metadata: Record<string, unknown> }>(
-      `SELECT metadata FROM security_event WHERE type = 'assistant.autonomy_changed' AND workspace_id = $1 AND target_type = 'workspace'`,
+describe('settings in "Why this reply" (feature 007 US6, T041)', () => {
+  it("shows the level and its source, the kind, the tone, quiet hours, and instructions used", async () => {
+    const seeded = await seedDraft("¿Se puede hacer una fiesta pequeña?");
+    const version = await db.query<{ id: string }>(
+      `INSERT INTO assistant_instruction_version (workspace_id, text) VALUES ($1, 'Firma como el equipo.') RETURNING id`,
       [team.workspaceId],
     );
-    expect(events.rows.map((row) => row.metadata)).toEqual([{ autonomy: "auto" }]);
-    await call(team.owner, "PUT", "/assistant-settings", { autonomy: "draft" });
-  });
-
-  it("overrides per property, follows the default when cleared, and rejects agents", async () => {
-    const url = `/properties/${published.propertyId}/assistant-settings`;
-    expect((await call(team.agent, "GET", url)).json()).toEqual({
-      override: null,
-      effective: "draft",
-    } satisfies PropertyAssistantSettings);
-    expect((await call(team.agent, "PUT", url, { override: "auto" })).statusCode).toBe(403);
-    const set = await call(team.owner, "PUT", url, { override: "auto" });
-    expect(set.json()).toEqual({ override: "auto", effective: "auto" });
-    const cleared = await call(team.owner, "PUT", url, { override: null });
-    expect(cleared.json()).toEqual({ override: null, effective: "draft" });
-    const events = await db.query<{ metadata: Record<string, unknown> }>(
-      `SELECT metadata FROM security_event WHERE type = 'assistant.autonomy_changed' AND target_id = $1 ORDER BY occurred_at`,
-      [published.propertyId],
+    await db.query(
+      `UPDATE agent_trace SET autonomy = 'full_auto', autonomy_source = 'property', answer_kind = 'general',
+         tone = 'formal', quiet_hours = true, workspace_instruction_version_id = $2 WHERE id = $1`,
+      [seeded.traceId, version.rows[0]!.id],
     );
-    expect(events.rows.map((row) => row.metadata)).toEqual([
-      { propertyId: published.propertyId, autonomy: "auto" },
-      { propertyId: published.propertyId, autonomy: "default" },
-    ]);
+    const detail = (
+      await call(team.agent, "GET", path(`/${seeded.conversationId}`))
+    ).json() as ConversationDetail;
+    expect(detail.traces.find((trace) => trace.id === seeded.traceId)).toMatchObject({
+      autonomy: "full_auto",
+      autonomySource: "property",
+      answerKind: "general",
+      tone: "formal",
+      quietHours: true,
+      instructions: { workspace: true, property: false },
+    });
+    // The text of the instructions is not part of the trace projection.
+    expect(JSON.stringify(detail)).not.toContain("Firma como el equipo");
   });
 });

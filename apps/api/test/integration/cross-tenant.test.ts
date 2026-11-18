@@ -44,6 +44,32 @@ async function deniedCount(): Promise<number> {
   return rows[0]?.n ?? 0;
 }
 
+/** A valid property settings body (feature 007 contracts/http-api.md). */
+const PROPERTY_SETTINGS = {
+  version: 0,
+  follows: { autonomy: false, tone: true, quietHours: true, contacts: true },
+  own: {
+    autonomy: Object.fromEntries(
+      [
+        "arrival",
+        "wifi",
+        "house_rules",
+        "appliances",
+        "amenities",
+        "parking",
+        "local_recommendations",
+        "emergency",
+        "checkout",
+        "other",
+      ].map((topic) => [topic, "auto"]),
+    ),
+    tone: "casual",
+    quietHours: { enabled: false, start: null, end: null },
+    contacts: { mode: "all" },
+  },
+  instructions: "",
+};
+
 describe("cross-workspace access (T080, AC-SEC-004)", () => {
   const foreignWorkspaceCalls = () =>
     [
@@ -611,8 +637,10 @@ describe("feature 005 resources across workspaces (T043, AC-SEC-006)", () => {
       ["GET", conv, undefined],
       ["POST", `${conv}/drafts/${foreign.draft}/send`, {}],
       ["POST", `${conv}/replies`, { text: "Hola" }],
-      ["GET", `${base}/assistant-settings`, undefined],
-      ["PUT", `${base}/assistant-settings`, { override: "auto" }],
+      // Feature 007 (AC-SEC-003): the property's assistant settings and tests.
+      ["GET", `${base}/assistant`, undefined],
+      ["PUT", `${base}/assistant`, PROPERTY_SETTINGS],
+      ["POST", `${base}/assistant/tests`, { question: "¿A qué hora es la salida?" }],
     ] as const;
   };
 
@@ -646,13 +674,14 @@ describe("feature 005 resources across workspaces (T043, AC-SEC-006)", () => {
       expect(response.statusCode, `${method} ${url}`).toBe(404);
       expect(await deniedCount(), `${method} ${url} logged`).toBe(before + 1);
     }
-    const { rows } = await db.query<{ status: string; n: number; autonomy: string | null }>(
+    const { rows } = await db.query<{ status: string; n: number; settings: number; tests: number }>(
       `SELECT d.status, (SELECT count(*)::int FROM chat_message WHERE conversation_id = $1) AS n,
-              (SELECT assistant_autonomy FROM property WHERE id = $3) AS autonomy
+              (SELECT count(*)::int FROM assistant_settings WHERE property_id = $3) AS settings,
+              (SELECT count(*)::int FROM assistant_test WHERE property_id = $3) AS tests
          FROM agent_draft d WHERE d.id = $2`,
       [foreign.conversation, foreign.draft, foreign.property],
     );
-    expect(rows[0]).toEqual({ status: "open", n: 1, autonomy: null });
+    expect(rows[0]).toEqual({ status: "open", n: 1, settings: 0, tests: 0 });
   });
 
   it("gives a missing conversation the same answer as a foreign one", async () => {

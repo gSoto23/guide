@@ -18,6 +18,7 @@ import { InterviewsModule } from "./interviews/interviews.module.js";
 import { SharedBlocksModule } from "./shared-blocks/shared-blocks.module.js";
 import { ChatModule } from "./chat/chat.module.js";
 import { ConversationsModule } from "./conversations/conversations.module.js";
+import { AssistantModule } from "./assistant/assistant.module.js";
 import { GuestModule } from "./guest/guest.module.js";
 import { ShareModule } from "./share/share.module.js";
 import { LockedFieldsModule } from "./locked-fields/locked-fields.module.js";
@@ -53,6 +54,7 @@ import { TenancyModule } from "./tenancy/tenancy.module.js";
     GuestModule,
     ChatModule,
     ConversationsModule,
+    AssistantModule,
     ShareModule,
     ListingContentModule,
     CalendarFeedsModule,
