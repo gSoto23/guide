@@ -54,7 +54,7 @@ export interface GuestChat {
     /** Message keys of suggested questions (guest catalog `chat.suggestions.*`). */
     suggestions: string[];
   };
-  conversation: { status: "open" | "needs_host"; pending: boolean } | null;
+  conversation: { status: "open" | "needs_host" | "done"; pending: boolean } | null;
   messages: GuestChatMessage[];
 }
 
@@ -75,12 +75,14 @@ export const NEEDS_HOST_REASONS = [
   "check_failed",
   "limit",
   "unavailable",
+  // Feature 006: the guest wrote in a conversation a member took over.
+  "taken_over",
 ] as const;
 export type NeedsHostReasonValue = (typeof NEEDS_HOST_REASONS)[number];
 
 export interface ConversationSummary {
   id: string;
-  status: "open" | "needs_host";
+  status: "open" | "needs_host" | "done";
   reason: NeedsHostReasonValue | null;
   stay: { checkInDate: string; checkoutDate: string } | null;
   lastMessageAt: string;
@@ -136,6 +138,11 @@ export interface ConversationDetail extends ConversationSummary {
   traces: MemberTrace[];
   /** Whether the caller may send drafts and replies (`conversations.handle`). */
   canReply: boolean;
+  /** Feature 006: who took the conversation over (null name when they left), and since when. */
+  takenOver: { by: string | null; at: string } | null;
+  doneAt: string | null;
+  /** Feature 006: other members replying now. */
+  replying: string[];
 }
 
 export const sendDraftSchema = z

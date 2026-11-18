@@ -9,6 +9,8 @@ import {
   chatMessage,
   chatUsageDaily,
   conversation,
+  conversationPresence,
+  copilotRun,
   createDb,
   createGuideForProperty,
   extractionRequest,
@@ -754,5 +756,88 @@ describe("retention.daily for agent settings (feature 007 T046)", () => {
       .from(assistantInstructionVersion)
       .where(inArray(assistantInstructionVersion.id, [current!, traced!, unused!]));
     expect(left.map((row) => row.id).sort()).toEqual([current!, traced!].sort());
+  });
+});
+
+describe("retention.daily for the inbox and copilot (feature 006 T038)", () => {
+  it("deletes copilot drafts and their traces after 30 days, and keeps newer ones", async () => {
+    const [old, recent] = await handle.db
+      .insert(copilotRun)
+      .values([
+        {
+          workspaceId,
+          propertyId,
+          createdBy: ownerId,
+          message: "¿A qué hora es la salida?",
+          bookingStatus: "confirmed",
+          createdAt: daysAgo(31),
+        },
+        {
+          workspaceId,
+          propertyId,
+          createdBy: ownerId,
+          message: "¿Hay parqueo?",
+          bookingStatus: "inquiry",
+          createdAt: daysAgo(3),
+        },
+      ])
+      .returning({ id: copilotRun.id });
+    await handle.db.insert(agentTrace).values({
+      workspaceId,
+      copilotRunId: old!.id,
+      decision: "drafted",
+      autonomy: "draft",
+    });
+    const counts = await run();
+    expect(counts.copilotRuns).toBeGreaterThanOrEqual(1);
+    const left = await handle.db
+      .select({ id: copilotRun.id })
+      .from(copilotRun)
+      .where(inArray(copilotRun.id, [old!.id, recent!.id]));
+    expect(left.map((row) => row.id)).toEqual([recent!.id]);
+    const traces = await handle.db
+      .select({ id: agentTrace.id })
+      .from(agentTrace)
+      .where(eq(agentTrace.copilotRunId, old!.id));
+    expect(traces).toEqual([]);
+  });
+
+  it("deletes presence an hour after it expired, and keeps current presence", async () => {
+    const [conv] = await handle.db
+      .insert(conversation)
+      .values({
+        workspaceId,
+        propertyId,
+        cookieHash: randomBytes(32).toString("hex"),
+        language: "es",
+      })
+      .returning({ id: conversation.id });
+    const otherId = randomUUID();
+    await handle.db.insert(user).values({
+      id: otherId,
+      name: "Bea",
+      email: `${otherId}@example.com`,
+      preferredLanguage: "es",
+    });
+    await handle.db.insert(conversationPresence).values([
+      {
+        workspaceId,
+        conversationId: conv!.id,
+        userId: ownerId,
+        expiresAt: new Date(Date.now() - 2 * 3_600_000),
+      },
+      {
+        workspaceId,
+        conversationId: conv!.id,
+        userId: otherId,
+        expiresAt: new Date(Date.now() + 30_000),
+      },
+    ]);
+    await run();
+    const left = await handle.db
+      .select({ userId: conversationPresence.userId })
+      .from(conversationPresence)
+      .where(eq(conversationPresence.conversationId, conv!.id));
+    expect(left).toEqual([{ userId: otherId }]);
   });
 });

@@ -169,3 +169,35 @@ describe("answerGuest settings (feature 007 T010)", () => {
     expect(text.match(/<\/host_preferences>/g)).toHaveLength(1);
   });
 });
+
+describe("answerGuest for the copilot (feature 006 T008)", () => {
+  it("adds the platform channel and booking status after the message, keeping the cached prefix", async () => {
+    const chat = replay(fixture("agent-answer-ok"));
+    await chat.adapter.answerGuest({
+      propertyName: "Casa",
+      hostName: "Ana",
+      knowledge,
+      history: [],
+      message: "Can I bring my dog?",
+      language: "en",
+    });
+    const copilot = replay(fixture("agent-answer-ok"));
+    await copilot.adapter.answerGuest({
+      propertyName: "Casa",
+      hostName: "Ana",
+      knowledge,
+      history: [],
+      message: "Can I bring my dog?",
+      language: "en",
+      channel: "platform",
+      bookingStatus: "inquiry",
+    });
+    const system = (body: Record<string, unknown>) => JSON.stringify(body.system);
+    expect(system(copilot.captured[0]!)).toBe(system(chat.captured[0]!));
+    expect(JSON.stringify(copilot.captured[0]!.messages)).toContain(
+      "Channel: platform. Booking status: inquiry.",
+    );
+    expect(JSON.stringify(chat.captured[0]!.messages)).not.toContain("Channel:");
+    expect(system(chat.captured[0]!)).toContain("write as the host in first person");
+  });
+});

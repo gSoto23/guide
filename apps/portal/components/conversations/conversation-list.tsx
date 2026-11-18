@@ -14,6 +14,7 @@ const REFRESH_MS = 15_000;
  */
 export function ConversationList({ locale, propertyId }: { locale: string; propertyId: string }) {
   const t = useTranslations("conversations");
+  const inbox = useTranslations("inbox");
   const errors = useTranslations("errors");
   const workspace = useWorkspace();
   const [items, setItems] = useState<ConversationSummary[] | null>(null);
@@ -55,6 +56,9 @@ export function ConversationList({ locale, propertyId }: { locale: string; prope
         {propertyName ? t("title", { property: propertyName }) : t("titleShort")}
       </h1>
       <p className="muted">{t("intro")}</p>
+      <p>
+        <Link href={`/${locale}/inbox?propertyId=${propertyId}`}>{inbox("title")}</Link>
+      </p>
       {error && (
         <p className="alert alert-error" role="alert">
           {error}

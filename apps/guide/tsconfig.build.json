@@ -4,5 +4,13 @@
     "rootDir": "src"
   },
   "include": ["src"],
-  "exclude": ["src/client", "test", "**/*.test.ts", "**/*.test.tsx"]
+  "exclude": [
+    "src/client",
+    "test",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/* 2.*",
+    "**/* 3.*",
+    "**/* 4.*"
+  ]
 }

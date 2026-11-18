@@ -46,3 +46,19 @@ describe("chat.quiet_summary", () => {
     expect(email.subject).toBe("1 guest is waiting at Casa Colibrí");
   });
 });
+
+describe("push texts (feature 006 T009)", () => {
+  it("names the property and the reason only", async () => {
+    const { renderPush } = await import("../src/chat/push.js");
+    expect(
+      renderPush("es", { kind: "needs_host", propertyName: "Casa Colibrí", reason: "emergency" }),
+    ).toEqual({
+      title: "Casa Colibrí",
+      body: "Posible emergencia",
+    });
+    expect(
+      renderPush("en", { kind: "quiet_summary", propertyName: "Villa Mar", count: 1 }).body,
+    ).toBe("1 guest is waiting for you");
+    expect(renderPush("en", { kind: "test" }).body).toContain("Alerts are on");
+  });
+});

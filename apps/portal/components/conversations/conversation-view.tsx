@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import type { ConversationDetail, MemberChatMessage, MemberTrace } from "@guidesk/contracts";
 import { problemOf } from "@/lib/properties-api";
@@ -25,8 +25,10 @@ export function ConversationView({
   conversationId: string;
 }) {
   const t = useTranslations("conversations");
+  const a = useTranslations("conversations.actions");
   const errors = useTranslations("errors");
   const workspace = useWorkspace();
+  const lastBeat = useRef(0);
   const [detail, setDetail] = useState<ConversationDetail | null>(null);
   const [editing, setEditing] = useState(false);
   const [draftText, setDraftText] = useState("");
@@ -69,6 +71,33 @@ export function ConversationView({
   const draftTrace = detail.draft?.traceId
     ? detail.traces.find((trace) => trace.id === detail.draft!.traceId)
     : undefined;
+
+  /** Feature 006 research R8: tells teammates this member is replying, at most every 10 seconds. */
+  function typing() {
+    if (!workspace || !detail?.canReply || Date.now() - lastBeat.current < 10_000) return;
+    lastBeat.current = Date.now();
+    void workspace.api.post(`${base}/presence`).catch(() => undefined);
+  }
+
+  /** Feature 006: done, reopen, reject, and take over (research R2 to R4). */
+  async function act(run: () => Promise<unknown>, success?: string) {
+    setBusy(true);
+    setMessage(null);
+    try {
+      await run();
+      if (success) setMessage({ kind: "success", text: success });
+      await load();
+    } catch (cause) {
+      const code = problemOf(cause)?.code;
+      setMessage({
+        kind: "error",
+        text: code === "draft_closed" ? t("draft.closed") : errors("internal_error"),
+      });
+      await load();
+    } finally {
+      setBusy(false);
+    }
+  }
 
   /** Posts, asking once to confirm when the API returns warnings (PC-14). */
   async function post(path: string, body: Record<string, unknown>): Promise<boolean> {
@@ -141,7 +170,11 @@ export function ConversationView({
         <span
           className={`badge ${detail.status === "needs_host" ? "badge-warning" : "badge-ready"}`}
         >
-          {detail.status === "needs_host" ? t("needsHost") : t("open")}
+          {detail.status === "needs_host"
+            ? t("needsHost")
+            : detail.status === "done"
+              ? a("done")
+              : t("open")}
         </span>
         <span className="badge">
           {detail.stay
@@ -152,8 +185,68 @@ export function ConversationView({
             : t("noStay")}
         </span>
       </p>
-      {detail.reason && (
-        <p className="muted">{t("reason", { reason: t(`reasons.${detail.reason}`) })}</p>
+      {detail.status === "needs_host" && detail.reason && (
+        <p
+          className={`alert ${detail.reason === "emergency" ? "alert-error" : "alert-warning"} conversation-banner`}
+          role="note"
+        >
+          {a("banner", { reason: t(`reasons.${detail.reason}`) })}
+        </p>
+      )}
+      {detail.replying.length > 0 && (
+        <p className="muted" role="status">
+          {a("replying", { names: detail.replying.join(", ") })}
+        </p>
+      )}
+      {detail.canReply && (
+        <div className="card">
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={detail.takenOver !== null}
+              disabled={busy}
+              onChange={(event) => {
+                const on = event.target.checked;
+                // Show the change at once; the reload brings who took it over and when.
+                setDetail({
+                  ...detail,
+                  takenOver: on ? { by: null, at: new Date().toISOString() } : null,
+                });
+                void act(() => workspace.api.put(`${base}/takeover`, { on }));
+              }}
+            />
+            {a("takeOver")}
+          </label>
+          <p className="field-hint">
+            {detail.takenOver
+              ? detail.takenOver.by
+                ? a("takenOverBy", { name: detail.takenOver.by, when: when(detail.takenOver.at) })
+                : a("takenOverAnon", { when: when(detail.takenOver.at) })
+              : a("takeOverHint")}
+          </p>
+          <div className="actions">
+            {detail.status === "done" ? (
+              <button
+                type="button"
+                className="button button-secondary"
+                disabled={busy}
+                onClick={() => void act(() => workspace.api.post(`${base}/reopen`))}
+              >
+                {a("reopen")}
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="button button-secondary"
+                disabled={busy}
+                onClick={() => void act(() => workspace.api.post(`${base}/done`))}
+              >
+                {a("done")}
+              </button>
+            )}
+          </div>
+          {detail.doneAt && <p className="muted">{a("doneAt", { when: when(detail.doneAt) })}</p>}
+        </div>
       )}
       {message && (
         <p
@@ -207,7 +300,10 @@ export function ConversationView({
                 rows={5}
                 maxLength={MAX}
                 value={draftText}
-                onChange={(event) => setDraftText(event.target.value)}
+                onChange={(event) => {
+                  setDraftText(event.target.value);
+                  typing();
+                }}
               />
             </>
           ) : (
@@ -259,6 +355,19 @@ export function ConversationView({
                   >
                     {t("draft.edit")}
                   </button>
+                  <button
+                    type="button"
+                    className="button button-secondary"
+                    disabled={busy}
+                    onClick={() =>
+                      void act(
+                        () => workspace.api.post(`${base}/drafts/${detail.draft!.id}/reject`),
+                        a("rejected"),
+                      )
+                    }
+                  >
+                    {a("reject")}
+                  </button>
                 </>
               )}
             </div>
@@ -276,7 +385,10 @@ export function ConversationView({
             maxLength={MAX}
             value={reply}
             aria-describedby="reply-hint"
-            onChange={(event) => setReply(event.target.value)}
+            onChange={(event) => {
+              setReply(event.target.value);
+              typing();
+            }}
           />
           <p id="reply-hint" className="muted">
             {t("reply.hint")}

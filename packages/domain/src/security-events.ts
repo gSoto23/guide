@@ -77,6 +77,14 @@ export const SECURITY_EVENT_TYPES = [
   "conversation.replied",
   // Feature 007 (research R10).
   "assistant.settings_changed",
+  // Feature 006 (data model, FR-006, FR-021).
+  "conversation.taken_over",
+  "conversation.handed_back",
+  "conversation.draft_rejected",
+  "conversation.marked_done",
+  "conversation.reopened",
+  "push.subscribed",
+  "push.unsubscribed",
 ] as const;
 
 export type SecurityEventType = (typeof SECURITY_EVENT_TYPES)[number];
@@ -162,6 +170,13 @@ const METADATA_ALLOWLIST: Partial<Record<SecurityEventType, readonly string[]>> 
     "instructions",
     "follows",
   ],
+  "conversation.taken_over": ["propertyId", "conversationId"],
+  "conversation.handed_back": ["propertyId", "conversationId"],
+  "conversation.draft_rejected": ["propertyId", "conversationId"],
+  "conversation.marked_done": ["propertyId", "conversationId"],
+  "conversation.reopened": ["propertyId", "conversationId"],
+  "push.subscribed": ["device"],
+  "push.unsubscribed": ["device"],
 };
 
 /** Short labels, numbers, booleans, and calendar dates; nothing that could carry free text. */

@@ -72,6 +72,9 @@ const TITLES: Record<ProblemCode, string> = {
   time_zone_required: "Property time zone required",
   instructions_invalid: "Instructions can't be saved",
   tests_paused: "Too many tests",
+  conversation_done: "Conversation already done",
+  copilot_paused: "Too many copilot drafts",
+  push_unavailable: "Push alerts aren't available",
 };
 
 const CODE_BY_STATUS: Record<number, ProblemCode> = {

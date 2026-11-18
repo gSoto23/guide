@@ -3,6 +3,7 @@ import { and, eq, ne, sql } from "drizzle-orm";
 import {
   agentDraft,
   assistantTest,
+  copilotRun,
   calendarFeed,
   conversation,
   extractionRequest,
@@ -52,6 +53,8 @@ const TABLES = {
   agent_draft: agentDraft,
   // Feature 007 (AC-SEC-003).
   assistant_test: assistantTest,
+  // Feature 006 (AC-SEC-004).
+  copilot_run: copilotRun,
 } as const;
 export type TenantResource = keyof typeof TABLES;
 

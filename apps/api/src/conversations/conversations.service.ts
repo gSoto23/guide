@@ -1,6 +1,7 @@
 import { createRequire } from "node:module";
 import { Inject, Injectable } from "@nestjs/common";
-import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, ne, sql } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import type {
   ChatSectionRef,
   ConversationDetail,
@@ -14,6 +15,7 @@ import {
   agentTrace,
   chatMessage,
   conversation,
+  conversationPresence,
   guide,
   guideVersion,
   property,
@@ -235,7 +237,28 @@ export class ConversationsService {
         createdAt: trace.createdAt.toISOString(),
       })),
       canReply: can(caller.role, "conversations.handle"),
+      takenOver: conv.takenOverAt
+        ? { by: conv.takerName || null, at: conv.takenOverAt.toISOString() }
+        : null,
+      doneAt: conv.doneAt?.toISOString() ?? null,
+      replying: await this.replying(caller.userId, conversationId),
     };
+  }
+
+  /** Feature 006 research R8: other members with a live heartbeat in this conversation. */
+  private async replying(userId: string, conversationId: string): Promise<string[]> {
+    const rows = await this.tx
+      .select({ name: sql<string>`coalesce(nullif(${user.name}, ''), ${user.email})` })
+      .from(conversationPresence)
+      .innerJoin(user, eq(user.id, conversationPresence.userId))
+      .where(
+        and(
+          eq(conversationPresence.conversationId, conversationId),
+          ne(conversationPresence.userId, userId),
+          sql`${conversationPresence.expiresAt} > now()`,
+        ),
+      );
+    return rows.map((row) => row.name).filter(Boolean);
   }
 
   /** Sends the open draft, unchanged or edited (FR-025, FR-026): the first send wins. */
@@ -329,6 +352,7 @@ export class ConversationsService {
 
   private async conversation(workspaceId: string, propertyId: string, conversationId: string) {
     await this.assertProperty(workspaceId, propertyId);
+    const taker = alias(user, "taker");
     const [row] = await this.tx
       .select({
         id: conversation.id,
@@ -338,9 +362,13 @@ export class ConversationsService {
         lastMessageAt: conversation.lastMessageAt,
         checkInDate: stay.checkInDate,
         checkoutDate: stay.checkoutDate,
+        doneAt: conversation.doneAt,
+        takenOverAt: conversation.takenOverAt,
+        takerName: sql<string | null>`coalesce(nullif(${taker.name}, ''), ${taker.email})`,
       })
       .from(conversation)
       .leftJoin(stay, eq(stay.id, conversation.stayId))
+      .leftJoin(taker, eq(taker.id, conversation.takenOverBy))
       .where(
         and(
           eq(conversation.id, conversationId),
@@ -368,7 +396,13 @@ export class ConversationsService {
       lastMessageAt: row.lastMessageAt.toISOString(),
       lastMessage: null,
     };
-    return { summary, language: row.language };
+    return {
+      summary,
+      language: row.language,
+      takenOverAt: row.takenOverAt,
+      takerName: row.takerName,
+      doneAt: row.doneAt,
+    };
   }
 
   /**
@@ -385,7 +419,14 @@ export class ConversationsService {
   ): Promise<MemberChatMessage> {
     await this.tx
       .update(conversation)
-      .set({ status: "open", needsHostReason: null, lastMessageAt: sql`now()` })
+      .set({
+        status: "open",
+        needsHostReason: null,
+        lastMessageAt: sql`now()`,
+        // Feature 006: a reply reopens a done conversation.
+        doneAt: null,
+        doneBy: null,
+      })
       .where(eq(conversation.id, conversationId));
     const [next] = await this.tx
       .select({ seq: sql<number>`coalesce(max(${chatMessage.seq}), 0)::int + 1` })

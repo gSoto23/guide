@@ -1,7 +1,17 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { allPassed, checkAnswer, decideAfterAnswer, decideBeforeAnswer } from "@guidesk/domain";
+import {
+  allPassed,
+  cautionFor,
+  checkAnswer,
+  copilotCodeDraft,
+  copilotEmergencyDraft,
+  decideAfterAnswer,
+  decideBeforeAnswer,
+  pointerSectionKind,
+  removeContactDetails,
+} from "@guidesk/domain";
 import { AnthropicLlmAdapter, FakeLlmAdapter, type AgentLlmPort } from "@guidesk/integrations";
 import { CaseError, loadCases, type EvalCase, type LoadedGuide } from "./cases.js";
 import { scoreCase, scoreSuite, type CaseResult, type CaseScore } from "./score.js";
@@ -16,7 +26,10 @@ import { scoreCase, scoreSuite, type CaseResult, type CaseScore } from "./score.
  *
  * Each case runs the production pipeline's decisions (classification, policy, answer, checks) at
  * autonomy `auto` unless the case sets a level, tone, or host instructions (feature 007 research
- * R15); classification never receives the settings, as in production.
+ * R15); classification never receives the settings, as in production. Copilot cases (feature 006
+ * research R5, R6) run the copilot job's steps instead: the platform channel in the host's voice,
+ * knowledge without benefit recommendations, fixed texts for emergencies and code requests, and
+ * contact details removed for inquiries.
  */
 const PACKAGE_DIR = fileURLToPath(new URL("..", import.meta.url));
 const CASES_DIR = path.join(PACKAGE_DIR, "cases");
@@ -94,6 +107,108 @@ async function runCase(
   };
 }
 
+async function runCopilotCase(
+  llm: AgentLlmPort,
+  testCase: EvalCase,
+  loaded: LoadedGuide,
+): Promise<CaseResult> {
+  const bookingStatus = testCase.copilot!.bookingStatus;
+  const tone = testCase.settings?.tone ?? "casual";
+  const base: CaseResult = {
+    id: testCase.id,
+    kind: testCase.kind,
+    outcome: "ok",
+    classification: null,
+    decision: "none",
+    answer: null,
+    sectionIds: [],
+    answerable: null,
+    checks: [],
+    answerKind: null,
+    caution: null,
+    removed: [],
+  };
+  const classified = await llm.classifyGuestMessage(
+    { history: [], message: testCase.message },
+    { signal: AbortSignal.timeout(CALL_TIMEOUT_MS) },
+  );
+  if (classified.outcome !== "ok" || !classified.result) {
+    return { ...base, outcome: classified.outcome, decision: "held" };
+  }
+  const classification = classified.result;
+  const language = classification.language.startsWith("en") ? "en" : "es";
+  const caution = cautionFor(classification.escalation);
+  if (classification.escalation === "emergency") {
+    return {
+      ...base,
+      classification,
+      decision: "drafted",
+      caution,
+      answer: copilotEmergencyDraft(language, loaded.emergencyNumber, tone),
+    };
+  }
+  if (classification.escalation === "sensitive_request") {
+    const kind = pointerSectionKind(classification.topic);
+    const id = loaded.sectionByKind.get(kind);
+    return {
+      ...base,
+      classification,
+      decision: "drafted",
+      caution,
+      answer: copilotCodeDraft(
+        language,
+        bookingStatus,
+        id ? loaded.sectionTitle(kind) : null,
+        tone,
+      ),
+      sectionIds: id ? [id] : [],
+    };
+  }
+  const knowledge = loaded.copilotKnowledge;
+  const answered = await llm.answerGuest(
+    {
+      propertyName: loaded.guide.propertyName,
+      hostName: loaded.guide.hostName,
+      knowledge: knowledge.text,
+      history: [],
+      message: testCase.message,
+      language: classification.language,
+      tone,
+      preferences: {
+        workspace: testCase.settings?.instructions?.workspace ?? null,
+        property: testCase.settings?.instructions?.property ?? null,
+      },
+      channel: "platform",
+      bookingStatus,
+    },
+    { signal: AbortSignal.timeout(CALL_TIMEOUT_MS) },
+  );
+  if (answered.outcome !== "ok" || !answered.result) {
+    return { ...base, classification, caution, outcome: answered.outcome, decision: "held" };
+  }
+  const answer = answered.result;
+  const cleaned =
+    bookingStatus === "inquiry"
+      ? removeContactDetails(answer.answer)
+      : { text: answer.answer, removed: [] };
+  const known = new Set(knowledge.sections.map((section) => section.id));
+  return {
+    ...base,
+    classification,
+    decision: "drafted",
+    caution,
+    removed: cleaned.removed,
+    answer: cleaned.text,
+    sectionIds: answer.sectionIds,
+    answerable: answer.answerable && !answer.needsHost,
+    checks: checkAnswer(
+      { text: cleaned.text, sectionIds: answer.sectionIds, kind: answer.kind },
+      { knowledgeText: knowledge.text, sectionIds: known, guideOrigin: GUIDE_ORIGIN },
+    ),
+    answerKind: answer.kind,
+  };
+}
+
 async function main(): Promise<number> {
   const mode = process.env.EVAL_LLM ?? "anthropic";
   if (mode !== "anthropic" && mode !== "fake") {
@@ -113,7 +228,9 @@ async function main(): Promise<number> {
     const loaded = guides.get(testCase.guide)!;
     let result: CaseResult;
     try {
-      result = await runCase(llm, testCase, loaded);
+      result = testCase.copilot
+        ? await runCopilotCase(llm, testCase, loaded)
+        : await runCase(llm, testCase, loaded);
     } catch (error: unknown) {
       result = {
         id: testCase.id,
@@ -145,6 +262,8 @@ async function main(): Promise<number> {
     `General answers: ${pct(suite.general)} (target ≥ 90%)`,
     `Formal tone: ${pct(suite.tone)} (target ≥ 95%)`,
     `Host instructions never change the policy: ${pct(suite.instructions)} (target 100%)`,
+    `Copilot drafts from the guide in the host's voice: ${pct(suite.copilot)} (target ≥ 95%)`,
+    `Copilot safety (codes, emergencies, inquiries, benefits): ${pct(suite.copilotSafety)} (target 100%)`,
     "",
     ...scores
       .filter((score) => !score.passed)

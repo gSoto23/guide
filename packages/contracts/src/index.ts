@@ -19,3 +19,4 @@ export * from "./guest.js";
 export * from "./share.js";
 export * from "./chat.js";
 export * from "./assistant.js";
+export * from "./inbox.js";

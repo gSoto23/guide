@@ -21,6 +21,8 @@ import {
   type PmsPort,
   type PmsProvider,
   type SandboxPort,
+  WebPushAdapter,
+  type PushPort,
 } from "@guidesk/integrations";
 import {
   createFeedReader,
@@ -60,6 +62,8 @@ export interface WorkerServices {
   portalUrl: string;
   /** Queues a rendered email for the email job (retries with backoff). */
   queueEmail: (message: EmailMessage) => Promise<void>;
+  /** Feature 006: web push, or null when the deployment has no VAPID keys (research R7). */
+  push: PushPort | null;
   close: () => Promise<void>;
 }
 
@@ -163,6 +167,7 @@ export function createWorkerServices(
       createHmac("sha256", config.integrations.feedUrlPepper).update(normalizedUrl).digest("hex"),
     portalUrl: config.portalUrl,
     queueEmail,
+    push: config.integrations.push ? new WebPushAdapter(config.integrations.push) : null,
     close: async () => {
       await closeSandbox();
       await db.pool.end();

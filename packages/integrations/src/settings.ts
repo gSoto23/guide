@@ -33,6 +33,11 @@ export interface IntegrationSettings {
   mediaRequireScan: boolean;
   /** Secret for calendar-link fingerprints (HMAC-SHA-256). */
   feedUrlPepper: string;
+  /**
+   * Feature 006: Web Push with VAPID (research R7). `null` turns push off; email still arrives.
+   * The private key is a secret: never log it.
+   */
+  push: { publicKey: string; privateKey: string; subject: string } | null;
   flags: {
     pmsBeds24: boolean;
     pmsHostex: boolean;
@@ -83,6 +88,9 @@ const schema = z.object({
     .transform((value) => value !== "false" && value !== "0"),
   GUIDE_INTERVIEW_VOICE: flag,
   GUIDE_SCANNED_PDF: flag,
+  VAPID_PUBLIC_KEY: optionalText,
+  VAPID_PRIVATE_KEY: optionalText,
+  VAPID_SUBJECT: optionalText,
 });
 
 type Parsed = z.infer<typeof schema>;
@@ -121,6 +129,16 @@ function problems(env: Parsed, production: boolean, usesLlm: boolean): string[] 
     require(Boolean(
       env.ANTHROPIC_API_KEY,
     ), "ANTHROPIC_API_KEY is required with LLM_MODE=anthropic");
+  }
+
+  const vapid = [env.VAPID_PUBLIC_KEY, env.VAPID_PRIVATE_KEY, env.VAPID_SUBJECT].filter(Boolean);
+  require(vapid.length === 0 ||
+    vapid.length ===
+      3, "VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, and VAPID_SUBJECT are set together (feature 006)");
+  if (env.VAPID_SUBJECT) {
+    require(/^(mailto:|https:\/\/)/.test(
+      env.VAPID_SUBJECT,
+    ), "VAPID_SUBJECT must be a mailto: or https: URL");
   }
 
   if (production) {
@@ -192,6 +210,14 @@ export function loadIntegrationSettings(
     speech: { mode: parsed.SPEECH_MODE },
     mediaRequireScan: parsed.MEDIA_REQUIRE_SCAN,
     feedUrlPepper: parsed.FEED_URL_PEPPER,
+    push:
+      parsed.VAPID_PUBLIC_KEY && parsed.VAPID_PRIVATE_KEY && parsed.VAPID_SUBJECT
+        ? {
+            publicKey: parsed.VAPID_PUBLIC_KEY,
+            privateKey: parsed.VAPID_PRIVATE_KEY,
+            subject: parsed.VAPID_SUBJECT,
+          }
+        : null,
     flags: {
       pmsBeds24: parsed.PMS_BEDS24,
       pmsHostex: parsed.PMS_HOSTEX,

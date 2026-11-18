@@ -6,5 +6,6 @@
     "jsx": "react-jsx",
     "lib": ["ES2024", "DOM", "DOM.Iterable"]
   },
-  "include": ["src", "test", "scripts"]
+  "include": ["src", "test", "scripts"],
+  "exclude": ["node_modules", "dist", "**/* 2.*", "**/* 3.*", "**/* 4.*"]
 }

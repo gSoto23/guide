@@ -162,6 +162,10 @@ export class GuestChatService {
             language: body.language,
             lastMessageAt: sql`now()`,
             stayId: sql`coalesce(excluded.stay_id, ${conversation.stayId})`,
+            // Feature 006 (research R2): a new guest message reopens a done conversation.
+            status: sql`CASE WHEN ${conversation.status} = 'done' THEN 'open' ELSE ${conversation.status} END`,
+            doneAt: sql`CASE WHEN ${conversation.status} = 'done' THEN NULL ELSE ${conversation.doneAt} END`,
+            doneBy: sql`CASE WHEN ${conversation.status} = 'done' THEN NULL ELSE ${conversation.doneBy} END`,
           },
         })
         .returning({ id: conversation.id });
@@ -206,7 +210,8 @@ export class GuestChatService {
       expireInSeconds: 60,
     });
     const message: GuestChatMessage = toGuestMessage({ ...stored.message, authorName: null });
-    return { body: { message, pending: true }, ...(setCookie ? { setCookie } : {}) };
+    const pending = await this.pending(stored.conversationId);
+    return { body: { message, pending }, ...(setCookie ? { setCookie } : {}) };
   }
 
   private async intro(target: GuestTarget): Promise<GuestChat["intro"]> {
@@ -280,8 +285,17 @@ export class GuestChatService {
     return after !== undefined ? rows : rows.reverse();
   }
 
-  /** A reply is pending while the latest message is the guest's and recent (research R2). */
+  /**
+   * A reply is pending while the latest message is the guest's and recent (research R2), unless a
+   * member took the conversation over: the assistant won't reply there (feature 006 research R4).
+   */
   private async pending(conversationId: string): Promise<boolean> {
+    const [conv] = await this.context.db
+      .select({ takenOverAt: conversation.takenOverAt })
+      .from(conversation)
+      .where(eq(conversation.id, conversationId))
+      .limit(1);
+    if (conv?.takenOverAt) return false;
     const [last] = await this.context.db
       .select({ author: chatMessage.author, createdAt: chatMessage.createdAt })
       .from(chatMessage)

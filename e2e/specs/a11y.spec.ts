@@ -354,3 +354,59 @@ test("assistant settings screens have no WCAG A/AA violations (feature 007 T047)
   await expect(panel.getByText(/^Result:/)).toBeVisible({ timeout: 20_000 });
   await expectNoViolations(host, "property assistant settings with a test result");
 });
+
+test("inbox, conversation actions, copilot, and alerts screens have no WCAG A/AA violations (feature 006 T039)", async ({
+  browser,
+}) => {
+  test.setTimeout(180_000);
+  const { openChat, propertyLink, publishGuide, sendChatMessage, signIn } =
+    await import("../helpers/guest");
+  const host = await newPage(browser);
+  await signIn(host, uniqueEmail("a11y-inbox"));
+  const guide = await publishGuide(host);
+
+  await host.goto("/es/inbox");
+  await expect(host.getByRole("heading", { name: "Bandeja", level: 1 })).toBeVisible();
+  await expectNoViolations(host, "empty inbox");
+
+  const context = await browser.newContext({
+    locale: "es-CR",
+    viewport: { width: 390, height: 844 },
+  });
+  const guest = await context.newPage();
+  await guest.goto(await propertyLink(host, guide));
+  await openChat(guest);
+  await sendChatMessage(guest, "¿Cómo abro la caja de llaves?");
+  await expect(guest.getByRole("dialog").locator(".chat-msg-assistant").last()).toBeVisible({
+    timeout: 15_000,
+  });
+  await context.close();
+
+  await host.goto("/es/inbox");
+  await expect(host.locator(".inbox-item").first()).toBeVisible({ timeout: 20_000 });
+  await expectNoViolations(host, "inbox with a conversation");
+  await host.getByRole("tab", { name: "Todas" }).click();
+  await expectNoViolations(host, "inbox, all tab");
+
+  await host.locator(".inbox-item").first().getByRole("link").click();
+  await expect(host.getByRole("button", { name: "Descartar borrador" })).toBeVisible();
+  await expectNoViolations(host, "conversation with draft actions");
+  await host.getByLabel("Responderé yo").check();
+  await expect(host.getByText(/^La tomó /)).toBeVisible();
+  await expectNoViolations(host, "taken-over conversation");
+
+  await host.goto("/es/inbox/copilot");
+  await host.getByLabel("Mensaje del huésped").fill("¿A qué hora es la salida?");
+  await expectNoViolations(host, "copilot form");
+  await host.getByRole("button", { name: "Preparar respuesta" }).click();
+  await expect(host.locator(".copilot-result")).toBeVisible({ timeout: 20_000 });
+  await expectNoViolations(host, "copilot with a draft");
+
+  await host.goto("/es/settings/account");
+  await expect(host.getByRole("heading", { name: "Alertas en este dispositivo" })).toBeVisible();
+  await expectNoViolations(host, "account settings with the alerts card");
+
+  await host.goto("/en/inbox");
+  await expect(host.getByRole("heading", { name: "Inbox", level: 1 })).toBeVisible();
+  await expectNoViolations(host, "inbox (en)");
+});

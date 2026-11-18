@@ -88,6 +88,8 @@ export const api = new sst.aws.Service("Api", {
     GUIDE_URL: guideUrl,
     // CloudFront and the load balancer: the only X-Forwarded-For hops the API trusts.
     TRUSTED_PROXY_HOPS: "2",
+    // Feature 006: the VAPID contact; the keys come from Secrets Manager.
+    VAPID_SUBJECT: portalUrl,
     ...databaseEnvironment,
     ...emailEnvironment,
     ...integrationEnvironment,
@@ -127,6 +129,8 @@ export const worker = new sst.aws.Service("Worker", {
     PORTAL_URL: portalUrl,
     // Feature 005: assistant replies may link to the guide's own pages (research R6).
     GUIDE_URL: guideUrl,
+    // Feature 006: the VAPID contact; the keys come from Secrets Manager.
+    VAPID_SUBJECT: portalUrl,
     ...databaseEnvironment,
     ...emailEnvironment,
     ...integrationEnvironment,
