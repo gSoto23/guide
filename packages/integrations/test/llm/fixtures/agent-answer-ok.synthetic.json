@@ -6,7 +6,7 @@
   "content": [
     {
       "type": "text",
-      "text": "{\"answer\": \"Checkout is by 11:00. Please leave the keys in the lockbox.\", \"sectionIds\": [\"s-checkout\"], \"answerable\": true, \"needsHost\": false}"
+      "text": "{\"answer\": \"Checkout is by 11:00. Please leave the keys in the lockbox.\", \"kind\": \"grounded\", \"sectionIds\": [\"s-checkout\"], \"answerable\": true, \"needsHost\": false}"
     }
   ],
   "stop_reason": "end_turn",

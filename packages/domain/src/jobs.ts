@@ -24,6 +24,9 @@ export const JOB_QUEUES = {
   // Feature 005 (research R2, R12).
   chatReply: "chat.reply",
   agentCostCheck: "agent.cost-check",
+  // Feature 007 (research R7, R12).
+  assistantTest: "assistant.test",
+  chatQuietDigest: "chat.quiet-digest",
 } as const;
 
 export interface CalendarRefreshJob {
@@ -50,6 +53,8 @@ export const QUEUE_POLICIES: Partial<
   [JOB_QUEUES.guideDraft]: "stately",
   // One queued and one active reply per conversation (feature 005 research R2).
   [JOB_QUEUES.chatReply]: "stately",
+  // The every-minute digest never overlaps itself (feature 007 research R7).
+  [JOB_QUEUES.chatQuietDigest]: "singleton",
 };
 
 export interface ExtractionRunJob {
@@ -118,3 +123,9 @@ export interface ChatReplyJob {
 
 /** The worker polls the reply queue this often (research R2). */
 export const CHAT_REPLY_POLL_SECONDS = 0.5;
+
+/** Feature 007 research R12: run one "test the assistant" question. */
+export interface AssistantTestJob {
+  testId: string;
+  workspaceId: string;
+}

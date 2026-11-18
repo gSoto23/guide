@@ -54,8 +54,6 @@ export const property = pgTable(
     checkoutTime: time("checkout_time"),
     maxGuests: smallint("max_guests"),
     guideLanguages: text("guide_languages", { enum: GUIDE_LANGUAGES }).array().notNull(),
-    /** Feature 005: overrides the workspace's assistant autonomy; null follows it (FR-022). */
-    assistantAutonomy: text("assistant_autonomy", { enum: ["draft", "auto"] }),
     setupStatus: text("setup_status", { enum: PROPERTY_SETUP_STATUSES }).notNull(),
     missingFacts: text("missing_facts")
       .array()

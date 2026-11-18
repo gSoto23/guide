@@ -1,11 +1,20 @@
 import { foldForMatch } from "../guides/completeness.js";
 import { asksOffPlatform } from "../guides/publish-checks.js";
+import type { AnswerKind } from "./policy.js";
 
 /**
  * Output checks (feature 005 research R6, FR-020, AC-SEC-008): deterministic tests a reply must
  * pass before it reaches a guest automatically. Member replies get them as warnings (PC-14).
  */
-export const OUTPUT_CHECKS = ["citation", "codes", "links", "promises", "off_platform"] as const;
+export const OUTPUT_CHECKS = [
+  "citation",
+  "codes",
+  "links",
+  "promises",
+  "off_platform",
+  "price",
+  "clarify",
+] as const;
 export type OutputCheck = (typeof OUTPUT_CHECKS)[number];
 
 export interface CheckResult {
@@ -67,27 +76,58 @@ function linksPass(text: string, context: CheckContext): boolean {
   return true;
 }
 
+/** Feature 007 research R4: general answers never state a price. */
+const PRICE_PATTERNS = [
+  /[$₡€£]\s?\d/u,
+  /\d\s?[$₡€£]/u,
+  /(?<![\p{L}])(?:usd|crc|eur|us\$)\s?\d/iu,
+  /\d[\d.,]*\s?(?:usd|crc|eur|dolares|dollars|colones|euros|pesos)(?![\p{L}])/iu,
+];
+
+export function pricePass(text: string): boolean {
+  const folded = foldForMatch(text);
+  return !PRICE_PATTERNS.some((pattern) => pattern.test(folded));
+}
+
+/** Feature 007 research R4: one short question, at most two sentences and 300 characters. */
+export function clarifyPass(text: string): boolean {
+  const trimmed = text.trim();
+  const sentences = trimmed.split(/(?<=[.!?])\s+/).filter((part) => /[\p{L}\p{N}]/u.test(part));
+  return [...trimmed].length <= 300 && trimmed.includes("?") && sentences.length <= 2;
+}
+
 export function promisesPass(text: string): boolean {
   const folded = foldForMatch(text);
   return !promisePatterns.some((pattern) => pattern.test(folded));
 }
 
-/** Every check for an assistant answer, in order. */
+/**
+ * Every check for an assistant answer, in order. Grounded answers must cite a published section;
+ * general answers must state no price; clarifying questions must be one short question (feature
+ * 007 research R4).
+ */
 export function checkAnswer(
-  answer: { text: string; sectionIds: readonly string[] },
+  answer: { text: string; sectionIds: readonly string[]; kind?: AnswerKind },
   context: CheckContext,
 ): CheckResult[] {
-  return [
-    {
+  const kind = answer.kind ?? "grounded";
+  const results: CheckResult[] = [];
+  if (kind === "grounded") {
+    results.push({
       check: "citation",
       passed:
         answer.sectionIds.length > 0 && answer.sectionIds.every((id) => context.sectionIds.has(id)),
-    },
+    });
+  }
+  results.push(
     { check: "codes", passed: codesPass(answer.text, context.knowledgeText) },
     { check: "links", passed: linksPass(answer.text, context) },
     { check: "promises", passed: promisesPass(answer.text) },
     { check: "off_platform", passed: !asksOffPlatform(answer.text) },
-  ];
+  );
+  if (kind === "general") results.push({ check: "price", passed: pricePass(answer.text) });
+  if (kind === "clarify") results.push({ check: "clarify", passed: clarifyPass(answer.text) });
+  return results;
 }
 
 /** Warnings for a member's own reply (PC-14): no citation needed, and their codes are their call. */

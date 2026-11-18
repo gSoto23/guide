@@ -105,7 +105,13 @@ export interface MemberTrace {
   topic: string | null;
   decision: "answered" | "drafted" | "held" | "pointer" | "greeting" | "paused";
   reason: NeedsHostReasonValue | null;
-  autonomy: "draft" | "auto";
+  autonomy: "draft" | "auto" | "full_auto";
+  /** Feature 007 (FR-020): null on traces written before it. */
+  autonomySource: "workspace" | "property" | null;
+  answerKind: "grounded" | "general" | "clarify" | null;
+  tone: "casual" | "formal" | null;
+  quietHours: boolean;
+  instructions: { workspace: boolean; property: boolean };
   sections: ChatSectionRef[];
   checks: { check: string; passed: boolean }[];
   /** The published version the assistant used (edge cases: a draft keeps its version). */
@@ -147,14 +153,3 @@ export const chatReplySchema = z
   })
   .strict();
 export type ChatReplyBody = z.infer<typeof chatReplySchema>;
-
-export const autonomySchema = z.enum(["draft", "auto"]);
-export const workspaceAssistantSchema = z.object({ autonomy: autonomySchema }).strict();
-export const propertyAssistantSchema = z.object({ override: autonomySchema.nullable() }).strict();
-export interface WorkspaceAssistantSettings {
-  autonomy: "draft" | "auto";
-}
-export interface PropertyAssistantSettings {
-  override: "draft" | "auto" | null;
-  effective: "draft" | "auto";
-}

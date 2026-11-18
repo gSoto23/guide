@@ -38,6 +38,8 @@ export type GuestClassification = z.infer<typeof guestClassificationSchema>;
 
 export const guestAnswerSchema = z.object({
   answer: z.string().min(1).max(2000),
+  /** Feature 007 research R2: from the guide, general destination information, or a question. */
+  kind: z.enum(["grounded", "general", "clarify"]),
   sectionIds: z.array(z.string().max(64)).max(5),
   answerable: z.boolean(),
   needsHost: z.boolean(),
@@ -64,4 +66,8 @@ export interface AnswerGuestInput {
   message: string;
   /** BCP 47 language to answer in, from the classification. */
   language: string;
+  /** Feature 007 (FR-007): the host's tone; casual when absent. */
+  tone?: "casual" | "formal";
+  /** Feature 007 (FR-011): the workspace's and the property's custom instructions. */
+  preferences?: { workspace: string | null; property: string | null };
 }
