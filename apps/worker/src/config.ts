@@ -5,6 +5,8 @@ export interface WorkerConfig {
   databaseUrl: string;
   /** The portal's public origin, for links in emails (feature 002). */
   portalUrl: string;
+  /** The guide origin (feature 005): assistant links to it pass the link check. */
+  guideUrl: string;
   email: {
     transport: "smtp" | "ses";
     from: string;
@@ -49,6 +51,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): WorkerConfig {
   return {
     databaseUrl,
     portalUrl: (env.PORTAL_URL ?? "http://localhost:3000").replace(/\/$/, ""),
+    guideUrl: (env.GUIDE_URL ?? "http://127.0.0.1:3001").replace(/\/$/, ""),
     email: {
       transport,
       from: env.EMAIL_FROM ?? "no-reply@guidesk.local",

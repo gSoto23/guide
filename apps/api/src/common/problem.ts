@@ -56,13 +56,18 @@ export type ProblemCode =
   | "invalid_code"
   | "verification_locked"
   | "guide_not_published"
-  | "stay_not_eligible";
+  | "stay_not_eligible"
+  // Feature 005 (contracts/http-api.md).
+  | "message_too_long"
+  | "chat_paused"
+  | "draft_closed"
+  | "reply_warnings";
 
 /**
  * Extra members of a problem body, such as `{limit, used}` or `{reason}`. Plain values only, and
  * never a restricted value (AC-SEC-008).
  */
-export type ProblemDetails = Record<string, string | number | boolean | null>;
+export type ProblemDetails = Record<string, string | number | boolean | null | string[]>;
 
 export interface ProblemBody {
   type: string;

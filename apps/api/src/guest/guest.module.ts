@@ -26,6 +26,6 @@ import { GuestVerification } from "./verification.service.js";
     GuestVerification,
     GuestOpens,
   ],
-  exports: [GuestContext, StayLinkSecrets],
+  exports: [GuestContext, GuestSessions, StayLinkSecrets],
 })
 export class GuestModule {}

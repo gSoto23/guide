@@ -64,6 +64,10 @@ const TITLES: Record<ProblemCode, string> = {
   verification_locked: "Too many tries",
   guide_not_published: "Guide not published",
   stay_not_eligible: "Stay not eligible",
+  message_too_long: "Message too long",
+  chat_paused: "Chat paused",
+  draft_closed: "Draft already handled",
+  reply_warnings: "Reply needs review",
 };
 
 const CODE_BY_STATUS: Record<number, ProblemCode> = {

@@ -1,3 +1,10 @@
+import type {
+  AnswerGuestInput,
+  GuestAnswer,
+  GuestClassification,
+  GuestClassificationInput,
+} from "./agent/schemas.js";
+import { fakeAnswer, fakeClassify } from "./agent/fake.js";
 import type { ListingExtraction } from "./extraction/schema.js";
 import type {
   DraftAnswer,
@@ -13,6 +20,7 @@ import type {
 import {
   LlmTimeoutError,
   LlmUnavailableError,
+  type AgentCallResult,
   type LlmCallOptions,
   type LlmCallResult,
   type LlmExtractionResult,
@@ -52,7 +60,13 @@ function paragraphs(text: string): string[] {
 
 /** One call the fake model received, for "never reaches the AI" checks (SC-004). */
 export interface FakeGuideCall {
-  method: "draftFromListing" | "draftAnswer" | "suggestFromDocument" | "translateBlocks";
+  method:
+    | "draftFromListing"
+    | "draftAnswer"
+    | "suggestFromDocument"
+    | "translateBlocks"
+    | "classifyGuestMessage"
+    | "answerGuest";
   input: unknown;
 }
 
@@ -65,6 +79,11 @@ export interface FakeLlmOptions {
   unavailable?: boolean;
   /** Feature 003: the outcome every guide call returns (default `ok`). */
   guideOutcome?: "ok" | "refused" | "truncated" | "invalid";
+  /** Feature 005: replaces the assistant's answer or classification, to test policy branches. */
+  agentAnswer?: (input: AnswerGuestInput) => GuestAnswer;
+  agentClassification?: (input: GuestClassificationInput) => GuestClassification;
+  /** Feature 005: the outcome every assistant call returns (default `ok`). */
+  agentOutcome?: "ok" | "refused" | "truncated" | "invalid";
   /** Feature 003: replaces translated blocks, to test token checks (research R7). */
   translate?: (blocks: readonly string[], to: "es" | "en") => string[];
 }
@@ -212,6 +231,45 @@ export class FakeLlmAdapter implements LlmPort {
         ? this.options.translate(input.blocks, input.to)
         : input.blocks.map((block) => (block ? `[${input.to}] ${block}` : block)),
     }));
+  }
+
+  async classifyGuestMessage(
+    input: GuestClassificationInput,
+    options: LlmCallOptions = {},
+  ): Promise<AgentCallResult<GuestClassification>> {
+    return this.agent("classifyGuestMessage", input, options, () =>
+      (this.options.agentClassification ?? fakeClassify)(input),
+    );
+  }
+
+  async answerGuest(
+    input: AnswerGuestInput,
+    options: LlmCallOptions = {},
+  ): Promise<AgentCallResult<GuestAnswer>> {
+    return this.agent("answerGuest", input, options, () =>
+      (this.options.agentAnswer ?? fakeAnswer)(input),
+    );
+  }
+
+  private async agent<T>(
+    method: FakeGuideCall["method"],
+    input: unknown,
+    options: LlmCallOptions,
+    answer: () => T,
+  ): Promise<AgentCallResult<T>> {
+    const result = await this.guide(method, input, options, answer).catch((error: unknown) => {
+      throw error;
+    });
+    const usage = {
+      inputTokens: result.usage.inputTokens,
+      outputTokens: result.usage.outputTokens,
+      cacheReadTokens: 0,
+      cacheWriteTokens: 0,
+      costUsdMicros: 0,
+    };
+    const outcome = this.options.agentOutcome ?? "ok";
+    if (outcome !== "ok") return { outcome, result: null, usage, model: "fake" };
+    return { ...result, usage };
   }
 
   private async guide<T>(

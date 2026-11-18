@@ -16,6 +16,7 @@ import { GuidesModule } from "./guides/guides.module.js";
 import { GuideDocumentsModule } from "./guide-documents/guide-documents.module.js";
 import { InterviewsModule } from "./interviews/interviews.module.js";
 import { SharedBlocksModule } from "./shared-blocks/shared-blocks.module.js";
+import { ChatModule } from "./chat/chat.module.js";
 import { GuestModule } from "./guest/guest.module.js";
 import { ShareModule } from "./share/share.module.js";
 import { LockedFieldsModule } from "./locked-fields/locked-fields.module.js";
@@ -49,6 +50,7 @@ import { TenancyModule } from "./tenancy/tenancy.module.js";
     GuideDocumentsModule,
     SharedBlocksModule,
     GuestModule,
+    ChatModule,
     ShareModule,
     ListingContentModule,
     CalendarFeedsModule,

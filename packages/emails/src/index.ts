@@ -9,3 +9,4 @@ export * from "./team/lifecycle.js";
 export * from "./account/lifecycle.js";
 export * from "./properties/notices.js";
 export * from "./guides/notices.js";
+export * from "./chat/notices.js";

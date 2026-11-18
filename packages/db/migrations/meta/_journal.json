@@ -162,6 +162,20 @@
       "when": 1794973882289,
       "tag": "0022_guest_guide_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1794979306538,
+      "tag": "0023_guide_chat",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1794979307218,
+      "tag": "0024_guide_chat_rls",
+      "breakpoints": true
     }
   ]
 }
