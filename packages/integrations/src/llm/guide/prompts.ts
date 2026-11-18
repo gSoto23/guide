@@ -39,8 +39,8 @@ function topicList(topics: readonly TopicHint[]): string {
 
 /** Wraps data in a block; a closing tag inside the data is broken so it cannot end the block early. */
 function block(name: string, data: string): string {
-  const safe = data.replace(new RegExp(`<\\s*/?\\s*${name}\\s*>`, "gi"), (tag) =>
-    tag.replace("<", "‹"),
+  const safe = data.replace(new RegExp(`<\\s*(?:/\\s*)?${name}\\s*>`, "gi"), (tag) =>
+    tag.replace(/</g, "‹"),
   );
   return `<${name}>\n${safe}\n</${name}>`;
 }

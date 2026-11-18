@@ -280,7 +280,9 @@ const HAS_DIGIT = /\p{N}/u;
 const HAS_LETTER = /\p{L}/u;
 const PURE_DIGITS = /^\p{Nd}+$/u;
 const CURRENCY_SIGN = /[$€£¥₡₹]/u;
-const CURRENCY_CODE = /^(?:usd|us|crc|eur|mxn|cop|gbp|cad)\d|\d(?:usd|crc|eur|mxn|cop|gbp|cad)$/u;
+/** A currency code before the amount ("usd25") or after it ("25usd"); each side is anchored. */
+const CURRENCY_CODE =
+  /(?:^(?:usd|us|crc|eur|mxn|cop|gbp|cad)\d)|(?:\d(?:usd|crc|eur|mxn|cop|gbp|cad)$)/u;
 const MEASURE =
   /^\d+(?:[.,]\d+)?(?:ghz|mhz|gbps|mbps|kbps|tb|gb|mb|m2|km|kg|cm|mm|mts|ft|sqft|hrs?|am|pm|mins?|pax|%)$/u;
 

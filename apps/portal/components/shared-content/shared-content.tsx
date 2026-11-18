@@ -42,8 +42,6 @@ export function SharedContent({ locale }: { locale: string }) {
     });
   }, [workspace, errors]);
 
-  if (!workspace) return null;
-
   async function create(event: FormEvent) {
     event.preventDefault();
     if (!workspace || !name.trim()) return;
@@ -65,6 +63,7 @@ export function SharedContent({ locale }: { locale: string }) {
     <section aria-labelledby="shared-title">
       <h1 id="shared-title">{t("title")}</h1>
       <p className="muted">{t("intro")}</p>
+      {!workspace && <p className="working">{guide("drafting")}</p>}
       {error && (
         <p className="alert alert-error" role="alert">
           {error}
@@ -98,7 +97,7 @@ export function SharedContent({ locale }: { locale: string }) {
           </div>
         );
       })}
-      {workspace.canManage &&
+      {workspace?.canManage &&
         (creating ? (
           <form className="card" onSubmit={create}>
             <label htmlFor="block-section">{t("section")}</label>

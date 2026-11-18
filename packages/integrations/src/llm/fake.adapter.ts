@@ -70,8 +70,8 @@ export interface FakeLlmOptions {
 }
 
 const HEADINGS = {
-  houseRules: /^(house rules|normas de la casa|reglas de la casa|normas)\s*:?\s*$/i,
-  amenities: /^(amenities|comodidades|servicios|lo que ofrece este lugar)\s*:?\s*$/i,
+  houseRules: /^(house rules|normas de la casa|reglas de la casa|normas)[\s:]*$/i,
+  amenities: /^(amenities|comodidades|servicios|lo que ofrece este lugar)[\s:]*$/i,
 };
 
 /** A small, deterministic reading used in development and tests (LLM_MODE=fake). */
