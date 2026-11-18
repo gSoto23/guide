@@ -109,13 +109,21 @@ export function rateOf(numerator: number, denominator: number): number | null {
   return denominator === 0 ? null : numerator / denominator;
 }
 
-/** The outcome of a guest question from its trace decision, or null when it isn't a question. */
-export function questionOutcome(decision: string): QuestionOutcome | null {
+/**
+ * The outcome of a guest question from its trace, or null when it isn't a question. A draft made
+ * because of a real escalation reason (the assistant didn't know, an emergency, a complaint) went to
+ * the host without an answer, so it counts as escalated; a draft for review is "with the host".
+ */
+export function questionOutcome(
+  decision: string,
+  reason: string | null = null,
+): QuestionOutcome | null {
   switch (decision) {
     case "answered":
     case "pointer":
       return "automatic";
     case "drafted":
+      return countedReason(reason) ? "escalated" : "with_host";
     case "paused":
       return "with_host";
     case "held":

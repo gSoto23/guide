@@ -33,8 +33,10 @@
   have `assistant_test_id` or `copilot_run_id` instead, so FR-007 holds by construction) whose
   decision is not `greeting`. Outcomes by decision:
   - `answered`, `pointer` → answered automatically (the reply reached the guest with no member);
-  - `drafted`, `paused` → answered with the host (a member reviews the draft or has taken over);
-  - `held` → escalated.
+  - `drafted` for review (reason `draft_ready`), `paused` → answered with the host (a member reviews
+    the draft or has taken over);
+  - `held`, and `drafted` with an escalation reason (for example `not_confident` at the "auto"
+    level, where the guest gets a holding reply and the host a draft) → escalated.
   Escalation reasons are the trace's `reason` for held and drafted traces, excluding the bookkeeping
   reasons `draft_ready` and `taken_over`. Topics are `classification->>'topic'`, excluding `greeting`;
   traces without a classification (limits, pauses) count under `other`.
@@ -133,4 +135,15 @@
 ## R12. Founder gates and implementation notes
 
 - **Gates:** none new; the report needs database access in staging and production once AWS exists.
-- **Notes:** filled in during implementation.
+- **Notes:**
+  - At the "auto" level the pipeline records an unknown answer as `drafted` with reason
+    `not_confident` (the guest gets a holding reply, the host a draft); R3 counts drafts with an
+    escalation reason as escalated, so "Sent to you" matches what hosts experience.
+  - The "no comparison yet" note shows once at the top of the screen instead of on every card.
+  - Analytics routes on the phone: the portal routes stay within 150 KB (bundle check), with the
+    headroom from the change that loads late forms on demand (merged before this spec).
+  - Timing: 50 properties, 180 days, 27,000 traces: the 90-day workspace and property views stay
+    within p95 500 ms and the unanswered list within 300 ms on a development machine.
+  - Local quickstart (2026-11-18): scenarios 1 to 3 pass in `analytics-us1` and `analytics-us3`;
+    scenario 4's numbers are covered by the API tests; scenario 5 ran against the local database and
+    printed the six metrics with no names or emails.

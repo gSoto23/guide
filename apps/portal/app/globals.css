@@ -1090,3 +1090,143 @@ input[type="radio"] {
   align-items: center;
   gap: 0.75rem;
 }
+
+/* Feature 010: analytics (screen H-34). Bars are decoration next to text numbers (FR-014). */
+.analytics fieldset.segmented {
+  border: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+.analytics fieldset.segmented legend {
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.analytics .tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.analytics .tab input {
+  margin: 0;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 8px 0 12px;
+}
+
+.metric {
+  margin: 0;
+}
+
+.metric-label {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.metric-value {
+  margin: 4px 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-change {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.metric-up,
+.metric-down {
+  color: var(--color-text);
+}
+
+.bar-list {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 16px;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  align-items: baseline;
+}
+
+.bar-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.bar-track {
+  grid-column: 1 / -1;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--color-primary);
+}
+
+.table-scroll {
+  overflow-x: auto;
+  margin: 8px 0 16px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.data-table caption {
+  text-align: left;
+  color: var(--color-text-muted);
+  padding-bottom: 4px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.data-table th:first-child,
+.data-table th[scope="row"] {
+  text-align: left;
+  white-space: normal;
+}
+
+.data-table th[scope="row"] .badge {
+  margin-left: 6px;
+}
+
+.unanswered-list {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+
+.unanswered-item {
+  padding: 8px 12px;
+  border-left: 3px solid var(--color-border-strong);
+  background: var(--color-surface);
+  border-radius: var(--radius);
+}
+
+.unanswered-item p {
+  margin: 0 0 4px;
+}

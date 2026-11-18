@@ -131,6 +131,7 @@ pnpm dev
 | `pnpm test` | Unit tests (Vitest) |
 | `pnpm test:integration` | API and database tests against a disposable PostgreSQL (Testcontainers; needs Docker) |
 | `pnpm lint:rls` | Fails if a tenant table lacks forced row-level security |
+| `pnpm --filter @guidesk/db report:pilot -- --from YYYY-MM-DD [--to YYYY-MM-DD] [--json]` | The founder's pilot metrics (PRD §8) for a sign-up cohort, aggregates only (feature 010); needs `DATABASE_URL` with the migration user |
 | `pnpm test:e2e` | Playwright end-to-end and accessibility tests (needs the running stack) |
 | `pnpm --filter @guidesk/portal bundle:check` | Initial JavaScript per route ≤ 150 KB gzip |
 | `pnpm perf:lighthouse` | Lighthouse CI budgets on a production build of the portal |

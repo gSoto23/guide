@@ -816,7 +816,8 @@
       "settings": "Ajustes",
       "shared": "Contenido compartido",
       "inbox": "Bandeja",
-      "requests": "Solicitudes"
+      "requests": "Solicitudes",
+      "analytics": "Estadísticas"
     },
     "loading": "Cargando…",
     "none": "Sin workspace: crea uno"
@@ -2142,5 +2143,125 @@
     "notWaiting": "Alguien ya respondió esta solicitud. Recargamos la lista.",
     "notConfirmed": "Esta solicitud ya no está confirmada. Recargamos la lista.",
     "payment": "Guidesk no cobra nada: acuerda el pago con el huésped."
+  },
+  "analytics": {
+    "title": "Estadísticas",
+    "workspaceTitle": "Estadísticas: todas las propiedades",
+    "propertyTitle": "Estadísticas: {name}",
+    "intro": "Cómo usan tus huéspedes la guía, a partir de las visitas y preguntas que Guidesk ya cuenta. No se rastrea a ningún huésped.",
+    "backToProperty": "← Volver a la propiedad",
+    "allProperties": "Ver todas las propiedades",
+    "cardTitle": "Estadísticas",
+    "cardBody": "Visitas a la guía, preguntas que respondió el asistente y lo que preguntaron los huéspedes, en los últimos 7, 30 o 90 días.",
+    "open": "Ver estadísticas",
+    "periodLegend": "Periodo",
+    "periods": {
+      "7": "7 días",
+      "30": "30 días",
+      "90": "90 días"
+    },
+    "utcNote": "Una propiedad no tiene zona horaria, así que sus días se cuentan en UTC.",
+    "removedNote": "Esta propiedad se retiró; sus números siguen en los totales del espacio de trabajo hasta que se elimine.",
+    "loading": "Cargando…",
+    "empty": "Todavía no hay nada en este periodo. Comparte el enlace de la guía con tus próximos huéspedes para empezar a ver números.",
+    "change": {
+      "same": "Igual que los {days} días anteriores",
+      "up": "+{abs} ({rel}) frente a los {days} días anteriores",
+      "down": "−{abs} ({rel}) frente a los {days} días anteriores",
+      "upNoRate": "+{abs} frente a los {days} días anteriores",
+      "downNoRate": "−{abs} frente a los {days} días anteriores",
+      "none": "Aún sin comparación: los {days} días anteriores empezaron antes de que esto existiera."
+    },
+    "noRate": "—",
+    "noRateHint": "No hubo preguntas en este periodo.",
+    "noAttachHint": "Ninguna estadía abrió la guía en este periodo.",
+    "sections": {
+      "guide": "Guía",
+      "chat": "Preguntas en el chat de la guía",
+      "topics": "Sobre qué preguntaron",
+      "escalations": "Enviadas a ti, por motivo",
+      "unanswered": "Preguntas que el asistente no supo responder",
+      "explore": "Explorar",
+      "requests": "Solicitudes de extras",
+      "properties": "Por propiedad"
+    },
+    "metrics": {
+      "views": "Visitas a la guía",
+      "viewsSplit": "{property} desde el enlace de la propiedad, {stay} desde enlaces de estadía",
+      "staysOpened": "Estadías que abrieron la guía",
+      "questions": "Preguntas de huéspedes",
+      "automatic": "Respondidas automáticamente",
+      "withHost": "Respondidas contigo",
+      "escalated": "Enviadas a ti",
+      "resolution": "Tasa de resolución automática",
+      "resolutionHint": "Respondidas automáticamente ÷ todas las preguntas",
+      "exploreOpens": "Aperturas de Explorar",
+      "clicks": "Clics a socios",
+      "requestsMade": "Solicitudes hechas",
+      "attach": "Tasa de solicitud",
+      "attachHint": "Estadías con una solicitud ÷ estadías que abrieron la guía"
+    },
+    "outcomesLabel": "Preguntas por resultado",
+    "share": "{share} de las preguntas",
+    "noneYet": "Ninguna en este periodo.",
+    "topics": {
+      "arrival": "Llegada y acceso",
+      "wifi": "Wi-Fi",
+      "house_rules": "Reglas de la casa",
+      "appliances": "Electrodomésticos",
+      "amenities": "Comodidades",
+      "parking": "Parqueo",
+      "local_recommendations": "Recomendaciones locales",
+      "emergency": "Emergencias",
+      "checkout": "Salida",
+      "other": "Otros"
+    },
+    "reasons": {
+      "emergency": "Emergencia",
+      "malfunction": "Algo dañado",
+      "complaint": "Queja",
+      "money": "Dinero o reembolsos",
+      "reservation_change": "Cambio de reserva",
+      "legal": "Legal",
+      "not_confident": "El asistente no sabía",
+      "check_failed": "La respuesta no pasó una revisión",
+      "limit": "Límite diario alcanzado",
+      "unavailable": "Asistente no disponible"
+    },
+    "statuses": {
+      "waiting": "En espera",
+      "confirmed": "Confirmadas",
+      "declined": "Rechazadas",
+      "cancelled": "Canceladas por el huésped",
+      "host_cancelled": "Canceladas por el anfitrión",
+      "expired": "Vencidas"
+    },
+    "partners": {
+      "viator": "Viator",
+      "civitatis": "Civitatis"
+    },
+    "clicksNote": "Solo conteos. Las comisiones no se muestran aquí.",
+    "unansweredHint": "Agrega las respuestas a tu guía para que el asistente pueda responder la próxima vez.",
+    "unansweredEmpty": "El asistente respondió todo lo que le preguntaron en este periodo.",
+    "openConversation": "Abrir la conversación",
+    "removedText": "El mensaje ya no está disponible.",
+    "more": "Ver más",
+    "table": {
+      "caption": "Propiedades en este periodo",
+      "name": "Propiedad",
+      "views": "Visitas",
+      "questions": "Preguntas",
+      "automatic": "Automáticas",
+      "rate": "Tasa",
+      "escalated": "Enviadas a ti",
+      "requests": "Solicitudes",
+      "clicks": "Clics",
+      "removed": "Retirada",
+      "showAll": "Ver las {count} propiedades",
+      "sorted": "Ordenado por {column}, {direction}",
+      "ascending": "ascendente",
+      "descending": "descendente"
+    },
+    "byStatus": "Por estado"
   }
 }

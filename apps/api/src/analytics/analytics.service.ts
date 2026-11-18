@@ -246,7 +246,7 @@ export class AnalyticsService {
          AND (t.created_at AT TIME ZONE p.tz)::date BETWEEN p.prev_from AND p.today
        GROUP BY 1, 2, 3, 4, 5`);
     for (const row of traces.rows) {
-      const outcome = questionOutcome(row.decision);
+      const outcome = questionOutcome(row.decision, row.reason);
       if (!outcome) continue;
       const t = of(row.property_id);
       add(t.questions, row.is_current, row.n);

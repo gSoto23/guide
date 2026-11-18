@@ -25,7 +25,7 @@ Index `agent_trace_workspace_created_idx (workspace_id, created_at) WHERE conver
 | Guide views | `guide_open_daily (property_id, day, link_kind, opens)` | sum per kind, local day |
 | Stays that opened the guide | `stay.guide_opened_at` | local day in the period |
 | Guest questions | `agent_trace` with `conversation_id`, decision ≠ `greeting` | local day of `created_at` in the property's zone |
-| Outcome | `agent_trace.decision` | `answered`/`pointer` automatic; `drafted`/`paused` with the host; `held` escalated |
+| Outcome | `agent_trace.decision` | `answered`/`pointer` automatic; `drafted` for review and `paused` with the host; `held` and `drafted` with an escalation reason escalated |
 | Escalation reasons | `agent_trace.reason` for `held` and `drafted` | without `draft_ready`, `taken_over` |
 | Topics | `agent_trace.classification->>'topic'` | without `greeting`; missing → `other` |
 | Unanswered | `agent_trace.reason = 'not_confident'` + `chat_message.body` (guest message) | newest first, 20 per page |

@@ -54,6 +54,9 @@ describe("question outcomes (research R3)", () => {
     expect(questionOutcome("answered")).toBe("automatic");
     expect(questionOutcome("pointer")).toBe("automatic");
     expect(questionOutcome("drafted")).toBe("with_host");
+    expect(questionOutcome("drafted", "draft_ready")).toBe("with_host");
+    expect(questionOutcome("drafted", "not_confident")).toBe("escalated");
+    expect(questionOutcome("drafted", "emergency")).toBe("escalated");
     expect(questionOutcome("paused")).toBe("with_host");
     expect(questionOutcome("held")).toBe("escalated");
     expect(questionOutcome("greeting")).toBeNull();

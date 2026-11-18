@@ -236,6 +236,16 @@ property's catalog. No payment happens in Guidesk yet: a confirmed request says 
 payment (checkout is spec 013). The guide chat may name the host's extras with the Extras link when a
 guest asks; copilot drafts never do.
 
+*As built in spec 010:* members see Analytics for a property (`/properties/{id}/analytics`) or the
+workspace (`/analytics`) over 7, 30, or 90 days by each property's local day, against the previous
+period: guide views by link kind, stays that opened the guide (`stay.guide_opened_at`, set by the
+stay-session exchange), guest questions by outcome from the assistant's traces (copilot runs and tests
+excluded) with the automated resolution rate, topics, escalation reasons, unanswered questions linking to
+their conversations, Explore opens and partner clicks, and add-on requests with the attach rate. The API
+reads the existing records and daily counts on request; there is no analytics store and no guest
+tracking. The founder's pilot metrics (PRD §8) come from `pnpm --filter @guidesk/db report:pilot`, run
+with database access outside the portal, which prints aggregates only.
+
 ### 5.2 Guest writes in the Airbnb chat (Phase 2, through a PMS)
 
 ```mermaid
