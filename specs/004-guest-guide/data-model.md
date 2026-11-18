@@ -141,7 +141,7 @@ New types in `packages/domain/src/security-events.ts`, with metadata allowlists 
 | `guide.stay_link_revoked` | member | `propertyId`, `stayId` |
 | `guide.confirmation_changed` | member | `propertyId`, `required` |
 | `guide.verification_locked` | none | `propertyId`, `stayId`, `lockedMinutes`, `lockouts` |
-| `restricted_value.guest_revealed` | none | `propertyId`, `fieldId`, `kind`, `stayId` |
+| `restricted_value.guest_revealed` | none | `propertyId`, `fieldId`, `kind`, `stayId`, `sessionId` |
 | `restricted_value.exported` | member | `propertyId`, `stayId`, `fields`, `language` |
 
 The reveal history of a property (feature 003) lists `restricted_value.revealed`,

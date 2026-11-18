@@ -139,8 +139,8 @@ of feature 002. Facts measured in this repository on 2026-11-17 are marked **mea
   a working stay link; the field belongs to that property and is referenced by the published
   version (or is the Wi-Fi password); lock state `inside`; verification passed when the property
   requires a code (R8); 30 reveals per session per hour. Then it records the security event
-  `restricted_value.guest_revealed` (metadata `propertyId`, `fieldId`, `kind`, `stayId`; no actor,
-  no network address) and calls feature 003's `RevealService.valueOf`, the only decrypt path.
+  `restricted_value.guest_revealed` (metadata `propertyId`, `fieldId`, `kind`, `stayId`, `sessionId`; no
+  actor, no network address) and calls feature 003's `RevealService.valueOf`, the only decrypt path.
   Responses carry `Cache-Control: no-store` and `Pragma: no-cache`. The browser script puts the value
   in the DOM only after the tap and removes it when the page is hidden for more than 5 minutes.
 - **Rationale:** SEC-06 keeps one decrypt path; reusing it means guest reveals inherit its tests and
