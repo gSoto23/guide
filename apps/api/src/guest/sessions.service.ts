@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { Inject, Injectable } from "@nestjs/common";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import type { GuestSession, StayExchangeResponse } from "@guidesk/contracts";
 import { guide, guideLink, guideSession, property, stay, stayLink, workspace } from "@guidesk/db";
 import { isStayToken, lockState, STAY_LINK_DEVICE_LIMIT, type LockContext } from "@guidesk/domain";
@@ -156,6 +156,11 @@ export class GuestSessions {
       stayLinkId: row.linkId,
       cookieHash: sha256Hex(value),
     });
+    // Feature 010 (research R4): the stay's first guide open, kept after links and sessions go.
+    await db
+      .update(stay)
+      .set({ guideOpenedAt: new Date() })
+      .where(and(eq(stay.id, row.stay.id), isNull(stay.guideOpenedAt)));
     const maxAge = (state.window!.closesAt.getTime() - Date.now()) / 1000;
     return { body: { guideUrl, notice: null }, setCookie: this.cookie(value, maxAge) };
   }

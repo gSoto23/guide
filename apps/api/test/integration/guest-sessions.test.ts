@@ -72,6 +72,25 @@ describe("guest sessions (feature 004 US2)", () => {
     ).toHaveLength(1);
   });
 
+  it("records the stay's first guide open once (feature 010 research R4)", async () => {
+    const stayId = await addStay(ctx, team, published.propertyId, 0);
+    const opened = async () =>
+      (
+        await db.query<{ at: Date | null }>(
+          `SELECT guide_opened_at AS at FROM stay WHERE id = $1`,
+          [stayId],
+        )
+      ).rows[0]!.at;
+    expect(await opened()).toBeNull();
+    const { token } = await copyStayLink(ctx, team, published.propertyId, stayId);
+    await exchange(ctx, token);
+    const first = await opened();
+    expect(first).toBeInstanceOf(Date);
+    // A second device keeps the first time.
+    await exchange(ctx, token);
+    expect((await opened())?.getTime()).toBe(first!.getTime());
+  });
+
   it("answers unknown and malformed tokens like any unavailable link (FR-054)", async () => {
     const unknown = await exchange(ctx, "A".repeat(43));
     const malformed = await exchange(ctx, "short");
