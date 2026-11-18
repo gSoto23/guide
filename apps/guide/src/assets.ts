@@ -9,6 +9,9 @@ import { fileURLToPath } from "node:url";
 export interface Assets {
   script: string;
   style: string;
+  /** Feature 005: the chat's script and styles, loaded only when the guest opens it (FR-002). */
+  chatScript: string;
+  chatStyle: string;
   publicDir: string;
 }
 
@@ -24,6 +27,8 @@ export function loadAssets(dir: string = publicDir()): Assets {
   return {
     script: `/${manifest["guide.js"] ?? "assets/guide.js"}`,
     style: `/${manifest["guide.css"] ?? "assets/guide.css"}`,
+    chatScript: `/${manifest["chat.js"] ?? "assets/chat.js"}`,
+    chatStyle: `/${manifest["chat.css"] ?? "assets/chat.css"}`,
     publicDir: dir,
   };
 }

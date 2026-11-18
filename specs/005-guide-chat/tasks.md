@@ -27,8 +27,8 @@ test data only.
 ## Phase 1: Setup
 
 - [ ] T001 Create `evals/agent` (package `@guidesk/evals-agent`, scripts `build`, `typecheck`, `lint`, `eval`) on the pattern of `evals/guide`, with `src/run.ts`, `src/cases.ts`, `src/score.ts`, and two fictional guides in `cases/guides/`
-- [ ] T002 [P] Add the `chat` namespace to `packages/i18n/messages/guest.{es,en}.json` (intro, suggestions header, typing, holding texts per reason, pause, pointer, greeting, emergency card, errors) and the `conversations` and `assistant` namespaces to the portal catalogs
-- [ ] T003 [P] Extend `e2e/helpers/guest.ts` with `setAutonomy`, `openChat`, and `sendChatMessage`
+- [X] T002 [P] Add the `chat` namespace to `packages/i18n/messages/guest.{es,en}.json` (intro, suggestions header, typing, holding texts per reason, pause, pointer, greeting, emergency card, errors) and the `conversations` and `assistant` namespaces to the portal catalogs
+- [X] T003 [P] Extend `e2e/helpers/guest.ts` with `setAutonomy`, `openChat`, and `sendChatMessage`
 
 ## Phase 2: Foundational
 
@@ -47,36 +47,36 @@ test data only.
 
 - [X] T014 [P] [US1] API integration test `apps/api/test/integration/guest-chat.test.ts`: intro, first message sets the cookie, idempotent `clientId`, messages after a cursor, 2,000-character limit, unavailable guide, another property's conversation not found
 - [X] T015 [P] [US1] Worker integration test `apps/worker/test/integration/chat-reply.test.ts` (answer branches): auto answer with citation, pointer for code questions, greeting, not confident → holding reply and draft, trace written, model input without locked values
-- [ ] T016 [P] [US1] Guest app test `apps/guide/test/chat.test.ts`: Ask entry and chat texts in the page data
-- [ ] T017 [P] [US1] End-to-end `e2e/specs/chat-us1.spec.ts`
+- [X] T016 [P] [US1] Guest app test `apps/guide/test/chat.test.ts`: Ask entry and chat texts in the page data
+- [X] T017 [P] [US1] End-to-end `e2e/specs/chat-us1.spec.ts`
 - [X] T018 [US1] Implement the guest chat routes in `apps/api/src/chat/` (GET and POST, enqueue `chat.reply`)
 - [X] T019 [US1] Implement `apps/worker/src/jobs/chat-reply.ts` (load the published snapshot, classify, decide, answer, checks, write reply or draft, trace, usage)
-- [ ] T020 [US1] Implement the chat UI `apps/guide/src/client/chat.ts` and styles, the Ask entry in the layout, and the asset build (separate bundle)
+- [X] T020 [US1] Implement the chat UI `apps/guide/src/client/chat.ts` and styles, the Ask entry in the layout, and the asset build (separate bundle)
 - [ ] T021 [US1] Eval cases: answerable, language, pointer, greeting, out of scope
 
 ## Phase 4: User Story 2 - Hand risky messages to the host (P1)
 
 - [X] T022 [P] [US2] Worker tests: every escalation category, emergency card payload first, very negative sentiment, injection attempts, model unavailable, refusal
 - [X] T023 [P] [US2] Notification test: one `chat.needs_host` per conversation per 30 minutes to owners, admins, and agents
-- [ ] T024 [P] [US2] End-to-end `e2e/specs/chat-us2.spec.ts`
+- [X] T024 [P] [US2] End-to-end `e2e/specs/chat-us2.spec.ts`
 - [X] T025 [US2] Implement the escalation and emergency paths in the job, with holding texts and quoted safety steps
 - [X] T026 [US2] Email `packages/emails/src/chat/needs-host.tsx` and the notification in the job
 - [ ] T027 [US2] Eval cases: escalation per category and injection (guest message and guide text)
 
 ## Phase 5: User Story 3 - Review drafts and reply (P1)
 
-- [ ] T028 [P] [US3] API integration test `apps/api/test/integration/conversations.test.ts`: list order, detail with draft and member traces, send unchanged, edit and send, reply, warnings and override, first send wins, roles, guest sees replies
-- [ ] T029 [P] [US3] End-to-end `e2e/specs/chat-us3.spec.ts`
-- [ ] T030 [US3] Implement `apps/api/src/conversations/` (list, detail, send draft, reply)
-- [ ] T031 [US3] Portal: `properties/[propertyId]/conversations` list and `[conversationId]` page (H-21 subset) with "Why this reply"; link from the property page; bundle budget entries
+- [X] T028 [P] [US3] API integration test `apps/api/test/integration/conversations.test.ts`: list order, detail with draft and member traces, send unchanged, edit and send, reply, warnings and override, first send wins, roles, guest sees replies
+- [X] T029 [P] [US3] End-to-end `e2e/specs/chat-us3.spec.ts`
+- [X] T030 [US3] Implement `apps/api/src/conversations/` (list, detail, send draft, reply)
+- [X] T031 [US3] Portal: `properties/[propertyId]/conversations` list and `[conversationId]` page (H-21 subset) with "Why this reply"; link from the property page; bundle budget entries
 - [X] T032 [US3] Draft mode and superseded drafts in the job
 
 ## Phase 6: User Story 4 - Assistant settings (P2)
 
-- [ ] T033 [P] [US4] Integration test `apps/api/test/integration/assistant-settings.test.ts`: default, override, clear, roles, events
-- [ ] T034 [P] [US4] End-to-end `e2e/specs/chat-us4.spec.ts`
-- [ ] T035 [US4] Implement the settings routes in `apps/api/src/conversations/`
-- [ ] T036 [US4] Portal: assistant card on the property page and in workspace settings
+- [X] T033 [P] [US4] Integration test `apps/api/test/integration/assistant-settings.test.ts`: default, override, clear, roles, events
+- [X] T034 [P] [US4] End-to-end `e2e/specs/chat-us4.spec.ts`
+- [X] T035 [US4] Implement the settings routes in `apps/api/src/conversations/`
+- [X] T036 [US4] Portal: assistant card on the property page and in workspace settings
 
 ## Phase 7: User Story 5 - Limits and budgets (P2)
 

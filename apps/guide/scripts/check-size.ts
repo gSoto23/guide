@@ -1,6 +1,7 @@
 /**
  * Size check for the guest app (feature 004 SC-001, plan Performance Budget): the browser script
- * at most 15 KB gzip, and script plus styles plus a rendered home page at most 150 KB.
+ * at most 15 KB gzip, and script plus styles plus a rendered home page at most 150 KB; the chat's
+ * script and styles at most 30 KB gzip together (feature 005 plan).
  */
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -17,7 +18,9 @@ const gz = (path: string) => gzipSync(readFileSync(join(out, path))).length / 10
 
 const script = gz(manifest["guide.js"]!);
 const style = gz(manifest["guide.css"]!);
+const chat = gz(manifest["chat.js"]!) + gz(manifest["chat.css"]!);
 const SCRIPT_BUDGET_KB = 15;
+const CHAT_BUDGET_KB = 30;
 const PAGE_BUDGET_KB = 150;
 
 const { createHandler } = await import(join(root, "dist", "handler.js"));
@@ -39,9 +42,10 @@ console.table([
   { file: "guide.css", gzipKb: style.toFixed(1), budgetKb: "-" },
   { file: "home.html", gzipKb: home.toFixed(1), budgetKb: "-" },
   { file: "total", gzipKb: total.toFixed(1), budgetKb: PAGE_BUDGET_KB },
+  { file: "chat.js + chat.css", gzipKb: chat.toFixed(1), budgetKb: CHAT_BUDGET_KB },
 ]);
 if (response.status !== 200) throw new Error(`Fixture home answered ${response.status}`);
-if (script > SCRIPT_BUDGET_KB || total > PAGE_BUDGET_KB) {
+if (script > SCRIPT_BUDGET_KB || total > PAGE_BUDGET_KB || chat > CHAT_BUDGET_KB) {
   console.error("Guest guide over its size budget");
   process.exit(1);
 }

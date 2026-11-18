@@ -35,7 +35,9 @@
     "/es/shared-content",
     "/es/shared-content/00000000-0000-4000-8000-000000000000",
     "/es/properties/00000000-0000-4000-8000-000000000000/share",
-    "/es/properties/00000000-0000-4000-8000-000000000000/share/poster"
+    "/es/properties/00000000-0000-4000-8000-000000000000/share/poster",
+    "/es/properties/00000000-0000-4000-8000-000000000000/conversations",
+    "/es/properties/00000000-0000-4000-8000-000000000000/conversations/00000000-0000-4000-8000-000000000000"
   ],
   "editorBudgetKb": 130
 }

@@ -14,3 +14,14 @@ export function defaultWorkspaceName(
   const name = locale === "en" ? `${trimmed}'s workspace` : `Espacio de ${trimmed}`;
   return name.length <= WORKSPACE_NAME_MAX ? name : name.slice(0, WORKSPACE_NAME_MAX).trimEnd();
 }
+
+const DEFAULT_NAME = /^(Mi espacio de trabajo|My workspace|Espacio de .+|.+'s workspace)$/;
+
+/**
+ * The host's name as guests see it (feature 005 FR-003): the workspace's name once the host has
+ * chosen one, or null while it is still a default like "Espacio de Ana", which reads oddly to guests.
+ */
+export function hostDisplayName(workspaceName: string): string | null {
+  const name = workspaceName.trim();
+  return name && !DEFAULT_NAME.test(name) ? name : null;
+}

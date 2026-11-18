@@ -26,6 +26,7 @@ import {
   emergencyText,
   greetingReply,
   holdingReply,
+  hostDisplayName,
   JOB_QUEUES,
   pointerReply,
   pointerSectionKind,
@@ -212,7 +213,7 @@ async function load(db: Database, job: ChatReplyJob): Promise<Loaded | null> {
     language: row.language,
     stayId: row.stayId,
     propertyName: row.propertyName,
-    hostName: row.hostName,
+    hostName: hostDisplayName(row.hostName) ?? "the host",
     autonomy: row.propertyAutonomy ?? row.workspaceAutonomy,
     available:
       row.propertyStatus === "active" &&

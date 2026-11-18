@@ -163,3 +163,38 @@ export async function addStay(
     }),
   );
 }
+
+// Feature 005: the in-guide chat ---------------------------------------------------------------------
+
+/** Sets the workspace's assistant autonomy through the API (owners and admins). */
+export async function setAutonomy(page: Page, guide: PublishedGuide, autonomy: "draft" | "auto") {
+  await json(
+    await page.request.put(`/api/v1/workspaces/${guide.workspaceId}/assistant-settings`, {
+      data: { autonomy },
+    }),
+  );
+}
+
+/** The guide's property link, from the Share overview. */
+export async function propertyLink(page: Page, guide: PublishedGuide): Promise<string> {
+  const share = await json<{ propertyLink: { url: string } | null }>(
+    await page.request.get(`${guide.base}/share`),
+  );
+  expect(share.propertyLink?.url).toBeTruthy();
+  return share.propertyLink!.url;
+}
+
+/** Opens the chat from a guide page (the Ask button loads the chat on demand). */
+export async function openChat(guest: Page): Promise<void> {
+  await guest.getByRole("button", { name: /^(Preguntar|Ask)$/ }).click();
+  await expect(guest.getByRole("dialog")).toBeVisible();
+  await expect(guest.locator(".chat-intro")).not.toBeEmpty();
+}
+
+/** Sends a chat message and waits until it shows as the guest's. */
+export async function sendChatMessage(guest: Page, text: string): Promise<void> {
+  const dialog = guest.getByRole("dialog");
+  await dialog.getByLabel(/^(Tu mensaje|Your message)$/).fill(text);
+  await dialog.getByRole("button", { name: /^(Enviar|Send)$/ }).click();
+  await expect(dialog.locator(".chat-msg-guest").filter({ hasText: text }).last()).toBeVisible();
+}

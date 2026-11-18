@@ -7,7 +7,13 @@ import { translator } from "../src/i18n.js";
 import { fixtureHandler, FIXTURE_PUBLIC_ID, get } from "./helpers.js";
 
 /** What guests see (feature 004 T022): order, facts, placeholders, disclosures, languages. */
-const assets = { script: "/a.js", style: "/a.css", publicDir: "/tmp" };
+const assets = {
+  script: "/a.js",
+  style: "/a.css",
+  chatScript: "/c.js",
+  chatStyle: "/c.css",
+  publicDir: "/tmp",
+};
 
 function render(guide: GuestGuide, sectionId?: string): string {
   const input = { t: translator(guide.language), locale: guide.language, assets, guide };

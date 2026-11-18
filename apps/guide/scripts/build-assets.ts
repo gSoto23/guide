@@ -51,6 +51,20 @@ const minified = (
 manifest["guide.css"] = `assets/guide.${hash(minified)}.css`;
 writeFileSync(join(out, manifest["guide.css"]), minified);
 
+// Feature 005: the chat's script and styles, loaded on the first tap of Ask (FR-002).
+const chatScript = await bundle("src/client/chat.ts");
+manifest["chat.js"] = `assets/chat.${hash(chatScript)}.js`;
+writeFileSync(join(out, manifest["chat.js"]), chatScript);
+const chatCss = (
+  await build({
+    stdin: { contents: readFileSync(join(root, "styles", "chat.css"), "utf8"), loader: "css" },
+    minify: true,
+    write: false,
+  })
+).outputFiles[0]!.text;
+manifest["chat.css"] = `assets/chat.${hash(chatCss)}.css`;
+writeFileSync(join(out, manifest["chat.css"]), chatCss);
+
 // The service worker keeps a stable path (/sw.js); browsers check it for updates on every visit.
 writeFileSync(join(out, "sw.js"), await bundle("src/client/sw.ts"));
 

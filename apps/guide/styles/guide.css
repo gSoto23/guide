@@ -461,3 +461,36 @@ a {
     scroll-behavior: auto !important;
   }
 }
+
+/* Feature 005: the Ask entry, shown by the page script; the chat brings its own styles. */
+.ask {
+  position: fixed;
+  right: 1rem;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 10;
+  min-height: 3rem;
+  padding: 0 1.25rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgb(43 33 28 / 25%);
+  cursor: pointer;
+}
+
+.ask:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ask {
+    color: #17120f;
+  }
+}
+
+body:has(.ask:not([hidden])) .main {
+  padding-bottom: max(5.5rem, env(safe-area-inset-bottom));
+}

@@ -48,7 +48,8 @@ export interface GuestChatMessage {
 export interface GuestChat {
   intro: {
     propertyName: string;
-    hostName: string;
+    /** The host's chosen name, or null while the workspace still has a default name. */
+    hostName: string | null;
     emergencyNumber: string | null;
     /** Message keys of suggested questions (guest catalog `chat.suggestions.*`). */
     suggestions: string[];
@@ -107,6 +108,9 @@ export interface MemberTrace {
   autonomy: "draft" | "auto";
   sections: ChatSectionRef[];
   checks: { check: string; passed: boolean }[];
+  /** The published version the assistant used (edge cases: a draft keeps its version). */
+  guideVersion: number | null;
+  /** The display name of the member who sent the draft. */
   sentBy: string | null;
   edited: boolean;
   createdAt: string;
@@ -124,18 +128,23 @@ export interface ConversationDetail extends ConversationSummary {
     createdAt: string;
   } | null;
   traces: MemberTrace[];
+  /** Whether the caller may send drafts and replies (`conversations.handle`). */
+  canReply: boolean;
 }
 
 export const sendDraftSchema = z
   .object({
-    text: z.string().trim().min(1).max(2000).optional(),
+    text: z.string().trim().min(1).max(CHAT_MESSAGE_MAX).optional(),
     acknowledgeWarnings: z.boolean().optional(),
   })
   .strict();
 export type SendDraftBody = z.infer<typeof sendDraftSchema>;
 
 export const chatReplySchema = z
-  .object({ text: z.string().trim().min(1).max(2000), acknowledgeWarnings: z.boolean().optional() })
+  .object({
+    text: z.string().trim().min(1).max(CHAT_MESSAGE_MAX),
+    acknowledgeWarnings: z.boolean().optional(),
+  })
   .strict();
 export type ChatReplyBody = z.infer<typeof chatReplySchema>;
 

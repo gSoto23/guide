@@ -18,6 +18,7 @@
     "@guidesk/db": "workspace:*",
     "@guidesk/domain": "workspace:*",
     "@guidesk/emails": "workspace:*",
+    "@guidesk/i18n": "workspace:*",
     "@guidesk/integrations": "workspace:*",
     "@guidesk/observability": "workspace:*",
     "@guidesk/sandbox": "workspace:*",

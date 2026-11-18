@@ -70,7 +70,8 @@ describe("guest chat (feature 005 US1)", () => {
     expect(response.headers["x-robots-tag"]).toBe("noindex, nofollow");
     const body = response.json() as GuestChat;
     expect(body.intro.propertyName).toBe("Casa Colibrí");
-    expect(body.intro.hostName).toBeTruthy();
+    // The workspace still has its default name, so the intro says "your host" (FR-003).
+    expect(body.intro.hostName).toBeNull();
     expect(body.intro.emergencyNumber).toBe("911");
     expect(body.intro.suggestions).toEqual([
       "arrival",

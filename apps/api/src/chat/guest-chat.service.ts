@@ -11,6 +11,7 @@ import {
 import { chatMessage, conversation, guide, guideVersion, user, workspace } from "@guidesk/db";
 import {
   emergencyNumberFor,
+  hostDisplayName,
   JOB_QUEUES,
   lockState,
   suggestionKeys,
@@ -95,7 +96,9 @@ export class GuestChatService {
       // A member without a display name signs as the host (the workspace's name).
       messages: rows.map((row) =>
         toGuestMessage(
-          row.author === "host" && !row.authorName ? { ...row, authorName: intro.hostName } : row,
+          row.author === "host" && !row.authorName
+            ? { ...row, authorName: intro.hostName ?? intro.propertyName }
+            : row,
         ),
       ),
     };
@@ -216,7 +219,7 @@ export class GuestChatService {
       .limit(1);
     return {
       propertyName: target.propertyName,
-      hostName: row?.hostName ?? target.propertyName,
+      hostName: row ? hostDisplayName(row.hostName) : null,
       emergencyNumber: emergencyNumberFor(target.country),
       suggestions: row ? suggestionKeys(row.snapshot as GuideSnapshot) : [],
     };

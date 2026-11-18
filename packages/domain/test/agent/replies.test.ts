@@ -33,3 +33,13 @@ describe("assistant fixed replies (FR-019)", () => {
     expect(greetingReply("en", "Casa Colibrí")).toContain("Casa Colibrí");
   });
 });
+
+describe("host display name (FR-003)", () => {
+  it("names the host only after the workspace has a chosen name", async () => {
+    const { hostDisplayName } = await import("../../src/tenancy.js");
+    expect(hostDisplayName("Hospedajes Ana")).toBe("Hospedajes Ana");
+    expect(hostDisplayName("Mi espacio de trabajo")).toBeNull();
+    expect(hostDisplayName("Espacio de Ana")).toBeNull();
+    expect(hostDisplayName("Ana's workspace")).toBeNull();
+  });
+});

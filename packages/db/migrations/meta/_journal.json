@@ -176,6 +176,13 @@
       "when": 1794979307218,
       "tag": "0024_guide_chat_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1794980620522,
+      "tag": "0025_guide_chat_member_writes",
+      "breakpoints": true
     }
   ]
 }

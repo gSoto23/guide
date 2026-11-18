@@ -153,7 +153,7 @@ describe("feature 005 RLS (T008)", () => {
     expect(visible.rows).toEqual([{ decision: "drafted", reason: "draft_ready" }]);
   });
 
-  it("lets agents write host messages and draft actions, never guest or assistant messages", async () => {
+  it("lets agents write host messages, sent drafts as themselves, and draft actions; never guest messages", async () => {
     await withRlsContext(handle.db, { userId: aldo, workspaceId: wsA }, async (tx) => {
       await tx.insert(chatMessage).values({
         workspaceId: wsA,
@@ -174,6 +174,30 @@ describe("feature 005 RLS (T008)", () => {
           conversationId: ids.A!.conversation,
           seq: 3,
           author: "assistant",
+          body: "Falso",
+          authorUserId: ana,
+        }),
+      ),
+      /row-level security/,
+    );
+    // A sent draft appears as the assistant, recorded with the member who sent it (FR-027).
+    await withRlsContext(handle.db, { userId: aldo, workspaceId: wsA }, (tx) =>
+      tx.insert(chatMessage).values({
+        workspaceId: wsA,
+        conversationId: ids.A!.conversation,
+        seq: 4,
+        author: "assistant",
+        body: "A las 11:00.",
+        authorUserId: aldo,
+      }),
+    );
+    await expectDbError(
+      withRlsContext(handle.db, { userId: aldo, workspaceId: wsA }, (tx) =>
+        tx.insert(chatMessage).values({
+          workspaceId: wsA,
+          conversationId: ids.A!.conversation,
+          seq: 5,
+          author: "guest",
           body: "Falso",
         }),
       ),

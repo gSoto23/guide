@@ -354,6 +354,31 @@ async function exchange(container: HTMLElement): Promise<void> {
   container.append(el("p", "lead", text("exchange.failed")), retry);
 }
 
+// The chat (feature 005 research R10): its script and styles load on the first tap ---------------------
+
+function wireAsk(): void {
+  const ask = document.getElementById("ask") as HTMLButtonElement | null;
+  if (!ask || !publicId) return;
+  ask.hidden = false;
+  let loaded = false;
+  ask.addEventListener("click", () => {
+    if (loaded) {
+      document.dispatchEvent(new Event("guidesk:ask"));
+      return;
+    }
+    loaded = true;
+    const style = el("link");
+    style.rel = "stylesheet";
+    style.href = ask.dataset.chatStyle ?? "";
+    document.head.append(style);
+    const script = el("script");
+    script.src = ask.dataset.chatScript ?? "";
+    script.defer = true;
+    script.addEventListener("error", () => (loaded = false));
+    document.head.append(script);
+  });
+}
+
 // Start -----------------------------------------------------------------------------------------------
 
 function start(): void {
@@ -371,6 +396,7 @@ function start(): void {
   });
   showNotice();
   offlineBanner();
+  wireAsk();
   void loadSession().then(countOpen);
   let hiddenAt = 0;
   document.addEventListener("visibilitychange", () => {
