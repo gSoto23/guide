@@ -1,6 +1,12 @@
 import "./instrument.js";
 import { PgBoss } from "pg-boss";
-import { SesEmailAdapter, SmtpEmailAdapter, type EmailAdapter } from "@guidesk/integrations";
+import {
+  createExperiencePartner,
+  loadCuratedCatalog,
+  SesEmailAdapter,
+  SmtpEmailAdapter,
+  type EmailAdapter,
+} from "@guidesk/integrations";
 import { describeError, shutdownObservability } from "@guidesk/observability";
 import {
   CHAT_REPLY_POLL_SECONDS,
@@ -60,6 +66,12 @@ import { createAssistantTestHandler } from "./jobs/assistant-test.js";
 import { createCopilotDraftHandler } from "./jobs/copilot-draft.js";
 import { createNotificationPushHandler } from "./jobs/notification-push.js";
 import { createQuietDigestHandler, QUIET_DIGEST_CRON } from "./jobs/quiet-digest.js";
+import {
+  createExploreReferencesHandler,
+  createExploreRefreshHandler,
+  EXPLORE_REFERENCES_CRON,
+  EXPLORE_REFRESH_CRON,
+} from "./jobs/explore-refresh.js";
 import { createChatReplyHandler } from "./jobs/chat-reply.js";
 import { createWorkerServices } from "./services.js";
 
@@ -242,6 +254,18 @@ async function main(): Promise<void> {
       portalUrl: services.portalUrl,
     }),
   );
+  // Feature 009: partner experiences (research R2, R4), refreshed in the background only.
+  const exploreDeps = {
+    db: services.db.db,
+    partner: createExperiencePartner(config.integrations.experiences),
+    curated: loadCuratedCatalog(config.integrations.experiences.catalogFile ?? undefined),
+  };
+  await createQueue(JOB_QUEUES.exploreRefresh);
+  await boss.work(JOB_QUEUES.exploreRefresh, createExploreRefreshHandler(exploreDeps));
+  await boss.schedule(JOB_QUEUES.exploreRefresh, EXPLORE_REFRESH_CRON, null, { tz: "UTC" });
+  await createQueue(JOB_QUEUES.exploreReferences);
+  await boss.work(JOB_QUEUES.exploreReferences, createExploreReferencesHandler(exploreDeps));
+  await boss.schedule(JOB_QUEUES.exploreReferences, EXPLORE_REFERENCES_CRON, null, { tz: "UTC" });
   // Shared-block fan-out (research R14): one job per publish or delete.
   await createQueue(JOB_QUEUES.sharedBlockPublish);
   await boss.work(

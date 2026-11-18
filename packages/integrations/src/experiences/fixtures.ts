@@ -168,6 +168,7 @@ export interface ExperienceSettings {
   viatorApiKey: string | null;
   viatorApiUrl: string;
   civitatisAffiliateId: string | null;
+  catalogFile?: string | null;
 }
 
 /**

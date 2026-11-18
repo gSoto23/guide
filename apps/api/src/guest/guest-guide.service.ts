@@ -13,6 +13,7 @@ import { emergencyNumberFor, mainLanguage, type GuideLanguage } from "@guidesk/d
 import type { MediaStoragePort } from "@guidesk/integrations";
 import { PublishService } from "../guides/publish.service.js";
 import { MEDIA_STORAGE } from "../uploads/media.provider.js";
+import { ExploreSelection } from "../explore/explore-selection.js";
 import { GuestContext, unavailable, type GuestTarget } from "./guest-context.js";
 
 /** Image and video variants a guest page may request (research R11). */
@@ -36,6 +37,7 @@ export class GuestGuideService {
     private readonly context: GuestContext,
     private readonly publish: PublishService,
     @Inject(MEDIA_STORAGE) private readonly media: MediaStoragePort,
+    private readonly explore: ExploreSelection,
   ) {}
 
   async guide(publicId: string, lang: GuideLanguage | undefined): Promise<GuestGuide> {
@@ -130,6 +132,31 @@ export class GuestGuideService {
       .filter(Boolean)
       .join(", ");
     const languages = preview.languages as GuideLanguage[];
+    const sections = preview.sections
+      .map((section) => ({
+        id: section.id,
+        kind: section.kind,
+        title: section.title,
+        items: section.items
+          .map((item) => this.item(target, preview.language as GuideLanguage, item))
+          .filter((item): item is GuestItem => item !== null),
+      }))
+      .filter((section) => section.items.length > 0);
+    // Feature 009: the Explore tab shows with host tips or selected experiences (FR-001).
+    const tips = sections.some((section) => section.items.some((item) => item.recommendation));
+    const explore = tips
+      ? { visible: true }
+      : {
+          visible:
+            (
+              await this.explore.forProperty(
+                db,
+                target.workspaceId,
+                target.propertyId,
+                preview.language as GuideLanguage,
+              )
+            ).selected.length > 0,
+        };
     return {
       publicId: target.publicId,
       language: preview.language as GuideLanguage,
@@ -146,21 +173,13 @@ export class GuestGuideService {
         address: address || null,
       },
       publishedAt: published?.publishedAt?.toISOString() ?? null,
-      sections: preview.sections
-        .map((section) => ({
-          id: section.id,
-          kind: section.kind,
-          title: section.title,
-          items: section.items
-            .map((item) => this.item(target, preview.language as GuideLanguage, item))
-            .filter((item): item is GuestItem => item !== null),
-        }))
-        .filter((section) => section.items.length > 0),
+      sections,
       lockedFields,
       wifi: {
         fieldId: publicWifi?.id ?? null,
         password: publicWifi?.publicValue ?? null,
       },
+      explore,
     };
   }
 

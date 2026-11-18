@@ -24,6 +24,7 @@ const candidate = (
 ): ExperienceCandidate => ({
   ref,
   partner: ref.startsWith("civitatis") ? "civitatis" : "viator",
+  curated: ref.startsWith("civitatis"),
   category,
   rating,
   reviewCount,
@@ -181,7 +182,7 @@ describe("selection (FR-018, research R7)", () => {
     expect(selectExperiences(items, { ...open, experiencesEnabled: false })).toEqual([]);
   });
 
-  it("puts curated entries after well-reviewed ones and before barely reviewed ones, stably", () => {
+  it("puts curated entries first, then well-reviewed ones, and barely reviewed ones last, stably", () => {
     const items = [
       candidate("civitatis-x", "tours", null, null),
       candidate("viator-few", "tours", 5, 2),
@@ -189,7 +190,7 @@ describe("selection (FR-018, research R7)", () => {
       candidate("viator-good", "tours", 4.2, 500),
     ];
     const once = selectExperiences(items, open).map((item) => item.ref);
-    expect(once).toEqual(["viator-good", "civitatis-x", "viator-few"]);
+    expect(once).toEqual(["civitatis-x", "viator-good", "viator-few"]);
     expect(selectExperiences([...items].reverse(), open).map((item) => item.ref)).toEqual(once);
   });
 

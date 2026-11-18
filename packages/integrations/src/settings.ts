@@ -47,6 +47,8 @@ export interface IntegrationSettings {
     viatorApiKey: string | null;
     viatorApiUrl: string;
     civitatisAffiliateId: string | null;
+    /** The curated list's path; the repository file when null (research R3). */
+    catalogFile: string | null;
   };
   flags: {
     pmsBeds24: boolean;
@@ -106,6 +108,7 @@ const schema = z.object({
   VIATOR_API_KEY: optionalText.transform((value) => (value === "unset" ? undefined : value)),
   VIATOR_API_URL: z.url().default("https://api.viator.com/partner"),
   CIVITATIS_AFFILIATE_ID: optionalText,
+  EXPLORE_CATALOG_FILE: optionalText,
 });
 
 type Parsed = z.infer<typeof schema>;
@@ -249,6 +252,7 @@ export function loadIntegrationSettings(
       viatorApiKey: parsed.VIATOR_API_KEY ?? null,
       viatorApiUrl: parsed.VIATOR_API_URL,
       civitatisAffiliateId: parsed.CIVITATIS_AFFILIATE_ID ?? null,
+      catalogFile: parsed.EXPLORE_CATALOG_FILE ?? null,
     },
     flags: {
       pmsBeds24: parsed.PMS_BEDS24,

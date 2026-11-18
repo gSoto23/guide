@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { sql } from "drizzle-orm";
-import { guideOpenDaily } from "@guidesk/db";
+import { exploreOpenDaily, guideOpenDaily } from "@guidesk/db";
 import { todayIn } from "@guidesk/domain";
 import { RateLimitService } from "../common/rate-limit.service.js";
 import { GuestContext } from "./guest-context.js";
@@ -9,7 +9,7 @@ import { GuestContext } from "./guest-context.js";
 export const OPENS_PER_HOUR = 60;
 
 /** Link previews, crawlers, and monitoring identify themselves; they are never counted (FR-050). */
-const AUTOMATED =
+export const AUTOMATED =
   /bot|crawl|spider|slurp|preview|facebookexternalhit|embedly|whatsapp|telegram|slack|discord|skype|curl|wget|python-requests|lighthouse|pingdom|uptime/i;
 
 /**
@@ -26,7 +26,7 @@ export class GuestOpens {
 
   async record(
     publicId: string,
-    kind: "property" | "stay",
+    kind: "property" | "stay" | "explore",
     userAgent: string | undefined,
     ipKey: string,
   ): Promise<void> {
@@ -34,6 +34,22 @@ export class GuestOpens {
     const target = await this.context.byPublicId(publicId);
     const limit = await this.rateLimit.consume(`guest-opens:ip:${ipKey}`, OPENS_PER_HOUR, 3600);
     if (!limit.allowed) return;
+    if (kind === "explore") {
+      // Feature 009 FR-011: Explore opens per property and day, counts only.
+      await this.context.db
+        .insert(exploreOpenDaily)
+        .values({
+          workspaceId: target.workspaceId,
+          propertyId: target.propertyId,
+          day: todayIn(target.timeZone),
+          opens: 1,
+        })
+        .onConflictDoUpdate({
+          target: [exploreOpenDaily.propertyId, exploreOpenDaily.day],
+          set: { opens: sql`${exploreOpenDaily.opens} + 1` },
+        });
+      return;
+    }
     await this.context.db
       .insert(guideOpenDaily)
       .values({

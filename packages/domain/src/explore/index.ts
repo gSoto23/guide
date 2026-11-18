@@ -145,6 +145,8 @@ export function effectiveExploreSettings(
 export interface ExperienceCandidate {
   ref: string;
   partner: ExperiencePartner;
+  /** True for entries from Guidesk's curated list (research R3). */
+  curated?: boolean;
   category: ExperienceCategory;
   rating: number | null;
   reviewCount: number | null;
@@ -155,9 +157,13 @@ function score(candidate: ExperienceCandidate): number {
   return candidate.rating * Math.log10((candidate.reviewCount ?? 0) + 10);
 }
 
-/** Curated entries have no rating; they follow rated experiences with at least 10 reviews. */
+/**
+ * Guidesk's curated entries are hand-picked for the destination, so they come first; partner
+ * products follow by rating and reviews, with barely reviewed ones (under 10) last (research R7).
+ */
 function rank(candidate: ExperienceCandidate): number {
-  if (candidate.rating === null) return 0.5;
+  if (candidate.curated) return 1000;
+  if (candidate.rating === null) return -1;
   if ((candidate.reviewCount ?? 0) < 10) return Math.min(score(candidate), 0.4);
   return score(candidate);
 }

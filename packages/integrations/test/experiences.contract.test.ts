@@ -227,6 +227,7 @@ describe("fixture mode and settings (research R12)", () => {
       viatorApiKey: null,
       viatorApiUrl: "https://api.viator.com/partner",
       civitatisAffiliateId: null,
+      catalogFile: null,
     });
     expect(() =>
       loadIntegrationSettings({ ...base, CIVITATIS_AFFILIATE_ID: "abc" }, { production: false }),

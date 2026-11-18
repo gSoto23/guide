@@ -89,9 +89,10 @@ Decisions for spec 009, building on specs 002 to 007.
 
 ## R7. Selection
 
-- **Decision:** pure domain function: drop hidden categories and hidden experiences, then rank by
-  `rating × log10(reviews + 10)` (curated entries without ratings rank after rated ones with at least 10
-  reviews), take at most 4 per category, at most 12 in total, then group by category in a fixed order.
+- **Decision:** pure domain function: drop hidden categories and hidden experiences, then rank Guidesk's
+  curated entries first (hand-picked for the destination), then partner products by
+  `rating × log10(reviews + 10)`, with products under 10 reviews or without a rating last; take at most
+  4 per category, at most 12 in total, then group by category in a fixed order.
   Ties break by partner order (Viator, Civitatis) and product ID, so the list is stable.
 - **Rationale:** FR-018; deterministic and testable.
 

@@ -1,0 +1,19 @@
+{
+  "$comment": "Synthetic curated entries for tests only (feature 009). The URLs are invented.",
+  "destinations": {
+    "cr:samara": {
+      "civitatis": [
+        {
+          "id": "samara-test-kayak",
+          "url": "https://www.civitatis.com/es/samara/kayak-de-prueba/",
+          "category": "water",
+          "title": { "es": "Kayak de prueba", "en": "Test kayak" },
+          "description": { "es": "Entrada ficticia para pruebas.", "en": "A fictional entry for tests." },
+          "durationMinutes": 120,
+          "priceFrom": 45,
+          "currency": "USD"
+        }
+      ]
+    }
+  }
+}
