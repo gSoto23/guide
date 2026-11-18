@@ -50,3 +50,12 @@ export function initObservability(serviceName: string): void {
 export async function shutdownObservability(): Promise<void> {
   await Promise.allSettled([sdk?.shutdown(), Sentry.close(2000)]);
 }
+
+/**
+ * An operational alert (feature 005 FR-032): an error event in Sentry when it is configured, and a
+ * line on stderr for the log alarms. Tags are short codes and numbers only, never personal data.
+ */
+export function reportAlert(name: string, tags: Record<string, string | number>): void {
+  console.error(`[alert] ${name} ${JSON.stringify(tags)}`);
+  Sentry.captureMessage(name, { level: "error", tags });
+}

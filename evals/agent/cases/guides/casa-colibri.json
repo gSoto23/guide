@@ -1,0 +1,81 @@
+{
+  "id": "casa-colibri",
+  "propertyName": "Casa Colibrí",
+  "hostName": "Hospedajes Ana",
+  "language": "es",
+  "country": "CR",
+  "facts": {
+    "checkInTime": "15:00",
+    "checkoutTime": "11:00",
+    "maxGuests": 4,
+    "address": "Calle Ficticia 123, Sámara"
+  },
+  "locked": [
+    { "id": "f-lockbox", "label": "Caja de llaves", "secret": "846251" },
+    { "id": "f-wifi", "label": "Contraseña del wifi", "secret": "PalmeraAzul77" },
+    { "id": "f-gate", "label": "Código del portón", "secret": "1979" }
+  ],
+  "sections": [
+    {
+      "kind": "arrival",
+      "texts": [
+        "El portón se abre con [[f-gate]]. La caja de llaves está a la derecha de la puerta principal; ábrela con [[f-lockbox]].",
+        "Si llegas después de las 22:00, deja el carro afuera del portón para no despertar a los vecinos."
+      ]
+    },
+    {
+      "kind": "wifi",
+      "texts": [
+        "La red se llama CasaColibri y la contraseña es [[f-wifi]]. El router está en la sala, junto al televisor."
+      ]
+    },
+    {
+      "kind": "house_rules",
+      "texts": [
+        "No se permiten fiestas ni eventos.",
+        "Horas de silencio de 22:00 a 7:00.",
+        "Se permiten mascotas pequeñas con aviso previo.",
+        "No se fuma dentro de la casa."
+      ]
+    },
+    {
+      "kind": "appliances",
+      "texts": [
+        "La cafetera es de cápsulas; hay cápsulas en la gaveta de arriba.",
+        "La lavadora está en la terraza de atrás; usa medio vaso de detergente.",
+        "El aire acondicionado se enciende con el control blanco; déjalo en 24 grados."
+      ]
+    },
+    {
+      "kind": "parking",
+      "texts": [
+        "Hay espacio para un carro dentro del portón. Un segundo carro puede quedar en la calle frente a la casa."
+      ]
+    },
+    {
+      "kind": "local_recommendations",
+      "texts": [
+        "Soda La Palma, a 300 metros, sirve casados y desayunos típicos.",
+        "El supermercado Sámara está a 5 minutos en carro."
+      ],
+      "recommendation": {
+        "name": "Soda La Palma",
+        "category": "restaurant",
+        "url": "https://example.com/soda-la-palma",
+        "benefit": "commission"
+      }
+    },
+    {
+      "kind": "checkout",
+      "texts": [
+        "La salida es a las 11:00. Deja las llaves en la caja de llaves, saca la basura al basurero de la entrada y apaga el aire acondicionado."
+      ]
+    },
+    {
+      "kind": "emergency",
+      "texts": [
+        "Clínica de Sámara: 200 metros al norte de la iglesia, abierta 24 horas. Policía turística: 2656-0000."
+      ]
+    }
+  ]
+}

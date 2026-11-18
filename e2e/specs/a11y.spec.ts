@@ -251,11 +251,15 @@ test("guest guide and Share screens have no WCAG A/AA violations (feature 004 T0
   await signIn(host, uniqueEmail("a11y-guest"));
   const guide = await publishGuide(host);
   const stay = await addStay(host, guide, 0);
-  await host.request.patch(`${guide.base}/share/settings`, { data: { requireConfirmationCode: true } });
+  await host.request.patch(`${guide.base}/share/settings`, {
+    data: { requireConfirmationCode: true },
+  });
 
   await host.goto(`/es/properties/${guide.propertyId}/share`);
   await expect(host.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(host.getByRole("heading", { name: "Estadías: enlaces que muestran los códigos" })).toBeVisible();
+  await expect(
+    host.getByRole("heading", { name: "Estadías: enlaces que muestran los códigos" }),
+  ).toBeVisible();
   await expectNoViolations(host, "share screen");
   await host.goto(`/es/properties/${guide.propertyId}/share/poster`);
   await expect(host.getByRole("heading", { name: "Casa Colibrí" })).toBeVisible();
@@ -282,4 +286,43 @@ test("guest guide and Share screens have no WCAG A/AA violations (feature 004 T0
     await expectNoViolations(guest, `unavailable (${locale})`);
     await context.close();
   }
+});
+
+test("guide chat and conversation screens have no WCAG A/AA violations (feature 005 T046)", async ({
+  browser,
+}) => {
+  test.setTimeout(180_000);
+  const { openChat, propertyLink, publishGuide, sendChatMessage, signIn } =
+    await import("../helpers/guest");
+  const host = await newPage(browser);
+  await signIn(host, uniqueEmail("a11y-chat"));
+  const guide = await publishGuide(host);
+  const link = await propertyLink(host, guide);
+
+  for (const locale of ["es-CR", "en-US"]) {
+    const context = await browser.newContext({ locale, viewport: { width: 390, height: 844 } });
+    const guest = await context.newPage();
+    await guest.goto(link);
+    await openChat(guest);
+    await expectNoViolations(guest, `chat intro (${locale})`);
+    await sendChatMessage(
+      guest,
+      locale === "es-CR" ? "Hay humo en la cocina" : "How do I open the lockbox?",
+    );
+    await expect(guest.getByRole("dialog").locator(".chat-msg-assistant").last()).toBeVisible({
+      timeout: 15_000,
+    });
+    await expectNoViolations(guest, `chat with replies (${locale})`);
+    await context.close();
+  }
+
+  await host.goto(`/es/properties/${guide.propertyId}/conversations`);
+  await expect(host.getByRole("link", { name: "Abrir conversación" }).first()).toBeVisible();
+  await expectNoViolations(host, "conversation list");
+  await host.getByRole("link", { name: "Abrir conversación" }).first().click();
+  await expect(host.getByRole("heading", { name: "Conversación" })).toBeVisible();
+  await expectNoViolations(host, "conversation page");
+  await host.goto(`/es/properties/${guide.propertyId}`);
+  await expect(host.getByRole("heading", { name: "Asistente del chat" })).toBeVisible();
+  await expectNoViolations(host, "property page with the assistant card");
 });

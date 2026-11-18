@@ -50,6 +50,7 @@ import { createInterviewAnswerHandler } from "./jobs/interview-answer.js";
 import { createSharedBlockPublishHandler } from "./jobs/shared-block-publish.js";
 import { createMediaCopyHandler } from "./jobs/media-copy.js";
 import { createMediaProcessHandler } from "./jobs/media-process.js";
+import { AGENT_COST_CHECK_CRON, createAgentCostCheckHandler } from "./jobs/agent-cost-check.js";
 import { createChatReplyHandler } from "./jobs/chat-reply.js";
 import { createWorkerServices } from "./services.js";
 
@@ -185,6 +186,9 @@ async function main(): Promise<void> {
       guideUrl: config.guideUrl,
     }),
   );
+  await createQueue(JOB_QUEUES.agentCostCheck);
+  await boss.work(JOB_QUEUES.agentCostCheck, createAgentCostCheckHandler({ db: services.db.db }));
+  await boss.schedule(JOB_QUEUES.agentCostCheck, AGENT_COST_CHECK_CRON, null, { tz: "UTC" });
   // Shared-block fan-out (research R14): one job per publish or delete.
   await createQueue(JOB_QUEUES.sharedBlockPublish);
   await boss.work(

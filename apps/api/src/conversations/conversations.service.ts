@@ -245,7 +245,9 @@ export class ConversationsService {
       .from(agentDraft)
       .where(and(eq(agentDraft.id, draftId), eq(agentDraft.conversationId, conversationId)))
       .limit(1);
-    if (!draft) throw new ApiProblem(404, "not_found");
+    if (!draft) {
+      throw await this.crossTenant.notFoundInRequest(this.tx, workspaceId, "agent_draft", draftId);
+    }
     if (draft.status !== "open") throw new ApiProblem(409, "draft_closed");
     const text = body.text ?? draft.body;
     const edited = text !== draft.body;
@@ -333,7 +335,14 @@ export class ConversationsService {
         ),
       )
       .limit(1);
-    if (!row) throw new ApiProblem(404, "not_found");
+    if (!row) {
+      throw await this.crossTenant.notFoundInRequest(
+        this.tx,
+        workspaceId,
+        "conversation",
+        conversationId,
+      );
+    }
     const summary: ConversationSummary = {
       id: row.id,
       status: row.status,

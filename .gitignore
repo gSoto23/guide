@@ -36,5 +36,6 @@ playwright-report/
 .tz-sources/
 evals/extraction/report/
 evals/guide/report/
+evals/agent/report/
 e2e/.certs/
 .lighthouseci-guide/
