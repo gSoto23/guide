@@ -42,7 +42,10 @@ test("quickstart 6: why this reply", async ({ page, browser }) => {
   await answer.getByText("Por qué esta respuesta").click();
   await expect(answer.getByText("Decisión: Respondió solo")).toBeVisible();
   await expect(answer.getByText("Tema: arrival")).toBeVisible();
-  await expect(answer.getByText("Autonomía: auto")).toBeVisible();
+  // Feature 007: the topic's level and where it came from.
+  await expect(
+    answer.getByText("Autonomía del tema: responde si está en la guía (ajuste del espacio)"),
+  ).toBeVisible();
   await expect(answer.getByText("Versión publicada de la guía: 1")).toBeVisible();
   await expect(answer.getByText("Cita una sección publicada: Pasó")).toBeVisible();
   const text = (await page.locator("main").textContent()) ?? "";

@@ -194,4 +194,22 @@ Decisions for spec 007. Each builds on what spec 005 shipped ([005 research](../
 
 - **Gates:** the same as 005 R16 (real-model evals need `ANTHROPIC_API_KEY`; staging quickstart with the
   real model), plus the legal review (OQ-35) of the formal and quiet-hours texts.
-- **Notes:** filled in during implementation.
+- **Local quickstart run (2026-11-18):** migrations 0026 and 0027 applied to a local database holding
+  spec 005 data: 8 workspaces at `auto` and 2 property overrides moved to settings rows with no change
+  in behavior (FR-006). Scenarios 1 to 7 pass end to end with the fake model (`settings-us1` to
+  `settings-us6`, plus `chat-us4` rewritten for the new screen); axe finds no violations on either
+  screen or the test panel; both routes load 144.7 KB gzip of JavaScript (budget 150 KB). The real
+  model and staging are not verified (founder gates above).
+- **Notes:**
+  - `409 settings_changed` carries no current values (problem bodies hold plain values only); the
+    screen reloads them. Validation errors use the repository's `422 validation_failed`.
+  - Agents see only their own membership (spec 001 RLS), so the contact list they read is partial;
+    they can't edit it. Members without a name are listed by email.
+  - `assistant_test` gained `language` (the member's screen language) for fixed texts in tests.
+  - Drizzle names every column on insert, so tests have a table-wide `INSERT` grant; the RLS policy
+    still requires `created_by` to be the member.
+  - The portal keeps the topic, level, and locked lists in `lib/assistant.ts` with compile-time
+    completeness checks: importing values from `@guidesk/contracts` pulled zod into the client and
+    put both routes at 183 KB.
+  - The spec 005 settings routes (`assistant-settings`) are removed in the same release as the new
+    ones; the 005 tests and the `chat-us4` scenario moved to them.

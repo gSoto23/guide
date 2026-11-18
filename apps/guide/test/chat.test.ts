@@ -17,10 +17,7 @@ function texts(html: string): Record<string, string> {
 
 describe("chat entry (feature 005 FR-001, FR-002)", () => {
   it("adds a hidden Ask button to every guide page, loading the chat only on demand", async () => {
-    for (const path of [
-      `/g/${FIXTURE_PUBLIC_ID}/es`,
-      `/g/${FIXTURE_PUBLIC_ID}/es/emergency`,
-    ]) {
+    for (const path of [`/g/${FIXTURE_PUBLIC_ID}/es`, `/g/${FIXTURE_PUBLIC_ID}/es/emergency`]) {
       const html = await page(path);
       expect(html).toContain(
         '<button type="button" id="ask" class="ask" hidden="" data-chat-script="/assets/chat.test.js" data-chat-style="/assets/chat.test.css">Preguntar</button>',

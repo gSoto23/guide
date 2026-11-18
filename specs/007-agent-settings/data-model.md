@@ -71,6 +71,7 @@ are not current and not referenced by a trace.
 | property_id | uuid FK property, cascade | |
 | created_by | text FK user, cascade | |
 | question | text | 1 to 2,000 characters |
+| language | text | `es` or `en`: the member's screen language, for fixed texts |
 | status | text | `pending`, `done` |
 | outcome | text | null while pending; `sent`, `draft`, `held`, `pointer`, `greeting`, `limited`, `unavailable` |
 | reason | text | needs-host reason when `draft` or `held` |

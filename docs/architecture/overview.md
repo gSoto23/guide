@@ -191,6 +191,13 @@ instead of streaming, because a reply is shown only after its checks pass. There
 autonomy `draft` (the default) members send, edit, or replace drafts from the property's conversation
 page; the full inbox is spec 006.
 
+*As built in spec 007:* the worker reads the assistant settings (one row per workspace and per
+property, resolved per group by the domain) before deciding. Autonomy is per topic; the tone and the
+host's custom instructions go into the answer call's cached prefix; quiet hours in the property's time
+zone hold non-urgent "needs the host" emails, and a per-minute job (`chat.quiet-digest`) sends one
+summary per contact when they end. "Test the assistant" runs the same pipeline in dry-run mode
+(`assistant.test`) and writes only the result, a trace, and the usage.
+
 ### 5.2 Guest writes in the Airbnb chat (Phase 2, through a PMS)
 
 ```mermaid

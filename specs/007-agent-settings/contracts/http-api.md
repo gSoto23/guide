@@ -73,14 +73,14 @@ AssistantTest = {
 
 | Status | Code | When |
 |---|---|---|
-| 400 | `validation_failed` | Bad shape, unknown topic or level, quiet hours with equal or missing times |
+| 422 | `validation_failed` | Bad shape, unknown topic or level, quiet hours with equal or missing times |
 | 403 | `forbidden` | Agent saving settings |
 | 404 | `not_found` | Other workspace's property, test, or member ID in contacts |
-| 409 | `settings_changed` | `version` is not the current one; body has `details.current` |
+| 409 | `settings_changed` | `version` is not the current one; the screen reloads the current values |
 | 409 | `time_zone_required` | Quiet hours enabled on a property without a time zone |
 | 409 | `guide_not_published` | Test on a property without a published guide |
-| 422 | `instructions_invalid` | `details.issues`: `too_long`, `restricted_value`, `link`, `email`, `phone`, `off_platform` |
-| 429 | `tests_paused` | Over 30 tests per member per hour; `details.retryAfterSeconds` |
+| 422 | `instructions_invalid` | `issues`: `too_long`, `restricted_value`, `link`, `email`, `phone`, `off_platform` |
+| 429 | `tests_paused` | Over 30 tests per member per hour; `retryAfterSeconds` |
 
 ## Member trace projection (spec 005, extended)
 
