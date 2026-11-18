@@ -370,6 +370,18 @@ of feature 002. Facts measured in this repository on 2026-11-17 are marked **mea
     (containers table and repository layout); security.md (SEC-01 to SEC-04 marked implemented, the
     guest session and the confirmation code); open questions OQ-20 and OQ-28 (decided); UX README
     (gap 1 updated, verification screen no longer provisional).
-  - **Rollout:** no feature flag; the guide is the product. Production needs `GUIDESK_GUIDE_DOMAIN`
-    (with OQ-11) and the legal review of the disclosure and template wording (OQ-35) before the pilot.
-    Both are founder gates, recorded in the quickstart, and do not block development.
+  - **Rollout:** no feature flag; the guide is the product. Founder gates before the pilot,
+    recorded in the quickstart, none blocking development:
+    1. `GUIDESK_GUIDE_DOMAIN` for production (with OQ-11).
+    2. The legal review of the disclosure and template wording (OQ-35).
+    3. Logging on the guide's CloudFront distribution and WAF must not record `/s/{token}` paths
+       (standard logs off, or URI redaction): the guest app itself logs no requests, and the API
+       receives the token only in a request body.
+    4. Guest pages render through the guide's own origin, so page renders on a CDN miss share the
+       Lambda's addresses for the per-IP guest limit (120 per minute). Watch `429` counts on
+       staging; if they appear, exempt the renderer with a shared header or raise its limit.
+    5. The quickstart on staging with a real phone on mobile data.
+  - **Observability:** guest routes are covered by the API's automatic HTTP spans (route templates
+    carry no tokens, codes, or values; problem responses carry stable codes) and Sentry. Counters
+    for exchanges, reveals, lockouts, and opens come from the security events and
+    `guide_open_daily`, which spec 010 reads.

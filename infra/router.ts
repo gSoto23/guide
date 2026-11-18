@@ -14,3 +14,17 @@ export const router = new sst.aws.Router("Router", {
 export const portalUrl = stageConfig.portalDomain
   ? `https://${stageConfig.portalDomain}`
   : router.url;
+
+/**
+ * The guest guide's own CloudFront distribution with AWS WAF (feature 004 research R2, SEC-11): a
+ * separate origin from the portal, so guest cookies stay host-only on the guide domain.
+ */
+export const guideRouter = new sst.aws.Router("GuideRouter", {
+  ...(stageConfig.guideDomain ? { domain: stageConfig.guideDomain } : {}),
+  waf: true,
+});
+
+/** The guide's public origin: the custom domain, or the CloudFront URL outside production. */
+export const guideUrl = stageConfig.guideDomain
+  ? `https://${stageConfig.guideDomain}`
+  : guideRouter.url;

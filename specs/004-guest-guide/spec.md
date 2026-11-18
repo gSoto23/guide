@@ -476,8 +476,9 @@ stored records contain no network address, device fingerprint, or guest identifi
 **Sharing in the portal**
 
 - **FR-037**: Each property MUST have a Share screen with: the property link (Copy, Open), the QR code
-  (download as PNG and SVG, and a printable poster with the property name, the Wi-Fi network name, and
-  a line saying the poster opens the public guide and codes are in the booking messages), the
+  (download as PNG and SVG, and a printable poster with the property name, a Wi-Fi network name the host may type for the
+  poster (not stored, because guides keep the network name as free text), and a line saying the
+  poster opens the public guide and codes are in the booking messages), the
   scheduled-message template, and the upcoming stays with their stay links.
 - **FR-038**: The scheduled-message template MUST exist in Spanish and English, contain the property
   link and no codes or stay details, include steps for adding it to Airbnb, Booking.com, and Vrbo

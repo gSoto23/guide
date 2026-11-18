@@ -3,6 +3,7 @@ import {
   extractionRequest,
   guideAiRequest,
   guideDocument,
+  guideLink,
   importItem,
   importRun,
   interviewTurn,
@@ -70,6 +71,8 @@ export interface RetentionCounts {
   unusedMedia: number;
   deletedMedia: number;
   aiRequests: number;
+  stayLinks: number;
+  propertyLinks: number;
 }
 
 function daysBefore(now: Date, days: number): Date {
@@ -265,7 +268,29 @@ export async function runRetention(deps: RetentionDeps): Promise<RetentionCounts
     )
     .returning({ id: guideAiRequest.id });
 
+  // Feature 004 (data model §7): stay links and their device sessions 30 days after the stay
+  // window closed (checkout plus 2 hours, so one more day covers every time zone) or after the
+  // link was revoked or replaced, and replaced property links after 30 days.
+  const monthAgo = daysBefore(now, 30);
+  const stayLinks = await db.execute<{ id: string }>(sql`
+    DELETE FROM stay_link l
+    USING stay s
+    WHERE s.id = l.stay_id
+      AND (
+        (l.status <> 'active' AND l.ended_at < ${monthAgo})
+        OR s.checkout_date < ${monthAgo.toISOString().slice(0, 10)}::date - 1
+        OR (s.status = 'cancelled' AND s.cancelled_at < ${monthAgo})
+      )
+    RETURNING l.id
+  `);
+  const propertyLinks = await db
+    .delete(guideLink)
+    .where(and(eq(guideLink.status, "replaced"), lt(guideLink.replacedAt, monthAgo)))
+    .returning({ id: guideLink.id });
+
   return {
+    stayLinks: stayLinks.rows.length,
+    propertyLinks: propertyLinks.length,
     interviewContent: interviewContent.length,
     documentText: documentText.length,
     versions: versions.rows.length,

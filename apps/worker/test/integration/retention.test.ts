@@ -9,6 +9,8 @@ import {
   guideAiRequest,
   guideDocument,
   guideItem,
+  guideLink,
+  guideSession,
   guideSection,
   guideVersion,
   interviewSession,
@@ -19,6 +21,7 @@ import {
   membership,
   property,
   stay,
+  stayLink,
   upload,
   user,
   workspace,
@@ -508,5 +511,89 @@ describe("retention.daily for the guide builder (feature 003 T120)", () => {
       .from(guideAiRequest)
       .where(eq(guideAiRequest.workspaceId, workspaceId));
     expect(left).toHaveLength(1);
+  });
+});
+
+describe("retention.daily for the guest guide (feature 004 T066)", () => {
+  let dataKeyId: string;
+
+  beforeEach(async () => {
+    const [dataKey] = await handle.db
+      .insert(workspaceDataKey)
+      .values({ workspaceId, wrappedKey: randomBytes(48), kmsKeyId: "local" })
+      .returning({ id: workspaceDataKey.id });
+    dataKeyId = dataKey!.id;
+  });
+
+  async function stayWithLink(
+    checkoutDaysAgo: number,
+    link: { status?: "active" | "revoked" | "replaced"; endedDaysAgo?: number } = {},
+  ) {
+    const [row] = await handle.db
+      .insert(stay)
+      .values({
+        workspaceId,
+        propertyId,
+        source: "manual",
+        checkInDate: dateDaysAgo(checkoutDaysAgo + 3),
+        checkoutDate: dateDaysAgo(checkoutDaysAgo),
+        channel: "Directo",
+      })
+      .returning({ id: stay.id });
+    const id = randomUUID();
+    const status = link.status ?? "active";
+    await handle.db.insert(stayLink).values({
+      id,
+      workspaceId,
+      propertyId,
+      stayId: row!.id,
+      tokenHash: randomBytes(32).toString("hex"),
+      tokenCiphertext: randomBytes(40),
+      dataKeyId,
+      status,
+      endedAt: status === "active" ? null : daysAgo(link.endedDaysAgo ?? 0),
+    });
+    await handle.db.insert(guideSession).values({
+      workspaceId,
+      propertyId,
+      stayLinkId: id,
+      cookieHash: randomBytes(32).toString("hex"),
+    });
+    return id;
+  }
+
+  it("deletes stay links and their sessions 30 days after the window or after ending", async () => {
+    const old = await stayWithLink(40);
+    const recent = await stayWithLink(10);
+    const revokedLongAgo = await stayWithLink(-5, { status: "revoked", endedDaysAgo: 31 });
+    const revokedRecently = await stayWithLink(-5, { status: "revoked", endedDaysAgo: 3 });
+    const counts = await run();
+    expect(counts.stayLinks).toBeGreaterThanOrEqual(2);
+    const left = await handle.db
+      .select({ id: stayLink.id })
+      .from(stayLink)
+      .where(eq(stayLink.workspaceId, workspaceId));
+    expect(left.map((row) => row.id).sort()).toEqual([recent, revokedRecently].sort());
+    const sessions = await handle.db
+      .select({ id: guideSession.id })
+      .from(guideSession)
+      .where(inArray(guideSession.stayLinkId, [old, revokedLongAgo]));
+    expect(sessions).toHaveLength(0);
+  });
+
+  it("deletes replaced property links after 30 days and keeps the active one", async () => {
+    const id = () =>
+      Array.from(randomBytes(26), (byte) => "abcdefghijklmnopqrstuvwxyz234567"[byte % 32]).join("");
+    await handle.db.insert(guideLink).values([
+      { workspaceId, propertyId, publicId: id() },
+      { workspaceId, propertyId, publicId: id(), status: "replaced", replacedAt: daysAgo(40) },
+      { workspaceId, propertyId, publicId: id(), status: "replaced", replacedAt: daysAgo(5) },
+    ]);
+    await run();
+    const left = await handle.db
+      .select({ status: guideLink.status })
+      .from(guideLink)
+      .where(eq(guideLink.propertyId, propertyId));
+    expect(left.map((row) => row.status).sort()).toEqual(["active", "replaced"]);
   });
 });

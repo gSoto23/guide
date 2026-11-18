@@ -37,3 +37,4 @@ playwright-report/
 evals/extraction/report/
 evals/guide/report/
 e2e/.certs/
+.lighthouseci-guide/

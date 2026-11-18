@@ -19,7 +19,7 @@ interface WorkerScope {
   addEventListener(type: "fetch", listener: (event: FetchEvent) => void): void;
 }
 
-const scope = self as unknown as WorkerScope;
+const scope = globalThis as unknown as WorkerScope;
 const VERSION = "v1";
 const PAGES = `guidesk-pages-${VERSION}`;
 const STATIC = `guidesk-static-${VERSION}`;

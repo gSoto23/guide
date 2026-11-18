@@ -20,6 +20,7 @@ const production = {
   ...base,
   NODE_ENV: "production",
   PORTAL_URL: "https://app.example.test",
+  GUIDE_URL: "https://guide.example.test",
   EDGE_SHARED_SECRET: "e".repeat(32),
   KMS_MODE: "aws",
   KMS_KEY_ID: "arn:aws:kms:us-east-1:000000000000:key/test",

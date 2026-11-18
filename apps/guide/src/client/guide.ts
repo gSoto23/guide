@@ -306,7 +306,7 @@ function countOpen(): void {
 
 function showNotice(): void {
   const box = document.getElementById("notice");
-  let notice: string | null = null;
+  let notice: string | null;
   try {
     notice = sessionStorage.getItem("guidesk_notice");
     sessionStorage.removeItem("guidesk_notice");

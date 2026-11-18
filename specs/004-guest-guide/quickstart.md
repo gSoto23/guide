@@ -94,4 +94,6 @@ Expected: everything passes; the guest script and styles stay within budget (R3)
 
 - The guide domain (`GUIDESK_GUIDE_DOMAIN`, with OQ-11) for production.
 - The legal review of the benefit disclosure and the message template wording (OQ-35).
+- CloudFront and WAF logging for the guide distribution that never records `/s/{token}` paths.
+- A look at `429` counts for guest page renders on staging (research R20, item 4).
 - This quickstart run on staging with a real phone on mobile data (LCP and the reveal flow).

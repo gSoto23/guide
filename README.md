@@ -115,6 +115,10 @@ pnpm dev
   On the first start the API and worker restart a few times while package builds settle.
 - Portal: `http://localhost:3000`. It forwards `/api/*` to the API on port 4000
   (`API_PROXY_URL`), so the browser sees one origin.
+- Guest guide: `http://127.0.0.1:3001` (feature 004). A different host from the portal, so the
+  two cookie jars never mix; it forwards `/api/*` to the API too. It runs from `apps/guide/dist`,
+  so run `pnpm --filter @guidesk/guide build` after changing it. `GUIDE_FIXTURES=true` serves a
+  fictional guide at `/g/demoguidedemoguidedemoguid/es` for design and Lighthouse work.
 - Emails, including sign-in codes: Mailpit at `http://localhost:8025`.
 - Google sign-in needs a development OAuth client in `GOOGLE_CLIENT_ID` and
   `GOOGLE_CLIENT_SECRET`; email codes and passkeys work without it.
@@ -164,6 +168,7 @@ docker run --rm -i -e BASE_URL=http://host.docker.internal:3000 -e ORIGIN=http:/
 
 ```text
 apps/portal/                      # Host portal (Next.js)
+apps/guide/                       # Guest guide (server-rendered React, ADR-0010)
 apps/api/                         # API (NestJS on Fastify, Better Auth)
 apps/worker/                      # Background jobs (pg-boss)
 packages/                         # domain, contracts, db, emails, i18n, integrations, observability, ...

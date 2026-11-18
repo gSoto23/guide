@@ -56,6 +56,28 @@ export default tseslint.config(
     },
   },
   {
+    // Feature 004 (research R12): guest routes read tenant data in the system context, so only
+    // the guest context and the stay link secrets may take the system database handle.
+    files: ["apps/api/src/guest/**/*.ts"],
+    ignores: ["apps/api/src/guest/guest-context.ts", "apps/api/src/guest/stay-link-secrets.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            { name: "@guidesk/vault/decrypt", message: VAULT_DECRYPT_MESSAGE },
+            {
+              name: "../database/database.module.js",
+              importNames: ["DB_HANDLE"],
+              message:
+                "Guest code reads through GuestContext (feature 004 research R12): resolve the workspace and property from a link or session first.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: VAULT_DECRYPT_ALLOWED,
     rules: {
       // These two rules hold only the vault restriction above; if either gains another entry,

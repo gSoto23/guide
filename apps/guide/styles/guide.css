@@ -290,12 +290,6 @@ a {
   border: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .button-primary {
-    color: #17120f;
-  }
-}
-
 .button-primary:disabled {
   opacity: 0.6;
   cursor: progress;
@@ -313,6 +307,12 @@ a {
   border: 0;
 }
 
+@media (prefers-color-scheme: dark) {
+  .button-primary,
+  .button-danger {
+    color: #17120f;
+  }
+}
 .map-links {
   display: flex;
   flex-wrap: wrap;

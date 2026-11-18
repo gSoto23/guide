@@ -32,6 +32,8 @@ const response: Response = await handle(new Request(`http://localhost/g/${FIXTUR
 const home = gzipSync(Buffer.from(await response.text())).length / 1024;
 const total = script + style + home;
 
+console.warn("Guest guide size (gzip KB)");
+// eslint-disable-next-line no-console -- a build report
 console.table([
   { file: "guide.js", gzipKb: script.toFixed(1), budgetKb: SCRIPT_BUDGET_KB },
   { file: "guide.css", gzipKb: style.toFixed(1), budgetKb: "-" },
