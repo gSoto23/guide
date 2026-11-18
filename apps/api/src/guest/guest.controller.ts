@@ -14,11 +14,13 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import {
   guestGuideQuerySchema,
+  guestOpenSchema,
   guestRevealSchema,
   guestSessionQuerySchema,
   guestVerifySchema,
   stayExchangeSchema,
   type GuestGuide,
+  type GuestOpenBody,
   type GuestRevealBody,
   type GuestSession,
   type GuestVerifyBody,
@@ -32,6 +34,7 @@ import { ZodValidationPipe } from "../common/zod.pipe.js";
 import { GuestGuideService, GUEST_MEDIA_VARIANTS } from "./guest-guide.service.js";
 import { guestIpKey, GuestInterceptor } from "./guest.interceptor.js";
 import { unavailable } from "./guest-context.js";
+import { GuestOpens } from "./opens.service.js";
 import { GuestReveals } from "./reveals.service.js";
 import { GuestSessions } from "./sessions.service.js";
 import { GuestVerification } from "./verification.service.js";
@@ -54,6 +57,7 @@ export class GuestController {
     private readonly sessions: GuestSessions,
     private readonly reveals: GuestReveals,
     private readonly verification: GuestVerification,
+    private readonly opens: GuestOpens,
   ) {}
 
   @Get("guides/:publicId")
@@ -133,6 +137,20 @@ export class GuestController {
       body.publicId,
       body.code,
       request.headers.cookie,
+      guestIpKey(request),
+    );
+  }
+
+  @Post("opens")
+  @HttpCode(204)
+  async open(
+    @Req() request: FastifyRequest,
+    @Body(new ZodValidationPipe(guestOpenSchema)) body: GuestOpenBody,
+  ): Promise<void> {
+    await this.opens.record(
+      body.publicId,
+      body.kind,
+      request.headers["user-agent"],
       guestIpKey(request),
     );
   }

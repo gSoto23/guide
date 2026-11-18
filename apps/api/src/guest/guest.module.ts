@@ -6,6 +6,7 @@ import { GuestContext } from "./guest-context.js";
 import { GuestGuideService } from "./guest-guide.service.js";
 import { GuestController } from "./guest.controller.js";
 import { GuestInterceptor } from "./guest.interceptor.js";
+import { GuestOpens } from "./opens.service.js";
 import { GuestReveals } from "./reveals.service.js";
 import { GuestSessions } from "./sessions.service.js";
 import { StayLinkSecrets } from "./stay-link-secrets.js";
@@ -23,6 +24,7 @@ import { GuestVerification } from "./verification.service.js";
     GuestSessions,
     StayLinkSecrets,
     GuestVerification,
+    GuestOpens,
   ],
   exports: [GuestContext, StayLinkSecrets],
 })

@@ -139,4 +139,14 @@ describe("guest sessions (feature 004 US2)", () => {
     const device = await exchange(ctx, token);
     expect((await sessionOf(device.cookie)).state).toBe("public");
   });
+
+  it("works before anyone opened the Share screen: the property link is created with the stay link", async () => {
+    const team3 = await seedTeam(ctx, db, "guestsessions3");
+    const fresh = await publishedGuide(ctx, team3, { name: "Casa Nueva", skipShare: true });
+    const stayId = await addStay(ctx, team3, fresh.propertyId, 0);
+    const { token } = await copyStayLink(ctx, team3, fresh.propertyId, stayId);
+    const device = await exchange(ctx, token);
+    expect(device.response.statusCode, device.response.body).toBe(200);
+    expect(device.body.guideUrl).toMatch(/^\/g\/[a-z2-7]{26}$/);
+  });
 });

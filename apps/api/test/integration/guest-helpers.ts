@@ -92,7 +92,7 @@ export async function publish(ctx: Ctx, team: TeamWorkspace, propertyId: string)
 export async function publishedGuide(
   ctx: Ctx,
   team: TeamWorkspace,
-  options: { name?: string; publicWifi?: boolean } = {},
+  options: { name?: string; publicWifi?: boolean; skipShare?: boolean } = {},
 ): Promise<PublishedGuide> {
   const created = await wsApi(ctx, team.owner, "POST", team.workspaceId, "/properties", {
     ...READY_FACTS,
@@ -164,6 +164,9 @@ export async function publishedGuide(
     },
   });
   await publish(ctx, team, propertyId);
+  if (options.skipShare) {
+    return { propertyId, lockboxId, wifiId, publicId: "", propertyLink: "" };
+  }
   const share = (
     await guideApi(ctx, team.owner, team, propertyId, "GET", "/share")
   ).json() as ShareOverview;

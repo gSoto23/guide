@@ -217,12 +217,12 @@ text first and media at reserved sizes.
 ### Tests for User Story 5 ⚠️
 
 - [X] T056 [P] [US5] Guest app test `apps/guide/test/sw.test.ts` (service worker routing rules against a fake cache and fetch): guide pages network-first with fallback and the `data-offline-at` mark; assets and guest media cache-first; other `/api/v1/guest/` responses and `no-store` responses never stored; a network `404` removes that guide's cached pages and media; unknown navigations fall back to `/offline`
-- [ ] T057 [P] [US5] End-to-end test `e2e/specs/guest-us5.spec.ts`: with a stay link inside the window, open the home and Arrival, reveal the code, go offline (`context.setOffline(true)`): the pages open with the offline banner, the code field asks for a connection, a never-opened section shows the not-saved page, and no cache entry contains the value
+- [X] T057 [P] [US5] End-to-end test `e2e/specs/guest-us5.spec.ts`: with a stay link inside the window, open the home and Arrival, reveal the code, go offline (`context.setOffline(true)`): the pages open with the offline banner, the code field asks for a connection, a never-opened section shows the not-saved page, and no cache entry contains the value
 
 ### Implementation for User Story 5
 
-- [ ] T058 [US5] Implement the service worker `apps/guide/src/client/sw.ts` (contracts/guide-web.md rules), the `/sw.js` route with `no-cache`, the manifest and icons, and the `/offline` page
-- [ ] T059 [US5] Extend `apps/guide/src/client/guide.ts`: register the service worker, show the offline banner from `data-offline-at` with the localized time, and the offline state of locked fields; check the first image is eager and the rest lazy with reserved sizes, and videos use `preload="none"` with posters
+- [X] T058 [US5] Implement the service worker `apps/guide/src/client/sw.ts` (contracts/guide-web.md rules), the `/sw.js` route with `no-cache`, the manifest and icons, and the `/offline` page
+- [X] T059 [US5] Extend `apps/guide/src/client/guide.ts`: register the service worker, show the offline banner from `data-offline-at` with the localized time, and the offline state of locked fields; check the first image is eager and the rest lazy with reserved sizes, and videos use `preload="none"` with posters
 
 **Checkpoint**: US5 works on top of US1 (and US2 for the code state).
 
@@ -237,13 +237,13 @@ with no identifiers.
 
 ### Tests for User Story 6 ⚠️
 
-- [ ] T060 [P] [US6] API integration test `apps/api/test/integration/guest-opens.test.ts`: opens upsert per property, day (property's zone), and kind; bot user agents ignored; over 60 per IP per hour ignored; the row holds no address or device data; the overview reports `opensLast30Days` and each stay's devices, first opened, and values shown
-- [ ] T061 [P] [US6] End-to-end test `e2e/specs/guest-us6.spec.ts`: two guest contexts open the property link and one opens the stay link; the Share screen shows the counts and "Opened on 1 device"
+- [X] T060 [P] [US6] API integration test `apps/api/test/integration/guest-opens.test.ts`: opens upsert per property, day (property's zone), and kind; bot user agents ignored; over 60 per IP per hour ignored; the row holds no address or device data; the overview reports `opensLast30Days` and each stay's devices, first opened, and values shown
+- [X] T061 [P] [US6] End-to-end test `e2e/specs/guest-us6.spec.ts`: two guest contexts open the property link and one opens the stay link; the Share screen shows the counts and "Opened on 1 device"
 
 ### Implementation for User Story 6
 
-- [ ] T062 [US6] Implement `POST /api/v1/guest/opens` in `apps/api/src/guest/opens.service.ts` (bot list, limit, upsert) and the 30-day sum in the share overview
-- [ ] T063 [US6] Send the open beacon from `apps/guide/src/client/guide.ts` once per link per day (`localStorage` date) and show the counts on the Share screen cards
+- [X] T062 [US6] Implement `POST /api/v1/guest/opens` in `apps/api/src/guest/opens.service.ts` (bot list, limit, upsert) and the 30-day sum in the share overview
+- [X] T063 [US6] Send the open beacon from `apps/guide/src/client/guide.ts` once per link per day (`localStorage` date) and show the counts on the Share screen cards
 
 **Checkpoint**: all user stories work on their own.
 

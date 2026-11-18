@@ -25,10 +25,11 @@ are updated.
 - **The wireframes' look.** The visual brand was decided on 2026-11-17 ([brand guide](../brand/README.md));
   the wireframes still show the earlier placeholder colors and no logo. The name itself waits on
   the trademark search and the domain (OQ-11).
-- **The guest verification screen (OQ-20).** The wireframes assume a short code shared in the
-  booking thread. Spec 004 decides the method.
-- **Offline arrival steps (OQ-28).** The default design never stores codes offline; a "Save until
-  checkout" action is shown only as an option.
+- **The guest verification screen (OQ-20).** *Decided in spec 004:* the stay link verifies the
+  guest; owners and admins can also require a 6-character confirmation code per stay, shown on the
+  Share screen and in the stay message, entered once per device (`G-04`).
+- **Offline arrival steps (OQ-28).** *Decided in spec 004:* codes are never stored offline; there
+  is no "Save until checkout" action. The stay message for the booking thread carries the code.
 - **Disclosure wording.** English and Spanish texts are proposals for the legal review (OQ-35)
   and depend on whether hosts share affiliate commissions (OQ-08).
 - **Spanish register.** The interface uses "tú" in neutral Latin American Spanish until pilot
@@ -46,8 +47,9 @@ design for each.
 1. **Stay links without a PMS.** SEC-01 requires a per-stay link to unlock restricted fields, but
    in the MVP the host delivers the guide through OTA scheduled messages, which send the same text
    to every booking. The interim design lets the host copy a stay link for each booking from the
-   Share screen. OQ-20 (spec 004) should decide whether verification can work from the property
-   link instead.
+   Share screen. *Spec 004 decided that the property link never unlocks codes (no guest data to
+   verify against, PC-03); the host copies a stay link, or a ready-made stay message, per booking.
+   Sending stay links automatically needs a PMS integration (Phase 2).*
 2. **Telling the guest that the host replied.** Guide-chat guests share no contact data (PC-03),
    so a host reply or a confirmed extra appears only when the guest reopens the guide. The flows
    remind guests that the platform thread also reaches the host. Whether to offer optional browser

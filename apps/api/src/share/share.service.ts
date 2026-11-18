@@ -247,8 +247,15 @@ export class ShareService {
     return { body: await QRCode.toBuffer(url, { ...options, type: "png", width: 1024 }), fileName };
   }
 
-  async copyStayLink(caller: Caller, workspaceId: string, propertyId: string, stayId: string) {
+  /** The target, with its property link created if needed: stay links open the guide through it. */
+  private async stayTarget(caller: Caller, workspaceId: string, propertyId: string) {
     const target = await this.target(workspaceId, propertyId);
+    if (target.published) await this.ensurePropertyLink(workspaceId, propertyId, caller.userId);
+    return target;
+  }
+
+  async copyStayLink(caller: Caller, workspaceId: string, propertyId: string, stayId: string) {
+    const target = await this.stayTarget(caller, workspaceId, propertyId);
     return this.stayLinks.copy(caller, workspaceId, target, stayId);
   }
 
@@ -258,7 +265,7 @@ export class ShareService {
     propertyId: string,
     stayId: string,
   ) {
-    const target = await this.target(workspaceId, propertyId);
+    const target = await this.stayTarget(caller, workspaceId, propertyId);
     return this.stayLinks.regenerate(caller, workspaceId, target, stayId);
   }
 
@@ -302,7 +309,7 @@ export class ShareService {
     language: "es" | "en",
     withValues: boolean,
   ) {
-    const target = await this.target(workspaceId, propertyId);
+    const target = await this.stayTarget(caller, workspaceId, propertyId);
     return this.stayMessages.message(caller, workspaceId, target, stayId, language, withValues);
   }
 }
