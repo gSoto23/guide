@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type {
@@ -22,9 +23,15 @@ import { problemNumber, problemOf, problemString } from "@/lib/properties-api";
 import { useOnline } from "@/lib/use-online";
 import { useStepUp } from "@/lib/use-step-up";
 import { useWorkspace } from "@/lib/use-workspace";
-import { CoreFactsForm, type CoreFactsBody, type CoreFactsValue } from "./core-facts-form";
-import { ExtractionReview } from "./extraction-review";
+import type { CoreFactsBody, CoreFactsValue } from "./core-facts-form";
 import { ListingInput, type PickedScreenshot } from "./listing-input";
+
+// The review and confirm steps come after the host submits the listing, so they load then and
+// stay out of the page's first download (Performance Budget, 150 KB per route).
+const loadReview = () => import("./extraction-review").then((m) => m.ExtractionReview);
+const loadCoreFacts = () => import("./core-facts-form").then((m) => m.CoreFactsForm);
+const ExtractionReview = dynamic(loadReview, { ssr: false });
+const CoreFactsForm = dynamic(loadCoreFacts, { ssr: false });
 
 const KNOWN_ERRORS = new Set([
   "workspace_pending_deletion",
@@ -64,6 +71,12 @@ export function ListingFlow({ locale }: { locale: string }) {
   const [items, setItems] = useState<ReviewItem[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>();
   const [itemProblem, setItemProblem] = useState<string | null>(null);
+
+  // Fetch the next steps once the page is interactive, so they're ready when the host submits.
+  useEffect(() => {
+    void loadReview().catch(() => undefined);
+    void loadCoreFacts().catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     if (!workspace?.canManage) return;

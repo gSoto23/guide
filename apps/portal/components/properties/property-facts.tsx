@@ -7,9 +7,13 @@ import { useTranslations } from "next-intl";
 import type { ConfirmPropertiesResult, PropertyDetail } from "@guidesk/contracts";
 import { problemNumber, problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
-import { CoreFactsForm, type CoreFactsBody } from "./core-facts-form";
+import type { CoreFactsBody } from "./core-facts-form";
 
 // Loaded after the facts, so the page stays inside its JavaScript budget (plan, Performance).
+// Shown only while editing, so it isn't part of the page's first download (Performance Budget).
+const CoreFactsForm = dynamic(() => import("./core-facts-form").then((m) => m.CoreFactsForm), {
+  ssr: false,
+});
 const ListingContent = dynamic(() => import("./listing-content").then((m) => m.ListingContent), {
   ssr: false,
 });
