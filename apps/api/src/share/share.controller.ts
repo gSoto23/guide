@@ -1,12 +1,20 @@
 import { Body, Controller, Get, HttpCode, Param, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { regeneratePropertyLinkSchema, type ShareOverview } from "@guidesk/contracts";
+import {
+  regeneratePropertyLinkSchema,
+  type ShareOverview,
+  type StayLinkCopy,
+} from "@guidesk/contracts";
+import { assertUuid } from "../common/ids.js";
 import { ZodValidationPipe } from "../common/zod.pipe.js";
 import { callerOf } from "../properties/properties.controller.js";
 import { WorkspaceAction } from "../tenancy/workspace-access.guard.js";
 import { ShareService } from "./share.service.js";
 
 const MANAGE = { capability: "properties.manage" } as const;
+/** A stay link shows codes to whoever opens it: owners and admins, after a recent sign-in. */
+const STAY_LINKS = { capability: "restricted.reveal", stepUp: true } as const;
+const STAY_LINKS_NO_STEP_UP = { capability: "restricted.reveal" } as const;
 
 /** /api/v1/workspaces/{workspaceId}/properties/{propertyId}/share (feature 004 contract). */
 @Controller("v1/workspaces/:workspaceId/properties/:propertyId/share")
@@ -63,5 +71,44 @@ export class ShareController {
       .header("content-type", "image/png")
       .header("content-disposition", `attachment; filename="${qr.fileName}"`)
       .send(qr.body);
+  }
+
+  @Post("stays/:stayId/link")
+  @HttpCode(200)
+  @WorkspaceAction(STAY_LINKS)
+  copyStayLink(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+    @Param("stayId") stayId: string,
+  ): Promise<StayLinkCopy> {
+    assertUuid(stayId);
+    return this.share.copyStayLink(callerOf(request), workspaceId, propertyId, stayId);
+  }
+
+  @Post("stays/:stayId/link/regenerate")
+  @HttpCode(200)
+  @WorkspaceAction(STAY_LINKS)
+  regenerateStayLink(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+    @Param("stayId") stayId: string,
+  ): Promise<StayLinkCopy> {
+    assertUuid(stayId);
+    return this.share.regenerateStayLink(callerOf(request), workspaceId, propertyId, stayId);
+  }
+
+  @Post("stays/:stayId/link/revoke")
+  @HttpCode(204)
+  @WorkspaceAction(STAY_LINKS_NO_STEP_UP)
+  async revokeStayLink(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+    @Param("stayId") stayId: string,
+  ): Promise<void> {
+    assertUuid(stayId);
+    await this.share.revokeStayLink(callerOf(request), workspaceId, propertyId, stayId);
   }
 }

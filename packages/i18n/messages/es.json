@@ -1234,7 +1234,9 @@
       "historyItem": "{name} vio «{label}» el {date}",
       "insert": "Insertar campo protegido",
       "move": "Mover a un campo protegido",
-      "fromPms": "De {provider}"
+      "fromPms": "De {provider}",
+      "historyGuest": "Un huésped vio «{label}» con su enlace de estadía el {date}",
+      "historyExport": "{name} copió un mensaje de estadía con los códigos el {date}"
     },
     "publish": {
       "open": "Publicar",
@@ -1485,6 +1487,31 @@
       "wifi": "Wi-Fi: {network}",
       "print": "Imprimir",
       "hint": "Usa tamaño Carta o A4. El nombre de la red no se guarda."
+    },
+    "stays": {
+      "title": "Estadías: enlaces que muestran los códigos",
+      "body": "Cada estadía tiene su propio enlace. Muestra los códigos solo del día de llegada hasta 2 horas después de la salida. Envíalo en el chat de esa reserva.",
+      "empty": "No hay estadías próximas. Conecta tu calendario o agrega una estadía a mano en la propiedad.",
+      "dates": "{checkIn} → {checkout}",
+      "mayBeBlock": "Puede ser un bloqueo",
+      "copy": "Copiar enlace de estadía",
+      "copied": "Enlace de estadía copiado",
+      "regenerate": "Crear enlace nuevo",
+      "regenerateConfirm": "El enlace actual dejará de funcionar en todos los dispositivos. ¿Crear uno nuevo?",
+      "revoke": "Revocar",
+      "revokeConfirm": "El enlace dejará de mostrar los códigos de inmediato. ¿Revocarlo?",
+      "code": "Código de confirmación: {code}",
+      "status": {
+        "not_created": "Aún no se ha copiado",
+        "active": "Activo",
+        "device_limit": "Límite de dispositivos alcanzado",
+        "revoked": "Revocado",
+        "ended": "Terminado"
+      },
+      "devices": "{count, plural, =0 {Sin abrir todavía} one {Abierto en # dispositivo} other {Abierto en # dispositivos}}",
+      "firstOpened": "Primera apertura: {date}",
+      "valuesShown": "{count, plural, =0 {Códigos no vistos} one {Códigos vistos # vez} other {Códigos vistos # veces}}",
+      "locked": "Verificación en pausa hasta las {time} por intentos fallidos."
     }
   }
 }

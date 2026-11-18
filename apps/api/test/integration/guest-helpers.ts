@@ -173,7 +173,13 @@ export async function publishedGuide(
   return { propertyId, lockboxId, wifiId, publicId, propertyLink };
 }
 
-/** A request from a guest's browser on the guide origin. */
+/** A random guest address, so per-IP limits never mix tests that share the database. */
+function randomIp(): string {
+  const part = () => Math.floor(Math.random() * 250) + 1;
+  return `10.${part()}.${part()}.${part()}`;
+}
+
+/** A request from a guest's browser on the guide origin (a random address unless one is given). */
 export function guest(
   ctx: Ctx,
   method: "GET" | "POST",
@@ -185,10 +191,72 @@ export function guest(
     url,
     headers: {
       origin: GUIDE_URL,
+      "x-forwarded-for": randomIp(),
       ...(options.cookie ? { cookie: options.cookie } : {}),
       ...(options.payload ? { "content-type": "application/json" } : {}),
       ...options.headers,
     },
     ...(options.payload ? { payload: options.payload } : {}),
   });
+}
+
+/** A date `offset` days from today in Costa Rica (the helper properties' zone, UTC−6). */
+export function crDate(offset: number): string {
+  const date = new Date(Date.now() - 6 * 3_600_000);
+  date.setUTCDate(date.getUTCDate() + offset);
+  return date.toISOString().slice(0, 10);
+}
+
+/** Adds a manual stay starting `startOffset` days from today. */
+export async function addStay(
+  ctx: Ctx,
+  team: TeamWorkspace,
+  propertyId: string,
+  startOffset: number,
+  nights = 3,
+): Promise<string> {
+  const response = await guideApi(ctx, team.owner, team, propertyId, "POST", "/stays", {
+    checkInDate: crDate(startOffset),
+    checkoutDate: crDate(startOffset + nights),
+    channel: "Directo",
+  });
+  expect(response.statusCode, response.body).toBe(201);
+  return (response.json() as { id: string }).id;
+}
+
+/** Copies a stay link as the owner and returns its token and code. */
+export async function copyStayLink(
+  ctx: Ctx,
+  team: TeamWorkspace,
+  propertyId: string,
+  stayId: string,
+  member: Member = team.owner,
+): Promise<{ url: string; token: string; confirmationCode: string | null }> {
+  const response = await guideApi(
+    ctx,
+    member,
+    team,
+    propertyId,
+    "POST",
+    `/share/stays/${stayId}/link`,
+  );
+  expect(response.statusCode, response.body).toBe(200);
+  const body = response.json() as { url: string; confirmationCode: string | null };
+  return { ...body, token: body.url.split("/s/")[1] ?? "" };
+}
+
+/** Exchanges a stay token like a guest's browser; returns the cookie and the response body. */
+export async function exchange(ctx: Ctx, token: string, cookie?: string) {
+  const response = await guest(ctx, "POST", "/api/v1/guest/stay-sessions", {
+    payload: { token },
+    ...(cookie ? { cookie } : {}),
+  });
+  const setCookie = response.headers["set-cookie"];
+  const raw = Array.isArray(setCookie) ? setCookie[0] : setCookie;
+  return {
+    response,
+    setCookie: raw ?? null,
+    cookie: raw ? raw.split(";")[0]! : (cookie ?? null),
+    body: response.json() as { guideUrl: string; notice: string | null },
+  };
 }

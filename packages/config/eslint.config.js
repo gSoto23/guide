@@ -7,13 +7,15 @@ import tseslint from "typescript-eslint";
 // `@guidesk/vault` but never reads plaintext back. `files` globs are relative to the config that
 // loads this one (the repository root for apps/api, apps/worker, and packages/*).
 const VAULT_DECRYPT_MESSAGE =
-  "Only apps/worker/src and apps/api/src/locked-fields/reveal.service.ts may import @guidesk/vault/decrypt (research R5, feature 003 R4, SEC-06). The rest of the API encrypts and never decrypts restricted values.";
+  "Only apps/worker/src, apps/api/src/locked-fields/reveal.service.ts, and apps/api/src/guest/stay-link-secrets.ts may import @guidesk/vault/decrypt (research R5, feature 003 R4, feature 004 R4, SEC-06). The rest of the API encrypts and never decrypts restricted values.";
 const VAULT_DECRYPT_ALLOWED = [
   "apps/worker/src/**",
   "apps/worker/test/**",
   "packages/vault/**",
   // Feature 003 (research R4): the single API file that reveals a locked field.
   "apps/api/src/locked-fields/reveal.service.ts",
+  // Feature 004 (research R4): stay tokens and confirmation codes, never locked-field values.
+  "apps/api/src/guest/stay-link-secrets.ts",
 ];
 
 export default tseslint.config(

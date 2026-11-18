@@ -420,11 +420,15 @@ export class LockedFieldsService {
     });
   }
 
-  /** Who revealed which field of the property, and when (FR-017). */
+  /**
+   * Who revealed which field of the property, and when (FR-017), including guests with a stay
+   * link and stay messages copied with codes (feature 004 FR-032, FR-040).
+   */
   async history(workspaceId: string, propertyId: string): Promise<RevealHistory> {
     await this.views.load(workspaceId, propertyId);
     const rows = await this.handle.db
       .select({
+        type: securityEvent.type,
         fieldId: securityEvent.targetId,
         kind: sql<string>`${securityEvent.metadata}->>'kind'`,
         at: securityEvent.occurredAt,
@@ -435,7 +439,11 @@ export class LockedFieldsService {
       .where(
         and(
           eq(securityEvent.workspaceId, workspaceId),
-          eq(securityEvent.type, "restricted_value.revealed"),
+          inArray(securityEvent.type, [
+            "restricted_value.revealed",
+            "restricted_value.guest_revealed",
+            "restricted_value.exported",
+          ]),
           sql`${securityEvent.metadata}->>'propertyId' = ${propertyId}`,
         ),
       )
@@ -451,11 +459,17 @@ export class LockedFieldsService {
     );
     return {
       items: rows.map((row) => ({
-        fieldId: row.fieldId ?? "",
-        kind: row.kind,
+        fieldId: row.type === "restricted_value.exported" ? "" : (row.fieldId ?? ""),
+        kind: row.kind ?? "",
         label: labels.get(row.fieldId ?? "") ?? "—",
         revealedBy: row.name,
         at: row.at.toISOString(),
+        source:
+          row.type === "restricted_value.guest_revealed"
+            ? ("guest" as const)
+            : row.type === "restricted_value.exported"
+              ? ("export" as const)
+              : ("member" as const),
       })),
     };
   }

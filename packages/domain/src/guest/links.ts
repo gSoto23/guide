@@ -64,3 +64,6 @@ export function isPropertyLinkId(value: string): boolean {
 export function isStayToken(value: string): boolean {
   return STAY_TOKEN_PATTERN.test(value);
 }
+
+/** Devices one stay link may open the guide on (FR-025). */
+export const STAY_LINK_DEVICE_LIMIT = 10;

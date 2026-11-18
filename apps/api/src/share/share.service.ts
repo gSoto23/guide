@@ -23,6 +23,8 @@ export interface ShareTarget {
   propertyId: string;
   propertyName: string;
   timeZone: string;
+  checkInTime: string | null;
+  checkoutTime: string | null;
   guideId: string;
   published: boolean;
   requireConfirmationCode: boolean;
@@ -72,6 +74,8 @@ export class ShareService {
         propertyId: property.id,
         propertyName: property.name,
         timeZone: property.timeZone,
+        checkInTime: property.checkInTime,
+        checkoutTime: property.checkoutTime,
         guideId: guide.id,
         status: guide.status,
         publishedVersionId: guide.publishedVersionId,
@@ -94,6 +98,8 @@ export class ShareService {
       propertyId: row.propertyId,
       propertyName: row.propertyName,
       timeZone: row.timeZone ?? "UTC",
+      checkInTime: row.checkInTime,
+      checkoutTime: row.checkoutTime,
       guideId: row.guideId,
       published: row.status === "published" && row.publishedVersionId !== null,
       requireConfirmationCode: row.requireConfirmationCode,
@@ -237,5 +243,25 @@ export class ShareService {
       return { body: await QRCode.toString(url, { ...options, type: "svg" }), fileName };
     }
     return { body: await QRCode.toBuffer(url, { ...options, type: "png", width: 1024 }), fileName };
+  }
+
+  async copyStayLink(caller: Caller, workspaceId: string, propertyId: string, stayId: string) {
+    const target = await this.target(workspaceId, propertyId);
+    return this.stayLinks.copy(caller, workspaceId, target, stayId);
+  }
+
+  async regenerateStayLink(
+    caller: Caller,
+    workspaceId: string,
+    propertyId: string,
+    stayId: string,
+  ) {
+    const target = await this.target(workspaceId, propertyId);
+    return this.stayLinks.regenerate(caller, workspaceId, target, stayId);
+  }
+
+  async revokeStayLink(caller: Caller, workspaceId: string, propertyId: string, stayId: string) {
+    const target = await this.target(workspaceId, propertyId);
+    await this.stayLinks.revoke(caller, workspaceId, target, stayId);
   }
 }

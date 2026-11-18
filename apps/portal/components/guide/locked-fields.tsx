@@ -331,11 +331,15 @@ export function LockedFields({ locale, propertyId }: { locale: string; propertyI
             <ul className="event-list">
               {history.items.slice(0, 20).map((item, index) => (
                 <li key={`${item.fieldId}-${index}`}>
-                  {t("historyItem", {
-                    name: item.revealedBy ?? "—",
-                    label: item.label,
-                    date: dateOf(item.at),
-                  })}
+                  {item.source === "guest"
+                    ? t("historyGuest", { label: item.label, date: dateOf(item.at) })
+                    : item.source === "export"
+                      ? t("historyExport", { name: item.revealedBy ?? "—", date: dateOf(item.at) })
+                      : t("historyItem", {
+                          name: item.revealedBy ?? "—",
+                          label: item.label,
+                          date: dateOf(item.at),
+                        })}
                 </li>
               ))}
             </ul>

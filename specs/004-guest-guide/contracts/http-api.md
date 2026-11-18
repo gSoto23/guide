@@ -101,10 +101,11 @@ when the media is not in the guide's published version.
 
 ### `POST /api/v1/guest/stay-sessions`
 
-Exchanges a stay token for a device session (research R5). Body `{token}` (JSON) or
-`token=…` (form, no-script fallback). Limits: 20 per IP per hour.
+Exchanges a stay token for a device session (research R5). Body `{token}`, JSON only: the API never
+parses form posts (CSRF hardening, feature 001 T103), so without scripts the exchange page explains
+that the essentials are in the booking messages. Limits: 20 per IP per hour.
 
-- `200` (JSON) or `303 Location: {guideUrl}` (form) with
+- `200` with
   `Set-Cookie: __Host-guidesk_guest=…; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=…`:
   `{ "guideUrl": "/g/{publicId}", "notice": null | "ended" | "device_limit" }`.
   - `notice: "ended"`: the link stopped (revoked, replaced, cancelled stay, window closed); no cookie.

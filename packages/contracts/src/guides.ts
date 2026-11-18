@@ -317,7 +317,15 @@ export interface RevealedValue {
 }
 
 export interface RevealHistory {
-  items: { fieldId: string; kind: string; label: string; revealedBy: string | null; at: string }[];
+  items: {
+    fieldId: string;
+    kind: string;
+    label: string;
+    revealedBy: string | null;
+    at: string;
+    /** Feature 004: a member, a guest with a stay link, or a stay message copied with codes. */
+    source: "member" | "guest" | "export";
+  }[];
 }
 
 // Preview, publishing, and versions (feature 003 contract "Preview, publishing, and versions") -----
