@@ -19,8 +19,9 @@ Answered with the recommended option under the founder's standing instruction to
 
 - Q: What are the topics a host sets autonomy for? → A: The topics the assistant already classifies
   (spec 005): the nine default guide sections (arrival and access, Wi-Fi, house rules, appliances,
-  amenities, parking, local recommendations, safety information, checkout), questions about custom
-  sections, and other questions. The mandatory escalation categories are shown as locked rows, never
+  amenities, parking, local recommendations, safety information, checkout) and other questions,
+  which include questions about custom sections (the classifier never sees the guide, so it can't
+  tell custom sections apart). The mandatory escalation categories are shown as locked rows, never
   configurable (FR-07.2). "Safety information" covers questions such as where the extinguisher is;
   an actual emergency is always a mandatory escalation.
 - Q: What is the difference between `auto` and `full_auto`? → A: `auto` sends only answers that cite a
@@ -263,8 +264,8 @@ applied; "Why this reply" shows them; changing the settings later doesn't change
 **Autonomy**
 
 - **FR-001**: Autonomy MUST be set per topic to `draft`, `auto`, or `full_auto`; the topics are the
-  nine default guide sections, custom sections, and other questions; a new workspace starts with every
-  topic at `draft` (FR-07.1).
+  nine default guide sections and other questions (including questions about custom sections); a new
+  workspace starts with every topic at `draft` (FR-07.1).
 - **FR-002**: The mandatory escalation categories of PRD §6.2 MUST be shown as locked, with no control
   to change them, and MUST never be answered automatically at any level, whatever the instructions
   (FR-07.2).
