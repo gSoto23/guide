@@ -125,6 +125,8 @@ export const worker = new sst.aws.Service("Worker", {
   environment: {
     NODE_ENV: "production",
     PORTAL_URL: portalUrl,
+    // Feature 005: assistant replies may link to the guide's own pages (research R6).
+    GUIDE_URL: guideUrl,
     ...databaseEnvironment,
     ...emailEnvironment,
     ...integrationEnvironment,

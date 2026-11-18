@@ -108,5 +108,42 @@
   "rateLimited": {
     "title": "Un momento",
     "body": "Inténtalo de nuevo en un momento."
+  },
+  "chat": {
+    "ask": "Preguntar",
+    "title": "Pregunta sobre {property}",
+    "close": "Cerrar el chat",
+    "intro": "Soy el asistente virtual de {property}. Respondo con la guía de {host}, y tu anfitrión puede ver este chat.",
+    "introNoHost": "Soy el asistente virtual de {property}. Respondo con la guía de tu anfitrión, que también puede ver este chat.",
+    "introEmergency": "En una emergencia, llama al {number}.",
+    "introPlatform": "También puedes escribirle a tu anfitrión por los mensajes de la plataforma de tu reserva.",
+    "suggestionsTitle": "Puedes preguntar, por ejemplo:",
+    "suggestions": {
+      "arrival": "¿Cómo entro?",
+      "wifi": "¿Cuál es la red de wifi?",
+      "checkout": "¿A qué hora es la salida?",
+      "house_rules": "¿Cuáles son las normas de la casa?",
+      "parking": "¿Dónde puedo parquear?",
+      "appliances": "¿Cómo funcionan los electrodomésticos?",
+      "local_recommendations": "¿Dónde podemos comer cerca?",
+      "amenities": "¿Qué comodidades tiene?"
+    },
+    "label": "Tu mensaje",
+    "placeholder": "Escribe tu pregunta",
+    "send": "Enviar",
+    "counter": "{count} de 2000 caracteres",
+    "typing": "El asistente está escribiendo…",
+    "you": "Tú",
+    "assistant": "Asistente",
+    "host": "{name} (anfitrión)",
+    "source": "De la guía:",
+    "emergencyTitle": "Emergencia",
+    "call": "Llamar al {number}",
+    "paused": "Enviaste muchos mensajes. Intenta de nuevo en {minutes} min, o escríbele a tu anfitrión por la plataforma de tu reserva.",
+    "tooLong": "Los mensajes pueden tener hasta 2000 caracteres.",
+    "error": "No se pudo enviar tu mensaje. Revisa tu conexión e intenta de nuevo.",
+    "unavailable": "El chat no está disponible para esta guía en este momento.",
+    "loading": "Cargando el chat…",
+    "offline": "Estás sin conexión. El chat vuelve a funcionar cuando te reconectes."
   }
 }

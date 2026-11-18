@@ -1,6 +1,21 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { z } from "zod";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
+import {
+  ANSWER_SYSTEM,
+  answerUserPrompt,
+  CLASSIFY_SYSTEM,
+  classifyUserPrompt,
+  knowledgeBlock,
+} from "./agent/prompts.js";
+import {
+  guestAnswerSchema,
+  guestClassificationSchema,
+  type AnswerGuestInput,
+  type GuestAnswer,
+  type GuestClassification,
+  type GuestClassificationInput,
+} from "./agent/schemas.js";
 import { buildExtractionMessage, EXTRACTION_SYSTEM_PROMPT } from "./extraction/prompt.js";
 import { listingExtractionSchema } from "./extraction/schema.js";
 import {
@@ -26,6 +41,8 @@ import {
   type TranslatedBlocks,
 } from "./guide/schemas.js";
 import {
+  type AgentCallResult,
+  type AgentUsage,
   LlmTimeoutError,
   LlmUnavailableError,
   type ExtractionUsage,
@@ -41,6 +58,9 @@ export const EXTRACTION_EFFORT = "low";
 /** ADR-0005: guide drafting from listings, interviews, and documents uses medium effort (feature 003 R6). */
 export const GUIDE_MODEL = "claude-opus-5-5";
 export const GUIDE_DRAFT_EFFORT = "medium";
+/** ADR-0005: the guest assistant classifies and answers at low effort (feature 005 research R3). */
+export const AGENT_MODEL = "claude-opus-5-5";
+export const AGENT_EFFORT = "low";
 /** Translation keeps structure and meaning at low effort (feature 003 R6). */
 export const GUIDE_TRANSLATE_EFFORT = "low";
 
@@ -59,6 +79,31 @@ interface UsageLike {
   input_tokens: number;
   output_tokens: number;
   cache_read_input_tokens?: number | null;
+}
+
+/**
+ * Cost of an assistant call with cache detail (feature 005 FR-030): cache writes at 1.25 times the
+ * input price (5-minute cache), cache reads at the cache-read price.
+ */
+export function agentUsage(
+  model: string,
+  usage: UsageLike & { cache_creation_input_tokens?: number | null },
+): AgentUsage {
+  const price = PRICES[model] ?? PRICES[AGENT_MODEL]!;
+  const cacheRead = usage.cache_read_input_tokens ?? 0;
+  const cacheWrite = usage.cache_creation_input_tokens ?? 0;
+  return {
+    inputTokens: usage.input_tokens,
+    outputTokens: usage.output_tokens,
+    cacheReadTokens: cacheRead,
+    cacheWriteTokens: cacheWrite,
+    costUsdMicros: Math.round(
+      usage.input_tokens * price.input +
+        cacheRead * price.cacheRead +
+        cacheWrite * price.input * 1.25 +
+        usage.output_tokens * price.output,
+    ),
+  };
 }
 
 export function usageCost(model: string, usage: UsageLike): ExtractionUsage {
@@ -200,6 +245,86 @@ export class AnthropicLlmAdapter implements LlmPort {
       return { ...result, outcome: "invalid", result: null };
     }
     return result;
+  }
+
+  /** Feature 005: classify a guest message without the guide (research R3). */
+  async classifyGuestMessage(
+    input: GuestClassificationInput,
+    options: LlmCallOptions = {},
+  ): Promise<AgentCallResult<GuestClassification>> {
+    return this.agentCall(
+      guestClassificationSchema,
+      [{ type: "text", text: CLASSIFY_SYSTEM, cache_control: { type: "ephemeral" } }],
+      classifyUserPrompt(input),
+      512,
+      options,
+    );
+  }
+
+  /**
+   * Feature 005: answer from the published guide (research R3, R4). The rules and the property's
+   * knowledge are two cached system blocks, so every message of a conversation reuses the prefix.
+   */
+  async answerGuest(
+    input: AnswerGuestInput,
+    options: LlmCallOptions = {},
+  ): Promise<AgentCallResult<GuestAnswer>> {
+    return this.agentCall(
+      guestAnswerSchema,
+      [
+        { type: "text", text: ANSWER_SYSTEM },
+        { type: "text", text: knowledgeBlock(input), cache_control: { type: "ephemeral" } },
+      ],
+      answerUserPrompt(input),
+      2048,
+      options,
+    );
+  }
+
+  private async agentCall<T>(
+    schema: z.ZodType<T>,
+    system: { type: "text"; text: string; cache_control?: { type: "ephemeral" } }[],
+    user: string,
+    maxTokens: number,
+    options: LlmCallOptions,
+  ): Promise<AgentCallResult<T>> {
+    let response;
+    try {
+      response = await this.client.beta.messages.create(
+        {
+          model: AGENT_MODEL,
+          max_tokens: maxTokens,
+          betas: ["server-side-fallback-2026-07-01"],
+          fallbacks: "default",
+          system,
+          messages: [{ role: "user", content: user }],
+          output_config: { effort: AGENT_EFFORT, format: betaZodOutputFormat(schema) },
+        },
+        { signal: options.signal },
+      );
+    } catch (error: unknown) {
+      if (options.signal?.aborted || error instanceof Anthropic.APIUserAbortError) {
+        throw new LlmTimeoutError();
+      }
+      const reason =
+        error instanceof Anthropic.APIError ? `status ${error.status ?? "none"}` : "connection";
+      throw new LlmUnavailableError(reason);
+    }
+    const usage = agentUsage(response.model, response.usage);
+    const base = { usage, model: response.model, result: null };
+    if (response.stop_reason === "refusal") return { ...base, outcome: "refused" };
+    if (response.stop_reason === "max_tokens") return { ...base, outcome: "truncated" };
+    const text = response.content
+      .map((block) => (block.type === "text" ? block.text : ""))
+      .join("");
+    let parsed;
+    try {
+      parsed = schema.safeParse(JSON.parse(text));
+    } catch {
+      return { ...base, outcome: "invalid" };
+    }
+    if (!parsed.success) return { ...base, outcome: "invalid" };
+    return { ...base, outcome: "ok", result: parsed.data };
   }
 
   /**

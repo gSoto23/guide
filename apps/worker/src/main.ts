@@ -2,7 +2,7 @@ import "./instrument.js";
 import { PgBoss } from "pg-boss";
 import { SesEmailAdapter, SmtpEmailAdapter, type EmailAdapter } from "@guidesk/integrations";
 import { describeError, shutdownObservability } from "@guidesk/observability";
-import { JOB_QUEUES, QUEUE_POLICIES } from "@guidesk/domain";
+import { CHAT_REPLY_POLL_SECONDS, JOB_QUEUES, QUEUE_POLICIES } from "@guidesk/domain";
 import { loadConfig, type WorkerConfig } from "./config.js";
 import {
   CALENDAR_SCHEDULE_CRON,
@@ -50,6 +50,8 @@ import { createInterviewAnswerHandler } from "./jobs/interview-answer.js";
 import { createSharedBlockPublishHandler } from "./jobs/shared-block-publish.js";
 import { createMediaCopyHandler } from "./jobs/media-copy.js";
 import { createMediaProcessHandler } from "./jobs/media-process.js";
+import { AGENT_COST_CHECK_CRON, createAgentCostCheckHandler } from "./jobs/agent-cost-check.js";
+import { createChatReplyHandler } from "./jobs/chat-reply.js";
 import { createWorkerServices } from "./services.js";
 
 function emailAdapter(config: WorkerConfig): EmailAdapter {
@@ -171,6 +173,22 @@ async function main(): Promise<void> {
     { localConcurrency: 2 },
     createMediaCopyHandler({ db: services.db.db, media: services.media }),
   );
+  // Feature 005: the assistant's replies, polled often so guests wait little (research R2).
+  await createQueue(JOB_QUEUES.chatReply);
+  await boss.work(
+    JOB_QUEUES.chatReply,
+    { localConcurrency: 8, pollingIntervalSeconds: CHAT_REPLY_POLL_SECONDS },
+    createChatReplyHandler({
+      db: services.db.db,
+      llm: services.llm,
+      queueEmail: services.queueEmail,
+      portalUrl: services.portalUrl,
+      guideUrl: config.guideUrl,
+    }),
+  );
+  await createQueue(JOB_QUEUES.agentCostCheck);
+  await boss.work(JOB_QUEUES.agentCostCheck, createAgentCostCheckHandler({ db: services.db.db }));
+  await boss.schedule(JOB_QUEUES.agentCostCheck, AGENT_COST_CHECK_CRON, null, { tz: "UTC" });
   // Shared-block fan-out (research R14): one job per publish or delete.
   await createQueue(JOB_QUEUES.sharedBlockPublish);
   await boss.work(

@@ -30,3 +30,4 @@ export * from "./guides/publish-checks.js";
 export * from "./guides/limits.js";
 export * from "./guides/drafting.js";
 export * from "./guest/index.js";
+export * from "./agent/index.js";

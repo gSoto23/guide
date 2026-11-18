@@ -60,7 +60,11 @@
     "ai_limit_reached": "You reached the daily AI limit. It resets at midnight (UTC).",
     "reveal_limit_reached": "You revealed too many locked fields in an hour. Try again later.",
     "guide_not_published": "Publish the guide first.",
-    "stay_not_eligible": "That stay is no longer active."
+    "stay_not_eligible": "That stay is no longer active.",
+    "draft_closed": "Someone already answered this draft.",
+    "reply_warnings": "Check your reply before sending it.",
+    "message_too_long": "The message is too long.",
+    "chat_paused": "The chat is paused."
   },
   "auth": {
     "signInCta": "Sign in or create an account",
@@ -1531,5 +1535,115 @@
       "copied": "Message copied",
       "close": "Close"
     }
+  },
+  "conversations": {
+    "link": "Conversations",
+    "title": "Conversations at {property}",
+    "titleShort": "Conversations",
+    "back": "Back to the property",
+    "intro": "What guests ask in the guide's chat. The ones that need you come first.",
+    "empty": "No conversations yet. They appear when a guest writes in the guide's chat.",
+    "needsHost": "Needs you",
+    "open": "Open",
+    "noStay": "No stay",
+    "stayDates": "Stay {checkIn} → {checkout}",
+    "lastAt": "Last message {when}",
+    "author": {
+      "guest": "Guest",
+      "assistant": "Assistant",
+      "host": "Host"
+    },
+    "openConversation": "Open conversation",
+    "conversation": "Conversation",
+    "backToList": "Back to conversations",
+    "reason": "Reason: {reason}",
+    "reasons": {
+      "emergency": "Possible emergency",
+      "malfunction": "Damage or something not working",
+      "complaint": "Complaint",
+      "money": "Refund, payment, or compensation",
+      "reservation_change": "Reservation change",
+      "legal": "Legal or safety matter",
+      "not_confident": "The assistant couldn't answer from the guide",
+      "draft_ready": "Draft ready to review",
+      "check_failed": "The draft failed a check",
+      "limit": "Daily assistant limit",
+      "unavailable": "Assistant unavailable"
+    },
+    "you": "Guest",
+    "assistantName": "Assistant",
+    "hostName": "{name} (host)",
+    "sentBy": "Sent by {name}",
+    "sources": "Sources:",
+    "emergencyCard": "Emergency card shown to the guest",
+    "draft": {
+      "title": "Assistant's draft",
+      "body": "The guest got a holding reply. Review the draft and send it, edit it, or write your own reply.",
+      "send": "Send",
+      "edit": "Edit",
+      "sendEdited": "Send edited",
+      "cancel": "Cancel",
+      "closed": "Someone already answered this draft.",
+      "sent": "Reply sent."
+    },
+    "reply": {
+      "title": "Reply",
+      "label": "Your reply",
+      "hint": "The guest sees it in the guide's chat with your name.",
+      "send": "Send reply",
+      "sent": "Reply sent."
+    },
+    "warnings": {
+      "title": "Check your reply",
+      "intro": "Your text may break these rules:",
+      "links": "It has links that aren't in the guide.",
+      "promises": "It promises a refund, discount, or change.",
+      "off_platform": "It asks to book or pay off the platform.",
+      "confirm": "Send anyway?",
+      "lockedNote": "If you share a code, the stay link is the safer way."
+    },
+    "why": {
+      "title": "Why this reply",
+      "decision": "Decision: {decision}",
+      "topic": "Topic: {topic}",
+      "autonomy": "Autonomy: {autonomy}",
+      "version": "Published guide version: {version}",
+      "checks": "Checks",
+      "passed": "Passed",
+      "failed": "Failed",
+      "edited": "Edited by a member",
+      "decisions": {
+        "answered": "Answered on its own",
+        "drafted": "Prepared a draft",
+        "held": "Handed the conversation to the host",
+        "pointer": "Pointed to the locked value's section",
+        "greeting": "Greeted",
+        "paused": "Paused the chat"
+      },
+      "checkNames": {
+        "citation": "Cites a published section",
+        "codes": "No codes that aren't in the guide",
+        "links": "Only links from the guide",
+        "promises": "No promises of refunds, discounts, or changes",
+        "off_platform": "Doesn't ask to book or pay off the platform"
+      }
+    },
+    "refresh": "Refresh",
+    "readOnly": "Your role can see this conversation but not reply."
+  },
+  "assistant": {
+    "title": "Chat assistant",
+    "workspaceBody": "How the assistant answers in this workspace's guide chats. Emergencies, complaints, payments, and reservation changes always go to your team.",
+    "propertyBody": "How the assistant answers in this property's guide chat.",
+    "draft": "Drafts: I prepare each reply and your team approves it",
+    "auto": "Automatic: I answer only what's in the guide and pass the rest to your team",
+    "inherit": "Use the workspace setting ({mode})",
+    "modes": {
+      "draft": "drafts",
+      "auto": "automatic"
+    },
+    "saved": "Setting saved.",
+    "readOnly": "Only owners and admins can change this setting.",
+    "legend": "Autonomy"
   }
 }

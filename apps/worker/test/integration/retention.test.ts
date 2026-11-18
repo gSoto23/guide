@@ -2,6 +2,10 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { afterAll, beforeAll, beforeEach, describe, expect, inject, it } from "vitest";
 import { eq, inArray } from "drizzle-orm";
 import {
+  agentTrace,
+  chatMessage,
+  chatUsageDaily,
+  conversation,
   createDb,
   createGuideForProperty,
   extractionRequest,
@@ -595,5 +599,86 @@ describe("retention.daily for the guest guide (feature 004 T066)", () => {
       .from(guideLink)
       .where(eq(guideLink.propertyId, propertyId));
     expect(left.map((row) => row.status).sort()).toEqual(["active", "replaced"]);
+  });
+});
+
+describe("retention.daily for the in-guide chat (feature 005 T045)", () => {
+  async function chat(options: { checkoutDaysAgo?: number; lastMessageDaysAgo: number }) {
+    let stayId: string | null = null;
+    if (options.checkoutDaysAgo !== undefined) {
+      const [row] = await handle.db
+        .insert(stay)
+        .values({
+          workspaceId,
+          propertyId,
+          source: "manual",
+          checkInDate: dateDaysAgo(options.checkoutDaysAgo + 3),
+          checkoutDate: dateDaysAgo(options.checkoutDaysAgo),
+          channel: "Directo",
+        })
+        .returning({ id: stay.id });
+      stayId = row!.id;
+    }
+    const [conv] = await handle.db
+      .insert(conversation)
+      .values({
+        workspaceId,
+        propertyId,
+        stayId,
+        cookieHash: randomBytes(32).toString("hex"),
+        language: "es",
+        lastMessageAt: daysAgo(options.lastMessageDaysAgo),
+      })
+      .returning({ id: conversation.id });
+    await handle.db.insert(chatMessage).values({
+      workspaceId,
+      conversationId: conv!.id,
+      seq: 1,
+      author: "guest",
+      body: "Hola",
+    });
+    await handle.db.insert(agentTrace).values({
+      workspaceId,
+      conversationId: conv!.id,
+      decision: "greeting",
+      autonomy: "draft",
+    });
+    return conv!.id;
+  }
+
+  it("deletes conversations 12 months after checkout, or after the last message without a stay", async () => {
+    const pastStay = await chat({ checkoutDaysAgo: 400, lastMessageDaysAgo: 10 });
+    const recentStay = await chat({ checkoutDaysAgo: 300, lastMessageDaysAgo: 300 });
+    const oldNoStay = await chat({ lastMessageDaysAgo: 380 });
+    const recentNoStay = await chat({ lastMessageDaysAgo: 20 });
+    await run();
+    const left = await handle.db
+      .select({ id: conversation.id })
+      .from(conversation)
+      .where(eq(conversation.workspaceId, workspaceId));
+    expect(left.map((row) => row.id).sort()).toEqual([recentStay, recentNoStay].sort());
+    const orphans = await handle.db
+      .select({ id: chatMessage.id })
+      .from(chatMessage)
+      .where(inArray(chatMessage.conversationId, [pastStay, oldNoStay]));
+    expect(orphans).toEqual([]);
+    const traces = await handle.db
+      .select({ id: agentTrace.id })
+      .from(agentTrace)
+      .where(inArray(agentTrace.conversationId, [pastStay, oldNoStay]));
+    expect(traces).toEqual([]);
+  });
+
+  it("deletes daily chat usage after 13 months", async () => {
+    await handle.db.insert(chatUsageDaily).values([
+      { workspaceId, propertyId, day: dateDaysAgo(420), replies: 3 },
+      { workspaceId, propertyId, day: dateDaysAgo(30), replies: 5 },
+    ]);
+    await run();
+    const left = await handle.db
+      .select({ replies: chatUsageDaily.replies })
+      .from(chatUsageDaily)
+      .where(eq(chatUsageDaily.propertyId, propertyId));
+    expect(left).toEqual([{ replies: 5 }]);
   });
 });

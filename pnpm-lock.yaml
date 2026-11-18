@@ -211,6 +211,9 @@ importers:
       '@guidesk/emails':
         specifier: workspace:*
         version: link:../../packages/emails
+      '@guidesk/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@guidesk/integrations':
         specifier: workspace:*
         version: link:../../packages/integrations
@@ -492,6 +495,22 @@ importers:
       '@playwright/test':
         specifier: ^1.65.0
         version: 1.65.0
+
+  evals/agent:
+    dependencies:
+      '@guidesk/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      '@guidesk/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
+      '@guidesk/integrations':
+        specifier: workspace:*
+        version: link:../../packages/integrations
+    devDependencies:
+      '@guidesk/config':
+        specifier: workspace:*
+        version: link:../../packages/config
 
   evals/extraction:
     dependencies:

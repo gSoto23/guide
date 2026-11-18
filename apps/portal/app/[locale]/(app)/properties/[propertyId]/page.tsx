@@ -1,4 +1,5 @@
 import { setRequestLocale } from "next-intl/server";
+import { AssistantCard } from "@/components/assistant/assistant-card";
 import { PropertyFacts } from "@/components/properties/property-facts";
 
 /** A property's page: facts, then listing content, calendars, and stays (T046). */
@@ -12,6 +13,7 @@ export default async function PropertyPage({
   return (
     <main>
       <PropertyFacts locale={locale} propertyId={propertyId} />
+      <AssistantCard propertyId={propertyId} />
     </main>
   );
 }

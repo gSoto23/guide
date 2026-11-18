@@ -3,6 +3,18 @@ import { Item, MapLinks, sectionTitle } from "../components/content.js";
 import { Layout, type PageChrome } from "../components/layout.js";
 import type { GuestLocale, Translate } from "../i18n.js";
 
+/** Suggested-question keys the API may return (domain `suggestionKeys`). */
+const CHAT_SUGGESTIONS = [
+  "arrival",
+  "wifi",
+  "checkout",
+  "house_rules",
+  "parking",
+  "appliances",
+  "local_recommendations",
+  "amenities",
+];
+
 /** Strings the browser script shows (contracts/guide-web.md); it ships no catalog of its own. */
 export function clientTexts(t: Translate): Record<string, string> {
   const keys = [
@@ -32,6 +44,32 @@ export function clientTexts(t: Translate): Record<string, string> {
     "offline.banner",
     "copy.copy",
     "copy.copied",
+    // Feature 005: the chat's texts (research R10); the chat script ships no catalog either.
+    "chat.title",
+    "chat.close",
+    "chat.intro",
+    "chat.introNoHost",
+    "chat.introEmergency",
+    "chat.introPlatform",
+    "chat.suggestionsTitle",
+    ...CHAT_SUGGESTIONS.map((key) => `chat.suggestions.${key}`),
+    "chat.label",
+    "chat.placeholder",
+    "chat.send",
+    "chat.counter",
+    "chat.typing",
+    "chat.you",
+    "chat.assistant",
+    "chat.host",
+    "chat.source",
+    "chat.emergencyTitle",
+    "chat.call",
+    "chat.paused",
+    "chat.tooLong",
+    "chat.error",
+    "chat.unavailable",
+    "chat.loading",
+    "chat.offline",
   ];
   const texts: Record<string, string> = {};
   // Placeholders stay as {name} for the script to fill.
@@ -43,6 +81,14 @@ export function clientTexts(t: Translate): Record<string, string> {
     "stay.dates": { checkIn: "{checkIn}", checkout: "{checkout}" },
     "stay.deviceTime": { time: "{time}" },
     "offline.banner": { time: "{time}" },
+    "chat.title": { property: "{property}" },
+    "chat.intro": { property: "{property}", host: "{host}" },
+    "chat.introNoHost": { property: "{property}" },
+    "chat.introEmergency": { number: "{number}" },
+    "chat.counter": { count: "{count}" },
+    "chat.host": { name: "{name}" },
+    "chat.call": { number: "{number}" },
+    "chat.paused": { minutes: "{minutes}" },
   };
   for (const key of keys) texts[key] = t(key, raw[key]);
   return texts;

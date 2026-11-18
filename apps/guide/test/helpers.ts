@@ -18,6 +18,8 @@ export function fixtureHandler(overrides: { secure?: boolean } = {}) {
     assets: {
       script: "/assets/guide.test.js",
       style: "/assets/guide.test.css",
+      chatScript: "/assets/chat.test.js",
+      chatStyle: "/assets/chat.test.css",
       publicDir: join(fileURLToPath(new URL(".", import.meta.url)), "fixtures-public"),
     },
   });

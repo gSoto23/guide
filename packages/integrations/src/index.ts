@@ -18,6 +18,8 @@ export * from "./llm/anthropic.adapter.js";
 export * from "./llm/fake.adapter.js";
 export * from "./llm/guide/schemas.js";
 export * from "./llm/guide/prompts.js";
+export * from "./llm/agent/schemas.js";
+export * from "./llm/agent/prompts.js";
 export * from "./sandbox/protocol.js";
 export * from "./sandbox/port.js";
 export * from "./sandbox/lambda.adapter.js";

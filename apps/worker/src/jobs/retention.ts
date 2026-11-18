@@ -1,5 +1,6 @@
 import { and, eq, inArray, isNotNull, isNull, lt, ne, or, sql } from "drizzle-orm";
 import {
+  chatUsageDaily,
   extractionRequest,
   guideAiRequest,
   guideDocument,
@@ -30,6 +31,8 @@ import { runInJobSpan, type JobSpanDeps } from "./span.js";
  *   they were written; published versions beyond the latest 20 per guide, never the current one;
  *   media no item, block, or kept version uses, 24 hours after it became unused; and AI request
  *   rows after 12 months (data model §6).
+ * - feature 005: conversations 12 months after the stay's checkout (or the last message without a
+ *   stay), and daily chat usage after 13 months.
  *
  * It logs counts only, never values.
  */
@@ -48,6 +51,10 @@ const KEPT_VERSIONS = 20;
 const AI_REQUEST_MONTHS = 12;
 /** Unused media handled per run. */
 const MEDIA_BATCH = 200;
+/** Feature 005: conversations are kept 12 months, daily chat usage 13 months (data model §5). */
+const CONVERSATION_MONTHS = 12;
+const CHAT_USAGE_MONTHS = 13;
+const CONVERSATION_BATCH = 1000;
 
 export interface RetentionDeps {
   db: Database;
@@ -73,6 +80,8 @@ export interface RetentionCounts {
   aiRequests: number;
   stayLinks: number;
   propertyLinks: number;
+  conversations: number;
+  chatUsage: number;
 }
 
 function daysBefore(now: Date, days: number): Date {
@@ -288,7 +297,30 @@ export async function runRetention(deps: RetentionDeps): Promise<RetentionCounts
     .where(and(eq(guideLink.status, "replaced"), lt(guideLink.replacedAt, monthAgo)))
     .returning({ id: guideLink.id });
 
+  // Feature 005 (data model §5, FR-033): conversations, with their messages, drafts, and traces by
+  // cascade, 12 months after the stay's checkout, or 12 months after the last message when the
+  // conversation has no stay; daily chat usage after 13 months.
+  const conversationCutoff = monthsBefore(now, CONVERSATION_MONTHS);
+  const conversations = await db.execute<{ id: string }>(sql`
+    DELETE FROM conversation
+    WHERE id IN (
+      SELECT c.id
+        FROM conversation c
+        LEFT JOIN stay s ON s.id = c.stay_id
+       WHERE (s.id IS NOT NULL AND s.checkout_date < ${conversationCutoff}::date)
+          OR (s.id IS NULL AND c.last_message_at < ${conversationCutoff}::date)
+       LIMIT ${CONVERSATION_BATCH}
+    )
+    RETURNING id
+  `);
+  const chatUsage = await db
+    .delete(chatUsageDaily)
+    .where(lt(chatUsageDaily.day, monthsBefore(now, CHAT_USAGE_MONTHS)))
+    .returning({ day: chatUsageDaily.day });
+
   return {
+    conversations: conversations.rows.length,
+    chatUsage: chatUsage.length,
     stayLinks: stayLinks.rows.length,
     propertyLinks: propertyLinks.length,
     interviewContent: interviewContent.length,

@@ -74,6 +74,12 @@ PostgreSQL is always the system of record for property knowledge: structured fac
 sections, uploaded documents, and the service catalog. This decision covers only **how that
 knowledge reaches the model on each reply**.
 
+*Note (spec 005): the stage 1 assembler is the knowledge renderer in `packages/domain/src/agent`
+(`renderKnowledge`), not a separate `packages/agent`, because it is pure and the domain already holds
+the published snapshot types. It renders the published version only, one `[section <id>] <title>`
+block per section, locked fields as labels, and nothing time-dependent, so the cached prefix stays
+byte-identical. It can move to its own package when the hybrid strategy or tools arrive.*
+
 A `ContextAssembler` in `packages/agent` builds the knowledge part of every prompt. It has two
 strategies, `full` and `hybrid`, selected **per property**. The rest of the pipeline does not
 know which strategy ran, so switching never touches the agent, the policy engine, or the

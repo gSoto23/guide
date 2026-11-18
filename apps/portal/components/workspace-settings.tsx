@@ -6,6 +6,7 @@ import type { MemberList, Workspace, WorkspaceDeletionResponse } from "@guidesk/
 import { apiFetch } from "@/lib/api";
 import { useMeContext } from "@/lib/me-context";
 import { errorKey, useStepUp } from "@/lib/use-step-up";
+import { AssistantCard } from "./assistant/assistant-card";
 
 const KNOWN = [
   "forbidden",
@@ -168,6 +169,8 @@ export function WorkspaceSettings({ locale }: { locale: string }) {
               </p>
             )}
           </section>
+
+          <AssistantCard />
 
           {isOwner ? (
             <section className="card" aria-labelledby="transfer-title">

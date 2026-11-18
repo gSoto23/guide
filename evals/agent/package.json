@@ -1,0 +1,21 @@
+{
+  "name": "@guidesk/evals-agent",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Eval suite for the in-guide assistant (feature 005 research R13, FR-034, constitution V): answers from the guide, escalations, code-seeking and injection, language, greetings.",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "eval": "tsc -p tsconfig.json && node --env-file-if-exists=../../.env dist/run.js"
+  },
+  "dependencies": {
+    "@guidesk/domain": "workspace:*",
+    "@guidesk/i18n": "workspace:*",
+    "@guidesk/integrations": "workspace:*"
+  },
+  "devDependencies": {
+    "@guidesk/config": "workspace:*"
+  }
+}

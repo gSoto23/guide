@@ -78,6 +78,19 @@ export function Layout({ t, locale, assets, title, guide, clientTexts, children 
         <main id="main" className="main">
           {children}
         </main>
+        {guide ? (
+          // Hidden until the page script runs: without scripts there is no chat (edge cases).
+          <button
+            type="button"
+            id="ask"
+            className="ask"
+            hidden
+            data-chat-script={assets.chatScript}
+            data-chat-style={assets.chatStyle}
+          >
+            {t("chat.ask")}
+          </button>
+        ) : null}
         {clientTexts ? (
           <script
             type="application/json"

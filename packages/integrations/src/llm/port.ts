@@ -1,3 +1,9 @@
+import type {
+  AnswerGuestInput,
+  GuestAnswer,
+  GuestClassification,
+  GuestClassificationInput,
+} from "./agent/schemas.js";
 import type { ListingExtraction } from "./extraction/schema.js";
 import type {
   DraftAnswer,
@@ -65,7 +71,38 @@ export interface GuideLlmPort {
   ): Promise<LlmCallResult<TranslatedBlocks>>;
 }
 
-export interface LlmPort extends GuideLlmPort {
+/** Token use of an assistant call, with cache reads and writes for the trace (feature 005 FR-030). */
+export interface AgentUsage {
+  inputTokens: number;
+  outputTokens: number;
+  cacheReadTokens: number;
+  cacheWriteTokens: number;
+  costUsdMicros: number;
+}
+
+export interface AgentCallResult<T> {
+  outcome: "ok" | "refused" | "truncated" | "invalid";
+  result: T | null;
+  usage: AgentUsage;
+  model: string;
+}
+
+/**
+ * The guest assistant's calls (feature 005 research R3). Classification never sees the guide; the
+ * answer sees only the published guide as rendered knowledge, with locked fields as labels.
+ */
+export interface AgentLlmPort {
+  classifyGuestMessage(
+    input: GuestClassificationInput,
+    options?: LlmCallOptions,
+  ): Promise<AgentCallResult<GuestClassification>>;
+  answerGuest(
+    input: AnswerGuestInput,
+    options?: LlmCallOptions,
+  ): Promise<AgentCallResult<GuestAnswer>>;
+}
+
+export interface LlmPort extends GuideLlmPort, AgentLlmPort {
   extractListing(
     redactedText: string,
     options?: { signal?: AbortSignal },

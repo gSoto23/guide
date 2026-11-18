@@ -108,5 +108,42 @@
   "rateLimited": {
     "title": "One moment",
     "body": "Try again in a moment."
+  },
+  "chat": {
+    "ask": "Ask",
+    "title": "Ask about {property}",
+    "close": "Close the chat",
+    "intro": "I'm the virtual assistant for {property}. My answers come from {host}'s guide, and your host can see this chat.",
+    "introNoHost": "I'm the virtual assistant for {property}. My answers come from your host's guide, and your host can see this chat.",
+    "introEmergency": "In an emergency, call {number}.",
+    "introPlatform": "You can also reach your host through your booking platform's messages.",
+    "suggestionsTitle": "You can ask, for example:",
+    "suggestions": {
+      "arrival": "How do I get in?",
+      "wifi": "What's the Wi-Fi network?",
+      "checkout": "What time is checkout?",
+      "house_rules": "What are the house rules?",
+      "parking": "Where can I park?",
+      "appliances": "How do the appliances work?",
+      "local_recommendations": "Where can we eat nearby?",
+      "amenities": "What does the place have?"
+    },
+    "label": "Your message",
+    "placeholder": "Write your question",
+    "send": "Send",
+    "counter": "{count} of 2,000 characters",
+    "typing": "The assistant is writing…",
+    "you": "You",
+    "assistant": "Assistant",
+    "host": "{name} (host)",
+    "source": "From the guide:",
+    "emergencyTitle": "Emergency",
+    "call": "Call {number}",
+    "paused": "You've sent many messages. Try again in {minutes} min, or write to your host through your booking platform.",
+    "tooLong": "Messages can have up to 2,000 characters.",
+    "error": "Your message couldn't be sent. Check your connection and try again.",
+    "unavailable": "The chat isn't available for this guide right now.",
+    "loading": "Loading the chat…",
+    "offline": "You're offline. The chat works again when you reconnect."
   }
 }

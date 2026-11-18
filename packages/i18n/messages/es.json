@@ -60,7 +60,11 @@
     "ai_limit_reached": "Llegaste al límite diario de IA. Se renueva a medianoche (UTC).",
     "reveal_limit_reached": "Revelaste demasiados campos protegidos en una hora. Inténtalo más tarde.",
     "guide_not_published": "Primero publica la guía.",
-    "stay_not_eligible": "Esa estadía ya no está activa."
+    "stay_not_eligible": "Esa estadía ya no está activa.",
+    "draft_closed": "Otra persona ya respondió este borrador.",
+    "reply_warnings": "Revisa tu respuesta antes de enviarla.",
+    "message_too_long": "El mensaje es demasiado largo.",
+    "chat_paused": "El chat está en pausa."
   },
   "auth": {
     "signInCta": "Entrar o crear cuenta",
@@ -1531,5 +1535,115 @@
       "copied": "Mensaje copiado",
       "close": "Cerrar"
     }
+  },
+  "conversations": {
+    "link": "Conversaciones",
+    "title": "Conversaciones de {property}",
+    "titleShort": "Conversaciones",
+    "back": "Volver a la propiedad",
+    "intro": "Lo que los huéspedes preguntan en el chat de la guía. Primero las que te necesitan.",
+    "empty": "Todavía no hay conversaciones. Aparecen cuando un huésped escribe en el chat de la guía.",
+    "needsHost": "Te necesita",
+    "open": "Abierta",
+    "noStay": "Sin estadía",
+    "stayDates": "Estadía {checkIn} → {checkout}",
+    "lastAt": "Último mensaje {when}",
+    "author": {
+      "guest": "Huésped",
+      "assistant": "Asistente",
+      "host": "Anfitrión"
+    },
+    "openConversation": "Abrir conversación",
+    "conversation": "Conversación",
+    "backToList": "Volver a las conversaciones",
+    "reason": "Motivo: {reason}",
+    "reasons": {
+      "emergency": "Posible emergencia",
+      "malfunction": "Daño o algo que no funciona",
+      "complaint": "Queja",
+      "money": "Reembolso, pago o compensación",
+      "reservation_change": "Cambio de reserva",
+      "legal": "Tema legal o de seguridad",
+      "not_confident": "El asistente no pudo responder con la guía",
+      "draft_ready": "Borrador listo para revisar",
+      "check_failed": "El borrador no pasó una revisión",
+      "limit": "Límite diario del asistente",
+      "unavailable": "Asistente no disponible"
+    },
+    "you": "Huésped",
+    "assistantName": "Asistente",
+    "hostName": "{name} (anfitrión)",
+    "sentBy": "Enviado por {name}",
+    "sources": "Fuentes:",
+    "emergencyCard": "Tarjeta de emergencia mostrada al huésped",
+    "draft": {
+      "title": "Borrador del asistente",
+      "body": "El huésped recibió una respuesta de espera. Revisa el borrador y envíalo, edítalo o escribe tu propia respuesta.",
+      "send": "Enviar",
+      "edit": "Editar",
+      "sendEdited": "Enviar editado",
+      "cancel": "Cancelar",
+      "closed": "Otra persona ya respondió este borrador.",
+      "sent": "Respuesta enviada."
+    },
+    "reply": {
+      "title": "Responder",
+      "label": "Tu respuesta",
+      "hint": "El huésped la verá en el chat de la guía con tu nombre.",
+      "send": "Enviar respuesta",
+      "sent": "Respuesta enviada."
+    },
+    "warnings": {
+      "title": "Revisa tu respuesta",
+      "intro": "Tu texto podría no cumplir estas reglas:",
+      "links": "Tiene enlaces que no están en la guía.",
+      "promises": "Promete un reembolso, descuento o cambio.",
+      "off_platform": "Pide reservar o pagar fuera de la plataforma.",
+      "confirm": "¿Enviar de todas formas?",
+      "lockedNote": "Si compartes un código, el enlace de estadía es la forma más segura."
+    },
+    "why": {
+      "title": "Por qué esta respuesta",
+      "decision": "Decisión: {decision}",
+      "topic": "Tema: {topic}",
+      "autonomy": "Autonomía: {autonomy}",
+      "version": "Versión publicada de la guía: {version}",
+      "checks": "Revisiones",
+      "passed": "Pasó",
+      "failed": "No pasó",
+      "edited": "Editado por un miembro",
+      "decisions": {
+        "answered": "Respondió solo",
+        "drafted": "Preparó un borrador",
+        "held": "Pasó la conversación al anfitrión",
+        "pointer": "Indicó la sección del dato protegido",
+        "greeting": "Saludó",
+        "paused": "Pausó el chat"
+      },
+      "checkNames": {
+        "citation": "Cita una sección publicada",
+        "codes": "Sin códigos que no estén en la guía",
+        "links": "Solo enlaces de la guía",
+        "promises": "Sin promesas de reembolsos, descuentos o cambios",
+        "off_platform": "Sin pedir reservar o pagar fuera de la plataforma"
+      }
+    },
+    "refresh": "Actualizar",
+    "readOnly": "Tu rol puede ver esta conversación pero no responder."
+  },
+  "assistant": {
+    "title": "Asistente del chat",
+    "workspaceBody": "Cómo responde el asistente en el chat de las guías de este espacio. Las emergencias, quejas, pagos y cambios de reserva siempre pasan a tu equipo.",
+    "propertyBody": "Cómo responde el asistente en el chat de la guía de esta propiedad.",
+    "draft": "Borradores: preparo cada respuesta y tu equipo la aprueba",
+    "auto": "Automático: respondo solo lo que está en la guía y paso lo demás a tu equipo",
+    "inherit": "Usar el ajuste del espacio ({mode})",
+    "modes": {
+      "draft": "borradores",
+      "auto": "automático"
+    },
+    "saved": "Ajuste guardado.",
+    "readOnly": "Solo propietarios y administradores pueden cambiar este ajuste.",
+    "legend": "Autonomía"
   }
 }

@@ -34,6 +34,13 @@ export const workspace = pgTable(
     /** Feature 003 pilot overrides (data model §5): daily guide AI requests and media storage. */
     guideAiDailyLimit: integer("guide_ai_daily_limit"),
     mediaStorageLimitMb: integer("media_storage_limit_mb"),
+    /** Feature 005: the assistant's default autonomy for the workspace's properties (FR-022). */
+    assistantAutonomy: text("assistant_autonomy", { enum: ["draft", "auto"] })
+      .notNull()
+      .default("draft"),
+    /** Feature 005 pilot budgets (FR-028): assistant replies and drafts per day. */
+    chatDailyLimit: integer("chat_daily_limit").notNull().default(1000),
+    chatPropertyDailyLimit: integer("chat_property_daily_limit").notNull().default(200),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .notNull()

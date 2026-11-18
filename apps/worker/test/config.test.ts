@@ -20,6 +20,14 @@ describe("loadConfig", () => {
       email: { transport: "smtp", smtpPort: 1025 },
     });
   });
+
+  it("reads the guide origin for assistant link checks (feature 005), without a trailing slash", () => {
+    const base = { DATABASE_URL: "postgres://localhost/guidesk", ...integrationBase };
+    expect(loadConfig(base).guideUrl).toBe("http://127.0.0.1:3001");
+    expect(loadConfig({ ...base, GUIDE_URL: "https://guide.example.com/" }).guideUrl).toBe(
+      "https://guide.example.com",
+    );
+  });
 });
 
 describe("integration settings (T006)", () => {

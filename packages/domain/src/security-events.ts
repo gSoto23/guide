@@ -72,6 +72,9 @@ export const SECURITY_EVENT_TYPES = [
   "guide.verification_locked",
   "restricted_value.guest_revealed",
   "restricted_value.exported",
+  // Feature 005 (data model §4).
+  "assistant.autonomy_changed",
+  "conversation.replied",
 ] as const;
 
 export type SecurityEventType = (typeof SECURITY_EVENT_TYPES)[number];
@@ -144,6 +147,8 @@ const METADATA_ALLOWLIST: Partial<Record<SecurityEventType, readonly string[]>> 
   // Guest reveals carry no actor, address, or device detail (feature 004 FR-032, SEC-20).
   "restricted_value.guest_revealed": [...LOCKED_FIELD, "stayId", "sessionId"],
   "restricted_value.exported": ["propertyId", "stayId", "fields", "language"],
+  "assistant.autonomy_changed": ["propertyId", "autonomy"],
+  "conversation.replied": ["propertyId", "conversationId", "fromDraft", "edited"],
 };
 
 /** Short labels, numbers, booleans, and calendar dates; nothing that could carry free text. */
