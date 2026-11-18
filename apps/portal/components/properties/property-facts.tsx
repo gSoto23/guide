@@ -32,6 +32,7 @@ const RemovePropertyDialog = dynamic(
  */
 export function PropertyFacts({ locale, propertyId }: { locale: string; propertyId: string }) {
   const t = useTranslations("properties");
+  const guide = useTranslations("guide");
   const errors = useTranslations("errors");
   const workspace = useWorkspace();
   const [property, setProperty] = useState<PropertyDetail | null>(null);
@@ -143,6 +144,16 @@ export function PropertyFacts({ locale, propertyId }: { locale: string; property
         <Link href={`/${locale}/properties`}>{t("detail.back")}</Link>
       </p>
       <h1>{property.name}</h1>
+      {!removed ? (
+        <p>
+          <Link
+            className="button button-primary"
+            href={`/${locale}/properties/${propertyId}/guide`}
+          >
+            {guide("review.open")}
+          </Link>
+        </p>
+      ) : null}
       <p className="property-meta">
         <span
           className={`badge ${property.setupStatus === "ready" ? "badge-ready" : "badge-warning"}`}

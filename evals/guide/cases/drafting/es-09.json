@@ -1,0 +1,19 @@
+{
+  "id": "es-09",
+  "language": "es",
+  "description": "Casa de campo con chimenea en Cartago.\nLa chimenea solo se usa con la leña del cajón de la terraza.\nEl mirador de Orosi está a quince minutos en carro.\nNo se permite fumar dentro de la casa.",
+  "expected": [
+    {
+      "phrase": "La chimenea solo se usa con la leña del cajón de la terraza.",
+      "section": "appliances"
+    },
+    {
+      "phrase": "El mirador de Orosi está a quince minutos en carro.",
+      "section": "local_recommendations"
+    },
+    {
+      "phrase": "No se permite fumar dentro de la casa.",
+      "section": "house_rules"
+    }
+  ]
+}

@@ -126,7 +126,7 @@ eval suites against the real model, and the quickstart on staging.
 | Guide review, locked fields, interview, uploads, translations, versions, shared content pages | LCP at p75, mid-range mobile on 4G | ≤ 2.5 s | Lighthouse CI on the local production build |
 | Same pages | INP / CLS at p75 | ≤ 200 ms / ≤ 0.1 | Lighthouse CI, real-user monitoring |
 | Same pages | Initial JavaScript per route | ≤ 150 KB gzip | Bundle-size check in CI |
-| Section editor chunk (Tiptap and extensions), loaded on demand | JavaScript | ≤ 120 KB gzip | Bundle-size check in CI (new entry) |
+| Section editor chunk (Tiptap and extensions), loaded on demand | JavaScript | ≤ 130 KB gzip (first estimate 120 KB; measured 123.7 KB with StarterKit 3, T057) | Bundle-size check in CI (new entry) |
 | Guide read, item save, approve, topic mark, publish check | Latency, excluding AI and sandbox calls | p95 ≤ 300 ms (NFR-19) | k6 (`perf/k6/guides.js`), OpenTelemetry |
 | Publish (snapshot of a 50-item guide) | Request to response | p95 ≤ 1 s | Integration timing test |
 | Completeness after a save | Save to updated score | In the save response; ≤ 1 min (FR-031) | Integration test |

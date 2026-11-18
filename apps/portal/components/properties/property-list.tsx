@@ -157,6 +157,16 @@ export function PropertyListView({ locale }: { locale: string }) {
                   })}
                 </span>
                 <span className="badge">{t(`list.calendar.${item.calendarStatus}`)}</span>
+                {item.guide ? (
+                  <span
+                    className={`badge ${item.guide.status === "published" ? "badge-ready" : ""}`}
+                  >
+                    {t(
+                      `list.guide.${item.guide.status === "published" && item.guide.hasUnpublishedChanges ? "published_changes" : item.guide.status}`,
+                      { score: item.guide.completeness },
+                    )}
+                  </span>
+                ) : null}
                 {item.pmsStatus === "not_found" ? (
                   <span className="badge badge-warning">{t("list.notFoundInPms")}</span>
                 ) : null}

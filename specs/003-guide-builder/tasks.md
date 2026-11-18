@@ -160,7 +160,7 @@ security events, guide creation for every property, and test helpers.
 - [X] T034 [P] Extend `ObjectStoragePort` in `packages/integrations/src/storage/` with the media bucket, presigned GET URLs (15 minutes, `inline`, stored type), copy, and object-tag reads; implement it for S3 and the local filesystem; extend `packages/integrations/test/storage.contract.test.ts`
 - [X] T035 Implement `GuideLimitsService` in `apps/api/src/guides/guide-limits.service.ts` (daily AI limit in `rate_limit_bucket` per UTC day, media usage sum, both with the workspace overrides) and the `GET /workspaces/{workspaceId}/guide-limits` route; share the AI-limit check with the worker through `packages/domain` rules and a small worker helper in `apps/worker/src/jobs/guide-ai.ts`
 - [X] T036 Create guides in every property creation path: add `createGuideForProperty(tx, property)` in `apps/api/src/guides/guide-factory.ts` (nine sections, fact items) and call it from the property service, the CSV import job, and the PMS import job in the same transaction; send `guide.draft` after commit. Make T017 pass
-- [ ] T037 [P] Add test helpers in `apps/api/test/integration/guide-helpers.ts` (create a guide with items, texts, locked fields, and a published version) and fixture files in `e2e/fixtures/guide/` (synthetic: entrance photo with GPS EXIF, 40-second MP4, MOV with location metadata, text PDF, scanned PDF, encrypted PDF, WebM voice note, renamed archive)
+- [X] T037 [P] Add test helpers in `apps/api/test/integration/guide-helpers.ts` (create a guide with items, texts, locked fields, and a published version) and fixture files in `e2e/fixtures/guide/` (synthetic: entrance photo with GPS EXIF, 40-second MP4, MOV with location metadata, text PDF, scanned PDF, encrypted PDF, WebM voice note, renamed archive)
 - [X] T038 [P] Add the guide message catalogs to `packages/i18n/messages/es.json` and `en.json`: section names, statuses, source labels, topic names, fact renderings, and locked-field kind names
 
 **Checkpoint**: tables, rules, ports, and limits ready; user stories can start.
@@ -181,8 +181,8 @@ phone with text, images, and videos; agents read only.
 - [X] T041 [P] [US1] Contract test for `draftFromListing` in `packages/integrations/test/llm/draft-from-listing.contract.test.ts` with recorded responses: ok, refusal fallback, truncation, invalid output; links not in the input are dropped
 - [X] T042 [P] [US1] Sandbox tests for the `media` mode in `apps/sandbox/test/media.test.ts`: a JPEG with GPS EXIF yields WebP variants at 1,600 and 640 px with no metadata (AC-SEC-010); a MOV with location boxes yields a file whose `udta`, `meta`, and XMP `uuid` boxes are zero-filled `free` boxes with every other byte unchanged; duration over 90 seconds is `too_long`; a renamed archive is `unsupported_type`; HEVC is reported as `hevc`
 - [X] T043 [P] [US1] Integration test for media in `apps/api/test/integration/guide-media.test.ts` and the worker job in `apps/worker/test/integration/media-process.test.ts`: presigned form with type and size limits (FR-009); `422 storage_limit_reached` at the form and again at processing (FR-065); scan wait honored when `MEDIA_REQUIRE_SCAN=true` (a `THREATS_FOUND` tag rejects as `malware`); images per section ≤ 20 and videos ≤ 3 (`422 item_limit`); presigned GET URLs only for `ready` media
-- [ ] T044 [P] [US1] Unit tests for the guide renderer in `packages/ui/test/guide-renderer.test.tsx`: every node and mark renders without raw HTML; links get `rel="noopener noreferrer nofollow"`; `lockedField` renders a placeholder with the label
-- [ ] T045 [P] [US1] End-to-end test `e2e/specs/guide-us1-draft.spec.ts` on a phone viewport (quickstart 1 and 2): draft from listing text, live fact change, edit with text, image, and video, approve, hide, custom section, conflict dialog, pasted script removed, agent read-only
+- [X] T044 [P] [US1] Unit tests for the guide renderer in `packages/ui/test/guide-renderer.test.tsx`: every node and mark renders without raw HTML; links get `rel="noopener noreferrer nofollow"`; `lockedField` renders a placeholder with the label
+- [X] T045 [P] [US1] End-to-end test `e2e/specs/guide-us1-draft.spec.ts` on a phone viewport (quickstart 1 and 2): draft from listing text, live fact change, edit with text, image, and video, approve, hide, custom section, conflict dialog, pasted script removed, agent read-only
 
 ### Implementation for User Story 1
 
@@ -192,14 +192,14 @@ phone with text, images, and videos; agents read only.
 - [X] T049 [US1] Implement the `guide.draft` job in `apps/worker/src/jobs/guide-draft.ts` (R16), recording each AI call in `guide_ai_request`, and the redraft route `POST /sections/{sectionId}/redraft` (FR-007). Make T040 pass
 - [X] T050 [US1] Implement the sandbox `media` mode in `apps/sandbox/src/file-processor/media-image.ts` and `media-video.ts` (R9: magic bytes, orientation, `sharp` variants, ISO BMFF box walk and in-place neutralization, duration and codec), wired in `handler.ts`. Make T042 pass
 - [X] T051 [US1] Implement the `guide-media` module (`apps/api/src/guide-media/`) and the `media.process` job (`apps/worker/src/jobs/media-process.ts`) with the scan wait, size re-check, and `media_object` states. Make T043 pass
-- [ ] T052 [P] [US1] Implement the guide renderer in `packages/ui/src/guide-renderer/` (R2). Make T044 pass
-- [ ] T053 [US1] Build the draft review page (H-12) in `apps/portal/app/[locale]/(app)/properties/[propertyId]/guide/page.tsx` with `apps/portal/components/guide/`: section cards with status, completeness, and source labels; "Drafting from your listing…" while `draft_state` is `drafting`; empty, error, and agent read-only states
-- [ ] T054 [US1] Build the section editor (H-13) in `apps/portal/app/[locale]/(app)/properties/[propertyId]/guide/sections/[sectionId]/page.tsx`: item cards; Tiptap loaded with `next/dynamic` (R3) and only the R2 extensions; mobile toolbar; recommendation form with the benefit question (FR-014); approve per item and per section; hide, rename, reorder, add and delete custom sections; the conflict dialog for `409 section_changed`
-- [ ] T055 [US1] Add autosave and offline drafts in `apps/portal/lib/guide/autosave.ts`: 1-second debounce, per-item `localStorage` copies, resend on reconnect, and offline notices that disable uploads (FR-011, FR-070)
-- [ ] T056 [US1] Build media upload in `apps/portal/components/guide/media-upload.tsx`: image normalization reused from `apps/portal/lib/image-normalize.ts`, direct upload with progress, processing and rejected states, storage usage, and the HEVC note
-- [ ] T057 [US1] Show the guide status and completeness on the property list (`apps/portal/components/properties/property-list.tsx`) and link "Build the guide" from the property page; add the guide routes to `apps/portal/bundle-budget.json` and the editor chunk entry (≤ 120 KB gzip)
-- [ ] T058 [US1] Seed `evals/guide` drafting cases from the 30 synthetic listings in `evals/extraction/cases/listings/` with expected section placements and injection cases, and implement the drafting scorer (placement ≥ 90%, invented facts 0) in `evals/guide/src/score.ts` (SC-002)
-- [ ] T059 [US1] Make T045 pass; record any deviation in this file's Implementation notes
+- [X] T052 [P] [US1] Implement the guide renderer in `packages/ui/src/guide-renderer/` (R2). Make T044 pass
+- [X] T053 [US1] Build the draft review page (H-12) in `apps/portal/app/[locale]/(app)/properties/[propertyId]/guide/page.tsx` with `apps/portal/components/guide/`: section cards with status, completeness, and source labels; "Drafting from your listing…" while `draft_state` is `drafting`; empty, error, and agent read-only states
+- [X] T054 [US1] Build the section editor (H-13) in `apps/portal/app/[locale]/(app)/properties/[propertyId]/guide/sections/[sectionId]/page.tsx`: item cards; Tiptap loaded with `next/dynamic` (R3) and only the R2 extensions; mobile toolbar; recommendation form with the benefit question (FR-014); approve per item and per section; hide, rename, reorder, add and delete custom sections; the conflict dialog for `409 section_changed`
+- [X] T055 [US1] Add autosave and offline drafts in `apps/portal/lib/guide/autosave.ts`: 1-second debounce, per-item `localStorage` copies, resend on reconnect, and offline notices that disable uploads (FR-011, FR-070)
+- [X] T056 [US1] Build media upload in `apps/portal/components/guide/media-upload.tsx`: image normalization reused from `apps/portal/lib/image-normalize.ts`, direct upload with progress, processing and rejected states, storage usage, and the HEVC note
+- [X] T057 [US1] Show the guide status and completeness on the property list (`apps/portal/components/properties/property-list.tsx`) and link "Build the guide" from the property page; add the guide routes to `apps/portal/bundle-budget.json` and the editor chunk entry (≤ 130 KB gzip, revised from 120 KB after measuring)
+- [X] T058 [US1] Seed `evals/guide` drafting cases from the 30 synthetic listings in `evals/extraction/cases/listings/` with expected section placements and injection cases, and implement the drafting scorer (placement ≥ 90%, invented facts 0) in `evals/guide/src/score.ts` (SC-002)
+- [X] T059 [US1] Make T045 pass; record any deviation in this file's Implementation notes
 
 **Checkpoint**: US1 works on its own: a draft exists for every property and can be edited.
 
@@ -429,3 +429,26 @@ Task: "Unit tests for publish checks in packages/domain/test/guides/publish-chec
 ## Implementation notes
 
 _Recorded during implementation._
+
+### Foundations and US1 (2026-11-17)
+
+- **One schema file.** The 13 tables live in `packages/db/src/schema/guides.ts` instead of four
+  files: items, media, documents, and interview turns reference each other, and one module avoids
+  an ESM import cycle. `GUIDE_LANGUAGES` moved to `enums.ts` for the same reason.
+- **The guide factory is shared.** `createGuideForProperty` is in `packages/db` (not the API), so
+  the API and the worker's CSV and PMS imports create guides in their own transactions (T036).
+  Imports do not queue `guide.draft`: the AI part of the draft runs the first time a manager opens
+  the guide, so a 40-property import spends no AI budget up front (R16). The API queues it at
+  once for properties created one by one.
+- **Conflicts carry the revision, not the section.** Problem bodies hold plain values only, so
+  `409 section_changed` returns `{revision}` and the portal reloads the guide (FR-012).
+- **Fixtures.** The GPS-tagged JPEG lives in `apps/sandbox/test/fixtures/media/` and is shared with
+  the worker and end-to-end tests; synthetic MP4 and MOV files are built in the tests (T037). Test
+  helpers stayed in each test file.
+- **Media signing locally.** Local media URLs are signed with a secret derived from
+  `FEED_URL_PEPPER`, so the API and the worker sign alike without another setting; a
+  development-only route serves them with `nosniff` and a sandboxing CSP.
+- **Editor budget.** The Tiptap chunk measured 123.7 KB gzip; the budget is 130 KB (plan updated).
+  The section editor route is 148.6 KB, under the 150 KB route budget.
+- **`@aws-sdk/s3-request-presigner`** was added for presigned GET URLs (part of the plan's S3
+  decision in R9).

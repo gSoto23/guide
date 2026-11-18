@@ -1,0 +1,19 @@
+{
+  "id": "en-04",
+  "language": "en",
+  "description": "A beach house with a private pool.\nThe washer and dryer are in the garage.\nThere is room for three cars along the fence.\nThe nearest hospital is in Port Haven, twenty minutes away.",
+  "expected": [
+    {
+      "phrase": "The washer and dryer are in the garage.",
+      "section": "appliances"
+    },
+    {
+      "phrase": "There is room for three cars along the fence.",
+      "section": "parking"
+    },
+    {
+      "phrase": "The nearest hospital is in Port Haven, twenty minutes away.",
+      "section": "emergency"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "es-04",
+  "language": "es",
+  "description": "Villa con piscina privada en Tamarindo.\nLa lavadora está en el cuarto de pilas detrás de la cocina.\nHay espacio para dos carros frente a la villa.\nEl hospital más cercano es el de Santa Cruz, a 30 minutos.",
+  "expected": [
+    {
+      "phrase": "La lavadora está en el cuarto de pilas detrás de la cocina.",
+      "section": "appliances"
+    },
+    {
+      "phrase": "Hay espacio para dos carros frente a la villa.",
+      "section": "parking"
+    },
+    {
+      "phrase": "El hospital más cercano es el de Santa Cruz, a 30 minutos.",
+      "section": "emergency"
+    }
+  ]
+}

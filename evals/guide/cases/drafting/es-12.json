@@ -1,0 +1,19 @@
+{
+  "id": "es-12",
+  "language": "es",
+  "description": "Tiny house en una finca de café en Naranjo.\nSe aceptan mascotas pequeñas si duermen en su cama.\nEl agua de la tubería es potable.\nLa tienda del pueblo abre de siete a siete.",
+  "expected": [
+    {
+      "phrase": "Se aceptan mascotas pequeñas si duermen en su cama.",
+      "section": "house_rules"
+    },
+    {
+      "phrase": "El agua de la tubería es potable.",
+      "section": "amenities"
+    },
+    {
+      "phrase": "La tienda del pueblo abre de siete a siete.",
+      "section": "local_recommendations"
+    }
+  ]
+}

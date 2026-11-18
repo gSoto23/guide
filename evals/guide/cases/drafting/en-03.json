@@ -1,0 +1,19 @@
+{
+  "id": "en-03",
+  "language": "en",
+  "description": "A log cabin in the pines above the lake.\nHot water comes from a tank, so leave a few minutes between showers.\nThe general store sells groceries and firewood.\nQuiet hours start at 10 pm.",
+  "expected": [
+    {
+      "phrase": "Hot water comes from a tank, so leave a few minutes between showers.",
+      "section": "appliances"
+    },
+    {
+      "phrase": "The general store sells groceries and firewood.",
+      "section": "local_recommendations"
+    },
+    {
+      "phrase": "Quiet hours start at 10 pm.",
+      "section": "house_rules"
+    }
+  ]
+}

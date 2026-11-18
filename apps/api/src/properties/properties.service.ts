@@ -33,6 +33,7 @@ import {
   createGuideForProperty,
   countActiveProperties,
   extractionRequest,
+  guide,
   LISTING_CONTENT_KINDS,
   listingContent,
   onboardingProfile,
@@ -204,15 +205,28 @@ export class PropertiesService {
         createdAt: property.createdAt,
         purgeAfter: property.purgeAfter,
         calendarStatus: calendarStatusSql,
+        guideStatus: guide.status,
+        guideChanges: guide.hasUnpublishedChanges,
+        guideCompleteness: guide.completeness,
       })
       .from(property)
+      .leftJoin(guide, eq(guide.propertyId, property.id))
       .where(and(...conditions))
       .orderBy(desc(property.createdAt), desc(property.id))
       .limit(query.limit + 1);
     const page = rows.slice(0, query.limit);
     const last = page.at(-1);
     return {
-      items: page.map((row) => toSummary(row, row.calendarStatus)),
+      items: page.map((row) => ({
+        ...toSummary(row, row.calendarStatus),
+        guide: row.guideStatus
+          ? {
+              status: row.guideStatus,
+              hasUnpublishedChanges: row.guideChanges ?? false,
+              completeness: row.guideCompleteness ?? 0,
+            }
+          : null,
+      })),
       nextCursor: rows.length > query.limit && last ? encodeCursor(last) : null,
     };
   }
@@ -324,7 +338,7 @@ export class PropertiesService {
       })
       .returning();
     // Feature 003: every property starts with its guide (FR-001, research R16).
-    const guide = await createGuideForProperty(tx, {
+    const newGuide = await createGuideForProperty(tx, {
       workspaceId,
       propertyId: row!.id,
       guideLanguages: row!.guideLanguages,
@@ -374,8 +388,8 @@ export class PropertiesService {
     // R16); `startAfter` leaves it time, and the job retries if the guide is not visible yet.
     await this.jobs.send(
       JOB_QUEUES.guideDraft,
-      { guideId: guide.guideId, workspaceId } satisfies GuideDraftJob,
-      { startAfter: 2, retryLimit: 3, retryBackoff: true, singletonKey: guide.guideId },
+      { guideId: newGuide.guideId, workspaceId } satisfies GuideDraftJob,
+      { startAfter: 2, retryLimit: 3, retryBackoff: true, singletonKey: newGuide.guideId },
     );
     return this.detail(caller, row!);
   }

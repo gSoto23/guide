@@ -723,3 +723,53 @@ input[type="radio"] {
   gap: 8px;
   margin: var(--space) 0;
 }
+
+/* Feature 003: the guide editor (research R3) and locked-field references. */
+.content-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+.guide-editor {
+  border: 1px solid var(--color-border, #d6d0c8);
+  border-radius: 0.5rem;
+  background: var(--color-surface, #fff);
+}
+.guide-editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-bottom: 1px solid var(--color-border, #d6d0c8);
+  position: sticky;
+  top: 0;
+  background: inherit;
+}
+.guide-editor-toolbar .button {
+  min-height: 2.5rem;
+  padding: 0.25rem 0.6rem;
+}
+.guide-editor-toolbar .active {
+  outline: 2px solid currentColor;
+}
+.guide-editor-content {
+  min-height: 6rem;
+  padding: 0.75rem;
+}
+.guide-editor-content:focus {
+  outline: 2px solid var(--color-focus, #1f6feb);
+  outline-offset: -2px;
+}
+.locked-field-chip,
+.locked-field-ref {
+  display: inline-block;
+  padding: 0 0.4rem;
+  border-radius: 0.3rem;
+  background: var(--color-muted-bg, #f1ece4);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.guide-document p {
+  margin: 0.4rem 0;
+}

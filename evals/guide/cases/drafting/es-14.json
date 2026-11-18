@@ -1,0 +1,19 @@
+{
+  "id": "es-14",
+  "language": "es",
+  "description": "Casa colonial restaurada en Liberia.\nDesde el aeropuerto son quince minutos por la carretera a Playas del Coco.\nLa televisión tiene Netflix con la cuenta de la casa.\nPedimos apagar el aire acondicionado al salir.",
+  "expected": [
+    {
+      "phrase": "Desde el aeropuerto son quince minutos por la carretera a Playas del Coco.",
+      "section": "arrival"
+    },
+    {
+      "phrase": "La televisión tiene Netflix con la cuenta de la casa.",
+      "section": "appliances"
+    },
+    {
+      "phrase": "Pedimos apagar el aire acondicionado al salir.",
+      "section": "checkout"
+    }
+  ]
+}

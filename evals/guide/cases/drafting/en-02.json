@@ -1,0 +1,19 @@
+{
+  "id": "en-02",
+  "language": "en",
+  "description": "A bright flat on the third floor with a balcony.\nThe Wi-Fi network is called Harbor-Guest and reaches the balcony.\nFrom the station, walk down Pier Road and turn left at the blue door.\nPlease strip the beds and start the dishwasher before you leave.",
+  "expected": [
+    {
+      "phrase": "The Wi-Fi network is called Harbor-Guest and reaches the balcony.",
+      "section": "wifi"
+    },
+    {
+      "phrase": "From the station, walk down Pier Road and turn left at the blue door.",
+      "section": "arrival"
+    },
+    {
+      "phrase": "Please strip the beds and start the dishwasher before you leave.",
+      "section": "checkout"
+    }
+  ]
+}

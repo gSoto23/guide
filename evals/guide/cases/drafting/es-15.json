@@ -1,0 +1,19 @@
+{
+  "id": "es-15",
+  "language": "es",
+  "description": "Cabina sencilla a la orilla de la playa en Cahuita.\nHay mosquiteros en todas las camas.\nEl parque nacional Cahuita abre a las seis de la mañana.\nEn caso de emergencia llamen al 911.",
+  "expected": [
+    {
+      "phrase": "Hay mosquiteros en todas las camas.",
+      "section": "amenities"
+    },
+    {
+      "phrase": "El parque nacional Cahuita abre a las seis de la mañana.",
+      "section": "local_recommendations"
+    },
+    {
+      "phrase": "En caso de emergencia llamen al 911.",
+      "section": "emergency"
+    }
+  ]
+}

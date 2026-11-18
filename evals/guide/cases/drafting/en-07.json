@@ -1,0 +1,19 @@
+{
+  "id": "en-07",
+  "language": "en",
+  "description": "A bungalow a short walk from the bay.\nThe ceiling fan turns on with the left pull chain.\nWe recommend the sunrise kayak tour in the mangroves.\nLeave through the side gate and close the padlock on your way out.",
+  "expected": [
+    {
+      "phrase": "The ceiling fan turns on with the left pull chain.",
+      "section": "appliances"
+    },
+    {
+      "phrase": "We recommend the sunrise kayak tour in the mangroves.",
+      "section": "local_recommendations"
+    },
+    {
+      "phrase": "Leave through the side gate and close the padlock on your way out.",
+      "section": "checkout"
+    }
+  ]
+}

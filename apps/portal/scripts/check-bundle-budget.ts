@@ -7,7 +7,7 @@
 //
 // Usage: pnpm --filter @guidesk/portal bundle:check (Node runs this TypeScript file directly).
 import { spawn } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
@@ -85,6 +85,32 @@ try {
       status: over ? "OVER" : "ok",
     });
   }
+  // The guide's text editor loads on demand (feature 003 research R3): its chunks never count
+  // toward a route, so they get their own budget. They are the chunks that hold ProseMirror or
+  // the locked-field node.
+  const chunkDir = path.join(root, ".next/static/chunks");
+  const chunkFiles = (await readdir(chunkDir, { recursive: true })).filter((file) =>
+    String(file).endsWith(".js"),
+  );
+  let editorBytes = 0;
+  let editorChunks = 0;
+  for (const file of chunkFiles) {
+    const content = await readFile(path.join(chunkDir, String(file)));
+    const text = content.toString("utf8");
+    if (text.includes("data-locked-field") || text.includes("ProseMirror")) {
+      editorBytes += gzipSync(content).length;
+      editorChunks += 1;
+    }
+  }
+  const editorKb = editorBytes / 1024;
+  const editorOver = editorChunks === 0 || editorKb > config.editorBudgetKb;
+  failed ||= editorOver;
+  rows.push({
+    route: "(guide text editor, on demand)",
+    scripts: editorChunks,
+    "gzip KB": editorKb.toFixed(1),
+    status: editorChunks === 0 ? "MISSING" : editorOver ? "OVER" : "ok",
+  });
   // eslint-disable-next-line no-console -- the report is the output
   console.table(rows);
   process.stdout.write(

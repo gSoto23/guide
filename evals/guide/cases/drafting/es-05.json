@@ -1,0 +1,19 @@
+{
+  "id": "es-05",
+  "language": "es",
+  "description": "Loft moderno en el centro de San José.\nLas llaves están en la recepción del edificio; muestren su identificación.\nEl estacionamiento público de la esquina cobra por hora.\nHay un mercado de frutas los sábados en la plaza.",
+  "expected": [
+    {
+      "phrase": "Las llaves están en la recepción del edificio; muestren su identificación.",
+      "section": "arrival"
+    },
+    {
+      "phrase": "El estacionamiento público de la esquina cobra por hora.",
+      "section": "parking"
+    },
+    {
+      "phrase": "Hay un mercado de frutas los sábados en la plaza.",
+      "section": "local_recommendations"
+    }
+  ]
+}

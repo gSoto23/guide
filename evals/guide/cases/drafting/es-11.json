@@ -1,0 +1,19 @@
+{
+  "id": "es-11",
+  "language": "es",
+  "description": "Casa de dos pisos cerca del volcán Arenal.\nLas aguas termales Baldí están a diez minutos.\nEl botiquín y el extintor están debajo del fregadero.\nAl salir, dejen las llaves sobre la mesa del comedor.",
+  "expected": [
+    {
+      "phrase": "Las aguas termales Baldí están a diez minutos.",
+      "section": "local_recommendations"
+    },
+    {
+      "phrase": "El botiquín y el extintor están debajo del fregadero.",
+      "section": "emergency"
+    },
+    {
+      "phrase": "Al salir, dejen las llaves sobre la mesa del comedor.",
+      "section": "checkout"
+    }
+  ]
+}

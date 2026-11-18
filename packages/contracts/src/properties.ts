@@ -124,6 +124,15 @@ export const propertySummarySchema = z.object({
   createdAt: z.iso.datetime(),
   /** When a removed property is deleted permanently (FR-045); null while active. */
   purgeAfter: z.iso.datetime().nullable(),
+  /** Feature 003 (FR-053): the guide's status and completeness, for the list. */
+  guide: z
+    .object({
+      status: z.enum(["draft", "published", "unpublished"]),
+      hasUnpublishedChanges: z.boolean(),
+      completeness: z.int().min(0).max(100),
+    })
+    .nullable()
+    .optional(),
 });
 export type PropertySummary = z.infer<typeof propertySummarySchema>;
 

@@ -1,0 +1,19 @@
+{
+  "id": "en-14",
+  "language": "en",
+  "description": "A restored town house in the old quarter.\nFrom the airport it is fifteen minutes on the coast road.\nThe TV has Netflix signed in with the house account.\nPlease turn off the air conditioning when you check out.",
+  "expected": [
+    {
+      "phrase": "From the airport it is fifteen minutes on the coast road.",
+      "section": "arrival"
+    },
+    {
+      "phrase": "The TV has Netflix signed in with the house account.",
+      "section": "appliances"
+    },
+    {
+      "phrase": "Please turn off the air conditioning when you check out.",
+      "section": "checkout"
+    }
+  ]
+}

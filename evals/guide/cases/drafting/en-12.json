@@ -1,0 +1,19 @@
+{
+  "id": "en-12",
+  "language": "en",
+  "description": "A tiny house on an apple orchard.\nSmall pets are welcome if they sleep in their own bed.\nTap water is safe to drink.\nThe village shop is open from seven to seven.",
+  "expected": [
+    {
+      "phrase": "Small pets are welcome if they sleep in their own bed.",
+      "section": "house_rules"
+    },
+    {
+      "phrase": "Tap water is safe to drink.",
+      "section": "amenities"
+    },
+    {
+      "phrase": "The village shop is open from seven to seven.",
+      "section": "local_recommendations"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "es-07",
+  "language": "es",
+  "description": "Bungalow a cien metros de playa Carrillo.\nEl ventilador de techo se prende con la cadena de la izquierda.\nRecomendamos el tour de kayak en el manglar al amanecer.\nLa salida es por el portón pequeño; ciérrenlo con candado al irse.",
+  "expected": [
+    {
+      "phrase": "El ventilador de techo se prende con la cadena de la izquierda.",
+      "section": "appliances"
+    },
+    {
+      "phrase": "Recomendamos el tour de kayak en el manglar al amanecer.",
+      "section": "local_recommendations"
+    },
+    {
+      "phrase": "La salida es por el portón pequeño; ciérrenlo con candado al irse.",
+      "section": "checkout"
+    }
+  ]
+}

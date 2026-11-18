@@ -1,0 +1,19 @@
+{
+  "id": "es-06",
+  "language": "es",
+  "description": "Casa familiar frente al río en La Fortuna.\nNo se permiten fiestas ni visitas después de las nueve.\nEl taxi al centro cuesta poco y se pide por WhatsApp a la recepción.\nToallas de playa y sombrilla están en el armario del pasillo.",
+  "expected": [
+    {
+      "phrase": "No se permiten fiestas ni visitas después de las nueve.",
+      "section": "house_rules"
+    },
+    {
+      "phrase": "El taxi al centro cuesta poco y se pide por WhatsApp a la recepción.",
+      "section": "parking"
+    },
+    {
+      "phrase": "Toallas de playa y sombrilla están en el armario del pasillo.",
+      "section": "amenities"
+    }
+  ]
+}

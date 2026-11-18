@@ -1,0 +1,19 @@
+{
+  "id": "en-01",
+  "language": "en",
+  "description": "A cedar cottage two streets from the harbor.\nThere is parking for two cars in the driveway.\nThe bakery on Main Street opens at seven.\nThe wood stove needs the flue lever pushed up before lighting.",
+  "expected": [
+    {
+      "phrase": "There is parking for two cars in the driveway.",
+      "section": "parking"
+    },
+    {
+      "phrase": "The bakery on Main Street opens at seven.",
+      "section": "local_recommendations"
+    },
+    {
+      "phrase": "The wood stove needs the flue lever pushed up before lighting.",
+      "section": "appliances"
+    }
+  ]
+}

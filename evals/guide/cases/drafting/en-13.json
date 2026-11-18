@@ -1,0 +1,19 @@
+{
+  "id": "en-13",
+  "language": "en",
+  "description": "A penthouse with a hot tub.\nThe hot tub turns on with the blue button by the door.\nParking is on level two, space 31.\nThe marina has good seafood restaurants.",
+  "expected": [
+    {
+      "phrase": "The hot tub turns on with the blue button by the door.",
+      "section": "appliances"
+    },
+    {
+      "phrase": "Parking is on level two, space 31.",
+      "section": "parking"
+    },
+    {
+      "phrase": "The marina has good seafood restaurants.",
+      "section": "local_recommendations"
+    }
+  ]
+}

@@ -66,7 +66,7 @@ facts not checked first-hand against the provider's documentation on 2026-11-17 
   that shows the label). Pasted content is reduced to the schema by ProseMirror's parser.
   - The editor is loaded on demand (`next/dynamic`) only when a host opens a section, so the guide
     review page keeps its initial JavaScript under the 150 KB budget. The editor chunk is checked
-    separately in the bundle check (≤ 120 KB gzip).
+    separately in the bundle check (≤ 130 KB gzip; the first estimate of 120 KB was revised after measuring 123.7 KB with StarterKit 3, which already bundles the link extension).
   - Autosave: changes are saved 1 second after typing stops. Unsent text is kept in
     `localStorage` per item, as the core-facts form does, and sent when the connection returns
     (FR-011, FR-070).

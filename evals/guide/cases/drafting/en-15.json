@@ -1,0 +1,19 @@
+{
+  "id": "en-15",
+  "language": "en",
+  "description": "A simple cabin right on the beach.\nThere are mosquito nets over every bed.\nThe national park opens at six in the morning.\nIn an emergency, call 911.",
+  "expected": [
+    {
+      "phrase": "There are mosquito nets over every bed.",
+      "section": "amenities"
+    },
+    {
+      "phrase": "The national park opens at six in the morning.",
+      "section": "local_recommendations"
+    },
+    {
+      "phrase": "In an emergency, call 911.",
+      "section": "emergency"
+    }
+  ]
+}

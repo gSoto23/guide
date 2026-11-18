@@ -1,0 +1,19 @@
+{
+  "id": "es-10",
+  "language": "es",
+  "description": "Condominio con acceso a playa en Jacó.\nEn la garita del condominio deben dar el número de la unidad.\nEl parqueo de visitas es el espacio 14.\nLa cafetera de cápsulas está en el mueble de arriba de la pila.",
+  "expected": [
+    {
+      "phrase": "En la garita del condominio deben dar el número de la unidad.",
+      "section": "arrival"
+    },
+    {
+      "phrase": "El parqueo de visitas es el espacio 14.",
+      "section": "parking"
+    },
+    {
+      "phrase": "La cafetera de cápsulas está en el mueble de arriba de la pila.",
+      "section": "appliances"
+    }
+  ]
+}
