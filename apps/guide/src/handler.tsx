@@ -2,13 +2,14 @@ import { readFile } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import type { ReactElement } from "react";
 import { renderToString } from "react-dom/server";
-import { fetchExplore, fetchGuide } from "./api-client.js";
+import { fetchExplore, fetchExtras, fetchGuide } from "./api-client.js";
 import type { Assets } from "./assets.js";
 import type { PageChrome } from "./components/layout.js";
 import type { GuideConfig } from "./config.js";
 import { CACHE, securityHeaders } from "./headers.js";
 import { isGuestLocale, preferredLocale, translator, type GuestLocale } from "./i18n.js";
 import { allowImages, ExperiencePage, ExplorePage, findCard } from "./pages/explore-pages.js";
+import { ExtraPage, ExtrasPage, findExtra } from "./pages/extras-pages.js";
 import { EmergencyPage, HomePage, SectionPage } from "./pages/guide-pages.js";
 import {
   ExchangePage,
@@ -182,6 +183,38 @@ export function createHandler({ config, assets }: HandlerDeps) {
       }
       return html(<ExperiencePage {...input} explore={explore} card={card} />, 200, CACHE.guide);
     }
+    if (rest === "extras") {
+      // Feature 008: the host's extras and one extra (screens G-08, G-09, research R6).
+      if (!guide.extras.visible) {
+        return respond(null, 302, {
+          location: `/g/${publicId}/${lang}`,
+          "cache-control": CACHE.guide,
+        });
+      }
+      const loaded = await fetchExtras(
+        config,
+        publicId,
+        lang,
+        request.headers.get("x-forwarded-for") ?? undefined,
+      );
+      if (loaded.kind === "unavailable") return unavailable(lang);
+      if (loaded.kind !== "ok") {
+        return html(
+          <RateLimitedPage {...chrome(lang)} />,
+          loaded.kind === "rate_limited" ? 429 : 503,
+          CACHE.noStore,
+        );
+      }
+      if (!detail) return html(<ExtrasPage {...input} extras={loaded.extras} />, 200, CACHE.guide);
+      const extra = UUID.test(detail) ? findExtra(loaded.extras, detail) : null;
+      if (!extra) {
+        return respond(null, 302, {
+          location: `/g/${publicId}/${lang}/extras`,
+          "cache-control": CACHE.guide,
+        });
+      }
+      return html(<ExtraPage {...input} extras={loaded.extras} extra={extra} />, 200, CACHE.guide);
+    }
     if (detail) return unavailable(lang);
     if (!rest) return html(<HomePage {...input} />, 200, CACHE.guide);
     if (rest === "emergency") return html(<EmergencyPage {...input} />, 200, CACHE.guide);
@@ -222,8 +255,12 @@ export function createHandler({ config, assets }: HandlerDeps) {
     if (parts[0] === "g" && (parts.length === 3 || parts.length === 4)) {
       return guidePage(request, parts[1]!, parts[2]!, parts[3]);
     }
-    // Feature 009: one experience, `/g/{publicId}/{lang}/explore/{ref}`.
-    if (parts[0] === "g" && parts.length === 5 && parts[3] === "explore") {
+    // Feature 009: one experience, `/g/{publicId}/{lang}/explore/{ref}`; feature 008: one extra.
+    if (
+      parts[0] === "g" &&
+      parts.length === 5 &&
+      (parts[3] === "explore" || parts[3] === "extras")
+    ) {
       return guidePage(request, parts[1]!, parts[2]!, parts[3], parts[4]);
     }
     return unavailable(requestLocale(request));

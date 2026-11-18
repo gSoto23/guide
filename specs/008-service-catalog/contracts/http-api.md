@@ -33,7 +33,7 @@ Public, `s-maxage=60`. `200 { "extras": [GuestExtra] }`, visible extras in order
 ### `GET /api/v1/guest/extras/requests?publicId=`
 
 Stay session required. `no-store`. `200 { "canRequest": boolean, "reason": null | "no_session" |
-"before_link" | "ended" | "verify", "requests": [GuestServiceRequest] }` where each request has `id`,
+"ended" | "verify", "requests": [GuestServiceRequest] }` where each request has `id`,
 `extraId`, `name`, `price`, `currency`, `requestedDate`, `requestedTime`, `quantity`, `status`,
 `reasonCode`, `reasonText`, `createdAt`. Without a session: `canRequest: false`, `reason:
 "no_session"`, no requests.
@@ -41,8 +41,8 @@ Stay session required. `no-store`. `200 { "canRequest": boolean, "reason": null 
 ### `POST /api/v1/guest/extras/requests`
 
 Body `{ publicId, extraId, date?: "YYYY-MM-DD", time?: "HH:MM", quantity, note? }`. Stay session
-required. `201` with the request (status `waiting` or `confirmed`). Errors: `401 no_session`, `403
-verify_required`, `409 not_requestable` (window), `422 rule_failed { rule }` with `rule` in
+required. `201` with the request (status `waiting` or `confirmed`). Errors: `401 no_session`, `409
+verification_required`, `409 not_requestable` (window), `422 rule_failed { rule }` with `rule` in
 `date_range`, `weekday`, `lead_time`, `max_per_stay`, `turnover`, `needs_date`, `needs_time`, `429
 too_many_requests`, `409 duplicate`.
 

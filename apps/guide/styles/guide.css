@@ -567,3 +567,102 @@ div.experience-photo {
   opacity: 0.55;
   pointer-events: none;
 }
+
+/* Feature 008: Extras (screens G-08, G-09). */
+.tile-extras .tile {
+  border-left-color: var(--primary-strong);
+}
+
+.extras,
+.requests,
+.extra-rules {
+  margin: 0;
+  padding: 0;
+}
+
+.extras,
+.requests {
+  list-style: none;
+  display: grid;
+  gap: 1rem;
+}
+
+.extra-rules {
+  padding-left: 1.25rem;
+}
+
+.extra-name,
+.request-name {
+  font-size: 1.0625rem;
+  margin: 0 0 0.25rem;
+}
+
+.extra-name a {
+  color: var(--carbon);
+}
+
+.extra-price {
+  margin: 0 0 0.25rem;
+  font-weight: 650;
+}
+
+.extra p,
+.request p {
+  margin: 0 0 0.25rem;
+}
+
+.extra-description {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.extra-request {
+  margin-top: 1.5rem;
+}
+
+.extra-form,
+.field {
+  display: grid;
+  gap: 0.375rem;
+}
+
+.extra-form {
+  gap: 0.875rem;
+  margin: 0.5rem 0;
+}
+
+/* `display: grid` would otherwise win over the hidden attribute the script sets. */
+.extra-request [hidden],
+.extra-requests[hidden] {
+  display: none;
+}
+
+.field-input {
+  min-height: 3rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--muted);
+  background: var(--cal);
+  color: var(--carbon);
+  font: inherit;
+}
+
+.field-hint {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--muted);
+}
+
+.request-status {
+  font-weight: 650;
+}
+
+.request[data-status="confirmed"] .request-status {
+  color: var(--primary-strong);
+}
+
+/* Kept in the layout (never display: none) so screen readers announce what is written into it. */
+.success {
+  margin: 0;
+  font-weight: 650;
+}

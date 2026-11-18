@@ -177,5 +177,88 @@
     "offline": "Necesitas conexión para reservar.",
     "empty": "Todavía no hay experiencias para esta zona.",
     "back": "Volver a Explorar"
+  },
+  "extras": {
+    "tile": "Servicios extra",
+    "title": "Servicios extra",
+    "intro": "Servicios que tu anfitrión ofrece para tu estadía.",
+    "optional": "Los servicios extra son opcionales. En la guía no se cobra nada: si tu anfitrión confirma, acuerda el pago contigo.",
+    "offeredBy": "Ofrecido por tu anfitrión",
+    "free": "Gratis",
+    "empty": "Por ahora no hay servicios extra.",
+    "back": "Volver a Servicios extra",
+    "description": "Descripción",
+    "onlyIn": {
+      "es": "Texto disponible solo en español.",
+      "en": "Texto disponible solo en inglés."
+    },
+    "rulesTitle": "Cómo funciona",
+    "rangeStay": "Para un día de tu estadía.",
+    "rangeArrival": "Para tu llegada: desde hoy hasta el día de tu check-in.",
+    "earlyCheckIn": "Para el día de tu llegada, si nadie sale de la casa ese día.",
+    "lateCheckout": "Para el día de tu salida, si nadie llega a la casa ese día.",
+    "weekdays": "Solo {days}.",
+    "lead": "Pídelo con al menos {hours, plural, one {# hora} other {# horas}} de anticipación.",
+    "max": "{count, plural, one {Uno por estadía.} other {Hasta # por estadía.}}",
+    "requestTitle": "Pedir este servicio",
+    "blocked": {
+      "no_session": "Para pedirlo, abre la guía desde el enlace de tu estadía que te envió tu anfitrión.",
+      "ended": "Tu estadía ya terminó, así que no puedes pedir servicios extra.",
+      "verify": "Confirma tu reserva para pedir servicios extra."
+    },
+    "verify": "Confirmar mi reserva",
+    "date": "Fecha",
+    "time": "Hora",
+    "quantity": "Cantidad",
+    "note": "Nota para tu anfitrión (opcional)",
+    "noteHint": "No incluyas teléfonos, correos ni documentos.",
+    "request": "Pedir",
+    "payment": "Aquí no se cobra nada. Si tu anfitrión confirma, acordará el pago contigo.",
+    "sent": "Listo. Tu solicitud está esperando a tu anfitrión.",
+    "sentConfirmed": "Listo. Tu solicitud quedó confirmada: tu anfitrión acordará el pago contigo.",
+    "offline": "Necesitas conexión para pedir o cancelar.",
+    "yourRequests": "Tus solicitudes",
+    "cancel": "Cancelar solicitud",
+    "cancelled": "Cancelaste la solicitud.",
+    "status": {
+      "waiting": "Esperando a tu anfitrión",
+      "confirmed": "Confirmada: tu anfitrión acordará el pago contigo",
+      "declined": "No disponible",
+      "cancelled": "Cancelada",
+      "host_cancelled": "Cancelada por tu anfitrión",
+      "expired": "Venció sin respuesta"
+    },
+    "statusNote": {
+      "waiting": "Todavía no se ha cobrado nada.",
+      "declined": "No se cobró nada.",
+      "cancelled": "No se cobró nada.",
+      "expired": "No se cobró nada."
+    },
+    "reasons": {
+      "unavailable": "No está disponible en esa fecha.",
+      "fully_booked": "Ya no hay cupo.",
+      "too_late": "Ya no hay tiempo para prepararlo.",
+      "other": "Otro motivo.",
+      "stay": "Tu reserva cambió o se canceló."
+    },
+    "rules": {
+      "quantity": "Elige una cantidad válida.",
+      "needs_date": "Elige una fecha.",
+      "needs_time": "Elige una hora.",
+      "date_range": "Esa fecha no está dentro de las fechas permitidas.",
+      "weekday": "Ese día de la semana no se ofrece.",
+      "lead_time": "Hace falta más anticipación: pídelo con al menos {hours} h.",
+      "max_per_stay": "Ya llegaste al máximo por estadía.",
+      "turnover": "No está disponible para tu reserva: hay otra estadía ese día."
+    },
+    "errors": {
+      "duplicate": "Ya enviaste esta misma solicitud hace un momento.",
+      "too_many_requests": "Tienes muchas solicitudes abiertas. Espera a que tu anfitrión responda.",
+      "not_requestable": "Ya no puedes pedir servicios extra para esta estadía.",
+      "no_session": "Para pedirlo, abre la guía desde el enlace de tu estadía.",
+      "not_waiting": "Esta solicitud ya cambió.",
+      "offline": "Necesitas conexión para pedir o cancelar.",
+      "generic": "No pudimos completar la acción. Inténtalo de nuevo."
+    }
   }
 }

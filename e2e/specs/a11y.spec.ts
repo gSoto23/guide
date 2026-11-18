@@ -444,3 +444,61 @@ test("Explore, experience detail, and Explore settings have no WCAG A/AA violati
   ).toBeVisible();
   await expectNoViolations(host, "workspace Explore settings");
 });
+
+test("Extras, extra detail with requests, the catalog, and Requests have no WCAG A/AA violations (feature 008 T027)", async ({
+  browser,
+}) => {
+  test.setTimeout(240_000);
+  const { addStay, publishGuide, signIn } = await import("../helpers/guest");
+  const { addExtra, costaRicaDay, stayLinkFor } = await import("../helpers/extras");
+  const host = await newPage(browser);
+  await signIn(host, uniqueEmail("a11y-extras"));
+  const guide = await publishGuide(host);
+  const stay = await addStay(host, guide, 0, 4);
+  const pickup = await addExtra(host, guide, {
+    name: { es: "Recogida en el aeropuerto", en: "Airport pickup" },
+    price: 85,
+    leadTimeHours: 24,
+    needsDate: true,
+    needsTime: true,
+  });
+  await addExtra(host, guide, { name: { es: "Canasta de bienvenida" }, price: 0 });
+  const stayLink = await stayLinkFor(host, guide, stay.id);
+
+  for (const locale of ["es-CR", "en-US"]) {
+    const context = await browser.newContext({ locale, viewport: { width: 390, height: 844 } });
+    const guest = await context.newPage();
+    await guest.goto(stayLink);
+    await expect(guest).toHaveURL(/\/g\/[a-z2-7]{26}\/(es|en)$/);
+    await guest.locator(".tile-extras").click();
+    await expect(guest.locator(".extra").first()).toBeVisible();
+    await expectNoViolations(guest, `Extras (${locale})`);
+    await guest.goto(`${guest.url()}/${pickup.id}`);
+    await expect(guest.locator("[data-request-form]")).toBeVisible();
+    if (locale === "es-CR") {
+      // With a request in the list and a rule error showing.
+      await guest.getByLabel("Fecha").fill(costaRicaDay(0));
+      await guest.getByLabel("Hora").fill("08:00");
+      await guest.getByRole("button", { name: "Pedir", exact: true }).click();
+      await expect(guest.locator("[data-request-error]")).not.toBeEmpty();
+      await guest.getByLabel("Fecha").fill(costaRicaDay(2));
+      await guest.getByLabel("Hora").fill("14:30");
+      await guest.getByRole("button", { name: "Pedir", exact: true }).click();
+      await expect(guest.locator("[data-extra-requests] li").first()).toBeVisible();
+    }
+    await expectNoViolations(guest, `extra detail (${locale})`);
+    await context.close();
+  }
+
+  await host.goto(`/es/properties/${guide.propertyId}/extras`);
+  await expect(host.locator(".extra-row").first()).toBeVisible();
+  await expectNoViolations(host, "extras catalog");
+  await host.getByRole("button", { name: "Agregar un extra" }).click();
+  await host.getByRole("button", { name: "Guardar" }).click();
+  await expect(host.locator(".field-error").first()).toBeVisible();
+  await expectNoViolations(host, "extra form with errors");
+  await host.goto("/en/requests");
+  await expect(host.locator(".request-row").first()).toBeVisible();
+  await host.locator(".request-row").first().getByRole("button", { name: "Decline" }).click();
+  await expectNoViolations(host, "Requests with the reason form");
+});

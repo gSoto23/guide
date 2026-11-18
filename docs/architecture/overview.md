@@ -223,6 +223,19 @@ shows and counts marked taps per day without personal data. Owners and admins ch
 per property and as a workspace default. The guide chat may point guests to Explore; copilot drafts
 never do.
 
+*As built in spec 008:* the guest guide has an Extras page (a tile on the guide home when the property
+shows extras): optional services the host offers, with the price or "Free". On a stay link inside its
+window (verified when the stay requires the code) the guest picks a date and time when the extra needs
+them, adds an optional note, and requests it; the API checks the extra's rules in the property's time
+zone and takes the name, price, and stay from the catalog and the session, never the body. Pre-approved
+extras are confirmed at once; others wait for the host. A worker job (`service-request.tick`, every
+minute) alerts the escalation contacts by email and push after quiet hours, expires waiting requests when
+their lead time passes (48 hours for extras without a date), and cancels waiting requests of stays that
+are no longer active. Members answer from Requests (`/requests`); owners and admins manage each
+property's catalog. No payment happens in Guidesk yet: a confirmed request says the host will arrange
+payment (checkout is spec 013). The guide chat may name the host's extras with the Extras link when a
+guest asks; copilot drafts never do.
+
 ### 5.2 Guest writes in the Airbnb chat (Phase 2, through a PMS)
 
 ```mermaid

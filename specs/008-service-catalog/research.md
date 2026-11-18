@@ -107,4 +107,20 @@ Decisions for spec 008, building on specs 002 to 007 and 009.
 
 - **Gates:** the legal review of extras texts and early check-in and late checkout as extras (OQ-35);
   a staging check on a phone with a real stay link.
-- **Notes:** filled in during implementation.
+- **Notes:**
+  - Stay cancellation (FR-019) is handled by the per-minute tick rather than a hook in the stays
+    service: one path covers manual removal, calendar refreshes, and PMS imports, within a minute.
+  - Validation failures in guest bodies (for example a `price` or `stayId` key) are `422
+    validation_failed` from the strict schema; nothing is stored.
+  - The guest pages redirect to the guide home when the property shows no extras (like Explore),
+    instead of a 404 that would read as "guide unavailable".
+  - Portal client components can't use `t.raw` with precompiled messages; suggestion texts are read
+    key by key.
+  - The header nav now wraps on phones; with six links it overflowed 390 px and widened the layout
+    viewport, which made bottom links hard to tap.
+  - The guest form's `display: grid` overrode the `hidden` attribute; the stylesheet now keeps hidden
+    parts hidden.
+  - Local quickstart (2026-11-18): scenarios 1 to 3 pass in `extras-us1` to `extras-us3`; the alert
+    email arrived within the first tick; scenario 4 is covered by the worker test (no wall-clock wait);
+    scenario 5 by the worker knowledge test and the evals with the fake model. Staging and the legal
+    review (OQ-35) remain founder gates.
