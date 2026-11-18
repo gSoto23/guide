@@ -1155,7 +1155,8 @@
       "empty": "Esta sección todavía no tiene contenido.",
       "caption": "Descripción para quien no puede ver la imagen",
       "textPlaceholder": "Escribe para tus huéspedes…",
-      "edit": "Editar"
+      "edit": "Editar",
+      "insertLocked": "Insertar campo protegido"
     },
     "media": {
       "uploading": "Subiendo…",
@@ -1201,6 +1202,36 @@
       "description": "Tu consejo",
       "save": "Guardar recomendación",
       "disclosure": "Los huéspedes verán que recibes un beneficio."
+    },
+    "locked": {
+      "title": "Campos protegidos",
+      "intro": "Los códigos y la contraseña del Wi-Fi se guardan cifrados. Solo los ves después de confirmar tu identidad, y cada vez queda registrado.",
+      "link": "Campos protegidos",
+      "add": "Agregar campo protegido",
+      "kind": "Tipo",
+      "label": "Nombre",
+      "value": "Valor",
+      "save": "Guardar",
+      "set": "Configurado el {date}",
+      "notSet": "Sin valor",
+      "reveal": "Ver",
+      "hide": "Ocultar",
+      "hidesIn": "Se oculta en {seconds} s",
+      "change": "Cambiar valor",
+      "delete": "Eliminar",
+      "deleteConfirm": "¿Eliminar este campo protegido?",
+      "referenced": "La guía publicada usa este campo. Si lo eliminas, los huéspedes verán un espacio vacío hasta que publiques de nuevo. ¿Eliminar de todos modos?",
+      "publicWifi": "Mostrar a cualquiera con el enlace de la guía",
+      "publicWifiWarning": "Cualquier persona con el enlace o el código QR de la guía verá la contraseña del Wi-Fi. ¿Continuar?",
+      "isPublic": "Pública",
+      "locked": "Protegido",
+      "agentNotice": "Los campos protegidos solo los ven propietarios y administradores.",
+      "history": "Quién los vio",
+      "historyEmpty": "Nadie ha visto estos campos todavía.",
+      "historyItem": "{name} vio «{label}» el {date}",
+      "insert": "Insertar campo protegido",
+      "move": "Mover a un campo protegido",
+      "fromPms": "De {provider}"
     }
   }
 }

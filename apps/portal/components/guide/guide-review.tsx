@@ -90,6 +90,11 @@ export function GuideReview({ locale, propertyId }: { locale: string; propertyId
         <strong>{t("review.completeness", { score: view.completeness })}</strong>
       </p>
       {!view.canEdit && <p className="alert alert-info">{t("review.readOnly")}</p>}
+      <p>
+        <Link href={`${base}/locked-fields`}>
+          🔒 {t("locked.link")} ({view.lockedFields.length})
+        </Link>
+      </p>
       {view.draftState === "drafting" && <p className="working">{t("drafting")}</p>}
       {view.draftState === "failed" && view.canEdit && (
         <p className="alert alert-info">{t("review.draftFailed")}</p>

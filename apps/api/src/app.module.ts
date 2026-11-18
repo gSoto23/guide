@@ -13,6 +13,7 @@ import { EmailModule } from "./email/email.module.js";
 import { ExtractionsModule } from "./extractions/extractions.module.js";
 import { GuideMediaModule } from "./guide-media/guide-media.module.js";
 import { GuidesModule } from "./guides/guides.module.js";
+import { LockedFieldsModule } from "./locked-fields/locked-fields.module.js";
 import { ImportRunsModule } from "./imports/import-runs.module.js";
 import { HealthController } from "./health/health.controller.js";
 import { IntegrationsModule } from "./integrations/integrations.module.js";
@@ -38,6 +39,7 @@ import { TenancyModule } from "./tenancy/tenancy.module.js";
     PropertiesModule,
     GuidesModule,
     GuideMediaModule,
+    LockedFieldsModule,
     ListingContentModule,
     CalendarFeedsModule,
     StaysModule,

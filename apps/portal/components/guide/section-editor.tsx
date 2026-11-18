@@ -16,10 +16,14 @@ import { createWriteQueue } from "@/lib/guide/autosave";
 import { sectionTitle } from "@/lib/guide/labels";
 import { problemOf } from "@/lib/properties-api";
 import { useOnline } from "@/lib/use-online";
+import { useStepUp } from "@/lib/use-step-up";
 import { useWorkspace } from "@/lib/use-workspace";
 import { ItemCard, type ItemActions } from "./item-card";
 import { MediaUploadButton } from "./media-upload";
 import { RecommendationForm } from "./recommendation-form";
+
+/** Thrown inside a write when the host closes the step-up dialog; not an error to show. */
+const CANCELLED = Symbol("cancelled");
 
 /**
  * The section editor (screen H-13, feature 003 US1): items with text, images, videos,
@@ -40,6 +44,7 @@ export function SectionEditor({
   const errors = useTranslations("errors");
   const workspace = useWorkspace();
   const online = useOnline();
+  const { run: withStepUp, dialog } = useStepUp();
   const enqueue = useMemo(() => createWriteQueue(), []);
   const [view, setView] = useState<GuideView | null>(null);
   const [section, setSection] = useState<SectionView | null>(null);
@@ -88,6 +93,7 @@ export function SectionEditor({
         setSection(result.section);
         return result;
       } catch (caught) {
+        if (caught === CANCELLED) return null;
         const code = problemOf(caught)?.code ?? "internal_error";
         if (code === "section_changed") setConflict(true);
         else setError(errors.has(code) ? errors(code) : errors("internal_error"));
@@ -114,6 +120,27 @@ export function SectionEditor({
           workspace!.api.post<SectionWriteResult>(`${base}/items/${item.id}/approve`, { revision }),
         );
       },
+      moveToLocked: async (item, warning) => {
+        const result = await write(async (revision) => {
+          const answer = await withStepUp(() =>
+            workspace!.api.post<SectionWriteResult>(
+              `${base}/items/${item.id}/move-to-locked-field`,
+              {
+                revision,
+                language: warning.language,
+                blockIndex: warning.blockIndex,
+                kind: warning.kind,
+              },
+            ),
+          );
+          if (!answer) throw CANCELLED;
+          return answer;
+        }).catch(() => null);
+        if (!result) return false;
+        // The new locked field joins the guide's list, so its label shows in the item.
+        await load();
+        return true;
+      },
       remove: async (item) => {
         await write((revision) =>
           workspace!.api.delete<SectionWriteResult>(`${base}/items/${item.id}`, { revision }),
@@ -136,7 +163,7 @@ export function SectionEditor({
         });
       },
     }),
-    [write, workspace, base, language, section, sectionId],
+    [write, workspace, base, language, section, sectionId, withStepUp, load],
   );
 
   if (!workspace) return null;
@@ -183,6 +210,7 @@ export function SectionEditor({
 
   return (
     <section aria-labelledby="section-title">
+      {dialog}
       <p>
         <Link href={`/${locale}${base}`}>{t("editor.backToGuide")}</Link>
       </p>

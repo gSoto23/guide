@@ -32,6 +32,6 @@ import { WorkspacesController } from "./workspaces.controller.js";
     WorkspaceAccessGuard,
     { provide: SEAT_LIMIT, useClass: PilotSeatLimitProvider },
   ],
-  exports: [CrossTenantService],
+  exports: [CrossTenantService, MemberNotices],
 })
 export class TenancyModule {}

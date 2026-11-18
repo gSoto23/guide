@@ -26,6 +26,19 @@ export class MemberNotices {
     await this.outbox.enqueueEmail({ to: recipient.email, ...rendered, template });
   }
 
+  /** The workspace's owners (feature 003: the reveal-limit alert, FR-018). */
+  async toOwners(workspaceId: string, template: string, render: Render): Promise<void> {
+    const recipients = await this.handle.db
+      .select({ email: user.email, language: user.preferredLanguage })
+      .from(membership)
+      .innerJoin(user, eq(user.id, membership.userId))
+      .where(and(eq(membership.workspaceId, workspaceId), eq(membership.role, "owner")));
+    for (const recipient of recipients) {
+      const rendered = await render(toEmailLocale(recipient.language));
+      await this.outbox.enqueueEmail({ to: recipient.email, ...rendered, template });
+    }
+  }
+
   /** Every member of the workspace, optionally except one user. */
   async toMembers(
     workspaceId: string,

@@ -19,12 +19,12 @@ export type SegInline =
   | { type: "text"; text: string; marks?: SegMark[] }
   | { type: "hardBreak" }
   | { type: "lockedField"; attrs: { fieldId: string } };
-interface SegTextBlock {
+export interface SegTextBlock {
   type: "paragraph" | "heading";
   attrs?: { level: 3 | 4 };
   content?: SegInline[];
 }
-interface SegList {
+export interface SegList {
   type: "bulletList" | "orderedList";
   attrs?: { start: number };
   content: { type: "listItem"; content: (SegTextBlock | SegList)[] }[];

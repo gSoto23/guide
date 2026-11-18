@@ -214,20 +214,20 @@ from text, and never sent to the AI.
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T060 [P] [US2] Integration test for locked fields in `apps/api/test/integration/locked-fields.test.ts`: add, change, delete, and reveal need step-up within 10 minutes and MFA above the threshold (AC-SEC-002); values ≤ 200 characters; no response except reveal carries a value (AC-SEC-006); reveal answers `no-store` and logs `restricted_value.revealed`; the 21st reveal in an hour is `429 reveal_limit_reached`, logs `reveal_limited`, and queues one `guides.reveal_limit` email to owners (FR-018, AC-SEC-003); `PUT visibility` works only for `wifi_password` (`422 wifi_only`) and moves the value between ciphertext and `public_value`; deleting a referenced field needs `confirm=true` (FR-024); agents get only `locked: true`, `403` on writes, and `404` on reveals and history; reveal history for owners and admins
-- [ ] T061 [P] [US2] Integration test for code warnings in `apps/api/test/integration/guide-code-warnings.test.ts` (FR-023): saving "door code 4821" returns a warning without the value; `keepCodeWarning` stores the hash and silences the same text; "Move to a locked field" creates the field and replaces the text with a `lockedField` node in one request
-- [ ] T062 [P] [US2] Unit test in `apps/api/test/unit/reveal-service.test.ts`: the decrypted buffer is zeroed after the response is built, and errors carry no value
-- [ ] T063 [P] [US2] Email template test in `packages/emails/test/guides.test.tsx`: `guides.reveal_limit` in Spanish and English contains no value or code and links only to the portal origin
-- [ ] T064 [P] [US2] End-to-end test `e2e/specs/guide-us2-locked.spec.ts` (quickstart 3)
+- [X] T060 [P] [US2] Integration test for locked fields in `apps/api/test/integration/locked-fields.test.ts`: add, change, delete, and reveal need step-up within 10 minutes and MFA above the threshold (AC-SEC-002); values ≤ 200 characters; no response except reveal carries a value (AC-SEC-006); reveal answers `no-store` and logs `restricted_value.revealed`; the 21st reveal in an hour is `429 reveal_limit_reached`, logs `reveal_limited`, and queues one `guides.reveal_limit` email to owners (FR-018, AC-SEC-003); `PUT visibility` works only for `wifi_password` (`422 wifi_only`) and moves the value between ciphertext and `public_value`; deleting a referenced field needs `confirm=true` (FR-024); agents get only `locked: true`, `403` on writes, and `404` on reveals and history; reveal history for owners and admins
+- [X] T061 [P] [US2] Integration test for code warnings in `apps/api/test/integration/guide-code-warnings.test.ts` (FR-023): saving "door code 4821" returns a warning without the value; `keepCodeWarning` stores the hash and silences the same text; "Move to a locked field" creates the field and replaces the text with a `lockedField` node in one request
+- [X] T062 [P] [US2] Unit test in `apps/api/test/unit/reveal-service.test.ts`: the decrypted buffer is zeroed after the response is built, and errors carry no value
+- [X] T063 [P] [US2] Email template test in `packages/emails/test/guides.test.tsx`: `guides.reveal_limit` in Spanish and English contains no value or code and links only to the portal origin
+- [X] T064 [P] [US2] End-to-end test `e2e/specs/guide-us2-locked.spec.ts` (quickstart 3)
 
 ### Implementation for User Story 2
 
-- [ ] T065 [US2] Implement the `locked-fields` module (`apps/api/src/locked-fields/`): controller, service (encrypt with the vault, labels, section kind, re-import rule of FR-022), `reveal.service.ts` (the only API decrypt, R4), visibility, history from the security log, and the per-member reveal limit with the owners' email through the outbox. Make T060 and T062 pass
-- [ ] T066 [US2] Add the `guides.reveal_limit` template in `packages/emails/src/guides/reveal-limit.tsx` with Spanish and English strings. Make T063 pass
-- [ ] T067 [US2] Add code warnings and "Move to a locked field" to the item service and contract (`POST /items/{itemId}/move-to-locked-field`, recorded in the contract). Make T061 pass
-- [ ] T068 [US2] Build the locked fields screen (H-18) in `apps/portal/app/[locale]/(app)/properties/[propertyId]/guide/locked-fields/page.tsx`: masked inputs, "set by … on …", reveal with the step-up dialog from spec 001 and a 60-second hide, the public Wi-Fi switch with its warning, reveal history, and agent view
-- [ ] T069 [US2] Add the `lockedField` inline node and the "Insert locked field" picker to the editor (`apps/portal/components/guide/editor/locked-field-node.ts`), and the code warning banner with "Move to a locked field" and "Keep as text"
-- [ ] T070 [US2] Make T064 pass
+- [X] T065 [US2] Implement the `locked-fields` module (`apps/api/src/locked-fields/`): controller, service (encrypt with the vault, labels, section kind, re-import rule of FR-022), `reveal.service.ts` (the only API decrypt, R4), visibility, history from the security log, and the per-member reveal limit with the owners' email through the outbox. Make T060 and T062 pass
+- [X] T066 [US2] Add the `guides.reveal_limit` template in `packages/emails/src/guides/reveal-limit.tsx` with Spanish and English strings. Make T063 pass
+- [X] T067 [US2] Add code warnings and "Move to a locked field" to the item service and contract (`POST /items/{itemId}/move-to-locked-field`, recorded in the contract). Make T061 pass
+- [X] T068 [US2] Build the locked fields screen (H-18) in `apps/portal/app/[locale]/(app)/properties/[propertyId]/guide/locked-fields/page.tsx`: masked inputs, "set by … on …", reveal with the step-up dialog from spec 001 and a 60-second hide, the public Wi-Fi switch with its warning, reveal history, and agent view
+- [X] T069 [US2] Add the `lockedField` inline node and the "Insert locked field" picker to the editor (`apps/portal/components/guide/editor/locked-field-node.ts`), and the code warning banner with "Move to a locked field" and "Keep as text"
+- [X] T070 [US2] Make T064 pass
 
 **Checkpoint**: US1 and US2 work; codes are safe in the guide.
 
@@ -452,3 +452,12 @@ _Recorded during implementation._
   The section editor route is 148.6 KB, under the 150 KB route budget.
 - **`@aws-sdk/s3-request-presigner`** was added for presigned GET URLs (part of the plan's S3
   decision in R9).
+- **Locked-field node location (T069).** The `lockedField` node lives in
+  `apps/portal/components/guide/text-item-editor.tsx` with the rest of the editor, so it stays in
+  the on-demand chunk; the "Insert locked field" picker is a toolbar select fed by the guide's
+  locked fields.
+- **Step-up dialog on demand.** `useStepUp` loads the step-up dialog only when the API answers
+  `step_up_required`; the section editor route is 149.2 KB with the move action. US3 to US7 must
+  keep new section-editor code in on-demand chunks.
+- **Code-warning tests (T061)** live in `guides.test.ts` (warning and `keepCodeWarning`) and
+  `locked-fields.test.ts` (move to a locked field) instead of a separate file.

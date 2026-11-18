@@ -2,7 +2,7 @@
 
 import { EditorContent, Node, mergeAttributes, useEditor, type JSONContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { useTranslations } from "next-intl";
 import type { GuideDocument } from "@guidesk/contracts";
 
@@ -18,8 +18,8 @@ export interface TextItemEditorProps {
   labelFor: (fieldId: string) => string;
   onChange: (doc: GuideDocument) => void;
   ariaLabel: string;
-  /** Feature 003 US2: the locked-field picker inserts references through this. */
-  onReady?: (insertLockedField: (fieldId: string) => void) => void;
+  /** Feature 003 US2: locked fields the toolbar can insert as references (FR-019). */
+  lockedFields?: { id: string; label: string }[];
 }
 
 function lockedFieldNode(labelFor: (fieldId: string) => string) {
@@ -62,7 +62,7 @@ export default function TextItemEditor({
   labelFor,
   onChange,
   ariaLabel,
-  onReady,
+  lockedFields = [],
 }: TextItemEditorProps) {
   const t = useTranslations("guide.editor");
   const changeRef = useRef(onChange);
@@ -107,13 +107,6 @@ export default function TextItemEditor({
     },
   });
 
-  useEffect(() => {
-    if (!editor || !onReady) return;
-    onReady((fieldId) => {
-      editor.chain().focus().insertContent({ type: "lockedField", attrs: { fieldId } }).run();
-    });
-  }, [editor, onReady]);
-
   if (!editor) return <div className="guide-editor-content" aria-busy="true" />;
 
   const button = (label: string, active: boolean, run: () => void) => (
@@ -154,6 +147,28 @@ export default function TextItemEditor({
           if (href.trim() === "") editor.chain().focus().unsetLink().run();
           else editor.chain().focus().extendMarkRange("link").setLink({ href: href.trim() }).run();
         })}
+        {lockedFields.length > 0 && (
+          <select
+            aria-label={t("insertLocked")}
+            value=""
+            onChange={(event) => {
+              const fieldId = event.target.value;
+              if (!fieldId) return;
+              editor
+                .chain()
+                .focus()
+                .insertContent({ type: "lockedField", attrs: { fieldId } })
+                .run();
+            }}
+          >
+            <option value="">{t("insertLocked")}</option>
+            {lockedFields.map((field) => (
+              <option key={field.id} value={field.id}>
+                {field.label}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
       <EditorContent editor={editor} />
     </div>

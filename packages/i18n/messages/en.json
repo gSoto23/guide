@@ -1155,7 +1155,8 @@
       "empty": "This section has no content yet.",
       "caption": "Description for people who cannot see the image",
       "textPlaceholder": "Write for your guests…",
-      "edit": "Edit"
+      "edit": "Edit",
+      "insertLocked": "Insert locked field"
     },
     "media": {
       "uploading": "Uploading…",
@@ -1201,6 +1202,36 @@
       "description": "Your tip",
       "save": "Save recommendation",
       "disclosure": "Guests will see that you get a benefit."
+    },
+    "locked": {
+      "title": "Locked fields",
+      "intro": "Codes and the Wi-Fi password are stored encrypted. You only see them after confirming your identity, and every time is logged.",
+      "link": "Locked fields",
+      "add": "Add a locked field",
+      "kind": "Kind",
+      "label": "Name",
+      "value": "Value",
+      "save": "Save",
+      "set": "Set on {date}",
+      "notSet": "No value",
+      "reveal": "Show",
+      "hide": "Hide",
+      "hidesIn": "Hides in {seconds} s",
+      "change": "Change value",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this locked field?",
+      "referenced": "The published guide uses this field. If you delete it, guests will see a blank until you publish again. Delete anyway?",
+      "publicWifi": "Show to anyone with the guide link",
+      "publicWifiWarning": "Anyone with the guide's link or QR code will see the Wi-Fi password. Continue?",
+      "isPublic": "Public",
+      "locked": "Locked",
+      "agentNotice": "Only owners and admins see locked fields.",
+      "history": "Who saw them",
+      "historyEmpty": "Nobody has seen these fields yet.",
+      "historyItem": "{name} saw “{label}” on {date}",
+      "insert": "Insert locked field",
+      "move": "Move to a locked field",
+      "fromPms": "From {provider}"
     }
   }
 }

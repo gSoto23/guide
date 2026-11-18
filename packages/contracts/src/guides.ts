@@ -240,7 +240,10 @@ export const createMediaSchema = z
   .object({
     kind: z.enum(MEDIA_KIND_VALUES),
     contentType: z.enum(["image/jpeg", "image/png", "image/webp", "video/mp4", "video/quicktime"]),
-    size: z.int().min(1).max(150 * 1024 * 1024),
+    size: z
+      .int()
+      .min(1)
+      .max(150 * 1024 * 1024),
     fileName: z.string().trim().min(1).max(200),
   })
   .strict()
@@ -257,4 +260,50 @@ export type CreateMediaBody = z.infer<typeof createMediaSchema>;
 export interface MediaUpload {
   mediaId: string;
   upload: { url: string; fields: Record<string, string> };
+}
+
+// Locked fields (feature 003 contract "Locked fields") -------------------------------------------
+
+const lockedValue = z.string().min(1).max(200);
+const lockedLabel = z.string().trim().min(1).max(80);
+
+export const createLockedFieldSchema = z
+  .object({
+    kind: z.enum(LOCKED_FIELD_KIND_VALUES),
+    label: lockedLabel.optional(),
+    value: lockedValue.optional(),
+    sectionKind: z.enum(DEFAULT_SECTION_KIND_VALUES).optional(),
+  })
+  .strict();
+export type CreateLockedFieldBody = z.infer<typeof createLockedFieldSchema>;
+
+export const updateLockedFieldSchema = z
+  .object({ label: lockedLabel.optional(), value: lockedValue.optional() })
+  .strict()
+  .refine((body) => body.label !== undefined || body.value !== undefined, {
+    message: "Change the label or the value",
+  });
+export type UpdateLockedFieldBody = z.infer<typeof updateLockedFieldSchema>;
+
+export const lockedFieldVisibilitySchema = z.object({ public: z.boolean() }).strict();
+export type LockedFieldVisibilityBody = z.infer<typeof lockedFieldVisibilitySchema>;
+
+export const moveToLockedFieldSchema = z
+  .object({
+    revision: z.int().min(0),
+    language: z.enum(GUIDE_LANGUAGE_VALUES),
+    blockIndex: z.int().min(0).max(4000),
+    kind: z.enum(LOCKED_FIELD_KIND_VALUES),
+    label: lockedLabel.optional(),
+  })
+  .strict();
+export type MoveToLockedFieldBody = z.infer<typeof moveToLockedFieldSchema>;
+
+export interface RevealedValue {
+  value: string;
+  hideAfterSeconds: number;
+}
+
+export interface RevealHistory {
+  items: { fieldId: string; kind: string; label: string; revealedBy: string | null; at: string }[];
 }

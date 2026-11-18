@@ -1,4 +1,4 @@
-import type { SegDocument, SegInline } from "./segmenter.js";
+import type { SegDocument, SegInline, SegList, SegTextBlock } from "./segmenter.js";
 
 /**
  * Building guide documents from the plain text the model returns (feature 003 research R6): the
@@ -80,4 +80,54 @@ export function stripUnknownLinks(text: string, input: string): string {
   return text
     .replace(URL_IN_TEXT, (url) => (input.includes(url) ? url : ""))
     .replace(/[ \t]{2,}/g, " ");
+}
+
+/**
+ * Replaces the first occurrence of `value` in text block `blockIndex` with a locked-field
+ * reference (FR-023 "Move to a locked field"). Returns null when the value is not there. The
+ * value never stays in the text.
+ */
+export function replaceWithLockedField(
+  doc: SegDocument,
+  blockIndex: number,
+  value: string,
+  fieldId: string,
+): SegDocument | null {
+  const copy = structuredClone(doc);
+  let index = -1;
+  let replaced = false;
+  const visit = (node: SegDocument["content"][number]): void => {
+    if (replaced) return;
+    if (node.type === "bulletList" || node.type === "orderedList") {
+      const list = node as SegList;
+      for (const item of list.content) for (const child of item.content) visit(child);
+      return;
+    }
+    const block = node as SegTextBlock;
+    index += 1;
+    if (index !== blockIndex) return;
+    {
+      const content = block.content ?? [];
+      for (let position = 0; position < content.length; position += 1) {
+        const inlineNode = content[position];
+        if (inlineNode?.type !== "text") continue;
+        const at = inlineNode.text.indexOf(value);
+        if (at === -1) continue;
+        const before = inlineNode.text.slice(0, at);
+        const after = inlineNode.text.slice(at + value.length);
+        const marks = inlineNode.marks;
+        const pieces: SegInline[] = [
+          ...(before ? [{ type: "text" as const, text: before, ...(marks ? { marks } : {}) }] : []),
+          { type: "lockedField", attrs: { fieldId } },
+          ...(after ? [{ type: "text" as const, text: after, ...(marks ? { marks } : {}) }] : []),
+        ];
+        content.splice(position, 1, ...pieces);
+        block.content = content;
+        replaced = true;
+        return;
+      }
+    }
+  };
+  for (const block of copy.content) visit(block);
+  return replaced ? copy : null;
 }

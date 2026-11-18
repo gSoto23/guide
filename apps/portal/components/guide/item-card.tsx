@@ -35,6 +35,8 @@ export interface ItemActions {
     body: { doc?: GuideDocument; recommendation?: Recommendation; keepCodeWarning?: boolean },
   ) => Promise<CodeWarning[]>;
   approve: (item: ItemView) => Promise<void>;
+  /** Moves a block that looks like a code into a new locked field (FR-019, US2). */
+  moveToLocked: (item: ItemView, warning: CodeWarning) => Promise<boolean>;
   remove: (item: ItemView) => Promise<void>;
   move: (item: ItemView, direction: -1 | 1) => Promise<void>;
 }
@@ -91,6 +93,8 @@ export function ItemCard({
   const [state, setState] = useState<"saved" | "saving" | "unsaved">("saved");
   const [warnings, setWarnings] = useState<CodeWarning[]>([]);
   const [editingRecommendation, setEditingRecommendation] = useState(false);
+  /** Remounts the editor when the server changed the text, such as after a move (FR-019). */
+  const [editorKey, setEditorKey] = useState(0);
   const pending = useRef<GuideDocument | null>(readLocalDraft<GuideDocument>(key));
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -178,10 +182,12 @@ export function ItemCard({
       {item.kind === "text" &&
         (editable ? (
           <TextItemEditor
+            key={editorKey}
             doc={(pending.current ?? text?.doc ?? null) as GuideDocument | null}
             labelFor={labelFor}
             onChange={changed}
             ariaLabel={t("editor.textPlaceholder")}
+            lockedFields={view.lockedFields.filter((field) => "isSet" in field)}
           />
         ) : (
           <GuideDocumentView
@@ -268,6 +274,23 @@ export function ItemCard({
       {warnings.length > 0 && (
         <p className="alert alert-info" role="status">
           {t("editor.codeWarning")}{" "}
+          <button
+            type="button"
+            className="button-link"
+            onClick={async () => {
+              const [warning] = warnings;
+              if (!warning) return;
+              await flush();
+              if (await actions.moveToLocked(item, warning)) {
+                pending.current = null;
+                clearLocalDraft(key);
+                setWarnings([]);
+                setEditorKey((current) => current + 1);
+              }
+            }}
+          >
+            {t("locked.move")}
+          </button>{" "}
           <button
             type="button"
             className="button-link"
