@@ -87,6 +87,9 @@ export const SECURITY_EVENT_TYPES = [
   "push.unsubscribed",
   // Feature 009 (data model).
   "explore.settings_changed",
+  // Feature 008 (data model).
+  "extras.changed",
+  "service_request.answered",
 ] as const;
 
 export type SecurityEventType = (typeof SECURITY_EVENT_TYPES)[number];
@@ -188,6 +191,8 @@ const METADATA_ALLOWLIST: Partial<Record<SecurityEventType, readonly string[]>> 
     "hiddenExperiences",
     "follows",
   ],
+  "extras.changed": ["propertyId", "action", "count"],
+  "service_request.answered": ["propertyId", "requestId", "status"],
 };
 
 /** Short labels, numbers, booleans, and calendar dates; nothing that could carry free text. */

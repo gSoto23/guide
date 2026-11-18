@@ -225,6 +225,20 @@
       "when": 1795026318185,
       "tag": "0031_explore_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1795029350407,
+      "tag": "0032_service_catalog",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1795029350987,
+      "tag": "0033_service_catalog_rls",
+      "breakpoints": true
     }
   ]
 }
