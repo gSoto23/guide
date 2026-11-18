@@ -79,17 +79,19 @@ function linksPass(text: string, context: CheckContext): boolean {
   return true;
 }
 
-/** Feature 007 research R4: general answers never state a price. */
-const PRICE_PATTERNS = [
-  /[$₡€£]\s?\d/u,
-  /\d\s?[$₡€£]/u,
-  /(?<![\p{L}])(?:usd|crc|eur|us\$)\s?\d/iu,
-  /\d[\d.,]*\s?(?:usd|crc|eur|dolares|dollars|colones|euros|pesos)(?![\p{L}])/iu,
-];
+/** Feature 007 research R4: general answers never state a price. Every pattern is fixed width. */
+const PRICE_PATTERNS = [/[$₡€£]\s?\d/u, /\d\s?[$₡€£]/u, /(?<!\p{L})(?:usd|crc|eur|us\$)\s?\d/u];
+const CURRENCY_WORDS = /(?<!\p{L})(?:usd|crc|eur|dolares|dollars|colones|euros|pesos)(?!\p{L})/gu;
 
 export function pricePass(text: string): boolean {
   const folded = foldForMatch(text);
-  return !PRICE_PATTERNS.some((pattern) => pattern.test(folded));
+  if (PRICE_PATTERNS.some((pattern) => pattern.test(folded))) return false;
+  // "15 dólares": a currency word right after a number (one optional space).
+  for (const match of folded.matchAll(CURRENCY_WORDS)) {
+    const before = folded.slice(Math.max(0, match.index - 2), match.index);
+    if (/\d\s?$/.test(before)) return false;
+  }
+  return true;
 }
 
 /** Feature 007 research R4: one short question, at most two sentences and 300 characters. */
