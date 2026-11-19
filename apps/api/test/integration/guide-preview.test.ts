@@ -21,7 +21,8 @@ let team: TeamWorkspace;
 let propertyId: string;
 let lockboxId: string;
 
-const LOCKBOX = "8246";
+// Not a substring any UUID or timestamp in the response can contain, so the check below cannot match by chance.
+const LOCKBOX = "TEST-8246";
 
 beforeAll(async () => {
   ctx = await createTestApp(inject("databaseUrl"));

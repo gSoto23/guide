@@ -23,7 +23,8 @@ let db: ReturnType<typeof systemQuery>;
 let team: TeamWorkspace;
 let propertyId: string;
 
-const LOCKBOX = "7342";
+// Not a substring any UUID or timestamp in the response can contain, so the checks below cannot match by chance.
+const LOCKBOX = "TEST-7342";
 const WIFI = "palmera-azul";
 
 const doc = (text: string) => ({
