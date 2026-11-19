@@ -1304,17 +1304,7 @@ main.public-main {
 .public-brand {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  font-weight: 700;
-  font-size: 1.25rem;
-  color: var(--color-text);
-  text-decoration: none;
   min-height: var(--tap-min);
-}
-
-.public-mark {
-  width: 28px;
-  height: 28px;
 }
 
 .public-nav {
@@ -1570,4 +1560,29 @@ main.public-main {
   margin-top: var(--space-5);
   font-size: 0.875rem;
   color: var(--color-text-muted);
+}
+
+/* The official logo (feature 014 brand polish): static SVGs, light and dark. */
+.brand-logo,
+.brand-logo img {
+  display: block;
+}
+
+.app-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.app-header-brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  flex-shrink: 0;
+}
+
+.app-header-top .switcher {
+  flex: 1;
+  min-width: 0;
 }

@@ -2,6 +2,7 @@ import { Button, Heading, Text } from "@react-email/components";
 import { EmailLayout } from "../layout.js";
 import type { EmailLocale } from "../locale.js";
 import { renderEmail, type RenderedEmail } from "../render.js";
+import { BRAND } from "../brand.js";
 
 type Rendered = RenderedEmail & { subject: string };
 export type InvitedRole = "admin" | "agent";
@@ -58,7 +59,7 @@ export async function renderInvitation(
       <Button
         href={details.acceptUrl}
         style={{
-          backgroundColor: "#0f766e",
+          backgroundColor: BRAND.primary,
           color: "#ffffff",
           padding: "12px 20px",
           borderRadius: "8px",
@@ -67,8 +68,10 @@ export async function renderInvitation(
       >
         {t.action}
       </Button>
-      <Text style={{ fontSize: "13px", color: "#4b5563" }}>{t.expiry(details.expiresInDays)}</Text>
-      <Text style={{ fontSize: "13px", color: "#4b5563" }}>{t.ignore}</Text>
+      <Text style={{ fontSize: "13px", color: BRAND.muted }}>
+        {t.expiry(details.expiresInDays)}
+      </Text>
+      <Text style={{ fontSize: "13px", color: BRAND.muted }}>{t.ignore}</Text>
     </EmailLayout>
   );
   return { ...(await renderEmail(element)), subject: t.subject(details.workspaceName) };
