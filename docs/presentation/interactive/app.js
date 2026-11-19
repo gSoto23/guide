@@ -647,14 +647,19 @@
   function paintFee() {
     var price = Number($('#feePrice').value);
     var fee = Math.round(price * feePct) / 100;
-    var host = price - fee;
+    // Tilopay's card fee as the founder reported it (OQ-37): 4.2% plus USD 0.30, in cents.
+    var prov = Math.round(price * 4.2 + 30) / 100;
+    var host = price - fee - prov;
     $('#feePriceOut').textContent = 'USD ' + price;
     $('#lgPrice').textContent = money(price);
     $('#lgFee').textContent = '− ' + money(fee);
+    $('#lgProv').textContent = '− ' + money(prov);
     $('#lgHost').textContent = money(host);
-    var bh = $('#barHost'), bf = $('#barFee');
-    bh.style.flexGrow = 100 - feePct; bh.textContent = (100 - feePct) + '%';
+    var provPct = prov / price * 100, hostPct = 100 - feePct - provPct;
+    var bh = $('#barHost'), bf = $('#barFee'), bp = $('#barProv');
+    bh.style.flexGrow = hostPct; bh.textContent = hostPct.toFixed(1) + '%';
     bf.style.flexGrow = feePct; bf.textContent = feePct + '%';
+    bp.style.flexGrow = provPct; bp.textContent = provPct.toFixed(1) + '%';
   }
   $('#feePrice').addEventListener('input', paintFee);
   $$('#feePlan .chip').forEach(function (c) {
@@ -674,13 +679,16 @@
     $('#ueStaysOut').textContent = stays; $('#ueRepliesOut').textContent = replies;
     $('#ueTourOut').textContent = Math.round(tour * 100) + '%'; $('#ueAddonOut').textContent = Math.round(addon * 100) + '%';
     var tourRev = stays * tour * 120 * 0.08;
-    var addonRev = stays * addon * 35 * 0.08;
+    // Fee on extras by plan, confirmed 2026-11-19: Free 10%, Pro 7%.
+    var addonFee = withPro ? 0.07 : 0.10;
+    var addonRev = stays * addon * 35 * addonFee;
     var aiLo = stays * replies * 0.03, aiHi = stays * replies * 0.11;
     var subLo = withPro ? 9 : 0, subHi = withPro ? 12 : 0;
     var revLo = tourRev + addonRev + subLo, revHi = tourRev + addonRev + subHi;
     var netLo = revLo - aiHi, netHi = revHi - aiLo;
     $('#ueTourV').textContent = money(tourRev);
     $('#ueAddonV').textContent = money(addonRev);
+    $('#ueAddonRate').textContent = Math.round(addonFee * 100) + '%';
     $('#ueSubRow').hidden = !withPro;
     $('#ueAiV').textContent = '− ' + money(aiLo) + '–' + aiHi.toFixed(2);
     function signed(n) { return (n < 0 ? '− ' : '') + 'USD ' + Math.abs(n).toFixed(2); }
