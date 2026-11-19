@@ -7,6 +7,7 @@
     "build": "tsc -p tsconfig.build.json",
     "dev": "node --env-file-if-exists=../../.env --watch --enable-source-maps dist/main.js",
     "start": "node --enable-source-maps dist/main.js",
+    "demo:seed": "node --env-file-if-exists=../../.env dist/cli/demo-seed.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint src test",
     "test": "vitest run",
