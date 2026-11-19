@@ -10,6 +10,9 @@
   function $(sel, ctx) { return (ctx || document).querySelector(sel); }
   function $$(sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); }
   function L(es, en) { return '<span class="es">' + es + '</span><span class="en">' + en + '</span>'; }
+  /* Text read from the page (attributes, element text) is escaped before it goes back in as HTML */
+  var ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ESC[c]; }); }
   function store(key, value) { try { if (value === undefined) return localStorage.getItem(key); localStorage.setItem(key, value); } catch (e) { return null; } return null; }
   function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
   function clearTimers() { timers.forEach(clearTimeout); timers = []; }
@@ -68,7 +71,7 @@
     if (!s) return;
     var ch = CHAPTERS[s.dataset.chapter] || ['', ''];
     $('#chapterLabel').innerHTML = L(ch[0], ch[1]);
-    $('#slideTitle').innerHTML = L(s.dataset.es, s.dataset.en);
+    $('#slideTitle').innerHTML = L(esc(s.dataset.es), esc(s.dataset.en));
     $('#slideCount').textContent = (current + 1) + ' / ' + slides.length;
     $('#progressFill').style.width = ((current + 1) / slides.length * 100) + '%';
     $('#prevBtn').disabled = current === 0;
@@ -167,7 +170,7 @@
       html += '<div><h3>' + L(CHAPTERS[key][0], CHAPTERS[key][1]) + '</h3><ol>';
       items.forEach(function (s) {
         n += 1;
-        html += '<li><a href="#' + s.id + '"><span class="n">' + (n < 10 ? '0' + n : n) + '</span><span>' + L(s.dataset.es, s.dataset.en) + '</span></a></li>';
+        html += '<li><a href="#' + esc(s.id) + '"><span class="n">' + (n < 10 ? '0' + n : n) + '</span><span>' + L(esc(s.dataset.es), esc(s.dataset.en)) + '</span></a></li>';
       });
       html += '</ol></div>';
     });
@@ -376,9 +379,10 @@
   var sheetOpener = null;
   $$('#featureGrid .feature').forEach(function (card) {
     card.addEventListener('click', function () {
-      var f = FEATURES[card.getAttribute('data-feature')];
+      var key = card.getAttribute('data-feature');
+      var f = FEATURES[key];
       if (!f) return;
-      $('#sheetTags').innerHTML = '<span class="tag">spec ' + card.getAttribute('data-feature') + '</span><span class="tag ok">main ✓</span><span class="tag">' + f.adr + '</span>';
+      $('#sheetTags').innerHTML = '<span class="tag">spec ' + esc(key) + '</span><span class="tag ok">main ✓</span><span class="tag">' + f.adr + '</span>';
       $('#sheetTitle').innerHTML = L(f.t[0], f.t[1]);
       $('#sheetLead').innerHTML = L(f.lead[0], f.lead[1]);
       $('#sheetList').innerHTML = f.items.map(function (it) { return '<li>' + L(it[0], it[1]) + '</li>'; }).join('');
@@ -757,7 +761,8 @@
     var list = '<ol class="small" style="color:var(--text)" id="traceList">' + steps.map(function (s, i) {
       return '<li data-i="' + i + '">' + L(s[1], s[2]) + '</li>';
     }).join('') + '</ol>';
-    var title = $('#traceChips [data-trace="' + key + '"]').innerHTML;
+    var chip = $('#traceChips [data-trace="' + key + '"]');
+    var title = L(esc($('.es', chip).textContent), esc($('.en', chip).textContent));
     $('#archDetail').innerHTML = '<p class="h3">' + title + '</p>' + list;
     var lis = $$('#traceList li');
     function mark(i) {
