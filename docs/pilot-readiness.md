@@ -46,8 +46,8 @@ access request, are drafted in [partner outreach](partner-outreach.md).
 - [ ] **Affiliate programs** (OQ-34, spec 009 R13): join Viator (basic-access API key) and Civitatis
   (affiliate number), ask Civitatis for its feed or API, and confirm each partner's content terms.
   Drafts: [Viator](partner-outreach.md#4-viator), [Civitatis](partner-outreach.md#5-civitatis).
-- [ ] **Brand and domains** (OQ-11): trademark search, the guide's own domain, and merging the chosen
-  visual identity (direction "A · Bienvenida", branch `claude/brand-identity-1a6c99`) when ready.
+- [ ] **Brand and domains** (OQ-11): trademark search and the domains. The visual identity (direction
+  "A · Bienvenida") is already in main (PR #3, [brand guide](brand/README.md)).
 - [ ] **Design partners and dates** (OQ-03, OQ-02): the 10 to 20 hosts and 3 to 5 managers, their PMS,
   the pilot start date, and the monthly budget.
 

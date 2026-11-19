@@ -91,8 +91,8 @@ export function expectationProblems(expected: Partial<ExpectedFields>, text: str
 
 type Value = ListingExtraction[Field];
 
-function present(value: Value): boolean {
-  if (value === null) return false;
+/** Whether a value the model returned says something; callers handle null first. */
+function present(value: NonNullable<Value>): boolean {
   if (typeof value === "number") return true;
   if (typeof value === "string") return value.trim() !== "";
   return value.some((item) => item.trim() !== "");

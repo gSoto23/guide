@@ -5,18 +5,44 @@
  * into the ignored folder .tz-sources/. Run with `pnpm --filter @guidesk/domain tz:generate`.
  */
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  closeSync,
+  existsSync,
+  mkdirSync,
+  openSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+  writeSync,
+} from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const sources = `${root}.tz-sources`;
 const output = `${root}src/properties/time-zone-data.ts`;
 
+/**
+ * Downloads a source once. The file is created exclusively, so a source already downloaded is kept
+ * and nothing can change between the check and the write; a failed download leaves no file behind.
+ */
 async function download(url: string, file: string): Promise<void> {
-  if (existsSync(file)) return;
-  const response = await fetch(url, { headers: { "user-agent": "guidesk-tz-generator" } });
-  if (!response.ok) throw new Error(`Download failed: ${url} (${response.status})`);
-  writeFileSync(file, Buffer.from(await response.arrayBuffer()));
+  let fd: number;
+  try {
+    fd = openSync(file, "wx");
+  } catch (error) {
+    if ((error as { code?: string }).code === "EEXIST") return;
+    throw error;
+  }
+  let done = false;
+  try {
+    const response = await fetch(url, { headers: { "user-agent": "guidesk-tz-generator" } });
+    if (!response.ok) throw new Error(`Download failed: ${url} (${response.status})`);
+    writeSync(fd, Buffer.from(await response.arrayBuffer()));
+    done = true;
+  } finally {
+    closeSync(fd);
+    if (!done) rmSync(file, { force: true });
+  }
 }
 
 /** Lowercase, without accents or punctuation; how hosts' city input is matched. */
