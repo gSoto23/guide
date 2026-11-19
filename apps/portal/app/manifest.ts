@@ -8,7 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Guidesk",
     short_name: "Guidesk",
-    start_url: "/",
+    // Feature 014 FR-013: the installed app opens where hosts work, not on the public home page.
+    start_url: "/start",
     scope: "/",
     display: "standalone",
     background_color: "#ffffff",

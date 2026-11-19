@@ -4,9 +4,11 @@ import { describe, expect, it } from "vitest";
 type Catalog = Record<string, unknown>;
 
 function load(locale: string): Catalog {
-  return JSON.parse(
-    readFileSync(new URL(`../messages/${locale}.json`, import.meta.url), "utf8"),
-  ) as Catalog;
+  // Feature 014: the public pages' catalogs sit outside messages/, which next-intl precompiles.
+  const file = locale.startsWith("public.")
+    ? `../public/${locale.slice("public.".length)}.json`
+    : `../messages/${locale}.json`;
+  return JSON.parse(readFileSync(new URL(file, import.meta.url), "utf8")) as Catalog;
 }
 
 function keys(catalog: Catalog, prefix = ""): string[] {
@@ -25,6 +27,22 @@ describe("message catalogs (constitution, Principle IX)", () => {
   // Feature 004: the guest guide has its own catalogs so portal pages never carry its strings.
   it("have the same guest guide keys in Spanish and English", () => {
     expect(keys(load("guest.es")).sort()).toEqual(keys(load("guest.en")).sort());
+  });
+
+  // Feature 014 (research R2): the public pages' texts live in their own catalogs, read only by
+  // those pages, so portal screens never carry them. Arrays must have the same length in both.
+  it("have the same public page structure in Spanish and English", () => {
+    expect(keys(load("public.es")).sort()).toEqual(keys(load("public.en")).sort());
+  });
+
+  it("use only the known placeholders in the public catalogs", () => {
+    const allowed = new Set(["company", "email", "date", "year", "count", "percent"]);
+    for (const locale of ["public.es", "public.en"]) {
+      const text = JSON.stringify(load(locale));
+      for (const match of text.matchAll(/\{([a-zA-Z]+)\}/g)) {
+        expect(allowed.has(match[1] ?? ""), `${locale}: {${match[1]}}`).toBe(true);
+      }
+    }
   });
 
   it("cover every API error code", () => {

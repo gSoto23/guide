@@ -666,3 +666,10 @@ div.experience-photo {
   margin: 0;
   font-weight: 650;
 }
+
+/* Feature 014 FR-010: the privacy link at the end of the guide home. */
+.privacy-link {
+  margin-top: 24px;
+  font-size: 0.875rem;
+  text-align: center;
+}

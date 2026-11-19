@@ -101,7 +101,8 @@
     "invalidCode": "The code is invalid or expired. Ask for a new one.",
     "resend": "Resend code",
     "resendIn": "Resend code in {seconds} s",
-    "codeResent": "We sent you a new code."
+    "codeResent": "We sent you a new code.",
+    "consent": "By continuing, you accept the <terms>Terms</terms> and the <privacy>Privacy policy</privacy>."
   },
   "onboarding": {
     "loading": "Loading…",

@@ -39,6 +39,7 @@ describe("guest app headers", () => {
       fixtures: false,
       edgeSecret: null,
       experienceImageOrigins: [],
+      portalUrl: "http://localhost:3000",
     });
     expect(csp).toContain("img-src 'self' data:;");
   });

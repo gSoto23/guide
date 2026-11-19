@@ -87,6 +87,8 @@ export const api = new sst.aws.Service("Api", {
   link: linked,
   environment: {
     NODE_ENV: "production",
+    // Feature 014 (research R11): the demo command refuses the production stage.
+    STAGE: $app.stage,
     PORT: "4000",
     PORTAL_URL: portalUrl,
     // The only origin allowed on guest routes (feature 004 research R2).
@@ -135,6 +137,8 @@ export const worker = new sst.aws.Service("Worker", {
   link: linked,
   environment: {
     NODE_ENV: "production",
+    // Feature 014 (research R11): founder tools refuse the production stage.
+    STAGE: $app.stage,
     PORTAL_URL: portalUrl,
     // Feature 005: assistant replies may link to the guide's own pages (research R6).
     GUIDE_URL: guideUrl,

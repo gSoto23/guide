@@ -1253,3 +1253,321 @@ input[type="radio"] {
 .unanswered-item p {
   margin: 0 0 4px;
 }
+
+/* ---------- Public pages (feature 014): home, privacy, terms. Brand tokens only; no fonts. ---------- */
+.public-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main.public-main {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+}
+
+.public-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.public-skip {
+  position: absolute;
+  left: var(--space-4);
+  top: -100px;
+  z-index: 10;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg);
+  border: 2px solid var(--color-focus);
+  border-radius: var(--radius-sm);
+}
+
+.public-skip:focus {
+  top: var(--space-2);
+}
+
+.public-header {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.public-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 64px;
+}
+
+.public-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--color-text);
+  text-decoration: none;
+  min-height: var(--tap-min);
+}
+
+.public-mark {
+  width: 28px;
+  height: 28px;
+}
+
+.public-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.public-nav a:not(.button) {
+  min-height: var(--tap-min);
+  display: inline-flex;
+  align-items: center;
+}
+
+.public-nav .button,
+.public-actions .button {
+  width: auto;
+  margin-top: 0;
+}
+
+.public-hero {
+  padding: var(--space-7) 0;
+  background: var(--color-surface);
+}
+
+.public-hero h1 {
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  line-height: 1.1;
+  max-width: 16ch;
+  margin: var(--space-2) 0 var(--space-4);
+}
+
+.public-eyebrow {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-primary-strong);
+}
+
+.public-lead {
+  font-size: 1.125rem;
+  max-width: 60ch;
+  margin: 0 0 var(--space-5);
+}
+
+.public-lead-small {
+  max-width: 60ch;
+}
+
+.public-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.public-text-link {
+  min-height: var(--tap-min);
+  display: inline-flex;
+  align-items: center;
+}
+
+.public-section {
+  padding: var(--space-7) 0;
+}
+
+.public-section-alt {
+  background: var(--color-surface);
+}
+
+.public-section h2,
+.legal h2 {
+  font-size: 1.5rem;
+  line-height: 1.25;
+  margin: 0 0 var(--space-4);
+}
+
+.public-section h3 {
+  font-size: 1.125rem;
+  margin: 0 0 var(--space-2);
+}
+
+.public-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+
+.public-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.public-card p {
+  margin: 0;
+}
+
+.public-steps {
+  list-style: none;
+  counter-reset: step;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+}
+
+.public-steps li {
+  counter-increment: step;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.public-steps li::before {
+  content: counter(step);
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: 700;
+}
+
+.public-steps p {
+  margin: 0;
+}
+
+.public-badge {
+  display: inline-block;
+  margin: 0 0 var(--space-4);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.public-plan ul {
+  margin: var(--space-3) 0;
+  padding-left: 1.25rem;
+}
+
+.public-plan-featured {
+  border: 2px solid var(--color-primary);
+}
+
+.public-plan-audience {
+  color: var(--color-text-muted);
+}
+
+.public-card .public-plan-price {
+  margin-top: var(--space-3);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.public-card .public-plan-fee {
+  font-weight: 600;
+}
+
+.public-note {
+  max-width: 70ch;
+  margin-top: var(--space-4);
+  color: var(--color-text-muted);
+}
+
+.public-cta {
+  text-align: left;
+}
+
+.public-footer {
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-5) 0;
+  color: var(--color-text-muted);
+}
+
+.public-footer-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  align-items: center;
+}
+
+.public-footer-row p {
+  margin: 0;
+}
+
+.public-footer-links {
+  list-style: none;
+  display: flex;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+}
+
+.public-footer-links a {
+  min-height: var(--tap-min);
+  display: inline-flex;
+  align-items: center;
+}
+
+.legal {
+  max-width: 76ch;
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-7);
+}
+
+.legal h1 {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+}
+
+.legal section {
+  margin-top: var(--space-6);
+}
+
+.legal ul {
+  padding-left: 1.25rem;
+}
+
+.legal li + li {
+  margin-top: var(--space-2);
+}
+
+.legal-updated {
+  color: var(--color-text-muted);
+}
+
+.legal-toc {
+  margin: var(--space-5) 0;
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+}
+
+.legal-toc h2 {
+  font-size: 1rem;
+  margin: 0 0 var(--space-2);
+}
+
+.legal-toc ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+/* Feature 014 FR-009: the consent line under sign-in and invitations. */
+.consent-line {
+  margin-top: var(--space-5);
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}

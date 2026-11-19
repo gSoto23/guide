@@ -1,0 +1,398 @@
+{
+  "meta": {
+    "home": {
+      "title": "Guidesk · La guía de tu propiedad con un concierge de IA",
+      "description": "Crea la guía de tu alquiler vacacional en minutos. Un asistente de IA responde a tus huéspedes con tu información y te pasa lo delicado. Gratis para empezar."
+    },
+    "privacy": {
+      "title": "Política de privacidad · Guidesk",
+      "description": "Qué datos trata Guidesk, para qué, con qué proveedores, cuánto tiempo los guarda y cómo ejercer tus derechos."
+    },
+    "terms": {
+      "title": "Términos del servicio · Guidesk",
+      "description": "Las condiciones para usar Guidesk como anfitrión o administrador de propiedades."
+    }
+  },
+  "nav": {
+    "home": "Guidesk, inicio",
+    "signIn": "Entrar",
+    "language": "English",
+    "skip": "Saltar al contenido"
+  },
+  "footer": {
+    "privacy": "Privacidad",
+    "terms": "Términos",
+    "contact": "Contacto: {email}",
+    "rights": "© {year} {company}"
+  },
+  "legal": {
+    "updated": "Última actualización: {date}",
+    "toc": "En esta página"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Para anfitriones de alquiler vacacional",
+      "title": "Tu casa, siempre lista para responder.",
+      "lead": "Guidesk crea la guía digital de tu propiedad y suma un asistente de IA que responde a tus huéspedes a cualquier hora, en su idioma, con tu información. Lo delicado te lo pasa a ti.",
+      "cta": "Empieza gratis",
+      "secondary": "Ya tengo cuenta"
+    },
+    "audience": {
+      "title": "Para quién es",
+      "items": [
+        {
+          "title": "Anfitriones",
+          "text": "Si tienes de una a cinco propiedades y contestas las mismas preguntas una y otra vez, Guidesk te devuelve tiempo sin perder el trato personal."
+        },
+        {
+          "title": "Administradores de propiedades",
+          "text": "Si llevas muchas propiedades con un equipo, Guidesk ordena la información de cada casa, reparte el trabajo por roles y te muestra qué necesita atención."
+        }
+      ]
+    },
+    "steps": {
+      "title": "Cómo funciona",
+      "items": [
+        {
+          "title": "Crea la guía con lo que ya tienes",
+          "text": "Pega el texto de tu anuncio o importa tus datos. Guidesk arma un borrador en español e inglés que tú revisas y publicas."
+        },
+        {
+          "title": "Comparte el enlace con tus huéspedes",
+          "text": "Envía el enlace o el código QR en tus mensajes programados. Los códigos de acceso solo los ve quien tiene una estadía activa."
+        },
+        {
+          "title": "El asistente responde y te avisa",
+          "text": "Responde con la información de tu guía. Emergencias, quejas, dinero y cambios de reserva te llegan a ti con una alerta."
+        }
+      ]
+    },
+    "features": {
+      "title": "Lo que hace Guidesk",
+      "items": [
+        {
+          "id": "guide",
+          "title": "Guía de la propiedad",
+          "text": "Llegada, Wi-Fi, normas, comodidades, salida y recomendaciones locales, en una página rápida que funciona en cualquier teléfono, incluso con poca señal."
+        },
+        {
+          "id": "chat",
+          "title": "Chat con IA en la guía",
+          "text": "Tus huéspedes preguntan y reciben respuestas al instante. Tú decides en qué temas responde solo y en cuáles te pide aprobación."
+        },
+        {
+          "id": "copilot",
+          "title": "Copiloto para Airbnb, Booking.com y Vrbo",
+          "text": "Pega el mensaje de un huésped y recibe una respuesta sugerida con tu información, lista para copiar en el chat de la plataforma."
+        },
+        {
+          "id": "extras",
+          "title": "Extras y experiencias",
+          "text": "Ofrece traslados, limpiezas o alquileres que tú defines, y muestra tours de socios. Comprar siempre es opcional y cada oferta lo dice claro."
+        },
+        {
+          "id": "analytics",
+          "title": "Estadísticas",
+          "text": "Mira cuántos huéspedes abren la guía, qué preguntan, cuántas respuestas resuelve el asistente y qué extras piden."
+        }
+      ]
+    },
+    "plans": {
+      "title": "Planes",
+      "lead": "Empieza gratis. Los precios de los planes de pago se anunciarán después del piloto.",
+      "pilot": "Gratis durante el piloto",
+      "tba": "Precio por anunciar",
+      "free": "USD 0",
+      "propertiesOne": "{count} propiedad activa",
+      "propertiesOther": "{count} propiedades activas",
+      "propertiesUnlimited": "Propiedades sin límite",
+      "repliesFixed": "{count} respuestas de IA al mes",
+      "repliesPooled": "{count} respuestas de IA al mes por propiedad activa, compartidas",
+      "seatsOne": "{count} puesto",
+      "seatsOther": "{count} puestos",
+      "seatsUnlimited": "Puestos sin límite",
+      "fee": "Comisión en extras: {percent}",
+      "feesNote": "La comisión aplica solo a los extras que el huésped paga en línea con Guidesk. El huésped paga el precio publicado, sin cargos adicionales; la comisión de la tarjeta la cubre el anfitrión.",
+      "items": [
+        {
+          "id": "free",
+          "name": "Free",
+          "audience": "Para probar Guidesk con tus primeras propiedades."
+        },
+        {
+          "id": "pro",
+          "name": "Pro",
+          "audience": "Para anfitriones y administradores pequeños."
+        },
+        {
+          "id": "business",
+          "name": "Business",
+          "audience": "Para administradores con equipos y muchas propiedades."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Prepara tu primera guía hoy",
+      "text": "Crea tu cuenta con Google, una passkey o un código por correo. No necesitas tarjeta.",
+      "button": "Empieza gratis"
+    }
+  },
+  "privacy": {
+    "title": "Política de privacidad",
+    "intro": [
+      "En esta política explicamos qué datos trata Guidesk, para qué los usamos, con quién los compartimos, cuánto tiempo los guardamos y cómo puedes ejercer tus derechos.",
+      "Guidesk es una herramienta para anfitriones y administradores de alquileres vacacionales. Sus huéspedes usan la guía y el chat que el anfitrión les comparte."
+    ],
+    "sections": [
+      {
+        "id": "responsible",
+        "title": "Quién es responsable",
+        "paragraphs": [
+          "{company} es responsable de los datos de las cuentas de anfitriones y de su equipo, y de los datos que tratamos para que Guidesk funcione y sea seguro.",
+          "Cuando un anfitrión usa Guidesk para atender a sus huéspedes, el anfitrión decide qué información de su propiedad y de sus estadías incluye. Guidesk trata esa información por cuenta del anfitrión, para prestarle el servicio.",
+          "Para cualquier pregunta sobre privacidad, escríbenos a {email}."
+        ]
+      },
+      {
+        "id": "data-hosts",
+        "title": "Datos de anfitriones y de sus equipos",
+        "paragraphs": ["Cuando creas una cuenta o trabajas en un espacio de trabajo, tratamos:"],
+        "items": [
+          "Tu cuenta: nombre, correo, idioma y métodos para entrar (Google, passkeys o códigos por correo). No guardamos contraseñas.",
+          "Tu espacio de trabajo: miembros, roles e invitaciones.",
+          "Tus propiedades y guías: direcciones, horarios, normas, textos, fotos, videos y documentos que subes.",
+          "Valores bloqueados, como códigos de puertas y alarmas, que guardamos cifrados.",
+          "Estadías: fechas, el nombre de pila del huésped si lo escribes, y los enlaces de cada estadía.",
+          "Extras, solicitudes y, cuando los pagos en línea estén activos, el estado de tus cobros. Tus datos bancarios los gestiona el proveedor de pagos, no Guidesk.",
+          "Registros de uso y de seguridad: inicios de sesión, cambios importantes y el uso del asistente de IA.",
+          "Las suscripciones a alertas en tus dispositivos, si las activas."
+        ]
+      },
+      {
+        "id": "data-guests",
+        "title": "Datos de huéspedes",
+        "paragraphs": ["Cuando un huésped usa la guía que le compartió su anfitrión, tratamos:"],
+        "items": [
+          "Las visitas a la guía y el idioma elegido, con una cookie de sesión.",
+          "Los mensajes del chat: las preguntas y las respuestas. El anfitrión puede leerlos.",
+          "Las solicitudes de extras: qué se pidió, cuándo y las notas que el huésped agregue.",
+          "El nombre de pila del huésped, si el anfitrión lo escribió en la estadía.",
+          "Los pagos de extras, que se hacen en la página segura del proveedor de pagos. Los datos de tarjeta nunca llegan a Guidesk."
+        ]
+      },
+      {
+        "id": "purposes",
+        "title": "Para qué usamos los datos",
+        "paragraphs": [
+          "Usamos los datos para prestar el servicio: mostrar la guía, responder a los huéspedes, avisar al anfitrión por correo y alertas, gestionar extras y pagos, y dar estadísticas al anfitrión.",
+          "También los usamos para proteger el servicio y las cuentas, prevenir abusos, cumplir la ley y mejorar Guidesk con métricas agregadas.",
+          "No vendemos datos, no los usamos para publicidad y no pedimos a los huéspedes su teléfono, su correo ni documentos de identidad."
+        ]
+      },
+      {
+        "id": "ai",
+        "title": "El asistente de IA",
+        "paragraphs": [
+          "Para responder, el asistente usa la información publicada en la guía y la conversación en curso. Ese contenido se procesa con nuestro proveedor de IA.",
+          "Nunca enviamos al proveedor de IA los códigos de acceso ni otros valores bloqueados, y enviamos solo los datos personales que una respuesta necesita. Según sus condiciones comerciales, el proveedor no usa estos datos para entrenar sus modelos.",
+          "Las respuestas pueden contener errores. Los temas sensibles, como emergencias, quejas, dinero o cambios de reserva, pasan al anfitrión."
+        ]
+      },
+      {
+        "id": "providers",
+        "title": "Proveedores que tratan datos por nosotros",
+        "paragraphs": [
+          "Trabajamos con estos proveedores, que tratan datos solo para prestarnos su servicio:"
+        ],
+        "items": [
+          "Amazon Web Services: alojamiento, base de datos y archivos, en Estados Unidos (región us-east-1).",
+          "Anthropic: las respuestas del asistente de IA, en Estados Unidos.",
+          "Amazon SES: el envío de correos del servicio.",
+          "Google: el inicio de sesión, solo para quienes eligen entrar con Google.",
+          "El proveedor de pagos, cuando los pagos en línea estén activos: cobra los extras y paga a los anfitriones.",
+          "Viator y Civitatis: solo cuando un huésped abre el enlace de una experiencia; desde ese momento aplican sus propias políticas.",
+          "Sentry: los reportes de errores, solo si están activados, sin datos personales cuando es posible."
+        ],
+        "footer": ["Si cambiamos de proveedor, actualizamos esta lista."]
+      },
+      {
+        "id": "retention",
+        "title": "Cuánto tiempo guardamos los datos",
+        "paragraphs": ["Guardamos cada tipo de dato solo el tiempo necesario:"],
+        "items": [
+          "Mensajes de huéspedes y registros del asistente: se borran o anonimizan 12 meses después de la salida de la estadía.",
+          "Datos de la cuenta, del espacio de trabajo y de las propiedades: mientras la cuenta esté activa. Al cerrarla, los borramos en un plazo de 30 días, salvo lo que la ley nos obligue a conservar.",
+          "Códigos de acceso y otros valores bloqueados: hasta que el anfitrión los borra o borra la propiedad.",
+          "Registros de seguridad: el tiempo necesario para proteger el servicio y cumplir obligaciones legales.",
+          "Estadísticas agregadas, que no identifican a nadie: mientras la cuenta esté activa."
+        ]
+      },
+      {
+        "id": "cookies",
+        "title": "Cookies",
+        "paragraphs": ["Usamos solo cookies necesarias para que el servicio funcione:"],
+        "items": [
+          "En el portal: la cookie de sesión para mantenerte dentro y la del idioma.",
+          "En la guía: la cookie de la estadía, que se crea al abrir un enlace de estadía, y la del idioma."
+        ],
+        "footer": [
+          "No usamos cookies de analítica ni de publicidad, ni rastreadores de terceros. Por eso no mostramos un aviso de cookies.",
+          "La guía puede guardar en el teléfono su contenido público para funcionar con poca señal. Los códigos de acceso nunca se guardan así."
+        ]
+      },
+      {
+        "id": "rights",
+        "title": "Tus derechos",
+        "paragraphs": [
+          "Puedes pedir acceso a tus datos, corregirlos, exportarlos, borrarlos u oponerte a un uso. Respondemos en un plazo de 30 días y podemos pedirte que confirmes tu identidad.",
+          "Los anfitriones pueden ver, corregir y borrar la mayor parte de sus datos desde el portal. Si eres huésped, puedes escribir a tu anfitrión o a nosotros.",
+          "Para ejercer tus derechos, escríbenos a {email}.",
+          "Si crees que no atendimos bien tu solicitud, puedes acudir a la autoridad de protección de datos de tu país; en Costa Rica, la Agencia de Protección de Datos de los Habitantes (PRODHAB)."
+        ]
+      },
+      {
+        "id": "transfers",
+        "title": "Transferencias internacionales",
+        "paragraphs": [
+          "Los datos se guardan en Estados Unidos. Cuando los datos salen de tu país, lo hacemos con proveedores que ofrecen garantías adecuadas de protección."
+        ]
+      },
+      {
+        "id": "security",
+        "title": "Seguridad",
+        "paragraphs": [
+          "Ciframos los datos en tránsito y en reposo, y ciframos aparte los códigos de acceso y los enlaces de estadía con llaves que se guardan fuera de la base de datos. Cada espacio de trabajo está aislado de los demás.",
+          "Protegemos las cuentas con passkeys y verificación en dos pasos, y registramos las acciones importantes en un historial de seguridad que no se puede modificar."
+        ]
+      },
+      {
+        "id": "children",
+        "title": "Menores de edad",
+        "paragraphs": [
+          "Guidesk no está dirigido a menores. Para crear una cuenta de anfitrión hay que ser mayor de edad."
+        ]
+      },
+      {
+        "id": "changes",
+        "title": "Cambios en esta política",
+        "paragraphs": [
+          "Si cambiamos esta política, actualizamos la fecha de arriba. Si el cambio es importante, avisamos a los anfitriones por correo antes de que aplique."
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Contacto",
+        "paragraphs": [
+          "Escríbenos a {email} para cualquier pregunta sobre esta política o sobre tus datos.",
+          "Si eres huésped, también puedes escribir a tu anfitrión."
+        ]
+      }
+    ]
+  },
+  "terms": {
+    "title": "Términos del servicio",
+    "intro": [
+      "Estos términos regulan el uso de Guidesk por anfitriones, administradores de propiedades y sus equipos. Al crear una cuenta o usar el servicio, los aceptas.",
+      "Los huéspedes usan la guía que su anfitrión les comparte; su relación por la estadía es con el anfitrión y con la plataforma donde reservaron."
+    ],
+    "sections": [
+      {
+        "id": "service",
+        "title": "El servicio",
+        "paragraphs": [
+          "Guidesk ofrece guías digitales de propiedades, un asistente de IA en la guía, un copiloto que sugiere respuestas para los chats de las plataformas, extras que el anfitrión ofrece, recomendaciones de experiencias de socios y estadísticas.",
+          "Guidesk no es una plataforma de reservas y no forma parte del contrato de la estadía entre el anfitrión y el huésped."
+        ]
+      },
+      {
+        "id": "accounts",
+        "title": "Cuentas y roles",
+        "paragraphs": [
+          "Para crear una cuenta debes ser mayor de edad y dar información verdadera. Eres responsable de la seguridad de tu cuenta y de los métodos que usas para entrar.",
+          "Cada espacio de trabajo tiene un dueño, que responde por las acciones de su equipo y decide sus roles (dueño, administrador o agente)."
+        ]
+      },
+      {
+        "id": "acceptable-use",
+        "title": "Uso aceptable",
+        "paragraphs": ["Al usar Guidesk te comprometes a no:"],
+        "items": [
+          "Publicar contenido ilegal, engañoso o que infrinja derechos de terceros.",
+          "Usar Guidesk para incumplir las reglas de Airbnb, Booking.com, Vrbo u otras plataformas, por ejemplo para cobrar depósitos o sacar una reserva o su pago de la plataforma.",
+          "Usar los datos de los huéspedes para fines distintos de su estadía, ni enviarles publicidad no solicitada.",
+          "Atacar, sobrecargar, copiar de forma automatizada o intentar vulnerar el servicio.",
+          "Publicar códigos de acceso u otra información sensible fuera de los lugares previstos para eso."
+        ]
+      },
+      {
+        "id": "host-content",
+        "title": "Tu contenido y tus responsabilidades",
+        "paragraphs": [
+          "El contenido que subes sigue siendo tuyo. Nos das permiso para guardarlo, procesarlo, traducirlo y mostrarlo a tus huéspedes y a tu equipo, solo para prestarte el servicio.",
+          "Eres responsable de que la información de tu guía sea correcta y esté al día, incluidos códigos, normas, avisos de seguridad y números de emergencia.",
+          "Eres responsable de los extras que ofreces: su descripción, su precio, sus impuestos, los permisos que requieran y su entrega."
+        ]
+      },
+      {
+        "id": "assistant",
+        "title": "El asistente de IA",
+        "paragraphs": [
+          "El asistente responde con la información de tu guía y según la configuración que eliges. Puede equivocarse, y tú puedes revisar, corregir y decidir en qué temas responde solo.",
+          "Los temas sensibles, como emergencias, seguridad, quejas, dinero, cambios de reserva o asuntos legales, pasan siempre a ti. Guidesk no es un servicio de emergencias: la guía muestra los números de emergencia que configures."
+        ]
+      },
+      {
+        "id": "payments",
+        "title": "Comisiones y pagos",
+        "paragraphs": [
+          "Cuando los pagos en línea estén activos, los huéspedes pagan los extras en la página segura del proveedor de pagos y tú recibes tu parte en tu cuenta con el proveedor. Guidesk nunca retiene tu dinero.",
+          "De cada extra pagado en línea, Guidesk cobra la comisión de tu plan: Free 10%, Pro 7% y Business 5%, o la que hayamos acordado por escrito. La comisión de la tarjeta la cubre el anfitrión. Los reembolsos los haces tú desde el portal, y las disputas las gestiona el proveedor según sus condiciones.",
+          "En las experiencias de socios, Guidesk puede recibir una comisión del socio; la guía lo indica en cada oferta."
+        ]
+      },
+      {
+        "id": "pilot",
+        "title": "Piloto y planes",
+        "paragraphs": [
+          "Durante el piloto, Guidesk es gratis. Los límites de cada plan se aplican desde el inicio.",
+          "Anunciaremos los precios de los planes de pago con al menos 30 días de anticipación antes de cobrarlos, y podrás elegir si continúas."
+        ]
+      },
+      {
+        "id": "suspension",
+        "title": "Suspensión y cierre",
+        "paragraphs": [
+          "Podemos suspender o cerrar una cuenta si incumple estos términos, pone en riesgo a huéspedes, a otros usuarios o al servicio, o si la ley lo exige. Cuando sea posible, te avisaremos antes.",
+          "Puedes dejar de usar Guidesk y cerrar tu cuenta cuando quieras. Tratamos tus datos después del cierre según la política de privacidad."
+        ]
+      },
+      {
+        "id": "liability",
+        "title": "Garantías y responsabilidad",
+        "paragraphs": [
+          "Prestamos el servicio con cuidado, pero tal como está y según esté disponible, sin garantizar que no tenga errores ni interrupciones.",
+          "En la medida en que la ley lo permita, no respondemos por daños indirectos, lucro cesante ni pérdida de datos, y nuestra responsabilidad total se limita a lo que hayas pagado a Guidesk en los 12 meses anteriores al reclamo."
+        ]
+      },
+      {
+        "id": "changes",
+        "title": "Cambios en estos términos",
+        "paragraphs": [
+          "Si cambiamos estos términos, actualizamos la fecha de arriba. Si el cambio es importante, te avisamos por correo al menos 15 días antes de que aplique."
+        ]
+      },
+      {
+        "id": "law",
+        "title": "Ley aplicable",
+        "paragraphs": [
+          "Estos términos se rigen por las leyes de Costa Rica. Cualquier controversia se resolverá ante los tribunales de San José, Costa Rica, salvo que la ley de protección al consumidor de tu país disponga otra cosa."
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Contacto",
+        "paragraphs": ["Escríbenos a {email} para cualquier pregunta sobre estos términos."]
+      }
+    ]
+  }
+}

@@ -101,7 +101,8 @@
     "invalidCode": "El código no es válido o ya venció. Pide uno nuevo.",
     "resend": "Reenviar código",
     "resendIn": "Reenviar código en {seconds} s",
-    "codeResent": "Te enviamos un código nuevo."
+    "codeResent": "Te enviamos un código nuevo.",
+    "consent": "Al continuar, aceptas los <terms>Términos</terms> y la <privacy>Política de privacidad</privacy>."
   },
   "onboarding": {
     "loading": "Cargando…",

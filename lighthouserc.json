@@ -5,6 +5,8 @@
       "startServerReadyPattern": "Ready",
       "startServerReadyTimeout": 60000,
       "url": [
+        "http://localhost:3000/es",
+        "http://localhost:3000/es/privacy",
         "http://localhost:3000/es/sign-in",
         "http://localhost:3000/en/sign-in",
         "http://localhost:3000/es/onboarding",

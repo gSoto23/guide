@@ -6,6 +6,8 @@ export interface PageChrome {
   t: Translate;
   locale: GuestLocale;
   assets: Assets;
+  /** Feature 014 FR-010: the privacy policy on the portal, in the page's language. */
+  privacyHref?: string;
 }
 
 interface LayoutProps extends PageChrome {
@@ -30,9 +32,23 @@ function jsonBlock(value: unknown): string {
 }
 
 /** The document shell: no inline script or style, never indexed, no referrer (R15). */
-export function Layout({ t, locale, assets, title, guide, clientTexts, children }: LayoutProps) {
+export function Layout({
+  t,
+  locale,
+  assets,
+  title,
+  guide,
+  clientTexts,
+  privacyHref,
+  children,
+}: LayoutProps) {
   return (
-    <html lang={locale} data-public-id={guide?.publicId} data-offline-at="">
+    <html
+      lang={locale}
+      data-public-id={guide?.publicId}
+      data-offline-at=""
+      data-privacy-href={privacyHref}
+    >
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />

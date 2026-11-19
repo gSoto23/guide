@@ -25,6 +25,12 @@ export const stageConfig = {
    * to the category illustration).
    */
   civitatisAffiliateId: process.env.GUIDESK_CIVITATIS_AFFILIATE_ID ?? "",
+  /**
+   * Feature 014 (research R4): the public pages' contact address (required in production) and the
+   * company named as responsible ("Guidesk" until the legal entity exists, OQ-01).
+   */
+  contactEmail: process.env.GUIDESK_CONTACT_EMAIL?.trim() ?? "",
+  companyName: process.env.GUIDESK_COMPANY_NAME?.trim() ?? "",
   /** Feature 011: where hosts ask for a plan change (shown on Plan and limits); optional. */
   planContactEmail: process.env.GUIDESK_PLAN_CONTACT_EMAIL ?? "",
   experienceImageOrigins: process.env.GUIDESK_EXPERIENCE_IMAGE_ORIGINS ?? "",
@@ -51,4 +57,26 @@ if (
   throw new Error(
     "GUIDESK_PORTAL_DOMAIN, GUIDESK_API_DOMAIN, and GUIDESK_GUIDE_DOMAIN are required for production",
   );
+}
+
+/** A plain email shape check (no regular expression on deploy input). */
+function looksLikeEmail(value: string): boolean {
+  const at = value.indexOf("@");
+  const domain = value.slice(at + 1);
+  return (
+    !/\s/.test(value) &&
+    at > 0 &&
+    at === value.lastIndexOf("@") &&
+    domain.lastIndexOf(".") > 0 &&
+    domain.lastIndexOf(".") < domain.length - 1
+  );
+}
+
+if (stageConfig.contactEmail && !looksLikeEmail(stageConfig.contactEmail)) {
+  throw new Error("GUIDESK_CONTACT_EMAIL must be an email address");
+}
+
+if (isProduction && !stageConfig.contactEmail) {
+  // The public privacy policy and terms must say how to reach Guidesk (feature 014 FR-017).
+  throw new Error("GUIDESK_CONTACT_EMAIL is required for production");
 }

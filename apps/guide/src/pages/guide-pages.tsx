@@ -48,6 +48,7 @@ export function clientTexts(t: Translate): Record<string, string> {
     "chat.title",
     "chat.close",
     "chat.intro",
+    "privacy.link",
     "chat.introNoHost",
     "chat.introEmergency",
     "chat.introPlatform",
@@ -168,6 +169,13 @@ export function HomePage(input: GuidePageInput) {
           <p>{guide.facts.address}</p>
           <MapLinks address={guide.facts.address} t={t} />
         </section>
+      ) : null}
+      {input.privacyHref ? (
+        <p className="privacy-link">
+          <a href={input.privacyHref} target="_blank" rel="noopener">
+            {t("privacy.link")}
+          </a>
+        </p>
       ) : null}
     </Layout>
   );

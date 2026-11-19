@@ -7,8 +7,10 @@ import { headers } from "next/headers";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 
+// Portal screens are never indexed; the public pages (feature 014) opt in with their own metadata.
 export const metadata: Metadata = {
   title: "Guidesk",
+  robots: { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
