@@ -14,6 +14,10 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth.js";
+import { inList } from "./columns.js";
+
+/** The plans of feature 011 (kept in step with `PLANS` in @guidesk/domain by a test). */
+export const PLAN_VALUES = ["free", "pro", "business"] as const;
 
 export const workspace = pgTable(
   "workspace",
@@ -27,10 +31,15 @@ export const workspace = pgTable(
       .default("active"),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
     purgeAfter: timestamp("purge_after", { withTimezone: true }),
-    /** Pilot seat limit set by Guidesk (FR-021); null uses the default. Feature 011 replaces it. */
+    /** Feature 011: Free, Pro, or Business (data model); only the founder tool changes it. */
+    plan: text("plan", { enum: PLAN_VALUES }).notNull().default("free"),
+    planChangedAt: timestamp("plan_changed_at", { withTimezone: true }),
+    /** The founder's last note about the plan; never returned by the API. */
+    planNote: text("plan_note"),
+    /** Custom limits set by Guidesk (feature 011 FR-003); null uses the plan's value. */
     seatLimit: integer("seat_limit"),
-    /** Pilot property limit set by Guidesk (FR-047); null uses the Free plan's 2. */
     propertyLimit: integer("property_limit"),
+    aiReplyMonthlyLimit: integer("ai_reply_monthly_limit"),
     /** Feature 003 pilot overrides (data model §5): daily guide AI requests and media storage. */
     guideAiDailyLimit: integer("guide_ai_daily_limit"),
     mediaStorageLimitMb: integer("media_storage_limit_mb"),
@@ -46,6 +55,15 @@ export const workspace = pgTable(
   (t) => [
     check("workspace_name_length", sql`char_length(${t.name}) BETWEEN 1 AND 80`),
     check("workspace_status_valid", sql`${t.status} IN ('active', 'pending_deletion')`),
+    check("workspace_plan_valid", inList(t.plan, PLAN_VALUES)),
+    check(
+      "workspace_plan_note_length",
+      sql`${t.planNote} IS NULL OR char_length(${t.planNote}) BETWEEN 1 AND 200`,
+    ),
+    check(
+      "workspace_ai_reply_monthly_limit_positive",
+      sql`${t.aiReplyMonthlyLimit} IS NULL OR ${t.aiReplyMonthlyLimit} > 0`,
+    ),
     check("workspace_seat_limit_positive", sql`${t.seatLimit} IS NULL OR ${t.seatLimit} > 0`),
     check(
       "workspace_property_limit_positive",

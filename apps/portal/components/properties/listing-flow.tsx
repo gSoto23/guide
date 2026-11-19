@@ -25,6 +25,7 @@ import { useStepUp } from "@/lib/use-step-up";
 import { useWorkspace } from "@/lib/use-workspace";
 import type { CoreFactsBody, CoreFactsValue } from "./core-facts-form";
 import { ListingInput, type PickedScreenshot } from "./listing-input";
+import { PlanLink } from "../plan/plan-link";
 
 // The review and confirm steps come after the host submits the listing, so they load then and
 // stay out of the page's first download (Performance Budget, 150 KB per route).
@@ -64,7 +65,12 @@ export function ListingFlow({ locale }: { locale: string }) {
   const [text, setText] = useState("");
   const [screenshots, setScreenshots] = useState<PickedScreenshot[]>([]);
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState<{ kind: "info" | "error"; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    kind: "info" | "error";
+    text: string;
+    /** The plan's property limit: owners and admins get a link to the plan (feature 011). */
+    plan?: boolean;
+  } | null>(null);
   const [extractionId, setExtractionId] = useState<string | null>(null);
   const [redactions, setRedactions] = useState<Record<string, number>>({});
   const [extraction, setExtraction] = useState<Extraction | null>(null);
@@ -193,6 +199,7 @@ export function ListingFlow({ locale }: { locale: string }) {
         setMessage({
           kind: "error",
           text: t("limits.reached", { limit: problemNumber(problem, "limit") ?? 2 }),
+          plan: true,
         });
       } else if (problem?.code === "conflict") {
         setMessage({ kind: "error", text: listing("alreadyUsed") });
@@ -208,7 +215,7 @@ export function ListingFlow({ locale }: { locale: string }) {
 
   const alert = message ? (
     <p className={`alert ${message.kind === "error" ? "alert-error" : "alert-info"}`} role="alert">
-      {message.text}
+      {message.text} {message.plan ? <PlanLink locale={locale} /> : null}
     </p>
   ) : null;
 

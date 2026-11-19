@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  DEFAULT_PILOT_SEAT_LIMIT,
   effectiveStatus,
   hasFreeSeat,
   invitationExpiry,
@@ -46,6 +45,6 @@ describe("seat limit (T073, FR-021)", () => {
   it("counts members and open invitations against the limit", () => {
     expect(hasFreeSeat({ members: 1, pendingInvitations: 0 }, 2)).toBe(true);
     expect(hasFreeSeat({ members: 1, pendingInvitations: 1 }, 2)).toBe(false);
-    expect(DEFAULT_PILOT_SEAT_LIMIT).toBeGreaterThan(1);
+    expect(hasFreeSeat({ members: 40, pendingInvitations: 9 }, null)).toBe(true);
   });
 });

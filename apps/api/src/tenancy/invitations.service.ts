@@ -138,6 +138,7 @@ export class InvitationsService {
         409,
         "seat_limit_reached",
         `This workspace has ${limit} seats and all are taken. Remove a member or revoke an invitation first.`,
+        { details: { limit, used } },
       );
     }
 

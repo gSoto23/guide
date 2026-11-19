@@ -16,7 +16,7 @@ import {
   JOB_QUEUES,
   missingFacts,
   normalizeAddressKey,
-  propertyLimit,
+  roomLeft,
   redactRestrictedValues,
   removeRedactedLines,
   setupStatusAfterEdit,
@@ -269,7 +269,7 @@ async function importListing(
       propertyId = existing.id;
       outcome = "updated";
     } else {
-      if (slots.used >= propertyLimit(slots.propertyLimit)) {
+      if (roomLeft(slots.limit, slots.used) === 0) {
         return { outcome: "skipped", reasonCode: "plan_limit" };
       }
       const setupStatus = initialSetupStatus("pms", imported);

@@ -166,7 +166,8 @@ export const propertyDetailSchema = propertySummarySchema.extend({
 export type PropertyDetail = z.infer<typeof propertyDetailSchema>;
 
 export const propertyLimitsSchema = z.object({
-  limit: z.number().int(),
+  /** The effective property limit (feature 011); null when the plan has none. */
+  limit: z.number().int().nullable(),
   used: z.number().int(),
   extractionLimit: z.number().int(),
   extractionsUsedToday: z.number().int(),

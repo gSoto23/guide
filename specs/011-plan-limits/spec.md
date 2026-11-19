@@ -263,7 +263,8 @@ warning; an agent cannot open the screen.
   add a note with a command-line tool that runs where database migrations run, never through the
   portal or the public API.
 - **FR-018**: Each change MUST be recorded in the workspace's security log as made by Guidesk, with the
-  previous and new plan and custom limits and the note.
+  previous and new plan and the new custom limits. The note is kept with the workspace's plan for the
+  founder (the log holds no free text).
 - **FR-019**: The founder MUST be able to print a workspace's plan, each limit with its source (plan or
   custom), and the month's usage.
 - **FR-020**: No portal or API request, from any role, MUST be able to change a plan or a custom limit.
@@ -272,8 +273,8 @@ warning; an agent cannot open the screen.
 
 - **Plan**: one of Free, Pro, Business, each with fixed limit values (FR-002). Defined by Guidesk;
   changes in Phase 2 with billing.
-- **Workspace plan**: a workspace's plan, when it was last changed, and its optional custom limits for
-  properties, seats, and monthly AI replies.
+- **Workspace plan**: a workspace's plan, when it was last changed, the founder's last note, and its
+  optional custom limits for properties, seats, and monthly AI replies.
 - **Monthly AI usage**: the sum of a workspace's daily AI-reply counts (already kept per property and
   UTC day for spec 005) since the 1st of the month.
 - **Usage notice**: that a workspace's owners were told about the 80% or 100% threshold in a given

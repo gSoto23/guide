@@ -21,6 +21,7 @@ limits use the basis `property limit ?? active properties + 2` (at least 2).
 |---|---|---|
 | plan | text not null default `'free'` | `IN ('free', 'pro', 'business')` |
 | plan_changed_at | timestamptz null | set by the founder tool |
+| plan_note | text null | the founder's last note, 1 to 200 characters; never returned by the API |
 | ai_reply_monthly_limit | integer null | custom limit; `> 0` |
 | seat_limit | integer null (existing) | now a custom limit; null = the plan's |
 | property_limit | integer null (existing) | now a custom limit; null = the plan's |
@@ -46,7 +47,8 @@ older than 13 months (same job and horizon as `chat_usage_daily`).
 - Needs-host and trace reason `monthly_limit` (with `limit` for the daily budgets).
 - Copilot run outcome and assistant test outcome `monthly_limited` (with `limited`).
 - Security event `workspace.plan_changed`: `actor_user_id` null, `workspace_id`, metadata
-  `{ from, to, custom: { properties, seats, aiReplies }, previousCustom: {…}, note }`.
+  `{ from, to, properties, seats, aiReplies }` where each limit is the new custom number or `"plan"`
+  (the log allows short values only; the note stays on the workspace).
 
 ## Sources read
 

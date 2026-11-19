@@ -32,6 +32,7 @@ const FORMAL_HOLDING_ES: Record<NeedsHostReason, string> = {
   draft_ready: "Gracias por su mensaje. Su anfitrión lo revisará y le responderá aquí pronto.",
   check_failed: "Gracias por su mensaje. Su anfitrión lo revisará y le responderá aquí pronto.",
   limit: "Gracias por su mensaje. Su anfitrión le responderá aquí pronto.",
+  monthly_limit: "Gracias por su mensaje. Su anfitrión le responderá aquí pronto.",
   unavailable:
     "El asistente no está disponible en este momento. Su anfitrión ya tiene su mensaje y le responderá aquí.",
   taken_over: "Su anfitrión le responderá aquí personalmente.",
@@ -58,6 +59,7 @@ const HOLDING: Record<ReplyLanguage, Record<NeedsHostReason, string>> = {
     draft_ready: "Gracias por tu mensaje. Tu anfitrión lo revisará y te responderá aquí pronto.",
     check_failed: "Gracias por tu mensaje. Tu anfitrión lo revisará y te responderá aquí pronto.",
     limit: "Gracias por tu mensaje. Tu anfitrión te responderá aquí pronto.",
+    monthly_limit: "Gracias por tu mensaje. Tu anfitrión te responderá aquí pronto.",
     unavailable:
       "El asistente no está disponible en este momento. Tu anfitrión ya tiene tu mensaje y te responderá aquí.",
     taken_over: "Tu anfitrión te responderá aquí personalmente.",
@@ -77,6 +79,7 @@ const HOLDING: Record<ReplyLanguage, Record<NeedsHostReason, string>> = {
     draft_ready: "Thanks for your message. Your host will review it and reply here soon.",
     check_failed: "Thanks for your message. Your host will review it and reply here soon.",
     limit: "Thanks for your message. Your host will reply here soon.",
+    monthly_limit: "Thanks for your message. Your host will reply here soon.",
     unavailable:
       "The assistant isn't available right now. Your host has your message and will reply here.",
     taken_over: "Your host will reply to you here personally.",

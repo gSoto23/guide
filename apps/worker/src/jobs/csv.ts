@@ -24,7 +24,7 @@ import {
   normalizeAddressKey,
   normalizeFeedUrl,
   planFeedRefresh,
-  propertyLimit,
+  roomLeft,
   readCsvHeader,
   todayIn,
   validateCsvRow,
@@ -209,7 +209,7 @@ async function createRow(
     if (slots.workspaceStatus === "pending_deletion") {
       return { outcome: "skipped", reasonCode: "workspace_pending_deletion" };
     }
-    if (slots.used >= propertyLimit(slots.propertyLimit)) {
+    if (roomLeft(slots.limit, slots.used) === 0) {
       return { outcome: "skipped", reasonCode: "plan_limit" };
     }
     // The stored values are already normalized, so validating them again gives the same facts.

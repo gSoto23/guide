@@ -76,8 +76,9 @@
 - **Decision:** `pnpm --filter @guidesk/db plan:set -- --workspace <uuid> --plan free|pro|business
   [--properties N|plan] [--seats N|plan] [--ai-replies N|plan] --note "…"` and
   `plan:show -- --workspace <uuid>`. `plan:set` updates the workspace and writes a security event
-  `workspace.plan_changed` (actor none, shown as Guidesk; metadata: previous and new plan and custom
-  limits, note) in one transaction. `plan:show` prints the plan, each limit with its source, and usage.
+  `workspace.plan_changed` (actor none, shown as Guidesk; metadata: previous and new plan and the new
+  custom limits) in one transaction. The note is stored in `workspace.plan_note`, because the security
+  log accepts only short values, never free text. `plan:show` prints the plan, each limit with its source, and usage.
 - **Rationale:** FR-017 to FR-020; same pattern as `report:pilot` (runs where migrations run). No API
   route can write `plan` or custom limits (AC-SEC-002).
 

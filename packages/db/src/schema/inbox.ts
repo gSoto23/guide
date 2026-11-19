@@ -23,7 +23,14 @@ import { workspace } from "./tenancy.js";
 
 export const BOOKING_STATUSES = ["inquiry", "confirmed"] as const;
 export const COPILOT_RUN_STATUSES = ["pending", "done"] as const;
-export const COPILOT_OUTCOMES = ["drafted", "limited", "unavailable", "failed"] as const;
+export const COPILOT_OUTCOMES = [
+  "drafted",
+  "limited",
+  // Feature 011: the month's AI replies are used up.
+  "monthly_limited",
+  "unavailable",
+  "failed",
+] as const;
 
 export const copilotRun = pgTable(
   "copilot_run",

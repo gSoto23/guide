@@ -31,6 +31,11 @@ const schema = z
     SMTP_PORT: z.coerce.number().int().positive().default(1025),
     SES_CONFIGURATION_SET: z.string().optional(),
     SENTRY_DSN: z.string().optional(),
+    /** Feature 011: where hosts ask Guidesk for a plan change; optional until the founder sets it. */
+    PLAN_CONTACT_EMAIL: z.preprocess(
+      (value) => (value === "" ? undefined : value),
+      z.email().optional(),
+    ),
     /**
      * Proxy hops in front of the API whose X-Forwarded-For entries are trusted: CloudFront and the
      * load balancer in AWS (2); the portal's dev proxy locally (1). Security review T103.

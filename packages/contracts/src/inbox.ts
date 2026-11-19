@@ -62,7 +62,7 @@ export type CopilotRequest = z.infer<typeof copilotRequestSchema>;
 export interface CopilotDraft {
   id: string;
   status: "pending" | "done";
-  outcome: "drafted" | "limited" | "unavailable" | "failed" | null;
+  outcome: "drafted" | "limited" | "monthly_limited" | "unavailable" | "failed" | null;
   draft: string | null;
   sections: ChatSectionRef[];
   checks: { check: string; passed: boolean }[];

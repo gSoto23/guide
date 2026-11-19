@@ -23,3 +23,4 @@ export * from "./inbox.js";
 export * from "./explore.js";
 export * from "./extras.js";
 export * from "./analytics.js";
+export * from "./plans.js";

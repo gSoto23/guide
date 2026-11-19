@@ -29,7 +29,11 @@ export type Invitation = z.infer<typeof invitationSchema>;
 export const invitationListSchema = z.object({
   invitations: z.array(invitationSchema),
   /** Members plus open invitations, against the workspace's seat limit (FR-021). */
-  seats: z.object({ used: z.number().int().nonnegative(), limit: z.number().int().positive() }),
+  /** `limit` is null when the plan has no seat limit (feature 011). */
+  seats: z.object({
+    used: z.number().int().nonnegative(),
+    limit: z.number().int().positive().nullable(),
+  }),
 });
 export type InvitationList = z.infer<typeof invitationListSchema>;
 

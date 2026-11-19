@@ -23,7 +23,9 @@
     "lint:rls": "node --env-file-if-exists=../../.env dist/cli/lint-rls.js",
     "generate": "drizzle-kit generate",
     "test:integration": "vitest run -c vitest.integration.config.ts",
-    "report:pilot": "node --env-file-if-exists=../../.env dist/cli/pilot-report.js"
+    "report:pilot": "node --env-file-if-exists=../../.env dist/cli/pilot-report.js",
+    "plan:set": "node --env-file-if-exists=../../.env dist/cli/plan.js set",
+    "plan:show": "node --env-file-if-exists=../../.env dist/cli/plan.js show"
   },
   "devDependencies": {
     "@guidesk/config": "workspace:*",
@@ -32,6 +34,7 @@
     "drizzle-kit": "^0.31.11"
   },
   "dependencies": {
+    "@guidesk/domain": "workspace:*",
     "drizzle-orm": "^0.45.4",
     "pg": "^8.23.1"
   }

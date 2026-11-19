@@ -6,6 +6,7 @@ import {
   invitationsUrl,
   invitationTokenFor,
   newOwner,
+  roomForTeam,
 } from "./invitation-helpers.js";
 import { createTestApp, updateCookies } from "./test-app.js";
 
@@ -62,6 +63,7 @@ describe("ownership transfer (T087, FR-026)", () => {
     const me = (await api(mfaCtx, "GET", "/api/v1/me", cookie)).json() as {
       lastWorkspaceId: string;
     };
+    await roomForTeam(me.lastWorkspaceId);
     const enable = await api(mfaCtx, "POST", "/api/auth/two-factor/enable", cookie, {});
     const { totpURI } = enable.json() as { totpURI: string };
     const enrolled = await api(mfaCtx, "POST", "/api/auth/two-factor/verify-totp", cookie, {

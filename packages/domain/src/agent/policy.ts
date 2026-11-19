@@ -33,6 +33,8 @@ export const NEEDS_HOST_REASONS = [
   "draft_ready",
   "check_failed",
   "limit",
+  // Feature 011: the month's AI replies are used up.
+  "monthly_limit",
   "unavailable",
   // Feature 006 (research R4, R10): the guest wrote in a conversation a member took over.
   "taken_over",

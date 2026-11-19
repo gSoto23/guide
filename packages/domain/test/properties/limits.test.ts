@@ -2,20 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   extractionLimit,
   extractionLimitResetsAt,
-  FREE_PLAN_PROPERTY_LIMIT,
   nextRefreshAllowedAt,
-  propertyLimit,
   refreshAllowed,
 } from "../../src/properties/limits.js";
-
-describe("property limit (FR-047, R12)", () => {
-  it("uses the workspace's pilot limit, or the Free plan's 2 when it is null", () => {
-    expect(FREE_PLAN_PROPERTY_LIMIT).toBe(2);
-    expect(propertyLimit(null)).toBe(2);
-    expect(propertyLimit(undefined)).toBe(2);
-    expect(propertyLimit(25)).toBe(25);
-  });
-});
 
 describe("extraction limit (FR-017)", () => {
   it("is twice the property limit, with a minimum of 10 per UTC day", () => {

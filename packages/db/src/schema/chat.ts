@@ -47,6 +47,8 @@ export const NEEDS_HOST_REASON_VALUES = [
   "draft_ready",
   "check_failed",
   "limit",
+  // Feature 011: the month's AI replies are used up.
+  "monthly_limit",
   "unavailable",
   "taken_over",
 ] as const;

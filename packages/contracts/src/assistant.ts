@@ -148,7 +148,14 @@ export const assistantTestSchema = z
 export type AssistantTestBody = z.infer<typeof assistantTestSchema>;
 
 export type AssistantTestOutcome =
-  "sent" | "draft" | "held" | "pointer" | "greeting" | "limited" | "unavailable";
+  | "sent"
+  | "draft"
+  | "held"
+  | "pointer"
+  | "greeting"
+  | "limited"
+  | "monthly_limited"
+  | "unavailable";
 
 export interface AssistantTest {
   id: string;

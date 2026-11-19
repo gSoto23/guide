@@ -23,7 +23,15 @@ export interface AssistantTestDeps extends PipelineDeps {
 }
 
 export type AssistantTestRunOutcome =
-  "sent" | "draft" | "held" | "pointer" | "greeting" | "limited" | "unavailable" | "skipped";
+  | "sent"
+  | "draft"
+  | "held"
+  | "pointer"
+  | "greeting"
+  | "limited"
+  | "monthly_limited"
+  | "unavailable"
+  | "skipped";
 
 function outcomeOf(outcome: Outcome): Exclude<AssistantTestRunOutcome, "skipped"> {
   switch (outcome.decision) {
@@ -37,6 +45,7 @@ function outcomeOf(outcome: Outcome): Exclude<AssistantTestRunOutcome, "skipped"
       return "greeting";
     default:
       if (outcome.reason === "limit") return "limited";
+      if (outcome.reason === "monthly_limit") return "monthly_limited";
       if (outcome.reason === "unavailable") return "unavailable";
       return "held";
   }

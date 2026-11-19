@@ -35,6 +35,8 @@ import type {
 import {
   createGuideForProperty,
   countActiveProperties,
+  derivedBasis,
+  workspaceLimitInputs,
   extractionRequest,
   guide,
   guideItem,
@@ -51,7 +53,6 @@ import {
   calendarFeed,
   restrictedValue,
   stay,
-  workspace,
   type DbHandle,
 } from "@guidesk/db";
 import {
@@ -66,7 +67,7 @@ import {
   missingFacts,
   normalizeAddressKey,
   orderStartOptions,
-  propertyLimit,
+  effectivePropertyLimit,
   setupStatusAfterEdit,
   todayIn,
   type CoreFacts,
@@ -244,13 +245,10 @@ export class PropertiesService {
 
   async limitsOf(workspaceId: string): Promise<PropertyLimits> {
     const tx = this.requestDb.current();
-    const [row] = await tx
-      .select({ propertyLimit: workspace.propertyLimit })
-      .from(workspace)
-      .where(eq(workspace.id, workspaceId))
-      .limit(1);
-    const limit = propertyLimit(row?.propertyLimit);
-    const used = await countActiveProperties(tx, workspaceId);
+    const inputs = await workspaceLimitInputs(tx, workspaceId);
+    if (!inputs) throw new ApiProblem(404, "not_found");
+    const limit = effectivePropertyLimit(inputs);
+    const used = inputs.activeProperties;
     // The rate-limit table is system-only (feature 001 migration 0008).
     const counted = await this.handle.db.execute<{ count: number }>(
       sql`SELECT coalesce(sum(count), 0)::int AS count FROM rate_limit_bucket WHERE key = ${extractionLimitKey(workspaceId, new Date())}`,
@@ -258,7 +256,7 @@ export class PropertiesService {
     return {
       limit,
       used,
-      extractionLimit: extractionLimit(limit),
+      extractionLimit: extractionLimit(derivedBasis(inputs)),
       extractionsUsedToday: Number(counted.rows[0]?.count ?? 0),
     };
   }

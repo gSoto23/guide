@@ -8,6 +8,7 @@ import type { DuplicateDraft, PropertyDetail, PropertyList } from "@guidesk/cont
 import { problemNumber, problemOf } from "@/lib/properties-api";
 import { useStepUp } from "@/lib/use-step-up";
 import { useWorkspace } from "@/lib/use-workspace";
+import { PlanLink } from "../plan/plan-link";
 import { CoreFactsForm, type CoreFactsBody } from "./core-facts-form";
 
 const KNOWN_ERRORS = new Set([
@@ -33,6 +34,8 @@ export function DuplicateProperty({ locale, from }: { locale: string; from: stri
   const [draft, setDraft] = useState<DuplicateDraft | null>(null);
   const [choices, setChoices] = useState<PropertyList["items"] | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  // The message is the plan's property limit: owners and admins get a link to the plan (feature 011).
+  const [atLimit, setAtLimit] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>();
 
   useEffect(() => {
@@ -40,6 +43,7 @@ export function DuplicateProperty({ locale, from }: { locale: string; from: stri
     const controller = new AbortController();
     setDraft(null);
     setMessage(null);
+    setAtLimit(false);
     const request = from
       ? workspace.api
           .get<DuplicateDraft>(
@@ -62,7 +66,7 @@ export function DuplicateProperty({ locale, from }: { locale: string; from: stri
 
   const alert = message ? (
     <p className="alert alert-error" role="alert">
-      {message}
+      {message} {atLimit ? <PlanLink locale={locale} /> : null}
     </p>
   ) : null;
 
@@ -93,6 +97,7 @@ export function DuplicateProperty({ locale, from }: { locale: string; from: stri
   async function create(body: CoreFactsBody): Promise<boolean> {
     if (!draft) return false;
     setMessage(null);
+    setAtLimit(false);
     setFieldErrors(undefined);
     try {
       // A second factor is asked for once the workspace has 3 properties (FR-048).
@@ -111,6 +116,7 @@ export function DuplicateProperty({ locale, from }: { locale: string; from: stri
       if (problem?.code === "validation_failed") setFieldErrors(problem.fields);
       else if (problem?.code === "plan_limit_reached") {
         setMessage(t("limits.reached", { limit: problemNumber(problem, "limit") ?? 2 }));
+        setAtLimit(true);
       } else {
         setMessage(
           errors(problem && KNOWN_ERRORS.has(problem.code) ? problem.code : "internal_error"),

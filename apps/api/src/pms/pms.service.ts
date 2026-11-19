@@ -14,7 +14,7 @@ import type {
 import { importItem, importRun, lockPropertySlots, pmsConnection, property } from "@guidesk/db";
 import {
   JOB_QUEUES,
-  propertyLimit,
+  roomLeft,
   REFRESH_NOW_INTERVAL_MS,
   REFRESH_NOW_PRIORITY,
   type Role,
@@ -302,7 +302,7 @@ export class PmsService {
     if (slots.workspaceStatus === "pending_deletion") {
       throw new ApiProblem(409, "workspace_pending_deletion");
     }
-    const limit = propertyLimit(slots.propertyLimit);
+    const limit = slots.limit;
     const unique = [...new Set(externalIds)];
     // Listings already imported are updated, not created, so they take no slot (FR-033).
     const imported = await this.withImported(
@@ -310,7 +310,7 @@ export class PmsService {
       connection.provider,
       unique.map((externalId) => ({ externalId, name: externalId })),
     );
-    let free = Math.max(0, limit - slots.used);
+    let free = roomLeft(limit, slots.used);
     if (free === 0 && imported.every((listing) => !listing.alreadyImported)) {
       throw new ApiProblem(409, "plan_limit_reached", undefined, {
         details: { limit, used: slots.used },

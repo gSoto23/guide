@@ -22,6 +22,7 @@ import { AssistantModule } from "./assistant/assistant.module.js";
 import { ExploreModule } from "./explore/explore.module.js";
 import { ExtrasModule } from "./extras/extras.module.js";
 import { AnalyticsModule } from "./analytics/analytics.module.js";
+import { PlansModule } from "./plans/plans.module.js";
 import { InboxModule } from "./inbox/inbox.module.js";
 import { PushModule } from "./push/push.module.js";
 import { GuestModule } from "./guest/guest.module.js";
@@ -63,6 +64,7 @@ import { TenancyModule } from "./tenancy/tenancy.module.js";
     ExploreModule,
     ExtrasModule,
     AnalyticsModule,
+    PlansModule,
     InboxModule,
     PushModule,
     ShareModule,

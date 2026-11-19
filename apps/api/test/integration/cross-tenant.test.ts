@@ -1129,3 +1129,23 @@ describe("feature 010 analytics across workspaces (T020, AC-SEC-001)", () => {
     expect(JSON.stringify(own.json())).not.toContain("Casa Analítica de Bruno");
   });
 });
+
+describe("feature 011 plan across workspaces (T020, AC-SEC-001)", () => {
+  const get = (url: string) =>
+    ctx.fastify.inject({
+      method: "GET",
+      url,
+      headers: { origin: "http://localhost:3000", cookie: alice.cookie },
+    });
+
+  it("answers 404 for another workspace's plan and logs the attempt", async () => {
+    const before = await deniedCount();
+    const response = await get(`/api/v1/workspaces/${bruno.workspaceId}/plan`);
+    expect(response.statusCode).toBe(404);
+    expect(await deniedCount()).toBe(before + 1);
+    const own = await get(`/api/v1/workspaces/${alice.workspaceId}/plan`);
+    expect(own.statusCode).toBe(200);
+    expect(own.json()).toMatchObject({ workspaceId: alice.workspaceId });
+    expect(own.body).not.toContain(bruno.workspaceId);
+  });
+});

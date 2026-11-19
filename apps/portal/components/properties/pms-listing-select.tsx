@@ -19,7 +19,8 @@ export function PmsListingSelect({
 }: {
   listings: PmsListingOption[];
   free: number;
-  limit: number;
+  /** Null when the plan has no property limit (feature 011). */
+  limit: number | null;
   busy: boolean;
   onImport: (externalIds: string[]) => void;
 }) {
@@ -54,7 +55,7 @@ export function PmsListingSelect({
   return (
     <>
       <h2>{t("chooseTitle")}</h2>
-      <p className="muted">{t("chooseIntro", { free, limit })}</p>
+      {limit === null ? null : <p className="muted">{t("chooseIntro", { free, limit })}</p>}
       <ul className="choice-list">
         {listings.map((listing) => (
           <li key={listing.externalId}>

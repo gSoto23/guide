@@ -7,6 +7,7 @@ export * from "./schema/index.js";
 export { securityEvent } from "./security-event.js";
 export * from "./views.js";
 export * from "./property-slots.js";
+export * from "./plan-limits.js";
 export * from "./listing-content.js";
 export * from "./guide-factory.js";
 export * from "./guide-limits.js";

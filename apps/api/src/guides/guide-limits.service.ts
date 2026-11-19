@@ -1,10 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { eq } from "drizzle-orm";
 import {
   consumeDailyCount,
   dailyCount,
+  derivedBasis,
   mediaBytesUsed,
-  workspace,
+  workspaceLimitInputs,
   type DbHandle,
 } from "@guidesk/db";
 import {
@@ -12,7 +12,6 @@ import {
   guideAiLimitKey,
   guideAiLimitResetsAt,
   mediaStorageLimitBytes,
-  propertyLimit,
 } from "@guidesk/domain";
 import { ApiProblem } from "../common/problem.js";
 import { DB_HANDLE } from "../database/database.module.js";
@@ -35,20 +34,11 @@ export class GuideLimitsService {
   ) {}
 
   private async workspaceLimits(workspaceId: string) {
-    const [row] = await this.requestDb
-      .current()
-      .select({
-        propertyLimit: workspace.propertyLimit,
-        aiOverride: workspace.guideAiDailyLimit,
-        mediaOverrideMb: workspace.mediaStorageLimitMb,
-      })
-      .from(workspace)
-      .where(eq(workspace.id, workspaceId))
-      .limit(1);
-    const properties = propertyLimit(row?.propertyLimit);
+    const inputs = await workspaceLimitInputs(this.requestDb.current(), workspaceId);
+    const basis = inputs ? derivedBasis(inputs) : 2;
     return {
-      ai: guideAiDailyLimit(properties, row?.aiOverride),
-      mediaBytes: mediaStorageLimitBytes(properties, row?.mediaOverrideMb),
+      ai: guideAiDailyLimit(basis, inputs?.guideAiDailyLimit),
+      mediaBytes: mediaStorageLimitBytes(basis, inputs?.mediaStorageLimitMb),
     };
   }
 

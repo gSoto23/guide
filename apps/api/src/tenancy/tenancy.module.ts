@@ -8,7 +8,7 @@ import { InvitationsService } from "./invitations.service.js";
 import { MemberNotices } from "./member-notices.js";
 import { MembersController } from "./members.controller.js";
 import { MembersService } from "./members.service.js";
-import { PilotSeatLimitProvider, SEAT_LIMIT } from "./seat-limit.js";
+import { PlanSeatLimitProvider, SEAT_LIMIT } from "./seat-limit.js";
 import { WorkspaceAccessGuard } from "./workspace-access.guard.js";
 import { WorkspaceLifecycleService } from "./workspace-lifecycle.service.js";
 import { WorkspacesController } from "./workspaces.controller.js";
@@ -30,7 +30,7 @@ import { WorkspacesController } from "./workspaces.controller.js";
     MembersService,
     WorkspaceLifecycleService,
     WorkspaceAccessGuard,
-    { provide: SEAT_LIMIT, useClass: PilotSeatLimitProvider },
+    { provide: SEAT_LIMIT, useClass: PlanSeatLimitProvider },
   ],
   exports: [CrossTenantService, MemberNotices],
 })

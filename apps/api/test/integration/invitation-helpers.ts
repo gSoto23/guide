@@ -1,3 +1,4 @@
+import pg from "pg";
 import { expect } from "vitest";
 import { signIn, uniqueEmail } from "./helpers.js";
 import { type createTestApp, PORTAL_URL } from "./test-app.js";
@@ -25,11 +26,12 @@ export function api(
   });
 }
 
-/** Signs up a new owner and returns their cookie and workspace. */
+/** Signs up a new owner and returns their cookie and workspace, with room for a team. */
 export async function newOwner(ctx: Ctx, prefix: string) {
   const email = uniqueEmail(prefix);
   const cookie = await signIn(ctx, email);
   const me = (await api(ctx, "GET", "/api/v1/me", cookie)).json() as { lastWorkspaceId: string };
+  await roomForTeam(me.lastWorkspaceId);
   return { email, cookie, workspaceId: me.lastWorkspaceId };
 }
 
@@ -45,6 +47,24 @@ export function invitationTokenFor(ctx: Ctx, email: string): string {
 
 export function invitationsUrl(workspaceId: string): string {
   return `/api/v1/workspaces/${workspaceId}/invitations`;
+}
+
+/**
+ * Gives a Free workspace room for a team, like the pilot default of 10 seats before feature 011:
+ * a custom seat limit only, so the plan's other limits stay as they are. Tests of seat limits set
+ * their own values afterwards.
+ */
+export async function roomForTeam(workspaceId: string): Promise<void> {
+  const client = new pg.Client({ connectionString: process.env.DATABASE_URL });
+  await client.connect();
+  try {
+    await client.query(
+      `UPDATE workspace SET seat_limit = 10 WHERE id = $1 AND seat_limit IS NULL AND plan = 'free'`,
+      [workspaceId],
+    );
+  } finally {
+    await client.end();
+  }
 }
 
 /** Invites a new person with the role and has them accept; returns their session and membership. */

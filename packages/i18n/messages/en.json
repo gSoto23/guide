@@ -25,7 +25,7 @@
     "rate_limited": "Too many attempts. Wait a moment and try again.",
     "internal_error": "Something went wrong. Please try again.",
     "network": "You're offline. Check your connection and try again.",
-    "seat_limit_reached": "All seats in this workspace are taken. Remove someone or revoke an invitation first.",
+    "seat_limit_reached": "All seats in your plan are taken. Remove someone, revoke an invitation, or change your plan in Plan and limits.",
     "already_member": "That person is already in the workspace.",
     "already_invited": "That email already has an open invitation.",
     "email_mismatch": "This invitation is for another email address.",
@@ -223,6 +223,7 @@
     },
     "limits": {
       "usage": "{used} of {limit} properties",
+      "usageUnlimited": "{used} properties · unlimited",
       "reached": "You've reached your plan's limit of {limit} properties. Remove a property, or contact us to raise the limit."
     },
     "start": {
@@ -752,6 +753,7 @@
     "sending": "Sending…",
     "sent": "Invitation sent to {email}. The link expires in 7 days.",
     "seats": "{used} of {limit} seats in use",
+    "seatsUnlimited": "{used} seats in use · unlimited",
     "invitationsTitle": "Invitations",
     "noInvitations": "No invitations yet.",
     "status": {
@@ -827,6 +829,7 @@
     "loading": "Loading…",
     "sections": {
       "workspace": "Workspace",
+      "plan": "Plan and limits",
       "team": "Team",
       "account": "Your account",
       "security": "Security",
@@ -887,7 +890,8 @@
       "empty": "No events yet.",
       "more": "Show more",
       "noAccess": "Only the owner and admins see the workspace log.",
-      "unknownActor": "System or deleted account"
+      "unknownActor": "System or deleted account",
+      "guidesk": "Guidesk"
     },
     "integrations": {
       "title": "Integrations",
@@ -1587,6 +1591,7 @@
       "draft_ready": "Draft ready to review",
       "check_failed": "The draft failed a check",
       "limit": "Daily assistant limit",
+      "monthly_limit": "AI replies for this month are used up",
       "unavailable": "Assistant unavailable",
       "taken_over": "The guest wrote again (taken over)"
     },
@@ -1809,6 +1814,7 @@
         "pointer": "Points to the protected section",
         "greeting": "Greeting",
         "limited": "Daily limit reached",
+        "monthly_limited": "AI replies for this month are used up",
         "unavailable": "Assistant unavailable"
       },
       "topic": "Topic: {topic}",
@@ -1898,6 +1904,7 @@
     },
     "outcomes": {
       "limited": "The assistant's daily limit for this property is reached.",
+      "monthly_limited": "AI replies for this month are used up; they renew on {date}. Your text is still here.",
       "unavailable": "The assistant isn't available right now. Your text is still here.",
       "failed": "We couldn't draft a reply. Your text is still here."
     },
@@ -2226,6 +2233,7 @@
       "not_confident": "The assistant didn't know",
       "check_failed": "Answer failed a check",
       "limit": "Daily limit reached",
+      "monthly_limit": "Monthly AI limit",
       "unavailable": "Assistant unavailable"
     },
     "statuses": {
@@ -2263,5 +2271,40 @@
       "descending": "descending"
     },
     "byStatus": "By status"
+  },
+  "plan": {
+    "title": "Plan and limits",
+    "intro": "Your plan sets how many properties, AI replies, and seats this workspace can use.",
+    "loading": "Loading…",
+    "noAccess": "Only the owner and admins see the workspace's plan.",
+    "names": {
+      "free": "Free",
+      "pro": "Pro",
+      "business": "Business"
+    },
+    "current": "{plan} plan",
+    "since": "Since {date}",
+    "limits": {
+      "properties": "Active properties",
+      "aiReplies": "AI replies this month",
+      "seats": "Seats"
+    },
+    "seatsHint": "Members and pending invitations: {members} {members, plural, one {member} other {members}} and {pending} {pending, plural, one {invitation} other {invitations}}.",
+    "usage": "{used} of {limit}",
+    "unlimited": "{used} · unlimited",
+    "custom": "A limit agreed with Guidesk.",
+    "pooled": "{perProperty} per active property, shared across the workspace.",
+    "resets": "They renew on {date}.",
+    "over": "You're above this limit. Nothing was removed; you can add more once usage is below the limit.",
+    "whatCountsTitle": "What counts as an AI reply?",
+    "whatCounts": "Every reply or draft the assistant writes with AI: in the guide chat, in the copilot, and in assistant tests. Fixed messages, like the holding reply, don't count. At the limit, guests get a holding reply and their conversations wait for you; your guides keep working.",
+    "changeTitle": "Change your plan",
+    "changeBody": "During the pilot, Guidesk changes plans at no cost. Write to us and include your workspace ID.",
+    "contact": "Write to {email}",
+    "noContact": "Reply to any Guidesk email to ask.",
+    "workspaceId": "Workspace ID",
+    "link": "See plan and limits",
+    "bannerWarning": "{left} of {limit} AI replies left this month.",
+    "bannerReached": "AI replies for this month are used up. They renew on {date}."
   }
 }

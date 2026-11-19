@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { AppHeader } from "@/components/app-header";
+import { PlanUsageBannerLoader } from "@/components/plan/plan-usage-banner-loader";
 import { ImportProgressBanner } from "@/components/properties/import-progress-banner";
 import { MeProvider } from "@/lib/me-context";
 
@@ -16,6 +17,7 @@ export default async function AppLayout({
     <MeProvider locale={locale}>
       <AppHeader locale={locale} />
       <ImportProgressBanner locale={locale} />
+      <PlanUsageBannerLoader locale={locale} />
       {children}
     </MeProvider>
   );

@@ -28,6 +28,7 @@ const KNOWN_ERRORS = new Set([
 export function MembersSettings({ locale }: { locale: string }) {
   const t = useTranslations("team");
   const errors = useTranslations("errors");
+  const plan = useTranslations("plan");
   const me = useMe(locale);
   const workspaceId = me?.lastWorkspaceId ?? null;
   const role = me?.memberships.find((m) => m.workspaceId === workspaceId)?.role ?? null;
@@ -165,7 +166,14 @@ export function MembersSettings({ locale }: { locale: string }) {
         <>
           <section className="card" aria-labelledby="invite-title">
             <h2 id="invite-title">{t("inviteTitle")}</h2>
-            {seats ? <p className="muted">{t("seats", seats)}</p> : null}
+            {seats ? (
+              <p className="muted">
+                {seats.limit === null
+                  ? t("seatsUnlimited", { used: seats.used })
+                  : t("seats", { used: seats.used, limit: seats.limit })}{" "}
+                <Link href={`/${locale}/settings/plan`}>{plan("link")}</Link>
+              </p>
+            ) : null}
             <form onSubmit={invite} noValidate>
               <label htmlFor="invite-email">{t("emailLabel")}</label>
               <input

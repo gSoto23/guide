@@ -1,10 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { propertyLimit } from "@guidesk/domain";
+import { roomLeft } from "@guidesk/domain";
 import { lockPropertySlots, type Transaction } from "@guidesk/db";
 import { ApiProblem } from "../common/problem.js";
 
 export interface CreationSlots {
-  limit: number;
+  /** Null when the plan has no property limit (feature 011). */
+  limit: number | null;
   used: number;
   /** Properties that can still be created; capped imports take at most this many. */
   free: number;
@@ -32,8 +33,8 @@ export class PropertyLimitService {
     if (slots.workspaceStatus === "pending_deletion") {
       throw new ApiProblem(409, "workspace_pending_deletion");
     }
-    const limit = propertyLimit(slots.propertyLimit);
-    const free = Math.max(0, limit - slots.used);
+    const limit = slots.limit;
+    const free = roomLeft(limit, slots.used);
     if (free === 0 || (!options.capped && count > free)) {
       throw new ApiProblem(409, "plan_limit_reached", undefined, {
         details: { limit, used: slots.used },
