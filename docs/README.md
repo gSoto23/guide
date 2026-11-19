@@ -28,6 +28,7 @@
 | **Process** | [Constitution](../.specify/memory/constitution.md) | Non-negotiable engineering principles (Spec Kit) |
 | | [Open questions](open-questions.md) | Pending decisions, partner applications, assumptions |
 | | [Pilot readiness](pilot-readiness.md) | Everything the founder must do before the first pilot guest |
+| | [Partner outreach](partner-outreach.md) | Drafts of the questions for Tilopay, Beds24, Hostex, Viator, and Civitatis, and the SES production access request |
 | | [Glossary](glossary.md) | Shared vocabulary |
 
 Feature specifications live in [`/specs`](../specs/), one folder per feature, created with

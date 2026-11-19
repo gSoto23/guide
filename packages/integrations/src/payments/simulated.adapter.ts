@@ -34,10 +34,13 @@ export interface OnboardingToken {
   returnUrl: string;
 }
 
-/** An illustrative card fee until the real one is known (OQ-37): 3.5% plus 0.30 USD or 150 CRC. */
+/**
+ * Tilopay's card fee as the founder reported it on 2026-11-19 (OQ-37): 4.2% plus 0.30 USD. The CRC
+ * fixed part (150 CRC) is illustrative until Tilopay confirms it.
+ */
 export function simulatedFee(amountMinor: number, currency: string): number {
   const fixed = currency === "CRC" ? 15_000 : 30;
-  return Math.round(amountMinor * 0.035) + fixed;
+  return Math.round(amountMinor * 0.042) + fixed;
 }
 
 export class SimulatedPaymentAdapter implements PaymentPort {

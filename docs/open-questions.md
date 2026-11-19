@@ -1,6 +1,6 @@
 # Open Questions and Assumptions
 
-> **Status:** Active log · **Owner:** Founder · **Last updated:** 2026-11-13
+> **Status:** Active log · **Owner:** Founder · **Last updated:** 2026-11-19
 
 This is the single place for unresolved decisions. When a question is answered, record the
 answer and date, and update the affected documents. Spec-level questions move into the
@@ -24,7 +24,7 @@ relevant spec as `[NEEDS CLARIFICATION]` items.
 | OQ-06 | Founder insight: what motivated Guidesk, and which existing tools do you know and dislike? | P2 | Positioning, messaging | Open |
 | OQ-07 | Confirm the MVP prioritization in [PRD §4](product/prd.md#4-feature-catalog-and-prioritization) | P0 | Phase 1 scope | Answered 2026-11-14. Confirmed, with changes: online payments for add-ons (F13) join the MVP as a month-4 milestone; read-only PMS import, CSV import, basic analytics, and voice notes are in; the pilot is free and billing waits until after it; reservations stay in Phase 2 and insurance in Phase 3. Phase 1 grows to 4 months. |
 | OQ-08 | Do hosts receive a share of affiliate commissions (tours, reservations) as an incentive? | P1 | F09, business model | Decided for the pilot in [spec 009](../specs/009-tours-affiliate/spec.md) (2026-11-18): no host share; the disclosure names Guidesk. Revisit after the pilot with its own disclosure text. |
-| OQ-09 | Who absorbs payment processing fees on add-ons: the guest (service fee), the host, or Guidesk? | P1 | F13 (MVP, month 4) | Default chosen in spec 013 (2026-11-19, under the founder's standing instruction; open for the founder to change): the host absorbs the card fee; the guest pays the listed price with no added charges. |
+| OQ-09 | Who absorbs payment processing fees on add-ons: the guest (service fee), the host, or Guidesk? | P1 | F13 (MVP, month 4) | Default chosen in spec 013 (2026-11-19, under the founder's standing instruction; open for the founder to change): the host absorbs the card fee; the guest pays the listed price with no added charges. Tilopay's card fee, as the founder reported it on 2026-11-19: 4.2% plus USD 0.30 per transaction (the simulated provider uses it). The founder confirmed the platform fees on 2026-11-19: Free 10%, Pro 7%, Business 5%. Still open: whether a refund returns the platform fee. |
 | OQ-10 | Pricing: Free-plan caps (properties, AI replies) and the Pro price point | P1 | F11 | Hypothesis in the [business model](product/business-model.md); validate in the pilot. Spec 011 enforces the hypothesis (Free: 2 properties, 100 AI replies a month, 1 seat; Pro: 300 AI replies per active property pooled, 3 seats; Business: unlimited seats) in `packages/domain/src/plans/`; the founder can change the numbers there. |
 | OQ-11 | Brand: trademark search and domain availability for "Guidesk" in the target markets; visual identity | P1 | Public launch | Open. Visual identity answered 2026-11-17 ([brand guide](brand/README.md)); trademark search and domain still open. |
 
@@ -54,7 +54,7 @@ relevant spec as `[NEEDS CLARIFICATION]` items.
 | OQ-34 | Join affiliate programs: Viator, Civitatis, GetYourGuide | P1 | Not started. Spec 009 is built and waits on it: the Viator basic-access API key (`ViatorApiKey` secret), the Civitatis affiliate number, and Civitatis's feed or API on request ([research R13](../specs/009-tours-affiliate/research.md)). |
 | OQ-35 | Legal review covering: Airbnb policies (commercial messages under the API terms, links in messages, disclosures); whether early check-in and late checkout may be sold through Guidesk checkout on each OTA (FR-13.6); receipts and guest contact data at checkout; privacy policy and terms of service; GDPR, CCPA, and LATAM data-protection laws; insurance distribution | P1 (payments part needed before month 4) | Not started |
 | OQ-36 | Ask Channex in writing whether it supports a messaging-only Airbnb connection | P2 | Not started |
-| OQ-37 | Confirm with Tilopay: split settlement for hosts under the payment-facilitator model, host onboarding requirements, coverage for hosts outside Costa Rica and Central America, acceptance of international cards, refunds through the API, the webhook signature scheme for card payments, and fees | P0 (before F13, by week 10) | Not started |
+| OQ-37 | Confirm with Tilopay: split settlement for hosts under the payment-facilitator model, host onboarding requirements, coverage for hosts outside Costa Rica and Central America, acceptance of international cards, refunds through the API, the webhook signature scheme for card payments, and fees | P0 (before F13, by week 10) | Partly answered 2026-11-19: the founder reports a fee of 4.2% plus USD 0.30 per transaction. To confirm in writing with the rest ([draft](partner-outreach.md#1-tilopay)): international cards, the fixed part in colones, and how the fixed part applies to split orders. |
 
 ## Unverified research items
 
