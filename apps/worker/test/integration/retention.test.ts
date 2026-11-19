@@ -29,6 +29,7 @@ import {
   importItem,
   importRun,
   membership,
+  planUsageNotice,
   property,
   serviceRequest,
   serviceRequestDaily,
@@ -688,6 +689,20 @@ describe("retention.daily for the in-guide chat (feature 005 T045)", () => {
       .from(chatUsageDaily)
       .where(eq(chatUsageDaily.propertyId, propertyId));
     expect(left).toEqual([{ replies: 5 }]);
+  });
+
+  it("deletes AI usage notices after 13 months, like the counts (feature 011)", async () => {
+    await handle.db.insert(planUsageNotice).values([
+      { workspaceId, month: "2024-01-01", threshold: 80 },
+      { workspaceId, month: dateDaysAgo(20).slice(0, 8) + "01", threshold: 100 },
+    ]);
+    const counts = await run();
+    expect(counts.planUsageNotices).toBeGreaterThanOrEqual(1);
+    const left = await handle.db
+      .select({ threshold: planUsageNotice.threshold })
+      .from(planUsageNotice)
+      .where(eq(planUsageNotice.workspaceId, workspaceId));
+    expect(left).toEqual([{ threshold: 100 }]);
   });
 });
 

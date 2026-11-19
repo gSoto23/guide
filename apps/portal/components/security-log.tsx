@@ -81,7 +81,14 @@ export function SecurityLog({ locale }: { locale: string }) {
               <span className="muted">
                 {new Date(event.occurredAt).toLocaleString(locale)}
                 {tab === "workspace"
-                  ? ` · ${event.actor ? event.actor.name || event.actor.email : t("unknownActor")}`
+                  ? ` · ${
+                      event.actor
+                        ? event.actor.name || event.actor.email
+                        : // Plan changes come from Guidesk's founder tool (feature 011 FR-018).
+                          event.type === "workspace.plan_changed"
+                          ? t("guidesk")
+                          : t("unknownActor")
+                    }`
                   : ""}
                 {event.userAgentFamily ? ` · ${event.userAgentFamily}` : ""}
                 {event.approxLocation ? ` · ${event.approxLocation}` : ""}

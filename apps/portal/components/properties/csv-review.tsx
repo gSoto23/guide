@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ImportItem, ImportRun, PropertyLimits } from "@guidesk/contracts";
 import { useCsvIssueText } from "@/lib/csv";
+import { roomFor } from "@/lib/plan";
 import { problemNumber, problemOf, type WorkspaceApi } from "@/lib/properties-api";
 import { useOnline } from "@/lib/use-online";
 
@@ -38,7 +39,7 @@ export function CsvReview({
   const valid = items.filter((item) => item.outcome === "pending");
   const withErrors = items.filter((item) => item.errors.length > 0);
   const warned = valid.filter((item) => item.warnings.length > 0);
-  const free = Math.max(0, limits.limit - limits.used);
+  const free = roomFor(limits);
   const mustChoose = valid.length > free;
   const [selected, setSelected] = useState<Set<number>>(
     () => new Set(valid.slice(0, free).map((item) => item.rowNumber ?? 0)),
@@ -65,7 +66,7 @@ export function CsvReview({
       const problem = problemOf(error);
       setMessage(
         problem?.code === "plan_limit_reached"
-          ? t("limitReached", { limit: problemNumber(problem, "limit") ?? limits.limit })
+          ? t("limitReached", { limit: problemNumber(problem, "limit") ?? limits.limit ?? 0 })
           : problem?.code === "validation_failed"
             ? t("overLimit", { free: problemNumber(problem, "free") ?? free })
             : errors(problem?.code === "network" ? "network" : "internal_error"),
@@ -150,7 +151,7 @@ export function CsvReview({
       ) : mustChoose && free > 0 ? (
         <section aria-labelledby="csv-choose">
           <h2 id="csv-choose">{t("chooseTitle")}</h2>
-          <p className="muted">{t("chooseIntro", { free, limit: limits.limit })}</p>
+          <p className="muted">{t("chooseIntro", { free, limit: limits.limit ?? 0 })}</p>
           <ul className="choice-list">
             {valid.map((item) => (
               <li key={item.id}>
@@ -172,7 +173,7 @@ export function CsvReview({
           ) : null}
         </section>
       ) : free === 0 ? (
-        <p className="alert alert-info">{t("limitReached", { limit: limits.limit })}</p>
+        <p className="alert alert-info">{t("limitReached", { limit: limits.limit ?? 0 })}</p>
       ) : null}
 
       <div className="actions">

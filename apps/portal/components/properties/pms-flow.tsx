@@ -10,6 +10,7 @@ import type {
   PropertyLimits,
   StartOptions,
 } from "@guidesk/contracts";
+import { roomFor } from "@/lib/plan";
 import { problemNumber, problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
 import { PmsConnect } from "./pms-connect";
@@ -94,7 +95,7 @@ export function PmsFlow({
       const problem = problemOf(error);
       setMessage(
         problem?.code === "plan_limit_reached"
-          ? t("limits.reached", { limit: problemNumber(problem, "limit") ?? limits!.limit })
+          ? t("limits.reached", { limit: problemNumber(problem, "limit") ?? limits?.limit ?? 0 })
           : errors(problem?.code === "network" ? "network" : "internal_error"),
       );
       setStarting(false);
@@ -112,7 +113,7 @@ export function PmsFlow({
       {connection ? (
         <PmsListingSelect
           listings={connection.listings}
-          free={Math.max(0, limits.limit - limits.used)}
+          free={roomFor(limits)}
           limit={limits.limit}
           busy={starting}
           onImport={start}

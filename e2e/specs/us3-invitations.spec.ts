@@ -1,5 +1,6 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import { latestCodeFor, latestMessageTo, waitForSubject } from "../helpers/mailpit";
+import { roomForTeam } from "../helpers/plan";
 
 /** Quickstart V10, V11, and V12 (spec 001 US3, T070). */
 function uniqueEmail(prefix: string): string {
@@ -22,6 +23,8 @@ async function signInWithEmail(page: Page, email: string) {
 }
 
 async function inviteFromTeamPage(page: Page, email: string, role: "Agente" | "Administrador") {
+  // Free has one seat (feature 011): team tests get 10 seats as a custom limit.
+  await roomForTeam(page);
   await page.goto("/es/settings/members");
   await page.getByLabel("Email", { exact: true }).fill(email);
   await page.getByRole("radio", { name: new RegExp(role) }).check();

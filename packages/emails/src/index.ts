@@ -12,3 +12,4 @@ export * from "./guides/notices.js";
 export * from "./chat/notices.js";
 export * from "./chat/push.js";
 export * from "./extras/notices.js";
+export * from "./plans/notices.js";

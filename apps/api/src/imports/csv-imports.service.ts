@@ -13,7 +13,7 @@ import {
   csvErrorFileRows,
   csvTemplateRows,
   JOB_QUEUES,
-  propertyLimit,
+  roomLeft,
   type CsvIssue,
   type CsvLanguage,
 } from "@guidesk/domain";
@@ -162,8 +162,8 @@ export class CsvImportsService {
     if (slots.workspaceStatus === "pending_deletion") {
       throw new ApiProblem(409, "workspace_pending_deletion");
     }
-    const limit = propertyLimit(slots.propertyLimit);
-    const free = Math.max(0, limit - slots.used);
+    const limit = slots.limit;
+    const free = roomLeft(limit, slots.used);
     const valid = await tx
       .select({ id: importItem.id, rowNumber: importItem.rowNumber })
       .from(importItem)

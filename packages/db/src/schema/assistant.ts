@@ -35,6 +35,8 @@ export const ASSISTANT_TEST_OUTCOMES = [
   "pointer",
   "greeting",
   "limited",
+  // Feature 011: the month's AI replies are used up.
+  "monthly_limited",
   "unavailable",
 ] as const;
 export const ANSWER_KIND_VALUES = ["grounded", "general", "clarify"] as const;

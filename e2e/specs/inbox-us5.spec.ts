@@ -8,6 +8,7 @@ import {
   uniqueEmail,
 } from "../helpers/guest";
 import { latestCodeFor, latestMessageTo, waitForSubject } from "../helpers/mailpit";
+import { roomForTeam } from "../helpers/plan";
 
 /**
  * Feature 006 US5 (T031): an agent typing a reply shows "{name} is replying" to the owner on the
@@ -24,6 +25,8 @@ test("quickstart 5: presence", async ({ page, browser }) => {
   await signIn(page, uniqueEmail("inbox-us5"));
   const guide = await publishGuide(page);
 
+  // Free has one seat (feature 011): team tests get 10 seats as a custom limit.
+  await roomForTeam(page);
   await page.goto("/es/settings/members");
   await page.getByLabel("Email", { exact: true }).fill(agentEmail);
   await page.getByRole("radio", { name: /Agente/ }).check();

@@ -1,11 +1,11 @@
-import { eq } from "drizzle-orm";
-import { consumeDailyCount, guideAiRequest, workspace, type Database } from "@guidesk/db";
 import {
-  guideAiDailyLimit,
-  guideAiLimitKey,
-  guideAiLimitResetsAt,
-  propertyLimit,
-} from "@guidesk/domain";
+  consumeDailyCount,
+  derivedBasis,
+  guideAiRequest,
+  workspaceLimitInputs,
+  type Database,
+} from "@guidesk/db";
+import { guideAiDailyLimit, guideAiLimitKey, guideAiLimitResetsAt } from "@guidesk/domain";
 import type { LlmCallResult } from "@guidesk/integrations";
 
 /**
@@ -17,12 +17,8 @@ export async function takeGuideAi(
   workspaceId: string,
   now: Date = new Date(),
 ): Promise<{ allowed: boolean; resetsAt: Date }> {
-  const [row] = await db
-    .select({ propertyLimit: workspace.propertyLimit, override: workspace.guideAiDailyLimit })
-    .from(workspace)
-    .where(eq(workspace.id, workspaceId))
-    .limit(1);
-  const limit = guideAiDailyLimit(propertyLimit(row?.propertyLimit), row?.override);
+  const inputs = await workspaceLimitInputs(db, workspaceId);
+  const limit = guideAiDailyLimit(inputs ? derivedBasis(inputs) : 2, inputs?.guideAiDailyLimit);
   const result = await consumeDailyCount(db, guideAiLimitKey(workspaceId, now), limit);
   return { allowed: result.allowed, resetsAt: guideAiLimitResetsAt(now) };
 }

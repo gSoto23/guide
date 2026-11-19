@@ -19,6 +19,7 @@ import {
 import type { AgentUsage } from "@guidesk/integrations";
 import {
   addUsage,
+  budgetStop,
   knowledgeInput,
   loadAppliedSettings,
   loadPropertyContext,
@@ -41,13 +42,14 @@ export interface CopilotDraftDeps extends PipelineDeps {
   now?: () => Date;
 }
 
-export type CopilotRunOutcome = "drafted" | "limited" | "unavailable" | "failed" | "skipped";
+export type CopilotRunOutcome =
+  "drafted" | "limited" | "monthly_limited" | "unavailable" | "failed" | "skipped";
 
 const CLASSIFY_TIMEOUT_MS = 5_000;
 const ANSWER_TIMEOUT_MS = 10_000;
 
 interface Result {
-  outcome: "drafted" | "limited" | "unavailable" | "failed";
+  outcome: "drafted" | "limited" | "monthly_limited" | "unavailable" | "failed";
   draft: string | null;
   sectionIds: string[];
   checks: CheckResult[];
@@ -144,9 +146,13 @@ export async function runCopilotDraft(
   const context = await loadPropertyContext(db, job.workspaceId, run.propertyId);
   if (!context?.available) return finish({ ...EMPTY, outcome: "unavailable" });
   const applied = await loadAppliedSettings(db, context, deps.now?.() ?? new Date());
-  const usage = await usageToday(db, context.workspaceId, context.propertyId);
-  if (usage.property >= context.propertyLimit || usage.workspace >= context.workspaceLimit) {
-    return finish({ ...EMPTY, outcome: "limited" }, applied);
+  const stop = budgetStop(await usageToday(db, context.workspaceId, context.propertyId), context);
+  if (stop) {
+    // No model call over a budget (feature 006, feature 011 R4).
+    return finish(
+      { ...EMPTY, outcome: stop === "monthly" ? "monthly_limited" : "limited" },
+      applied,
+    );
   }
 
   let classified;

@@ -1,19 +1,14 @@
 /**
- * Property, extraction, and refresh limits (feature 002 FR-017, FR-023, FR-035, FR-047,
- * research R12). Feature 011 replaces the pilot limits with plan limits.
+ * Extraction and refresh limits (feature 002 FR-017, FR-023, FR-035). The property limit itself
+ * comes from the workspace's plan (feature 011, `plans/`).
  */
 
-/** Active properties allowed on the Free plan, and in the pilot when Guidesk set no limit. */
-export const FREE_PLAN_PROPERTY_LIMIT = 2;
-
-/** The workspace's property limit: its pilot `property_limit`, or the Free plan's 2. */
-export function propertyLimit(workspacePropertyLimit: number | null | undefined): number {
-  return workspacePropertyLimit ?? FREE_PLAN_PROPERTY_LIMIT;
-}
-
-/** Extractions per workspace per UTC day: twice the property limit, at least 10 (FR-017). */
-export function extractionLimit(limit: number): number {
-  return Math.max(10, 2 * limit);
+/**
+ * Extractions per workspace per UTC day: twice the limit basis (the property limit, or for
+ * unlimited plans the active properties plus 2), at least 10 (FR-017, feature 011 FR-005).
+ */
+export function extractionLimit(basis: number): number {
+  return Math.max(10, 2 * basis);
 }
 
 /** When the daily extraction count starts again: the next UTC midnight. */

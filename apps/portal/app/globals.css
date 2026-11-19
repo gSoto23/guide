@@ -665,6 +665,29 @@ input[type="radio"] {
   color: inherit;
 }
 
+/* Feature 011: the month's AI replies at 80% or more. */
+.plan-banner {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 8px var(--space);
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  font-weight: 600;
+}
+
+.plan-banner a {
+  color: inherit;
+}
+
+.bar-note {
+  grid-column: 1 / -1;
+  font-size: 0.85rem;
+}
+
+.plan-id {
+  overflow-wrap: anywhere;
+}
+
 .choice-list {
   list-style: none;
   border: 0;

@@ -246,6 +246,18 @@ reads the existing records and daily counts on request; there is no analytics st
 tracking. The founder's pilot metrics (PRD §8) come from `pnpm --filter @guidesk/db report:pilot`, run
 with database access outside the portal, which prints aggregates only.
 
+*As built in spec 011:* every workspace has a plan (Free, Pro, or Business, defined in
+`packages/domain/src/plans/`) that limits active properties, AI replies per UTC month, and seats
+(members plus pending invitations); Guidesk may set a custom limit per workspace. AI replies are the
+model replies the worker already counts per property and day (guide chat, copilot, tests); at the
+month's limit the worker makes no model call, the guest gets the holding reply, and the conversation
+waits for the host with the reason `monthly_limit`. A 5-minute job (`plan-usage.tick`) emails owners
+once at 80% and once at 100%. Every property path and invitation enforces the effective limits; a
+workspace above a limit keeps everything it has. Owners and admins see Plan and limits
+(`/settings/plan`) and a banner at 80%; the founder changes plans with
+`pnpm --filter @guidesk/db plan:set`, never through the API, and each change is in the security log.
+There is no billing yet (Phase 2).
+
 ### 5.2 Guest writes in the Airbnb chat (Phase 2, through a PMS)
 
 ```mermaid

@@ -1,5 +1,5 @@
 {
-  "$comment": "Initial JavaScript per route, gzip (spec 001 plan and spec 002 plan, Performance Budget; T101, T124; feature 003 T057, T068, T077, T091, T101, T110, T116; feature 004 T029, T030; feature 007 T018; feature 006 T013, T023; feature 009 T017; feature 008 T009, T018; feature 010 T008, T014). Checked by scripts/check-bundle-budget.ts against a production build.",
+  "$comment": "Initial JavaScript per route, gzip (spec 001 plan and spec 002 plan, Performance Budget; T101, T124; feature 003 T057, T068, T077, T091, T101, T110, T116; feature 004 T029, T030; feature 007 T018; feature 006 T013, T023; feature 009 T017; feature 008 T009, T018; feature 010 T008, T014; feature 011 T018). Checked by scripts/check-bundle-budget.ts against a production build.",
   "budgetKb": 150,
   "routes": [
     "/es/sign-in",
@@ -47,7 +47,8 @@
     "/es/properties/00000000-0000-4000-8000-000000000000/extras",
     "/es/requests",
     "/es/analytics",
-    "/es/properties/00000000-0000-4000-8000-000000000000/analytics"
+    "/es/properties/00000000-0000-4000-8000-000000000000/analytics",
+    "/es/settings/plan"
   ],
   "editorBudgetKb": 130
 }

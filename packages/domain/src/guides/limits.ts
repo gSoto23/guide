@@ -1,11 +1,11 @@
 /**
- * Guide builder limits (feature 003 FR-018, FR-064, FR-065, research R6, R9). Feature 011 replaces
- * the pilot limits with plan limits.
+ * Guide builder limits (feature 003 FR-018, FR-064, FR-065, research R6, R9). The basis is the
+ * plan's property limit, or for unlimited plans the active properties plus 2 (feature 011 FR-005).
  */
 
-/** Guide AI requests per workspace per UTC day: the pilot override, else 50 per allowed property, at least 100. */
-export function guideAiDailyLimit(propertyLimit: number, override?: number | null): number {
-  return override ?? Math.max(100, 50 * propertyLimit);
+/** Guide AI requests per workspace per UTC day: Guidesk's override, else 50 per basis property, at least 100. */
+export function guideAiDailyLimit(basis: number, override?: number | null): number {
+  return override ?? Math.max(100, 50 * basis);
 }
 
 /** The `rate_limit_bucket` key that counts a workspace's guide AI requests for one UTC day. */
@@ -20,9 +20,9 @@ export function guideAiLimitResetsAt(now: Date): Date {
 
 const MEBIBYTE = 1024 * 1024;
 
-/** Media storage per workspace in bytes: the pilot override in MB, else 1 GB per allowed property. */
-export function mediaStorageLimitBytes(propertyLimit: number, overrideMb?: number | null): number {
-  return (overrideMb ?? 1024 * propertyLimit) * MEBIBYTE;
+/** Media storage per workspace in bytes: Guidesk's override in MB, else 1 GB per basis property. */
+export function mediaStorageLimitBytes(basis: number, overrideMb?: number | null): number {
+  return (overrideMb ?? 1024 * basis) * MEBIBYTE;
 }
 
 /** Locked-field reveals per member per hour (FR-018). */

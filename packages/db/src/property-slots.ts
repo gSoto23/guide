@@ -1,11 +1,12 @@
 import { sql } from "drizzle-orm";
+import { effectivePropertyLimit, isPlan } from "@guidesk/domain";
 import type { Database } from "./client.js";
 import type { Transaction } from "./rls.js";
 
 export interface PropertySlots {
   workspaceStatus: "active" | "pending_deletion";
-  /** The workspace's pilot `property_limit`; null means the Free plan's default. */
-  propertyLimit: number | null;
+  /** The effective property limit (feature 011: custom limit ?? plan); null is unlimited. */
+  limit: number | null;
   /** Active properties; removed ones do not count (FR-047). */
   used: number;
 }
@@ -20,8 +21,8 @@ export async function lockPropertySlots(
   tx: Database | Transaction,
   workspaceId: string,
 ): Promise<PropertySlots | null> {
-  const locked = await tx.execute<{ status: string; property_limit: number | null }>(
-    sql`SELECT status, property_limit FROM workspace WHERE id = ${workspaceId} FOR UPDATE`,
+  const locked = await tx.execute<{ status: string; plan: string; property_limit: number | null }>(
+    sql`SELECT status, plan, property_limit FROM workspace WHERE id = ${workspaceId} FOR UPDATE`,
   );
   const row = locked.rows[0];
   if (!row) return null;
@@ -30,7 +31,10 @@ export async function lockPropertySlots(
   );
   return {
     workspaceStatus: row.status === "pending_deletion" ? "pending_deletion" : "active",
-    propertyLimit: row.property_limit === null ? null : Number(row.property_limit),
+    limit: effectivePropertyLimit({
+      plan: isPlan(row.plan) ? row.plan : "free",
+      propertyLimit: row.property_limit === null ? null : Number(row.property_limit),
+    }),
     used: Number(counted.rows[0]?.used ?? 0),
   };
 }

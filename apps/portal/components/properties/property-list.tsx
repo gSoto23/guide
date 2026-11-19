@@ -18,6 +18,7 @@ import { StartOptionsPanel } from "./start-options";
  */
 export function PropertyListView({ locale }: { locale: string }) {
   const t = useTranslations("properties");
+  const plan = useTranslations("plan");
   const workspace = useWorkspace();
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
@@ -101,15 +102,20 @@ export function PropertyListView({ locale }: { locale: string }) {
   return (
     <>
       <h1>{t("list.title")}</h1>
-      <p className="muted">{t("limits.usage", { used: limits.used, limit: limits.limit })}</p>
+      <p className="muted">
+        {limits.limit === null
+          ? t("limits.usageUnlimited", { used: limits.used })
+          : t("limits.usage", { used: limits.used, limit: limits.limit })}
+      </p>
       {workspace.canManage ? (
-        limits.used < limits.limit ? (
+        limits.limit === null || limits.used < limits.limit ? (
           <Link className="button button-primary" href={`/${locale}/properties/new`}>
             {t("list.add")}
           </Link>
         ) : (
           <p className="alert alert-info" role="status">
-            {t("limits.reached", { limit: limits.limit })}
+            {t("limits.reached", { limit: limits.limit })}{" "}
+            <Link href={`/${locale}/settings/plan`}>{plan("link")}</Link>
           </p>
         )
       ) : null}

@@ -1,11 +1,13 @@
 import { and, eq, sql } from "drizzle-orm";
-import { mediaBytesUsed, mediaObject, upload, workspace, type Database } from "@guidesk/db";
 import {
-  JOB_QUEUES,
-  mediaStorageLimitBytes,
-  propertyLimit,
-  type MediaProcessJob,
-} from "@guidesk/domain";
+  derivedBasis,
+  mediaBytesUsed,
+  mediaObject,
+  upload,
+  workspaceLimitInputs,
+  type Database,
+} from "@guidesk/db";
+import { JOB_QUEUES, mediaStorageLimitBytes, type MediaProcessJob } from "@guidesk/domain";
 import type { MediaStoragePort, ObjectStoragePort, SandboxPort } from "@guidesk/integrations";
 import { runInJobSpan, type JobSpanDeps } from "./span.js";
 
@@ -98,12 +100,11 @@ export async function runMediaProcess(
     return reject(REASONS.has(response.error) ? response.error : "unreadable");
   if (!("media" in response)) return reject("unreadable");
 
-  const [limits] = await db
-    .select({ propertyLimit: workspace.propertyLimit, overrideMb: workspace.mediaStorageLimitMb })
-    .from(workspace)
-    .where(eq(workspace.id, job.workspaceId))
-    .limit(1);
-  const limit = mediaStorageLimitBytes(propertyLimit(limits?.propertyLimit), limits?.overrideMb);
+  const inputs = await workspaceLimitInputs(db, job.workspaceId);
+  const limit = mediaStorageLimitBytes(
+    inputs ? derivedBasis(inputs) : 2,
+    inputs?.mediaStorageLimitMb,
+  );
   if ((await mediaBytesUsed(db, job.workspaceId)) + response.media.bytes > limit) {
     await deps.media.deletePrefix(row.prefix);
     return reject("storage_limit");

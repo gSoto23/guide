@@ -1,5 +1,6 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import { latestCodeFor, latestMessageTo, waitForSubject } from "../helpers/mailpit";
+import { roomForTeam } from "../helpers/plan";
 
 /** Quickstart V13 (spec 001 US4, T081): switching in under 2 s, with no data mixing. */
 function uniqueEmail(prefix: string): string {
@@ -48,6 +49,8 @@ test("V13: a co-host switches between workspaces in under 2 s, seeing only each 
   const marco = await newPage(browser);
   await signIn(marco, marcoEmail);
   await renameCurrentWorkspace(marco, marcoWorkspace);
+  // Free has one seat (feature 011): team tests get 10 seats as a custom limit.
+  await roomForTeam(marco);
   await marco.goto("/es/settings/members");
   await marco.getByLabel("Email", { exact: true }).fill(luisaEmail);
   await marco.getByRole("button", { name: "Enviar invitación" }).click();

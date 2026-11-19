@@ -90,6 +90,8 @@ export const SECURITY_EVENT_TYPES = [
   // Feature 008 (data model).
   "extras.changed",
   "service_request.answered",
+  // Feature 011 (data model): changed by Guidesk's founder tool, so there is no actor.
+  "workspace.plan_changed",
 ] as const;
 
 export type SecurityEventType = (typeof SECURITY_EVENT_TYPES)[number];
@@ -193,6 +195,8 @@ const METADATA_ALLOWLIST: Partial<Record<SecurityEventType, readonly string[]>> 
   ],
   "extras.changed": ["propertyId", "action", "count"],
   "service_request.answered": ["propertyId", "requestId", "status"],
+  // The plans and custom limits (a number or "plan"); the founder's note stays off the log.
+  "workspace.plan_changed": ["from", "to", "properties", "seats", "aiReplies"],
 };
 
 /** Short labels, numbers, booleans, and calendar dates; nothing that could carry free text. */

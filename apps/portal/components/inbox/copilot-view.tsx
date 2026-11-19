@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import type { CopilotDraft, PropertyList } from "@guidesk/contracts";
+import { formatMoment, nextRenewal } from "@/lib/plan";
 import { problemNumber, problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
 
@@ -79,7 +80,12 @@ export function CopilotView({ locale }: { locale: string }) {
         const current = await workspace.api.get<CopilotDraft>(`${base}/${runId}`);
         if (current.status === "done") {
           if (current.outcome === "drafted") setDraft(current);
-          else setError(t(`outcomes.${current.outcome ?? "failed"}`));
+          else
+            setError(
+              t(`outcomes.${current.outcome ?? "failed"}`, {
+                date: formatMoment(locale, nextRenewal()),
+              }),
+            );
           return;
         }
       }

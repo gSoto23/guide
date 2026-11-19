@@ -268,7 +268,7 @@ interface Recipient {
   locale: "es" | "en";
 }
 
-async function membersOf(
+export async function membersOf(
   db: Database,
   workspaceId: string,
   roles: ("owner" | "admin" | "agent")[],

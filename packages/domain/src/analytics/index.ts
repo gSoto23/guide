@@ -36,6 +36,8 @@ export const ANALYTICS_REASONS = [
   "not_confident",
   "check_failed",
   "limit",
+  // Feature 011: the month's AI replies are used up.
+  "monthly_limit",
   "unavailable",
 ] as const;
 export type AnalyticsReason = (typeof ANALYTICS_REASONS)[number];

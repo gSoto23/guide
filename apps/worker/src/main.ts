@@ -77,6 +77,7 @@ import {
   createServiceRequestTickHandler,
   SERVICE_REQUEST_TICK_CRON,
 } from "./jobs/service-request-tick.js";
+import { createPlanUsageTickHandler, PLAN_USAGE_TICK_CRON } from "./jobs/plan-usage-tick.js";
 import { createWorkerServices } from "./services.js";
 
 function emailAdapter(config: WorkerConfig): EmailAdapter {
@@ -293,6 +294,17 @@ async function main(): Promise<void> {
   await boss.schedule(JOB_QUEUES.serviceRequestTick, SERVICE_REQUEST_TICK_CRON, null, {
     tz: "UTC",
   });
+  // Feature 011 (research R5): AI usage emails at 80% and 100% of the month, every 5 minutes.
+  await createQueue(JOB_QUEUES.planUsageTick);
+  await boss.work(
+    JOB_QUEUES.planUsageTick,
+    createPlanUsageTickHandler({
+      db: services.db.db,
+      queueEmail: services.queueEmail,
+      portalUrl: services.portalUrl,
+    }),
+  );
+  await boss.schedule(JOB_QUEUES.planUsageTick, PLAN_USAGE_TICK_CRON, null, { tz: "UTC" });
   // Shared-block fan-out (research R14): one job per publish or delete.
   await createQueue(JOB_QUEUES.sharedBlockPublish);
   await boss.work(

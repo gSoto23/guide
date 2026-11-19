@@ -4,10 +4,12 @@ import {
   chatUsageDaily,
   guide,
   guideVersion,
+  limitsFor,
   loadAssistantSettingsRows,
   property,
   restrictedValue,
   workspace,
+  workspaceLimitInputs,
   type Database,
 } from "@guidesk/db";
 import {
@@ -69,8 +71,11 @@ export interface PropertyContext {
   hostName: string;
   available: boolean;
   publishedVersionId: string | null;
+  /** Daily budgets (feature 005 FR-028). */
   propertyLimit: number;
   workspaceLimit: number;
+  /** The month's AI replies allowed by the plan or a custom limit (feature 011 FR-002). */
+  monthlyLimit: number;
   country: string | null;
   timeZone: string | null;
   checkInTime: string | null;
@@ -176,6 +181,7 @@ export async function loadPropertyContext(
     .where(and(eq(property.id, propertyId), eq(property.workspaceId, workspaceId)))
     .limit(1);
   if (!row) return null;
+  const inputs = await workspaceLimitInputs(db, workspaceId);
   const address = [row.addressLine1, row.addressUnit, row.city].filter(Boolean).join(", ");
   return {
     workspaceId,
@@ -190,6 +196,7 @@ export async function loadPropertyContext(
     publishedVersionId: row.publishedVersionId,
     propertyLimit: row.propertyLimit,
     workspaceLimit: row.workspaceLimit,
+    monthlyLimit: inputs ? limitsFor(inputs).aiReplies.limit : 0,
     country: row.country,
     timeZone: row.timeZone,
     checkInTime: hhmm(row.checkInTime),
@@ -210,25 +217,45 @@ export async function loadAppliedSettings(
   return { effective, quiet: quietWindow(now, context.timeZone, effective.quietHours) };
 }
 
-/** Today's (UTC) model replies for the property and the whole workspace (feature 005 R8). */
+/**
+ * Today's (UTC) model replies for the property and the whole workspace (feature 005 R8), and the
+ * workspace's replies this UTC month (feature 011 R3).
+ */
 export async function usageToday(
   db: Database,
   workspaceId: string,
   propertyId: string,
-): Promise<{ property: number; workspace: number }> {
+): Promise<{ property: number; workspace: number; month: number }> {
+  const today = sql`(now() AT TIME ZONE 'utc')::date`;
   const [row] = await db
     .select({
-      property: sql<number>`coalesce(sum(${chatUsageDaily.replies}) FILTER (WHERE ${chatUsageDaily.propertyId} = ${propertyId}), 0)::int`,
-      workspace: sql<number>`coalesce(sum(${chatUsageDaily.replies}), 0)::int`,
+      property: sql<number>`coalesce(sum(${chatUsageDaily.replies}) FILTER (WHERE ${chatUsageDaily.propertyId} = ${propertyId} AND ${chatUsageDaily.day} = ${today}), 0)::int`,
+      workspace: sql<number>`coalesce(sum(${chatUsageDaily.replies}) FILTER (WHERE ${chatUsageDaily.day} = ${today}), 0)::int`,
+      month: sql<number>`coalesce(sum(${chatUsageDaily.replies}), 0)::int`,
     })
     .from(chatUsageDaily)
     .where(
       and(
         eq(chatUsageDaily.workspaceId, workspaceId),
-        sql`${chatUsageDaily.day} = (now() AT TIME ZONE 'utc')::date`,
+        sql`${chatUsageDaily.day} >= date_trunc('month', now() AT TIME ZONE 'utc')::date`,
       ),
     );
-  return { property: row?.property ?? 0, workspace: row?.workspace ?? 0 };
+  return { property: row?.property ?? 0, workspace: row?.workspace ?? 0, month: row?.month ?? 0 };
+}
+
+/**
+ * The budget that stops a model call now, if any (feature 011 R4): the month's AI replies first,
+ * then the daily budgets of feature 005 (FR-028).
+ */
+export function budgetStop(
+  usage: { property: number; workspace: number; month: number },
+  context: Pick<PropertyContext, "propertyLimit" | "workspaceLimit" | "monthlyLimit">,
+): "monthly" | "daily" | null {
+  if (usage.month >= context.monthlyLimit) return "monthly";
+  if (usage.property >= context.propertyLimit || usage.workspace >= context.workspaceLimit) {
+    return "daily";
+  }
+  return null;
 }
 
 /** Adds one model reply to today's usage; `db` may be a transaction. */
@@ -364,10 +391,10 @@ export async function decideReply(deps: PipelineDeps, input: DecideInput): Promi
     messages: [],
   });
 
-  const usage = await usageToday(db, context.workspaceId, context.propertyId);
-  if (usage.property >= context.propertyLimit || usage.workspace >= context.workspaceLimit) {
-    // Over a budget: a holding reply without any model call (feature 005 FR-028).
-    return input.takenOver ? silent() : held("limit");
+  const stop = budgetStop(await usageToday(db, context.workspaceId, context.propertyId), context);
+  if (stop) {
+    // Over a budget: a holding reply without any model call (feature 005 FR-028, feature 011).
+    return input.takenOver ? silent() : held(stop === "monthly" ? "monthly_limit" : "limit");
   }
 
   let classified: AgentCallResult<Classification>;

@@ -35,6 +35,8 @@ export const JOB_QUEUES = {
   exploreReferences: "explore.references",
   // Feature 008 (research R5): alerts for new requests and expiry, every minute.
   serviceRequestTick: "service-request.tick",
+  // Feature 011 (research R5): 80% and 100% AI usage emails, every 5 minutes.
+  planUsageTick: "plan-usage.tick",
 } as const;
 
 export interface CalendarRefreshJob {
@@ -67,6 +69,7 @@ export const QUEUE_POLICIES: Partial<
   [JOB_QUEUES.exploreRefresh]: "singleton",
   [JOB_QUEUES.exploreReferences]: "singleton",
   [JOB_QUEUES.serviceRequestTick]: "singleton",
+  [JOB_QUEUES.planUsageTick]: "singleton",
 };
 
 export interface ExtractionRunJob {

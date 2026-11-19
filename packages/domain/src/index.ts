@@ -34,3 +34,4 @@ export * from "./agent/index.js";
 export * from "./explore/index.js";
 export * from "./extras/index.js";
 export * from "./analytics/index.js";
+export * from "./plans/index.js";

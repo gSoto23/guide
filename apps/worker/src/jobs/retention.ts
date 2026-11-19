@@ -9,6 +9,7 @@ import {
   importRun,
   interviewTurn,
   mediaObject,
+  planUsageNotice,
   stay,
   upload,
   type Database,
@@ -100,6 +101,7 @@ export interface RetentionCounts {
   copilotRuns: number;
   presence: number;
   serviceRequests: number;
+  planUsageNotices: number;
 }
 
 function daysBefore(now: Date, days: number): Date {
@@ -335,6 +337,11 @@ export async function runRetention(deps: RetentionDeps): Promise<RetentionCounts
     .delete(chatUsageDaily)
     .where(lt(chatUsageDaily.day, monthsBefore(now, CHAT_USAGE_MONTHS)))
     .returning({ day: chatUsageDaily.day });
+  // Feature 011: AI usage notices with the same horizon as the counts they describe.
+  const planUsageNotices = await db
+    .delete(planUsageNotice)
+    .where(lt(planUsageNotice.month, monthsBefore(now, CHAT_USAGE_MONTHS)))
+    .returning({ month: planUsageNotice.month });
 
   // Feature 007: tests and their traces (cascade) after 30 days; instruction versions no settings
   // row points to and no trace refers to (FR-021: versions live as long as the traces they explain).
@@ -381,6 +388,7 @@ export async function runRetention(deps: RetentionDeps): Promise<RetentionCounts
 
   return {
     serviceRequests: serviceRequests.rows.length,
+    planUsageNotices: planUsageNotices.length,
     conversations: conversations.rows.length,
     chatUsage: chatUsage.length,
     assistantTests: assistantTests.rows.length,
@@ -434,6 +442,7 @@ export function createRetentionHandler(deps: RetentionDeps) {
           "retention.copilot_runs": counts.copilotRuns,
           "retention.presence": counts.presence,
           "retention.service_requests": counts.serviceRequests,
+          "retention.plan_usage_notices": counts.planUsageNotices,
         });
       },
       deps.span,

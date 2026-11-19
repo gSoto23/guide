@@ -1,5 +1,6 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import { latestCodeFor, latestMessageTo, waitForSubject } from "../helpers/mailpit";
+import { roomForTeam } from "../helpers/plan";
 
 /**
  * Feature 003 US2 (quickstart 3, T064): locked fields are added with masked inputs, revealed for a
@@ -115,6 +116,8 @@ test("quickstart 3: locked fields, references, code warnings, and the agent view
   await expect(owner.getByText("4821")).toHaveCount(0);
 
   // An agent sees only that the fields exist (FR-063, AC-SEC-001).
+  // Free has one seat (feature 011): team tests get 10 seats as a custom limit.
+  await roomForTeam(owner);
   await owner.goto("/es/settings/members");
   const agentEmail = uniqueEmail("guide-us2-agent");
   await owner.getByLabel("Email", { exact: true }).fill(agentEmail);

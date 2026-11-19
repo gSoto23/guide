@@ -43,6 +43,7 @@ export type AnalyticsReasonKey =
   | "not_confident"
   | "check_failed"
   | "limit"
+  | "monthly_limit"
   | "unavailable";
 
 export type AnalyticsRequestStatus =

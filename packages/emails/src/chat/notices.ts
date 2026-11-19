@@ -16,6 +16,7 @@ export type ChatNeedsHostReason =
   | "draft_ready"
   | "check_failed"
   | "limit"
+  | "monthly_limit"
   | "unavailable"
   | "taken_over";
 
@@ -31,6 +32,7 @@ const REASONS: Record<EmailLocale, Record<ChatNeedsHostReason, string>> = {
     draft_ready: "The assistant prepared a reply for you to review.",
     check_failed: "The assistant's reply needs your review before it is sent.",
     limit: "The daily assistant budget is used up, so you need to reply.",
+    monthly_limit: "This month's AI replies are used up, so you need to reply.",
     unavailable: "The assistant was unavailable, so you need to reply.",
     taken_over: "The guest wrote again in a conversation you took over.",
   },
@@ -45,6 +47,7 @@ const REASONS: Record<EmailLocale, Record<ChatNeedsHostReason, string>> = {
     draft_ready: "El asistente preparó una respuesta para que la revises.",
     check_failed: "La respuesta del asistente necesita tu revisión antes de enviarse.",
     limit: "Se agotó el presupuesto diario del asistente, así que debes responder tú.",
+    monthly_limit: "Se acabaron las respuestas de IA de este mes, así que debes responder tú.",
     unavailable: "El asistente no estaba disponible, así que debes responder tú.",
     taken_over: "El huésped volvió a escribir en una conversación que tomaste.",
   },

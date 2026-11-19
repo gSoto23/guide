@@ -25,7 +25,7 @@
     "rate_limited": "Demasiados intentos. Espera un momento y vuelve a intentarlo.",
     "internal_error": "Algo salió mal. Inténtalo de nuevo.",
     "network": "Sin conexión. Revisa tu internet e inténtalo de nuevo.",
-    "seat_limit_reached": "Ya usaste todos los asientos de este workspace. Quita a alguien o revoca una invitación primero.",
+    "seat_limit_reached": "Ya usaste todos los asientos de tu plan. Quita a alguien, revoca una invitación o cambia de plan en Plan y límites.",
     "already_member": "Esa persona ya forma parte del workspace.",
     "already_invited": "Ese email ya tiene una invitación abierta.",
     "email_mismatch": "Esta invitación es para otra dirección de email.",
@@ -223,6 +223,7 @@
     },
     "limits": {
       "usage": "{used} de {limit} propiedades",
+      "usageUnlimited": "{used} propiedades · sin límite",
       "reached": "Llegaste al límite de {limit} propiedades de tu plan. Quita una propiedad o escríbenos para ampliar el límite."
     },
     "start": {
@@ -752,6 +753,7 @@
     "sending": "Enviando…",
     "sent": "Invitación enviada a {email}. El enlace vence en 7 días.",
     "seats": "{used} de {limit} asientos en uso",
+    "seatsUnlimited": "{used} asientos en uso · sin límite",
     "invitationsTitle": "Invitaciones",
     "noInvitations": "Todavía no hay invitaciones.",
     "status": {
@@ -827,6 +829,7 @@
     "loading": "Cargando…",
     "sections": {
       "workspace": "Workspace",
+      "plan": "Plan y límites",
       "team": "Equipo",
       "account": "Tu cuenta",
       "security": "Seguridad",
@@ -887,7 +890,8 @@
       "empty": "Todavía no hay eventos.",
       "more": "Ver más",
       "noAccess": "Solo el dueño y los administradores ven el registro del workspace.",
-      "unknownActor": "Sistema o cuenta eliminada"
+      "unknownActor": "Sistema o cuenta eliminada",
+      "guidesk": "Guidesk"
     },
     "integrations": {
       "title": "Integraciones",
@@ -1587,6 +1591,7 @@
       "draft_ready": "Borrador listo para revisar",
       "check_failed": "El borrador no pasó una revisión",
       "limit": "Límite diario del asistente",
+      "monthly_limit": "Se acabaron las respuestas de IA del mes",
       "unavailable": "Asistente no disponible",
       "taken_over": "El huésped volvió a escribir (conversación tomada)"
     },
@@ -1809,6 +1814,7 @@
         "pointer": "Indica la sección del dato protegido",
         "greeting": "Saludo",
         "limited": "Límite diario alcanzado",
+        "monthly_limited": "Se acabaron las respuestas de IA del mes",
         "unavailable": "Asistente no disponible"
       },
       "topic": "Tema: {topic}",
@@ -1898,6 +1904,7 @@
     },
     "outcomes": {
       "limited": "Se alcanzó el límite diario del asistente para esta propiedad.",
+      "monthly_limited": "Se acabaron las respuestas de IA de este mes; vuelven el {date}. Tu texto sigue aquí.",
       "unavailable": "El asistente no está disponible ahora. Tu texto sigue aquí.",
       "failed": "No pudimos preparar una respuesta. Tu texto sigue aquí."
     },
@@ -2226,6 +2233,7 @@
       "not_confident": "El asistente no sabía",
       "check_failed": "La respuesta no pasó una revisión",
       "limit": "Límite diario alcanzado",
+      "monthly_limit": "Límite mensual de IA",
       "unavailable": "Asistente no disponible"
     },
     "statuses": {
@@ -2263,5 +2271,40 @@
       "descending": "descendente"
     },
     "byStatus": "Por estado"
+  },
+  "plan": {
+    "title": "Plan y límites",
+    "intro": "Tu plan define cuántas propiedades, respuestas de IA y asientos puede usar este workspace.",
+    "loading": "Cargando…",
+    "noAccess": "Solo el dueño y los administradores ven el plan del workspace.",
+    "names": {
+      "free": "Free",
+      "pro": "Pro",
+      "business": "Business"
+    },
+    "current": "Plan {plan}",
+    "since": "Desde el {date}",
+    "limits": {
+      "properties": "Propiedades activas",
+      "aiReplies": "Respuestas de IA este mes",
+      "seats": "Asientos"
+    },
+    "seatsHint": "Miembros e invitaciones pendientes: {members} {members, plural, one {miembro} other {miembros}} y {pending} {pending, plural, one {invitación} other {invitaciones}}.",
+    "usage": "{used} de {limit}",
+    "unlimited": "{used} · sin límite",
+    "custom": "Límite acordado con Guidesk.",
+    "pooled": "{perProperty} por propiedad activa, compartidas en todo el workspace.",
+    "resets": "Se renuevan el {date}.",
+    "over": "Estás por encima de este límite. No se quitó nada; podrás agregar más cuando el uso baje del límite.",
+    "whatCountsTitle": "¿Qué cuenta como respuesta de IA?",
+    "whatCounts": "Cada respuesta o borrador que el asistente escribe con IA: en el chat de la guía, en el copiloto y en las pruebas del asistente. Los mensajes fijos, como la respuesta de espera, no cuentan. Al llegar al límite, los huéspedes reciben una respuesta de espera y sus conversaciones te esperan; tus guías siguen funcionando.",
+    "changeTitle": "Cambiar de plan",
+    "changeBody": "Durante el piloto, Guidesk cambia los planes sin costo. Escríbenos e incluye el ID de tu workspace.",
+    "contact": "Escribir a {email}",
+    "noContact": "Responde a cualquier correo de Guidesk para pedirlo.",
+    "workspaceId": "ID del workspace",
+    "link": "Ver plan y límites",
+    "bannerWarning": "Quedan {left} de {limit} respuestas de IA este mes.",
+    "bannerReached": "Se acabaron las respuestas de IA de este mes. Vuelven el {date}."
   }
 }

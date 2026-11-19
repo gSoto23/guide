@@ -6,14 +6,13 @@ import type {
   Extraction,
   ExtractionResult,
 } from "@guidesk/contracts";
-import { extractionRequest, workspace } from "@guidesk/db";
+import { derivedBasis, extractionRequest, workspaceLimitInputs } from "@guidesk/db";
 import {
   extractionLimit,
   extractionLimitKey,
   extractionLimitResetsAt,
   isUrlOnly,
   JOB_QUEUES,
-  propertyLimit,
   redactRestrictedValues,
   type ExtractionRunJob,
   type Role,
@@ -88,14 +87,10 @@ export class ExtractionsService {
 
   /** Takes one extraction from today's limit, or refuses with the reset time (AC-SEC-010). */
   private async consumeLimit(workspaceId: string): Promise<void> {
-    const [row] = await this.requestDb
-      .current()
-      .select({ propertyLimit: workspace.propertyLimit })
-      .from(workspace)
-      .where(eq(workspace.id, workspaceId))
-      .limit(1);
+    const inputs = await workspaceLimitInputs(this.requestDb.current(), workspaceId);
+    if (!inputs) throw new ApiProblem(404, "not_found");
     const now = new Date();
-    const limit = extractionLimit(propertyLimit(row?.propertyLimit));
+    const limit = extractionLimit(derivedBasis(inputs));
     const result = await this.rateLimit.consume(
       extractionLimitKey(workspaceId, now),
       limit,
