@@ -117,7 +117,8 @@ export function PayoutsView({ locale }: { locale: string }) {
         {payouts.month.length === 0 ? (
           <p className="muted">{t("monthEmpty")}</p>
         ) : (
-          <div className="table-scroll">
+          // Seven columns scroll sideways on a phone: the region takes focus for keyboard users.
+          <div className="table-scroll" role="region" aria-labelledby="payouts-month" tabIndex={0}>
             <table className="data-table">
               <caption>{t("monthCaption")}</caption>
               <thead>

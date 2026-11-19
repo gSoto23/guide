@@ -93,3 +93,15 @@
   signature, fees), OQ-09 (fee policy chosen: the host absorbs the provider fee), OQ-35 (legal review of
   checkout texts, taxes, receipts, and early check-in/late checkout), then the Tilopay adapter and a
   sandbox run of ADR-0007's confirmation steps.
+- **Notes:**
+  - Provider routes and the simulated pages are `@Public()` (no session); the event route is outside
+    the cookie origin check because it carries no cookies.
+  - The refund panel and the AI banner of spec 011 load with a plain `import()`: `/requests` is 147.6
+    KB, `/settings/payouts` 142.7 KB; the guest guide's total stays 9.6 KB.
+  - The simulated pages use links (`&action=pay`) because HTML form posts are never parsed (T103).
+  - Timing: checkout starts and paid events stay well within p95 500 ms on a development machine.
+  - Local quickstart (2026-11-19): scenarios 1 and 2 pass in `payments-us1` (payouts set up on the
+    simulated page, the guest pays, the guide shows "Paid" with the reference after the provider's
+    event, the owner gets the "paid" email); scenario 3 in `payments-us3` (fees on Requests, a partial
+    refund, Payouts totals); scenario 4 in the db tests (`--fee-percent`). The axe check covers Payouts,
+    Requests with the refund form, and the guest's payment states.

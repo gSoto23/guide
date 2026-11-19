@@ -570,3 +570,47 @@ test("Plan and limits and the AI usage banner have no WCAG A/AA violations (feat
     await expectNoViolations(host, `Plan and limits with the banner (${locale})`);
   }
 });
+
+test("Payouts, Requests with a refund, and the guest's payment states have no WCAG A/AA violations (feature 013 T021)", async ({
+  browser,
+}) => {
+  test.setTimeout(240_000);
+  const { addStay, publishGuide, signIn } = await import("../helpers/guest");
+  const { addExtra, stayLinkFor } = await import("../helpers/extras");
+  const host = await newPage(browser);
+  await signIn(host, uniqueEmail("a11y-payments"));
+  const guide = await publishGuide(host);
+  const stay = await addStay(host, guide, 0, 4);
+  await addExtra(host, guide, { name: { es: "Cesta de frutas" }, price: 40, preApproved: true });
+  const stayLink = await stayLinkFor(host, guide, stay.id);
+  await host.goto("/es/settings/payouts");
+  await expect(host.getByRole("button", { name: "Configurar pagos" })).toBeVisible();
+  await expectNoViolations(host, "Payouts before setup");
+  const started = await host.request.post(
+    `/api/v1/workspaces/${guide.workspaceId}/payouts/onboarding?lang=es`,
+  );
+  await host.goto(`${((await started.json()) as { onboardingUrl: string }).onboardingUrl}&action=approve`);
+
+  const context = await browser.newContext({ locale: "es-CR", viewport: { width: 390, height: 844 } });
+  const guest = await context.newPage();
+  await guest.goto(stayLink);
+  await guest.getByRole("link", { name: "Servicios extra" }).click();
+  await guest.getByRole("link", { name: "Cesta de frutas" }).click();
+  await guest.getByRole("button", { name: "Pedir", exact: true }).click();
+  await expect(guest.getByRole("button", { name: /^Pagar / })).toBeVisible();
+  await expectNoViolations(guest, "guest extra with Pay");
+  await guest.getByRole("button", { name: /^Pagar / }).click();
+  await guest.getByRole("link", { name: /^Pay / }).click();
+  await expect(guest.getByText(/^Pagado /).first()).toBeVisible({ timeout: 15_000 });
+  await expectNoViolations(guest, "guest extra paid");
+  await context.close();
+
+  await host.goto("/en/requests");
+  const row = host.locator(".request-row").first();
+  await row.getByRole("button", { name: "Refund" }).click();
+  await expect(row.getByRole("button", { name: "Confirm the refund" })).toBeVisible();
+  await expectNoViolations(host, "Requests with the refund form");
+  await host.goto("/en/settings/payouts");
+  await expect(host.getByRole("table")).toBeVisible();
+  await expectNoViolations(host, "Payouts with totals");
+});
