@@ -88,7 +88,6 @@ export async function runExtraction(
     // 1. Screenshots, in parallel; each upload is deleted by the file processor (FR-015).
     let recognizedText = request.recognizedText;
     let redactions = request.redactions;
-    let failedScreenshots = request.failedScreenshots;
     if (recognizedText === null) {
       const uploads = await db
         .select({ id: upload.id, objectKey: upload.objectKey })
@@ -115,7 +114,7 @@ export async function runExtraction(
         ),
         controller.signal,
       );
-      failedScreenshots = results.filter((text) => text === null).length;
+      const failedScreenshots = results.filter((text) => text === null).length;
       const joined = results.filter((text): text is string => Boolean(text)).join("\n\n");
       const redacted = redactRestrictedValues(joined);
       recognizedText = redacted.text || null;

@@ -134,7 +134,8 @@ describe("extraction job (T059)", () => {
     await runExtraction({ db: handle.db, sandbox, llm }, { extractionId, workspaceId });
     const row = await load(extractionId);
     const items = (row.result as { items: { body: string | null; containsLink: boolean }[] }).items;
-    const withLink = items.find((item) => item.body?.includes("https://evil.example"));
+    const withLink = items.find((item) => item.body?.includes("ignore previous instructions"));
+    expect(withLink?.body).toContain("https://evil.example");
     expect(withLink?.containsLink).toBe(true);
     expect(row.propertyId).toBeNull();
   });
