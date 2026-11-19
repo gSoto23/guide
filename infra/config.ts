@@ -25,6 +25,8 @@ export const stageConfig = {
    * to the category illustration).
    */
   civitatisAffiliateId: process.env.GUIDESK_CIVITATIS_AFFILIATE_ID ?? "",
+  /** Feature 011: where hosts ask for a plan change (shown on Plan and limits); optional. */
+  planContactEmail: process.env.GUIDESK_PLAN_CONTACT_EMAIL ?? "",
   experienceImageOrigins: process.env.GUIDESK_EXPERIENCE_IMAGE_ORIGINS ?? "",
   /**
    * Feature flags (feature 002 research R15, feature 003 research R22). Off unless set to "true"

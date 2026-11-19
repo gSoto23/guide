@@ -95,6 +95,10 @@ export const api = new sst.aws.Service("Api", {
     TRUSTED_PROXY_HOPS: "2",
     // Feature 006: the VAPID contact; the keys come from Secrets Manager.
     VAPID_SUBJECT: portalUrl,
+    // Feature 011: the plan contact (optional). Feature 013: payments stay off until the Tilopay
+    // adapter exists (OQ-01, OQ-37); the API refuses the simulated provider in production.
+    PAYMENTS_MODE: "off",
+    ...(stageConfig.planContactEmail ? { PLAN_CONTACT_EMAIL: stageConfig.planContactEmail } : {}),
     ...databaseEnvironment,
     ...emailEnvironment,
     ...integrationEnvironment,

@@ -26,6 +26,7 @@
 | | [Budget](presentation/budget.md) | Development and operating costs per scenario, with sources |
 | **Process** | [Constitution](../.specify/memory/constitution.md) | Non-negotiable engineering principles (Spec Kit) |
 | | [Open questions](open-questions.md) | Pending decisions, partner applications, assumptions |
+| | [Pilot readiness](pilot-readiness.md) | Everything the founder must do before the first pilot guest |
 | | [Glossary](glossary.md) | Shared vocabulary |
 
 Feature specifications live in [`/specs`](../specs/), one folder per feature, created with
