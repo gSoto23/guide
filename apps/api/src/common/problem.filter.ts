@@ -82,6 +82,14 @@ const TITLES: Record<ProblemCode, string> = {
   rule_failed: "The request doesn't meet the extra's rules",
   duplicate: "You just made the same request",
   too_many_requests: "Too many requests for this stay",
+  not_payable: "This request can't be paid online",
+  already_paid: "This request is already paid",
+  invalid_event: "The payment event could not be verified",
+  not_refundable: "This payment can't be refunded",
+  amount_too_large: "The refund is larger than what is left",
+  refund_first: "Refund the payment first",
+  payments_off: "Online payments are off",
+  expired: "This link expired",
 };
 
 const CODE_BY_STATUS: Record<number, ProblemCode> = {

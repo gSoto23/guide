@@ -3,14 +3,18 @@ import { and, asc, desc, eq, gte, inArray, ne } from "drizzle-orm";
 import { extra, serviceRequest, stay, type Database } from "@guidesk/db";
 import { checkRequest, EXTRA_LIMITS, localized, lockState, type ExtraRules } from "@guidesk/domain";
 import type {
+  GuestCheckout,
   GuestExtra,
   GuestExtras,
+  GuestPayment,
   GuestServiceRequest,
   GuestServiceRequestBody,
   GuestServiceRequests,
 } from "@guidesk/contracts";
 import { ApiProblem } from "../common/problem.js";
+import { RateLimitService } from "../common/rate-limit.service.js";
 import { countRequest } from "../extras/service-requests.service.js";
+import { PaymentsService } from "../payments/payments.service.js";
 import { GuestContext, type GuestTarget } from "./guest-context.js";
 import { GuestSessions, type GuestDevice } from "./sessions.service.js";
 
@@ -37,7 +41,11 @@ function guestExtra(row: ExtraRow, language: "es" | "en"): GuestExtra {
   };
 }
 
-function guestRequest(row: RequestRow, language: "es" | "en"): GuestServiceRequest {
+function guestRequest(
+  row: RequestRow,
+  language: "es" | "en",
+  payment: GuestPayment | null = null,
+): GuestServiceRequest {
   return {
     id: row.id,
     extraId: row.extraId,
@@ -51,6 +59,7 @@ function guestRequest(row: RequestRow, language: "es" | "en"): GuestServiceReque
     reasonCode: row.reasonCode,
     reasonText: row.reasonText,
     createdAt: row.createdAt.toISOString(),
+    payment,
   };
 }
 
@@ -65,7 +74,38 @@ export class GuestExtrasService {
   constructor(
     private readonly context: GuestContext,
     private readonly sessions: GuestSessions,
+    private readonly payments: PaymentsService,
+    private readonly rateLimit: RateLimitService,
   ) {}
+
+  /** One request with its payment state for the guest (feature 013 FR-018). */
+  private async withPayment(target: GuestTarget, row: RequestRow, language: "es" | "en") {
+    const payments = await this.payments.guestPayments(this.context.db, target.workspaceId, [row]);
+    return guestRequest(row, language, payments.get(row.id) ?? null);
+  }
+
+  /**
+   * Starts or reuses the checkout of one of this stay's requests (feature 013 FR-004 to FR-008):
+   * 10 starts per stay per hour (SEC-07); the stay always comes from the session.
+   */
+  async checkout(
+    requestId: string,
+    publicId: string,
+    cookieHeader: string | undefined,
+    lang: "es" | "en" | undefined,
+  ): Promise<GuestCheckout> {
+    const { target, device } = await this.session(publicId, cookieHeader);
+    const limited = await this.rateLimit.consume(`checkout:${device.stayId}`, 10, 3600);
+    if (!limited.allowed) throw new ApiProblem(429, "rate_limited");
+    return this.payments.startCheckout({
+      workspaceId: target.workspaceId,
+      propertyId: target.propertyId,
+      stayId: device.stayId,
+      requestId,
+      publicId,
+      language: lang ?? (target.languages[0] === "en" ? "en" : "es"),
+    });
+  }
 
   /** Visible extras of a property, in order (also for the guide's `extras.visible`). */
   async visible(db: Database, target: { workspaceId: string; propertyId: string }) {
@@ -119,10 +159,11 @@ export class GuestExtrasService {
       .orderBy(desc(serviceRequest.createdAt))
       .limit(50);
     const language = lang ?? target.languages[0] ?? "es";
+    const payments = await this.payments.guestPayments(this.context.db, target.workspaceId, rows);
     return {
       canRequest: reason === null,
       reason,
-      requests: rows.map((row) => guestRequest(row, language)),
+      requests: rows.map((row) => guestRequest(row, language, payments.get(row.id) ?? null)),
     };
   }
 
@@ -252,7 +293,7 @@ export class GuestExtrasService {
     await countRequest(db, { ...target, timeZone }, "waiting");
     if (checked.status === "confirmed")
       await countRequest(db, { ...target, timeZone }, "confirmed");
-    return guestRequest(stored!, lang ?? target.languages[0] ?? "es");
+    return this.withPayment(target, stored!, lang ?? target.languages[0] ?? "es");
   }
 
   async cancel(
@@ -283,6 +324,6 @@ export class GuestExtrasService {
       throw exists ? new ApiProblem(409, "not_waiting") : new ApiProblem(404, "not_found");
     }
     await countRequest(this.context.db, { ...target }, "cancelled");
-    return guestRequest(updated, lang ?? target.languages[0] ?? "es");
+    return this.withPayment(target, updated, lang ?? target.languages[0] ?? "es");
   }
 }

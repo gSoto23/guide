@@ -40,6 +40,8 @@ export const workspace = pgTable(
     seatLimit: integer("seat_limit"),
     propertyLimit: integer("property_limit"),
     aiReplyMonthlyLimit: integer("ai_reply_monthly_limit"),
+    /** Feature 013: a custom platform fee in basis points; null uses the plan's. */
+    platformFeeBps: integer("platform_fee_bps"),
     /** Feature 003 pilot overrides (data model §5): daily guide AI requests and media storage. */
     guideAiDailyLimit: integer("guide_ai_daily_limit"),
     mediaStorageLimitMb: integer("media_storage_limit_mb"),
@@ -63,6 +65,10 @@ export const workspace = pgTable(
     check(
       "workspace_ai_reply_monthly_limit_positive",
       sql`${t.aiReplyMonthlyLimit} IS NULL OR ${t.aiReplyMonthlyLimit} > 0`,
+    ),
+    check(
+      "workspace_platform_fee_bps_range",
+      sql`${t.platformFeeBps} IS NULL OR ${t.platformFeeBps} BETWEEN 0 AND 3000`,
     ),
     check("workspace_seat_limit_positive", sql`${t.seatLimit} IS NULL OR ${t.seatLimit} > 0`),
     check(

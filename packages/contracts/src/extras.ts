@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { GuestPayment, RequestPayment } from "./payments.js";
 
 /**
  * Feature 008 value lists (data model). Kept out of `values.ts`, which every portal route that
@@ -168,6 +169,8 @@ export interface GuestServiceRequest {
   reasonCode: ServiceRequestReason | null;
   reasonText: string | null;
   createdAt: string;
+  /** Feature 013: null when online payment isn't possible for this request. */
+  payment: GuestPayment | null;
 }
 
 /** `GET /api/v1/guest/extras/requests`: whether this device may request, and its stay's requests. */
@@ -198,7 +201,9 @@ export const serviceRequestAnswerSchema = z
   .strict();
 export type ServiceRequestAnswerBody = z.infer<typeof serviceRequestAnswerSchema>;
 
-export interface MemberServiceRequest extends GuestServiceRequest {
+export interface MemberServiceRequest extends Omit<GuestServiceRequest, "payment"> {
+  /** Feature 013: the request's latest order, or null when none was started. */
+  payment: RequestPayment | null;
   propertyId: string;
   propertyName: string;
   stay: { checkInDate: string; checkoutDate: string; guestName: string | null };

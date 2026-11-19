@@ -14,10 +14,11 @@ import { GuestReveals } from "./reveals.service.js";
 import { GuestSessions } from "./sessions.service.js";
 import { StayLinkSecrets } from "./stay-link-secrets.js";
 import { GuestVerification } from "./verification.service.js";
+import { PaymentsModule } from "../payments/payments.module.js";
 
 /** The guest guide's public routes (feature 004 research R1, R12). */
 @Module({
-  imports: [TenancyModule, GuidesModule, LockedFieldsModule, ExploreCoreModule],
+  imports: [TenancyModule, GuidesModule, LockedFieldsModule, ExploreCoreModule, PaymentsModule],
   controllers: [GuestController],
   providers: [
     GuestContext,

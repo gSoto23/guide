@@ -31,6 +31,11 @@ const schema = z
     SMTP_PORT: z.coerce.number().int().positive().default(1025),
     SES_CONFIGURATION_SET: z.string().optional(),
     SENTRY_DSN: z.string().optional(),
+    /**
+     * Feature 013 (research R1): `simulated` locally by default, `off` in production by default;
+     * production refuses `simulated`, and `tilopay` waits for its adapter (OQ-37).
+     */
+    PAYMENTS_MODE: z.enum(["off", "simulated", "tilopay"]).optional(),
     /** Feature 011: where hosts ask Guidesk for a plan change; optional until the founder sets it. */
     PLAN_CONTACT_EMAIL: z.preprocess(
       (value) => (value === "" ? undefined : value),
@@ -49,6 +54,14 @@ const schema = z
   .refine((env) => env.NODE_ENV !== "production" || env.PORTAL_URL.startsWith("https://"), {
     message: "PORTAL_URL must use HTTPS in production (SEC-11)",
     path: ["PORTAL_URL"],
+  })
+  .refine((env) => env.NODE_ENV !== "production" || env.PAYMENTS_MODE !== "simulated", {
+    message: "PAYMENTS_MODE=simulated is not allowed in production (feature 013 AC-SEC-007)",
+    path: ["PAYMENTS_MODE"],
+  })
+  .refine((env) => env.PAYMENTS_MODE !== "tilopay", {
+    message: "PAYMENTS_MODE=tilopay needs the Tilopay adapter, which is not built yet (OQ-37)",
+    path: ["PAYMENTS_MODE"],
   })
   .refine((env) => env.NODE_ENV !== "production" || env.GUIDE_URL.startsWith("https://"), {
     message: "GUIDE_URL must use HTTPS in production (SEC-11)",

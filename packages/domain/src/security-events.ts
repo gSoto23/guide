@@ -92,6 +92,12 @@ export const SECURITY_EVENT_TYPES = [
   "service_request.answered",
   // Feature 011 (data model): changed by Guidesk's founder tool, so there is no actor.
   "workspace.plan_changed",
+  // Feature 013 (data model).
+  "payment.refunded",
+  "payment.disputed",
+  "payment.event_refused",
+  "payouts.onboarding_started",
+  "payouts.status_changed",
 ] as const;
 
 export type SecurityEventType = (typeof SECURITY_EVENT_TYPES)[number];
@@ -196,7 +202,13 @@ const METADATA_ALLOWLIST: Partial<Record<SecurityEventType, readonly string[]>> 
   "extras.changed": ["propertyId", "action", "count"],
   "service_request.answered": ["propertyId", "requestId", "status"],
   // The plans and custom limits (a number or "plan"); the founder's note stays off the log.
-  "workspace.plan_changed": ["from", "to", "properties", "seats", "aiReplies"],
+  "workspace.plan_changed": ["from", "to", "properties", "seats", "aiReplies", "feeBps"],
+  // Amounts and IDs only; never card data or the guest's details (feature 013 SEC-20).
+  "payment.refunded": ["orderId", "amountMinor", "currency", "full"],
+  "payment.disputed": ["orderId"],
+  "payment.event_refused": ["provider", "reason"],
+  "payouts.onboarding_started": ["provider"],
+  "payouts.status_changed": ["provider", "status"],
 };
 
 /** Short labels, numbers, booleans, and calendar dates; nothing that could carry free text. */

@@ -37,6 +37,8 @@ export const JOB_QUEUES = {
   serviceRequestTick: "service-request.tick",
   // Feature 011 (research R5): 80% and 100% AI usage emails, every 5 minutes.
   planUsageTick: "plan-usage.tick",
+  // Feature 013 (research R8): emails when an add-on is paid or disputed.
+  paymentNotify: "payment.notify",
 } as const;
 
 export interface CalendarRefreshJob {
