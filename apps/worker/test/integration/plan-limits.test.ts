@@ -74,6 +74,13 @@ describe("guide chat at the monthly limit (FR-007)", () => {
     expect(trace?.reason).toBe("monthly_limit");
     // The daily notice is for the daily budgets only; the monthly emails come from plan-usage.tick.
     expect(emails.filter((email) => email.template === "chat.limit_reached")).toEqual([]);
+    // The team's "needs you" email names the monthly limit.
+    const needsHost = emails.filter((email) => email.template === "chat.needs_host");
+    expect(needsHost.length).toBeGreaterThan(0);
+    expect(needsHost.map((email) => email.text).join("\n")).toMatch(
+      /Se acabaron las respuestas de IA de este mes|This month's AI replies are used up/,
+    );
+    expect(needsHost.map((email) => email.text).join("\n")).not.toContain("undefined");
   });
 
   it("answers at 99 replies and ignores earlier months", async () => {

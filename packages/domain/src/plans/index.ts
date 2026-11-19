@@ -52,7 +52,10 @@ export interface EffectiveLimits {
 }
 
 /** The plan's limits with the custom ones applied (FR-003), for `activeProperties` right now. */
-export function effectiveLimits(workspace: WorkspacePlan, activeProperties: number): EffectiveLimits {
+export function effectiveLimits(
+  workspace: WorkspacePlan,
+  activeProperties: number,
+): EffectiveLimits {
   const plan = PLAN_LIMITS[workspace.plan];
   const pooled = plan.aiReplies.kind === "pooled" ? plan.aiReplies.perProperty : null;
   const planAi =

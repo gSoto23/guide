@@ -88,7 +88,7 @@
   admins) returns the plan, each limit with usage and source, the renewal moment, the workspace ID, and
   the contact address (`PLAN_CONTACT_EMAIL`, optional). Limit errors keep their codes
   (`plan_limit_reached`, `seat_limit_reached`) with `{limit, used}`. Portal: `/settings/plan` (H-32)
-  with meters drawn as `<meter>` plus visible text, a link from settings, and a banner loaded on demand
+  with each limit as text and a bar that repeats it (R11), a link from settings, and a banner loaded on demand
   in the signed-in layout for owners and admins at 80% and 100% (refetched on navigation, like the
   import banner). Limit messages for properties and seats link to the screen for owners and admins.
 - **Rationale:** FR-013 to FR-016; loading the banner on demand keeps its code out of every route's
@@ -107,3 +107,26 @@
 
 - **Gates:** none new for development. Before the pilot: the founder sets `PLAN_CONTACT_EMAIL` and
   moves design partners to Pro or Business with `plan:set`; the plan numbers stay open (OQ-10).
+- **Notes:**
+  - The security log accepts short values only, so `workspace.plan_changed` records the plans and the
+    new custom limits, and the founder's note lives in `workspace.plan_note` (shown by `plan:show`,
+    never returned by the API).
+  - The app role has no update grant on the plan columns (only `name`, `updated_at`, and
+    `assistant_autonomy`), so no API bug can raise a plan; the security review test checks the grants.
+  - Limit bars follow the Analytics pattern (a bar marked `aria-hidden` next to visible text) instead
+    of `<meter>`, so every bar is also text.
+  - The banner is loaded with a plain dynamic import after the page: about 0.2 KB of initial
+    JavaScript per route; the largest route stays at 148.7 KB.
+  - Test helpers give the teams they build 10 seats as a custom limit (the old pilot default), and the
+    end-to-end team tests move their workspace to Business with the founder tool before inviting.
+  - Invitations already serialize per workspace with an advisory lock, so 10 racing invitations for
+    the last seat give exactly one.
+  - Timing: 50 properties with 60 days of usage, `GET plan` well within p95 300 ms on a development
+    machine.
+  - Local quickstart (2026-11-19 UTC): scenarios 1 and 2 pass in `plan-us1` (holding reply at the
+    limit, inbox reason, copilot message, banner, Free property and seat refusals with the link);
+    scenarios 3 and 4 in `plan-us4` (the founder tool moves the workspace to Business, the screen and
+    the security log follow, an agent can't open the screen); the local worker's `plan-usage.tick`
+    sent each test owner one "used up" email (Mailpit). The 80% email is covered by the worker tests.
+  - The "needs you" email and push name the monthly limit (`monthly_limit` texts in the email
+    package), checked in the worker tests.

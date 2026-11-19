@@ -1,5 +1,6 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import { latestCodeFor, latestMessageTo, waitForSubject } from "../helpers/mailpit";
+import { roomForTeam } from "../helpers/plan";
 
 /** Quickstart V15, V16, and V17 (spec 001 US5, T091). */
 function uniqueEmail(prefix: string): string {
@@ -39,6 +40,8 @@ test("V15–V17: removal, the owner leaving, and deletion with restore", async (
   await expect(owner.getByText("Nombre guardado.")).toBeVisible();
 
   // Invite an agent, who joins from the link.
+  // Free has one seat (feature 011): team tests get 10 seats as a custom limit.
+  await roomForTeam(owner);
   await owner.goto("/es/settings/members");
   await owner.getByLabel("Email", { exact: true }).fill(agentEmail);
   await owner.getByRole("button", { name: "Enviar invitación" }).click();

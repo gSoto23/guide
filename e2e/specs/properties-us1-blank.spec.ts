@@ -1,5 +1,6 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import { latestCodeFor, latestMessageTo, waitForSubject } from "../helpers/mailpit";
+import { roomForTeam } from "../helpers/plan";
 
 /**
  * Feature 002 US1 on a phone viewport (quickstart scenarios 1 and 2, T037): a blank property with
@@ -81,6 +82,8 @@ test("quickstart 1 and 2: blank property, zone choice, agent view, and the limit
 
   // An agent of the same workspace views it, without edit controls.
   const agentEmail = uniqueEmail("us1-agent");
+  // Free has one seat (feature 011): team tests get 10 seats as a custom limit.
+  await roomForTeam(owner);
   await owner.goto("/es/settings/members");
   await owner.getByLabel("Email", { exact: true }).fill(agentEmail);
   await owner.getByRole("radio", { name: /Agente/ }).check();

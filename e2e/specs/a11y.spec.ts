@@ -1,6 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import { latestCodeFor, latestMessageTo, waitForSubject } from "../helpers/mailpit";
+import { roomForTeam } from "../helpers/plan";
 
 /**
  * Accessibility checks with axe (spec 001 T104, NFR-12): WCAG 2.2 A and AA rules on the auth,
@@ -69,6 +70,8 @@ test("auth, onboarding, settings, and invitation screens have no WCAG A/AA viola
 
   // The invitation page as the invitee sees it before signing in.
   const invitee = uniqueEmail("a11y-invitee");
+  // Free has one seat (feature 011): team tests get 10 seats as a custom limit.
+  await roomForTeam(page);
   await page.goto("/es/settings/members");
   await page.getByLabel("Email", { exact: true }).fill(invitee);
   await page.getByRole("button", { name: "Enviar invitación" }).click();
@@ -513,7 +516,10 @@ test("Analytics for a property and the workspace have no WCAG A/AA violations (f
   await signIn(host, uniqueEmail("a11y-analytics"));
   const guide = await publishGuide(host);
   await setAutonomy(host, guide, "auto");
-  const context = await browser.newContext({ locale: "es-CR", viewport: { width: 390, height: 844 } });
+  const context = await browser.newContext({
+    locale: "es-CR",
+    viewport: { width: 390, height: 844 },
+  });
   const guest = await context.newPage();
   await guest.goto(await propertyLink(host, guide));
   await openChat(guest);
@@ -530,4 +536,37 @@ test("Analytics for a property and the workspace have no WCAG A/AA violations (f
   await expect(host.getByRole("table")).toBeVisible();
   await host.getByRole("button", { name: "Questions" }).click();
   await expectNoViolations(host, "workspace analytics");
+});
+
+test("Plan and limits and the AI usage banner have no WCAG A/AA violations (feature 011 T023)", async ({
+  browser,
+}) => {
+  test.setTimeout(240_000);
+  const { openChat, propertyLink, publishGuide, sendChatMessage, setAutonomy, signIn } =
+    await import("../helpers/guest");
+  const { setPlan, workspaceIdOf } = await import("../helpers/plan");
+  const host = await newPage(browser);
+  await signIn(host, uniqueEmail("a11y-plan"));
+  const guide = await publishGuide(host);
+  await setAutonomy(host, guide, "auto");
+  setPlan(await workspaceIdOf(host), "pro", { aiReplies: 1, note: "a11y" });
+  const context = await browser.newContext({
+    locale: "es-CR",
+    viewport: { width: 390, height: 844 },
+  });
+  const guest = await context.newPage();
+  await guest.goto(await propertyLink(host, guide));
+  await openChat(guest);
+  await sendChatMessage(guest, "¿Cómo abro la caja de llaves?");
+  await expect(guest.getByRole("dialog").locator(".chat-msg-assistant").last()).toBeVisible({
+    timeout: 15_000,
+  });
+  await context.close();
+
+  for (const locale of ["es", "en"]) {
+    await host.goto(`/${locale}/settings/plan`);
+    await expect(host.locator(".bar-row").first()).toBeVisible();
+    await expect(host.locator(".plan-banner")).toBeVisible();
+    await expectNoViolations(host, `Plan and limits with the banner (${locale})`);
+  }
 });

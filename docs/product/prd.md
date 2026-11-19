@@ -251,6 +251,10 @@ criteria.
   subscription billing starts after the pilot (Phase 2), once the legal entity and payment
   provider exist (OQ-01).
 
+*Built in spec 011 (limits only): plans Free, Pro, and Business with properties, monthly AI replies,
+and seats; custom limits per workspace; the founder assigns plans with a command-line tool until
+billing exists.*
+
 ### F13 — Guest checkout and payouts (MVP, month 4)
 
 - **FR-13.1** A guest MUST be able to pay for a confirmed add-on through the payment provider's
