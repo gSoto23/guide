@@ -11,6 +11,7 @@ import {
 import { localized, todayIn, type ServiceRequestStatus } from "@guidesk/domain";
 import type {
   MemberServiceRequest,
+  RequestPayment,
   ServiceRequestAnswerBody,
   ServiceRequestPage,
   ServiceRequestsQuery,
@@ -18,6 +19,7 @@ import type {
 import { ApiProblem } from "../common/problem.js";
 import { RequestDb } from "../database/request-db.js";
 import { SecurityLogService } from "../security-log/security-log.service.js";
+import { PaymentsService } from "../payments/payments.service.js";
 import { CrossTenantService } from "../tenancy/cross-tenant.js";
 
 const PAGE = 50;
@@ -60,6 +62,7 @@ export class ServiceRequestsService {
     private readonly requestDb: RequestDb,
     private readonly crossTenant: CrossTenantService,
     private readonly securityLog: SecurityLogService,
+    private readonly payments: PaymentsService,
   ) {}
 
   private get tx() {
@@ -115,8 +118,15 @@ export class ServiceRequestsService {
       .where(
         and(eq(serviceRequest.workspaceId, workspaceId), eq(serviceRequest.status, "waiting")),
       );
+    const shown = rows.slice(0, PAGE);
+    const payments = await this.payments.memberPayments(
+      this.tx,
+      shown.map((row) => row.request.id),
+    );
     return {
-      items: rows.slice(0, PAGE).map((row) => this.item(row, caller.language)),
+      items: shown.map((row) =>
+        this.item(row, caller.language, payments.get(row.request.id) ?? null),
+      ),
       next: rows.length > PAGE ? String(offset + PAGE) : null,
       waiting: waiting?.n ?? 0,
     };
@@ -132,6 +142,7 @@ export class ServiceRequestsService {
       answeredByName: string | null;
     },
     language: "es" | "en",
+    payment: RequestPayment | null = null,
   ): MemberServiceRequest {
     const r = row.request;
     return {
@@ -158,6 +169,7 @@ export class ServiceRequestsService {
       answeredBy: row.answeredByName,
       answeredAt: r.answeredAt?.toISOString() ?? null,
       expiresAt: r.expiresAt.toISOString(),
+      payment,
     };
   }
 
@@ -189,6 +201,8 @@ export class ServiceRequestsService {
         requestId,
       );
     }
+    // A paid request is cancelled only after a full refund (feature 013 FR-015).
+    if (to === "host_cancelled") await this.payments.assertCancellable(this.tx, requestId);
     const expired = from === "waiting" && current.expiresAt.getTime() <= Date.now();
     const [updated] = expired
       ? []
@@ -234,7 +248,8 @@ export class ServiceRequestsService {
       .innerJoin(stay, eq(stay.id, serviceRequest.stayId))
       .where(eq(serviceRequest.id, requestId))
       .limit(1);
-    return this.item(page[0]!, caller.language);
+    const payments = await this.payments.memberPayments(this.tx, [requestId]);
+    return this.item(page[0]!, caller.language, payments.get(requestId) ?? null);
   }
 
   confirm(caller: RequestsCaller, workspaceId: string, requestId: string) {

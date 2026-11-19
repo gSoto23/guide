@@ -39,3 +39,6 @@ export * from "./experiences/port.js";
 export * from "./experiences/viator.adapter.js";
 export * from "./experiences/fixtures.js";
 export * from "./experiences/curated.js";
+export * from "./payments/port.js";
+export * from "./payments/simulated.adapter.js";
+export * from "./payments/factory.js";

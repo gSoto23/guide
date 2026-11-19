@@ -2,6 +2,7 @@ import { createDb } from "../client.js";
 import {
   formatPlanReport,
   parseCustomLimit,
+  parseFeePercent,
   PlanAdminError,
   setPlan,
   showPlan,
@@ -21,7 +22,7 @@ const option = (name: string): string | undefined => {
 };
 const USAGE = [
   "Usage:",
-  '  plan:set -- --workspace <uuid> --plan free|pro|business [--properties <n>|plan] [--seats <n>|plan] [--ai-replies <n>|plan] --note "<text>"',
+  '  plan:set -- --workspace <uuid> --plan free|pro|business [--properties <n>|plan] [--seats <n>|plan] [--ai-replies <n>|plan] [--fee-percent <0-30>|plan] --note "<text>"',
   "  plan:show -- --workspace <uuid> [--json]",
 ].join("\n");
 
@@ -40,6 +41,7 @@ try {
       properties: parseCustomLimit("properties", option("properties")),
       seats: parseCustomLimit("seats", option("seats")),
       aiReplies: parseCustomLimit("ai-replies", option("ai-replies")),
+      feeBps: parseFeePercent(option("fee-percent")),
       note: option("note") ?? "",
     });
     console.warn(`Plan changed from ${result.from} to ${result.to}.`);

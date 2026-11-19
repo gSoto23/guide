@@ -35,3 +35,4 @@ export * from "./explore/index.js";
 export * from "./extras/index.js";
 export * from "./analytics/index.js";
 export * from "./plans/index.js";
+export * from "./payments/index.js";

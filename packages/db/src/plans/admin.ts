@@ -28,17 +28,34 @@ export interface SetPlanInput {
   properties?: CustomLimitChange;
   seats?: CustomLimitChange;
   aiReplies?: CustomLimitChange;
+  /** Feature 013: a custom platform fee in basis points (0 to 3,000), "plan", or keep. */
+  feeBps?: number | "plan";
   note: string;
 }
 
 export interface SetPlanResult {
   from: Plan;
   to: Plan;
-  custom: { properties: number | null; seats: number | null; aiReplies: number | null };
+  custom: {
+    properties: number | null;
+    seats: number | null;
+    aiReplies: number | null;
+    feeBps: number | null;
+  };
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_LIMIT = 1_000_000;
+
+/** Parses `--fee-percent`: 0 to 30 with up to two decimals, or "plan" (feature 013 FR-021). */
+export function parseFeePercent(value: string | undefined): number | "plan" | undefined {
+  if (value === undefined) return undefined;
+  if (value === "plan") return "plan";
+  if (!/^\d{1,2}(\.\d{1,2})?$/.test(value) || Number(value) > 30) {
+    throw new PlanAdminError('--fee-percent must be from 0 to 30 (up to two decimals), or "plan".');
+  }
+  return Math.round(Number(value) * 100);
+}
 
 /** Parses a CLI value for a custom limit; throws on anything but a positive whole number or "plan". */
 export function parseCustomLimit(name: string, value: string | undefined): CustomLimitChange {
@@ -73,8 +90,9 @@ export async function setPlan(db: Database, input: SetPlanInput): Promise<SetPla
       property_limit: number | null;
       seat_limit: number | null;
       ai_reply_monthly_limit: number | null;
+      platform_fee_bps: number | null;
     }>(sql`
-      SELECT plan, property_limit, seat_limit, ai_reply_monthly_limit
+      SELECT plan, property_limit, seat_limit, ai_reply_monthly_limit, platform_fee_bps
         FROM workspace WHERE id = ${input.workspaceId} FOR UPDATE`);
     const row = locked.rows[0];
     if (!row) throw new PlanAdminError("No workspace with that ID.");
@@ -82,12 +100,22 @@ export async function setPlan(db: Database, input: SetPlanInput): Promise<SetPla
       properties: next(row.property_limit, input.properties),
       seats: next(row.seat_limit, input.seats),
       aiReplies: next(row.ai_reply_monthly_limit, input.aiReplies),
+      feeBps:
+        input.feeBps === undefined
+          ? row.platform_fee_bps
+          : input.feeBps === "plan"
+            ? null
+            : input.feeBps,
     };
+    if (custom.feeBps !== null && (custom.feeBps < 0 || custom.feeBps > 3000)) {
+      throw new PlanAdminError("The platform fee must be from 0 to 30%.");
+    }
     await tx.execute(sql`
       UPDATE workspace
          SET plan = ${plan}, plan_changed_at = now(), plan_note = ${note},
              property_limit = ${custom.properties}, seat_limit = ${custom.seats},
-             ai_reply_monthly_limit = ${custom.aiReplies}, updated_at = now()
+             ai_reply_monthly_limit = ${custom.aiReplies}, platform_fee_bps = ${custom.feeBps},
+             updated_at = now()
        WHERE id = ${input.workspaceId}`);
     const from = isPlan(row.plan) ? row.plan : "free";
     const metadata = {
@@ -96,6 +124,7 @@ export async function setPlan(db: Database, input: SetPlanInput): Promise<SetPla
       properties: custom.properties ?? "plan",
       seats: custom.seats ?? "plan",
       aiReplies: custom.aiReplies ?? "plan",
+      feeBps: custom.feeBps ?? "plan",
     };
     assertSafeMetadata(metadata, "workspace.plan_changed");
     await tx.insert(securityEvent).values({

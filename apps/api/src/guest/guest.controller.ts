@@ -15,6 +15,9 @@ import { z } from "zod";
 import {
   exploreQuerySchema,
   guestCancelRequestSchema,
+  guestCheckoutSchema,
+  type GuestCheckout,
+  type GuestCheckoutBody,
   guestRequestsQuerySchema,
   guestServiceRequestSchema,
   type GuestExtras,
@@ -39,6 +42,7 @@ import {
 } from "@guidesk/contracts";
 import { Public } from "../auth/public.decorator.js";
 import { assertUuid } from "../common/ids.js";
+import { ApiProblem } from "../common/problem.js";
 import { ZodValidationPipe } from "../common/zod.pipe.js";
 import { GuestExploreService } from "./explore.service.js";
 import { GuestExtrasService } from "./extras.service.js";
@@ -159,6 +163,25 @@ export class GuestController {
   ): Promise<GuestServiceRequest> {
     void reply.header("cache-control", "no-store");
     return this.extras.create(body, request.headers.cookie, query.lang);
+  }
+
+  /** Feature 013: starts or reuses the request's checkout (contracts/http-api.md). */
+  @Post("extras/requests/:requestId/checkout")
+  @HttpCode(200)
+  async extrasCheckout(
+    @Req() request: FastifyRequest,
+    @Param("requestId") requestId: string,
+    @Query(new ZodValidationPipe(exploreQuerySchema)) query: z.infer<typeof exploreQuerySchema>,
+    @Body(new ZodValidationPipe(guestCheckoutSchema)) body: GuestCheckoutBody,
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ): Promise<GuestCheckout> {
+    try {
+      assertUuid(requestId);
+    } catch {
+      throw new ApiProblem(404, "not_found");
+    }
+    void reply.header("cache-control", "no-store");
+    return this.extras.checkout(requestId, body.publicId, request.headers.cookie, query.lang);
   }
 
   @Post("extras/requests/:requestId/cancel")

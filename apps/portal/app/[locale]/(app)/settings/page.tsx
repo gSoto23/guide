@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 const SECTIONS = [
   "workspace",
   "plan",
+  "payouts",
   "team",
   "assistant",
   "explore",
@@ -15,6 +16,7 @@ const SECTIONS = [
 const PATHS: Record<(typeof SECTIONS)[number], string> = {
   workspace: "settings/workspace",
   plan: "settings/plan",
+  payouts: "settings/payouts",
   team: "settings/members",
   assistant: "settings/assistant",
   explore: "settings/explore",

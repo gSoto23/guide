@@ -213,7 +213,22 @@
     "note": "Note for your host (optional)",
     "noteHint": "Don't include phone numbers, emails, or documents.",
     "request": "Request",
-    "payment": "Nothing is charged here. If your host confirms, they'll arrange payment with you.",
+    "payment": {
+      "pay": "Pay {amount}",
+      "total": "Total: {amount}. It includes any taxes your host charges; there are no extra charges.",
+      "open": "Payment in progress. If you already paid, it will be confirmed here in a moment.",
+      "processing": "We're confirming your payment with the provider…",
+      "paid": "Paid {amount}",
+      "reference": "Payment reference: {reference}",
+      "refunded": "Refunded {amount}",
+      "disputed": "Your bank opened a dispute on this payment. The payment provider handles it.",
+      "redirecting": "Opening the payment page…",
+      "errors": {
+        "not_payable": "This extra can't be paid online any more. Your host will arrange payment with you.",
+        "already_paid": "This extra is already paid.",
+        "rate_limited": "You tried to pay many times. Wait a while and try again."
+      }
+    },
     "sent": "Done. Your request is waiting for your host.",
     "sentConfirmed": "Done. Your request is confirmed: your host will arrange payment with you.",
     "offline": "You need a connection to request or cancel.",
@@ -223,6 +238,7 @@
     "status": {
       "waiting": "Waiting for your host",
       "confirmed": "Confirmed: your host will arrange payment with you",
+      "confirmed_payable": "Confirmed",
       "declined": "Not available",
       "cancelled": "Cancelled",
       "host_cancelled": "Cancelled by your host",

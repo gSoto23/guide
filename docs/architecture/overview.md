@@ -258,6 +258,17 @@ workspace above a limit keeps everything it has. Owners and admins see Plan and 
 `pnpm --filter @guidesk/db plan:set`, never through the API, and each change is in the security log.
 There is no billing yet (Phase 2).
 
+*As built in spec 013 (with a simulated provider):* guests pay confirmed add-ons through the
+provider's hosted checkout behind `PaymentPort` (`packages/integrations/src/payments/`). The API starts
+one checkout per request from the stay session, using only the stored request's amount, and an order
+becomes paid only through a verified provider event (`POST /api/v1/payments/events/{provider}`,
+recorded once in `payment_event`). Orders keep the price, Guidesk's platform fee (by plan or agreed),
+the provider's fee, and the host's share in minor units; the host's share settles to the host's
+provider account (split settlement). Owners set up payouts on the provider's page; owners and admins
+refund with re-authentication; disputes are flagged and emailed by `payment.notify`. `PAYMENTS_MODE`
+is `simulated` locally (hosted pages under `/api/v1/simulated-provider/*`) and `off` in production
+until the Tilopay adapter exists (OQ-01, OQ-37).
+
 ### 5.2 Guest writes in the Airbnb chat (Phase 2, through a PMS)
 
 ```mermaid

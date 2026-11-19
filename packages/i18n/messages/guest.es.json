@@ -213,7 +213,22 @@
     "note": "Nota para tu anfitrión (opcional)",
     "noteHint": "No incluyas teléfonos, correos ni documentos.",
     "request": "Pedir",
-    "payment": "Aquí no se cobra nada. Si tu anfitrión confirma, acordará el pago contigo.",
+    "payment": {
+      "pay": "Pagar {amount}",
+      "total": "Total: {amount}. Incluye los impuestos que cobre tu anfitrión; no hay cargos extra.",
+      "open": "Pago en proceso. Si ya pagaste, en un momento se confirma aquí.",
+      "processing": "Estamos confirmando tu pago con el proveedor…",
+      "paid": "Pagado {amount}",
+      "reference": "Referencia del pago: {reference}",
+      "refunded": "Reembolsado {amount}",
+      "disputed": "Tu banco abrió una disputa por este pago. El proveedor de pagos la atiende.",
+      "redirecting": "Abriendo la página de pago…",
+      "errors": {
+        "not_payable": "Este extra ya no se puede pagar en línea. Tu anfitrión coordinará el pago contigo.",
+        "already_paid": "Este extra ya está pagado.",
+        "rate_limited": "Intentaste pagar muchas veces. Espera un rato y vuelve a intentarlo."
+      }
+    },
     "sent": "Listo. Tu solicitud está esperando a tu anfitrión.",
     "sentConfirmed": "Listo. Tu solicitud quedó confirmada: tu anfitrión acordará el pago contigo.",
     "offline": "Necesitas conexión para pedir o cancelar.",
@@ -223,6 +238,7 @@
     "status": {
       "waiting": "Esperando a tu anfitrión",
       "confirmed": "Confirmada: tu anfitrión acordará el pago contigo",
+      "confirmed_payable": "Confirmada",
       "declined": "No disponible",
       "cancelled": "Cancelada",
       "host_cancelled": "Cancelada por tu anfitrión",

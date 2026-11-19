@@ -68,10 +68,23 @@ export function extrasTexts(t: Translate): Record<string, string> {
     "extras.cancelled",
     "extras.sent",
     "extras.sentConfirmed",
+    "extras.status.confirmed_payable",
+    // Feature 013: payment states, with their placeholders left for the script.
+    "extras.payment.pay",
+    "extras.payment.total",
+    "extras.payment.open",
+    "extras.payment.processing",
+    "extras.payment.paid",
+    "extras.payment.reference",
+    "extras.payment.refunded",
+    "extras.payment.disputed",
+    "extras.payment.redirecting",
+    "extras.payment.errors.not_payable",
+    "extras.payment.errors.already_paid",
+    "extras.payment.errors.rate_limited",
   ];
-  for (const key of keys) {
-    texts[key] = t(key, key === "extras.rules.lead_time" ? { hours: "{hours}" } : undefined);
-  }
+  const placeholders = { hours: "{hours}", amount: "{amount}", reference: "{reference}" };
+  for (const key of keys) texts[key] = t(key, placeholders);
   return texts;
 }
 

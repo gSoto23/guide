@@ -19,3 +19,4 @@ export * from "./chat.js";
 export * from "./explore.js";
 export * from "./extras.js";
 export * from "./plans.js";
+export * from "./payments.js";

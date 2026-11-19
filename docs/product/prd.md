@@ -285,6 +285,11 @@ billing exists.*
 - **FR-13.8** Every order records its platform fee and commissions (`COMMISSION`) for payouts
   and reporting.
 
+*Built in spec 013 with a simulated provider: checkout, payouts onboarding, orders with fees,
+refunds, and disputes; the Tilopay adapter follows once the legal entity and the merchant account
+exist (OQ-01, OQ-37). Fee policy chosen for OQ-09: the host absorbs the card fee; Guidesk's fee is
+10% on Free, 7% on Pro, and 5% on Business.*
+
 ### F12 — PMS integrations (Phase 2)
 
 - **FR-12.1** A host MUST be able to connect a supported PMS from a guided wizard. OAuth is used

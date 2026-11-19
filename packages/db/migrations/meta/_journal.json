@@ -253,6 +253,13 @@
       "when": 1795046707810,
       "tag": "0035_plan_limits",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1795052340215,
+      "tag": "0036_payments",
+      "breakpoints": true
     }
   ]
 }

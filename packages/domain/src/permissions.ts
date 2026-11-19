@@ -10,6 +10,7 @@ export const CAPABILITIES = [
   "integrations.manage",
   "conversations.handle",
   "restricted.reveal",
+  "payments.refund",
   "security_log.view",
 ] as const;
 export type Capability = (typeof CAPABILITIES)[number];
@@ -29,6 +30,8 @@ const MATRIX: Record<Capability, readonly Role[]> = {
   "integrations.manage": OWNER_ADMIN,
   "conversations.handle": ["owner", "admin", "agent"],
   "restricted.reveal": OWNER_ADMIN,
+  // Feature 013: refunds move money, so agents can't (FR-014).
+  "payments.refund": OWNER_ADMIN,
   "security_log.view": OWNER_ADMIN,
 };
 

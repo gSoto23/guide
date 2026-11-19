@@ -23,6 +23,7 @@ import {
   stay,
   type DbHandle,
   extra,
+  paymentOrder,
   serviceRequest,
   type Transaction,
 } from "@guidesk/db";
@@ -60,6 +61,8 @@ const TABLES = {
   // Feature 008 (AC-SEC-004).
   extra,
   service_request: serviceRequest,
+  // Feature 013 (AC-SEC-005).
+  payment_order: paymentOrder,
 } as const;
 export type TenantResource = keyof typeof TABLES;
 

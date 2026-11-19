@@ -78,7 +78,16 @@ export type ProblemCode =
   | "not_requestable"
   | "rule_failed"
   | "duplicate"
-  | "too_many_requests";
+  | "too_many_requests"
+  // Feature 013 (contracts/http-api.md).
+  | "not_payable"
+  | "already_paid"
+  | "invalid_event"
+  | "not_refundable"
+  | "amount_too_large"
+  | "refund_first"
+  | "payments_off"
+  | "expired";
 
 /**
  * Extra members of a problem body, such as `{limit, used}` or `{reason}`. Plain values only, and
