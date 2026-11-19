@@ -29,7 +29,10 @@ access request, are drafted in [partner outreach](partner-outreach.md).
     checkout (spec 008 R10, spec 013);
   - the Explore partner disclosure (spec 009 R13);
   - checkout texts, "taxes included by the host", receipts, and guest data at checkout (spec 013 R10);
-  - the privacy policy and terms of service.
+  - the privacy policy and terms of service: drafts written from what Guidesk does are live at
+    `/{locale}/privacy` and `/{locale}/terms` on the portal (spec 014), with the last-updated date in
+    `apps/portal/lib/public/legal.ts`;
+  - the consent line on sign-in and invitations, and the public home page's claims (spec 014).
 - [ ] **Fee policy and plan numbers:** confirm or change the defaults chosen during the build:
   - who absorbs the card fee: the host (OQ-09, spec 013);
   - Guidesk's platform fee: Free 10%, Pro 7%, Business 5% (`packages/domain/src/payments/`), confirmed
@@ -56,7 +59,13 @@ access request, are drafted in [partner outreach](partner-outreach.md).
 - [ ] **AWS account** with GitHub OIDC for deploys; set the repository variable `AWS_DEPLOY_ROLE_ARN`
   (the deploy workflow skips until it exists).
 - [ ] **Domains** for the stage: `GUIDESK_PORTAL_DOMAIN`, `GUIDESK_API_DOMAIN`, and
-  `GUIDESK_GUIDE_DOMAIN` (required in production), and the email sender `GUIDESK_EMAIL_SENDER`.
+  `GUIDESK_GUIDE_DOMAIN` (required in production), and the email sender `GUIDESK_EMAIL_SENDER`. Set
+  them, like every `GUIDESK_*` setting, as variables of the GitHub environment (Settings →
+  Environments → staging or production → Variables); the deploy passes them to SST. With the DNS in
+  Route 53, SST creates the certificates and records.
+- [ ] **Public pages (spec 014):** `GUIDESK_CONTACT_EMAIL` (the address shown on the home page and in
+  the legal pages; production refuses to deploy without it) and `GUIDESK_COMPANY_NAME` (the company
+  named as responsible, once the legal entity exists, OQ-01; "Guidesk" until then).
 - [ ] **Email:** verify the sending domain in Amazon SES and request production access (sending to any
   address) well before the pilot ([ADR-0009](architecture/adr/0009-mvp-hosting-and-transactional-email.md);
   [request text](partner-outreach.md#6-amazon-ses-production-access)).
@@ -109,6 +118,8 @@ Run each spec's quickstart on staging with real phones on mobile data (each `spe
 - [ ] Explore with live partner data (009).
 - [ ] Extras and requests with a real stay link (008); checkout once Tilopay exists (013).
 - [ ] Analytics and the pilot report against staging data (010).
+- [ ] The public home, privacy policy, and terms on the stage's domain, and the demo workspace
+  (`demo:seed` as a one-off task with the API's role, spec 014 quickstart scenario 5).
 - [ ] Plan limits, the usage emails, and Plan and limits (011).
 
 ## 5. Pilot operations

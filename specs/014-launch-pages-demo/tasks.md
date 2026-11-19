@@ -25,10 +25,10 @@ Conventions:
 
 ## Phase 1: Setup
 
-- [ ] T001 [P] Public catalogs and their parity test:
+- [X] T001 [P] Public catalogs and their parity test:
   - Create `packages/i18n/messages/public.es.json` and `public.en.json` with the structure in data-model.md (`meta`, `nav`, `footer`, `legal`, then `home`, `privacy`, `terms` filled by the stories) and add them to the package exports.
   - In `packages/i18n/test/catalogs.test.ts`, add a deep check: same keys, same array lengths, string versus non-string matching, and placeholders limited to `{company}`, `{email}`, `{date}`.
-- [ ] T002 [P] Portal public helpers with unit tests in `apps/portal/test/public-helpers.test.ts`:
+- [X] T002 [P] Portal public helpers with unit tests in `apps/portal/test/public-helpers.test.ts`:
   - `apps/portal/lib/public/settings.ts`:
     - `CONTACT_EMAIL` is validated as an email; an invalid value counts as unset;
     - `COMPANY_NAME` is 1–120 characters, default "Guidesk";
@@ -36,7 +36,7 @@ Conventions:
   - `apps/portal/lib/public/text.ts`: `fill(text, values)` and `withoutEmailLines(lines, email)`.
   - `apps/portal/lib/public/catalog.ts`: a server-only loader for `public.{locale}.json`.
   - `apps/portal/lib/public/routes.ts`: the public paths and `alternates(path)`.
-- [ ] T003 [P] Settings through infra:
+- [X] T003 [P] Settings through infra:
   - `infra/config.ts`: `contactEmail` and `companyName` from `GUIDESK_CONTACT_EMAIL` and `GUIDESK_COMPANY_NAME`. Production refuses to deploy without a valid contact email.
   - `infra/web.ts`: portal environment `PORTAL_URL`, `CONTACT_EMAIL`, `COMPANY_NAME`.
   - `infra/guide.ts`: `PORTAL_URL`.
@@ -46,10 +46,10 @@ Conventions:
 
 ## Phase 2: Foundational (public pages)
 
-- [ ] T004 Public layout and page frame:
+- [X] T004 Public layout and page frame:
   - `apps/portal/app/[locale]/(public)/layout.tsx` with `apps/portal/components/public/site-header.tsx` (logo, sign-in link, language link to the same page) and `site-footer.tsx` (privacy, terms, contact when set, "© {year} {company}"). All server components.
   - The locale layout's default metadata becomes `robots: { index: false, follow: false }`.
-- [ ] T005 Public styles in `apps/portal/app/globals.css`:
+- [X] T005 Public styles in `apps/portal/app/globals.css`:
   - brand tokens only;
   - a readable line length for legal text;
   - stacking grids for plans, steps, and features at narrow widths;
@@ -64,22 +64,22 @@ Conventions:
 
 ### Tests for User Story 1
 
-- [ ] T006 [P] [US1] E2E home checks in `e2e/specs/public-pages.spec.ts`:
+- [X] T006 [P] [US1] E2E home checks in `e2e/specs/public-pages.spec.ts`:
   - `/es` and `/en` show the tagline, three steps, five features, and plans (2 properties, 100 replies, 1 seat; "to be announced"; fees 10%, 7%, 5%; free pilot);
   - "Empieza gratis" reaches `/es/sign-in`;
   - the language link keeps the page;
   - no request leaves the origin (AC-SEC-006);
   - update `e2e/specs/smoke.spec.ts` for the new home.
-- [ ] T007 [P] [US1] Unit test `apps/portal/test/public-plans.test.ts`: the plan figures come from `@guidesk/domain` (limits and fee bps), formatted per locale.
+- [X] T007 [P] [US1] Unit test `apps/portal/test/public-plans.test.ts`: the plan figures come from `@guidesk/domain` (limits and fee bps), formatted per locale.
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Home texts in `public.es.json` and `public.en.json`: `meta.home`, `home.*` (hero, audience, steps, features, plans, CTA), with the copy rules from FR-005 (no partnership claims, copilot as copy and paste).
-- [ ] T009 [US1] Home page:
+- [X] T008 [US1] Home texts in `public.es.json` and `public.en.json`: `meta.home`, `home.*` (hero, audience, steps, features, plans, CTA), with the copy rules from FR-005 (no partnership claims, copilot as copy and paste).
+- [X] T009 [US1] Home page:
   - `apps/portal/lib/public/plans.ts` for the figures;
   - `apps/portal/components/public/home/` (hero, audience, steps, features, plans, CTA);
   - `apps/portal/app/[locale]/(public)/page.tsx`, moved from `[locale]/page.tsx`, with `generateMetadata` (title, description, alternates, Open Graph, `robots` index).
-- [ ] T010 [US1] Budgets:
+- [X] T010 [US1] Budgets:
   - add `/es` and `/en` to `apps/portal/bundle-budget.json`;
   - add `/es` to `lighthouserc.json`;
   - add the home to `e2e/specs/a11y.spec.ts`.
@@ -92,31 +92,31 @@ Conventions:
 
 ### Tests for User Story 2
 
-- [ ] T011 [P] [US2] E2E legal checks in `e2e/specs/public-pages.spec.ts`:
+- [X] T011 [P] [US2] E2E legal checks in `e2e/specs/public-pages.spec.ts`:
   - `/es/privacy` and `/en/privacy` show the date, the responsible party, every provider (AWS us-east-1, Anthropic, Amazon SES, Google, payment provider, Viator and Civitatis, Sentry), the 12-month retention, the cookies without a banner, and rights within 30 days;
   - `/es/terms` and `/en/terms` show the FR-007 sections and the governing law;
   - the consent line on sign-in and on an invitation links to both pages;
   - add the legal pages to `e2e/specs/a11y.spec.ts`.
-- [ ] T012 [P] [US2] Unit test `apps/portal/test/robots-sitemap.test.ts`: robots allows only the six public paths, disallows `/`, and names the sitemap; the sitemap lists exactly the six URLs with alternates (AC-SEC-005).
-- [ ] T013 [P] [US2] Guide unit test in `apps/guide/test/`: the privacy link appears on the guide home and in the chat panel, points to `${PORTAL_URL}/${lang}/privacy`, and opens in a new tab with `rel="noopener"`.
+- [X] T012 [P] [US2] Unit test `apps/portal/test/robots-sitemap.test.ts`: robots allows only the six public paths, disallows `/`, and names the sitemap; the sitemap lists exactly the six URLs with alternates (AC-SEC-005).
+- [X] T013 [P] [US2] Guide unit test in `apps/guide/test/`: the privacy link appears on the guide home and in the chat panel, points to `${PORTAL_URL}/${lang}/privacy`, and opens in a new tab with `rel="noopener"`.
 
 ### Implementation for User Story 2
 
-- [ ] T014 [US2] Privacy texts (`privacy.*`, `meta.privacy`) in both public catalogs, following FR-006 and the section IDs in data-model.md, written from `docs/architecture/security.md` and the infrastructure. `{email}` appears only in lines that can drop out.
-- [ ] T015 [US2] Terms texts (`terms.*`, `meta.terms`) in both public catalogs, following FR-007.
-- [ ] T016 [US2] Legal pages:
+- [X] T014 [US2] Privacy texts (`privacy.*`, `meta.privacy`) in both public catalogs, following FR-006 and the section IDs in data-model.md, written from `docs/architecture/security.md` and the infrastructure. `{email}` appears only in lines that can drop out.
+- [X] T015 [US2] Terms texts (`terms.*`, `meta.terms`) in both public catalogs, following FR-007.
+- [X] T016 [US2] Legal pages:
   - `apps/portal/lib/public/legal.ts` (`LEGAL_UPDATED = "2026-11-19"`, formatted per locale);
   - `apps/portal/components/public/legal-document.tsx` (title, date, table of contents, sections, lists; email lines dropped when unset);
   - `apps/portal/app/[locale]/(public)/privacy/page.tsx` and `terms/page.tsx` with `generateMetadata`.
-- [ ] T017 [US2] `apps/portal/app/robots.ts` and `apps/portal/app/sitemap.ts`, from `lib/public/routes.ts` and `PORTAL_URL`.
-- [ ] T018 [US2] Consent line:
+- [X] T017 [US2] `apps/portal/app/robots.ts` and `apps/portal/app/sitemap.ts`, from `lib/public/routes.ts` and `PORTAL_URL`.
+- [X] T018 [US2] Consent line:
   - portal catalog key `auth.consent` (es and en, with `<terms>` and `<privacy>` tags);
   - render it under the primary action on `apps/portal/app/[locale]/(auth)/sign-in/page.tsx` (or `components/sign-in-form.tsx`) and `invite/[token]/page.tsx`.
-- [ ] T019 [US2] Guest privacy link:
+- [X] T019 [US2] Guest privacy link:
   - `apps/guide/src/config.ts` `portalUrl` (from `PORTAL_URL`, default `http://localhost:3000`);
   - guest catalogs `privacy.link`;
   - render the link at the end of the guide home and in the chat panel (`apps/guide/src/pages/guide-pages.tsx` and the chat component).
-- [ ] T020 [US2] Budgets: add `/es/privacy` and `/en/terms` to `bundle-budget.json`, and `/es/privacy` to `lighthouserc.json`.
+- [X] T020 [US2] Budgets: add `/es/privacy` and `/en/terms` to `bundle-budget.json`, and `/es/privacy` to `lighthouserc.json`.
 
 ## Phase 5: User Story 3 — The founder fills a stage with a realistic demo (P2)
 
@@ -126,7 +126,7 @@ Conventions:
 
 ### Tests for User Story 3
 
-- [ ] T021 [P] [US3] API integration test `apps/api/test/integration/demo-seed.test.ts` (Testcontainers, local KMS), run against an account created through the test app:
+- [X] T021 [P] [US3] API integration test `apps/api/test/integration/demo-seed.test.ts` (Testcontainers, local KMS), run against an account created through the test app:
   - **Dataset:** the workspace is demo, Pro, with one owner; 2 ready properties with published guides in es and en; past, current, and upcoming stays; the current stay link resolves and its session reveals the door code; extras and requests in three states.
   - **Inbox and Analytics:** one `needs_host` conversation with reason malfunction; the Analytics service for 30 days returns values and comparisons in every block.
   - **Secrets (AC-SEC-003):** `stay_link.token_ciphertext` and `restricted_value.value_ciphertext` don't contain the plaintext; the command output contains no token, code, or door code.
@@ -134,8 +134,8 @@ Conventions:
   - **Failure (AC-SEC-008):** a failure forced after the first inserts leaves no rows.
   - **Second run:** creates "Demo · Guidesk 2".
   - **No outside calls:** no LLM, email, or push adapter call (spies).
-- [ ] T022 [P] [US3] DB integration test in `packages/db/test/integration/pilot-report.test.ts`: adding a demo workspace with activity and an account that belongs only to it leaves every pilot report number unchanged (AC-SEC-004).
-- [ ] T023 [P] [US3] Unit test `apps/api/test/unit/demo-history.test.ts`:
+- [X] T022 [P] [US3] DB integration test in `packages/db/test/integration/pilot-report.test.ts`: adding a demo workspace with activity and an account that belongs only to it leaves every pilot report number unchanged (AC-SEC-004).
+- [X] T023 [P] [US3] Unit test `apps/api/test/unit/demo-history.test.ts`:
   - the generator is deterministic for a seed and a date;
   - it covers 60 days with variation;
   - it keeps monthly AI replies under the Pro pool;
@@ -143,11 +143,11 @@ Conventions:
 
 ### Implementation for User Story 3
 
-- [ ] T024 [US3] Migration `packages/db/migrations/0037_workspace_demo.sql` (`workspace.demo boolean NOT NULL DEFAULT false`), the Drizzle schema in `packages/db/src/schema/tenancy.ts`, and the generated meta (prettier on `packages/db/migrations/meta`).
-- [ ] T025 [P] [US3] Security event type `workspace.demo_seeded` (metadata `properties`, `stays`) in `packages/domain/src/security-events.ts`, with its unit test.
-- [ ] T026 [US3] Pilot report: in `packages/db/src/reports/pilot.ts`, leave demo workspaces out of every metric, and leave out accounts whose memberships are all demo.
-- [ ] T027 [P] [US3] API config `STAGE` (optional string) in `apps/api/src/config/config.ts`.
-- [ ] T028 [P] [US3] Synthetic content in `apps/api/src/demo/content.ts`:
+- [X] T024 [US3] Migration `packages/db/migrations/0037_workspace_demo.sql` (`workspace.demo boolean NOT NULL DEFAULT false`), the Drizzle schema in `packages/db/src/schema/tenancy.ts`, and the generated meta (prettier on `packages/db/migrations/meta`).
+- [X] T025 [P] [US3] Security event type `workspace.demo_seeded` (metadata `properties`, `stays`) in `packages/domain/src/security-events.ts`, with its unit test.
+- [X] T026 [US3] Pilot report: in `packages/db/src/reports/pilot.ts`, leave demo workspaces out of every metric, and leave out accounts whose memberships are all demo.
+- [X] T027 [P] [US3] API config `STAGE` (optional string) in `apps/api/src/config/config.ts`.
+- [X] T028 [P] [US3] Synthetic content in `apps/api/src/demo/content.ts`:
   - the two properties with facts and time zones;
   - section items in es and en as segment documents (arrival, Wi-Fi, house rules, amenities, checkout, local tips, emergencies);
   - fictional door codes and Wi-Fi;
@@ -155,8 +155,8 @@ Conventions:
   - a bank of guest questions and assistant replies by topic in both languages;
   - fictional first names.
   - Platform rules: no deposits, extras optional, no off-platform payments.
-- [ ] T029 [US3] History generator in `apps/api/src/demo/history.ts`: a seeded PRNG with a weekly pattern; the plan for past stays, daily counters, and per-day questions (topic, decision, reason).
-- [ ] T030 [US3] Builder in `apps/api/src/demo/seed.ts`, running in one transaction with `createDataKeyStore(tx)`:
+- [X] T029 [US3] History generator in `apps/api/src/demo/history.ts`: a seeded PRNG with a weekly pattern; the plan for past stays, daily counters, and per-day questions (topic, decision, reason).
+- [X] T030 [US3] Builder in `apps/api/src/demo/seed.ts`, running in one transaction with `createDataKeyStore(tx)`:
   - the guards;
   - the workspace (demo, Pro, numbered name, backdated) and its membership;
   - properties through `createGuideForProperty`, then the texts (validated with the contracts schema) and the published snapshot from `buildSnapshot`;
@@ -168,16 +168,16 @@ Conventions:
   - conversations, messages, and traces, including the open malfunction escalation with its draft;
   - the daily counters;
   - the security event.
-- [ ] T031 [US3] Command `apps/api/src/cli/demo-seed.ts` and the `demo:seed` script in `apps/api/package.json`: argument parsing, exit codes, and text and JSON output per `contracts/demo-seed-cli.md`. It never logs data values.
+- [X] T031 [US3] Command `apps/api/src/cli/demo-seed.ts` and the `demo:seed` script in `apps/api/package.json`: argument parsing, exit codes, and text and JSON output per `contracts/demo-seed-cli.md`. It never logs data values.
 
 ## Phase 6: User Story 4 — The installed app opens where hosts work (P3)
 
-- [ ] T032 [P] [US4] Unit test `apps/portal/test/manifest.test.ts`: `start_url` is `/start` and `scope` is `/`.
-- [ ] T033 [US4] `apps/portal/app/manifest.ts`: `start_url: "/start"`.
+- [X] T032 [P] [US4] Unit test `apps/portal/test/manifest.test.ts`: `start_url` is `/start` and `scope` is `/`.
+- [X] T033 [US4] `apps/portal/app/manifest.ts`: `start_url: "/start"`.
 
 ## Phase 7: Polish and cross-cutting
 
-- [ ] T034 Docs:
+- [X] T034 Docs:
   - `docs/pilot-readiness.md`: the contact and company settings, the demo command, and that the legal review covers the drafts at `/privacy` and `/terms`;
   - `docs/ux/screens.md`: public screens P-01 home, P-02 privacy, P-03 terms;
   - the presentation's status slides, marking public pages and demo data as built, then republish the artifact.
@@ -207,4 +207,24 @@ Conventions:
 
 ## Implementation notes
 
-(Filled during implementation.)
+- **Public pages (2026-11-19):**
+  - The header and footer are a `PublicShell` server component, not a group layout (research R1 note).
+  - The public catalogs live in `packages/i18n/public/` because the next-intl plugin precompiles
+    every JSON file in `messages/` (research R2 note).
+  - The axe checks for the public pages are in `e2e/specs/public-pages.spec.ts` (the shared
+    `a11y.spec.ts` pins port 3000 for its sign-up flow).
+  - Measured initial JavaScript: 139.0 KB on `/es`, `/en`, `/es/privacy`, and `/en/terms` (budget 150).
+  - The language link's visible text is its accessible name (axe `label-content-name-mismatch`).
+  - `robots.txt` and `sitemap.xml` render per request so they use the runtime `PORTAL_URL`.
+- **Local results (2026-11-19):**
+  - unit tests: portal 16, guide 36, i18n 5, API 64, domain security events 11;
+  - DB integration: pilot report 3/3, with demo workspaces present;
+  - API integration: `demo-seed.test.ts` 12/12, about 3 s for a full run;
+  - e2e against a production build: `public-pages` and `smoke`, 6/6;
+  - the portal build passes and `bundle:check` passes.
+- **Migration 0037:** drizzle-kit refuses to generate while the iCloud copies (" 2" files) sit in
+  `src/schema` and `migrations/meta`. Move them aside while generating, then put them back.
+- **Not run locally:**
+  - quickstart scenario 4 against the dev stack: the integration test covers the same checks through
+    the API, including copying the stay link and revealing the door code;
+  - scenario 5 (staging): it needs the AWS account.

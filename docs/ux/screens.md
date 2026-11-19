@@ -9,8 +9,8 @@ low-fidelity wireframe in [wireframes.html](wireframes.html).
 
 **Conventions:**
 
-- **IDs:** `A-` authentication and onboarding, `G-` guest guide, `H-` host portal, `X-` external
-  pages Guidesk links to, `B-` internal back-office.
+- **IDs:** `A-` authentication and onboarding, `G-` guest guide, `H-` host portal, `P-` public pages,
+  `X-` external pages Guidesk links to, `B-` internal back-office.
 - **States:** E = empty, L = loading, Er = error, O = offline, Lk = locked, Lm = limit (see the
   [state vocabulary](user-flows.md#user-flows)).
 - **Personas:** P1 Ana (individual host), P2 Marco (manager) and his team, P3 Emily (guest),
@@ -124,7 +124,18 @@ Source: PRD F01–F03, F06–F11, F13; spec 001. Every screen works on a phone (
 | P-01 | Provider portal | Local providers list their services for hosts in their area (F18) | List a service | E | P4 | Phase 3 |
 | B-01 | Back-office | Support, partners, moderation, agent trace viewer, consented support access (F15, SEC-15) | Search workspace · Open trace | Lk (MFA, time-boxed access) | Internal | Phase 2 (minimal in MVP) |
 
-## 4. External pages
+## 4. Public pages
+
+Source: [spec 014](../../specs/014-launch-pages-demo/spec.md). Server-rendered on the portal domain,
+in Spanish and English, indexed by search engines (the only portal pages that are).
+
+| ID | Page | Purpose and key content | Primary actions | Phase |
+|---|---|---|---|---|
+| P-01 | Home (`/{locale}`) | What Guidesk is, for whom, three steps, features, plans with the fees on extras, the free pilot | Start free (sign in or sign up), language | MVP |
+| P-02 | Privacy policy (`/{locale}/privacy`) | Who is responsible, data from hosts and guests, providers, retention, cookies, rights; draft for OQ-35 | Contents links | MVP |
+| P-03 | Terms of service (`/{locale}/terms`) | Accounts, acceptable use, host responsibilities, the assistant, fees and payments, pilot, law; draft for OQ-35 | Contents links | MVP |
+
+## 5. External pages
 
 | ID | Page | Owned by | Notes |
 |---|---|---|---|
@@ -132,7 +143,7 @@ Source: PRD F01–F03, F06–F11, F13; spec 001. Every screen works on a phone (
 | X-02 | Partner experience pages | Viator, Civitatis, GetYourGuide | Opened in a new tab, with no referrer (SEC-02). |
 | X-03 | OTA scheduled messages | Airbnb, Booking.com, Vrbo | The host pastes Guidesk's template there; Guidesk never automates it (PC-12). |
 
-## 5. Shared overlays and system screens
+## 6. Shared overlays and system screens
 
 | ID | Element | Used in | Notes |
 |---|---|---|---|

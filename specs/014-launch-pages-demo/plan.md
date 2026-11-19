@@ -89,7 +89,7 @@ Post-design re-check (after data-model, contracts, quickstart): no change; all g
 
 | Surface or path | Metric | Budget | Verified by |
 |---|---|---|---|
-| `/es`, `/en` (home) | Initial JavaScript, gzip | ≤ 150 KB (target ≤ 110 KB: no client components) | `bundle:check` in CI (`apps/portal/bundle-budget.json`) |
+| `/es`, `/en` (home) | Initial JavaScript, gzip | ≤ 150 KB (measured 139.0 KB: the framework baseline, no client components of their own) | `bundle:check` in CI (`apps/portal/bundle-budget.json`) |
 | `/es/privacy`, `/en/terms` | Initial JavaScript, gzip | ≤ 150 KB | `bundle:check` in CI |
 | `/es`, `/es/privacy` | LCP, lab (Lighthouse, mobile) | ≤ 2.5 s | Lighthouse CI (`lighthouserc.json`) |
 | `/es`, `/es/privacy` | CLS | ≤ 0.1 | Lighthouse CI |
