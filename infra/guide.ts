@@ -5,7 +5,7 @@
  * CloudFront for 60 seconds following the function's Cache-Control headers.
  */
 import { stageConfig } from "./config";
-import { guideRouter, guideUrl } from "./router";
+import { guideRouter, guideUrl, portalUrl } from "./router";
 import { api } from "./services";
 import { media } from "./storage";
 
@@ -26,6 +26,8 @@ export const guideApp = new sst.aws.Function("GuideApp", {
     // Rendering reads the public guide data through the guide's own origin (cached by CloudFront).
     GUIDE_API_URL: guideUrl,
     GUIDE_PUBLIC_DIR: "public",
+    // Feature 014: the guide links to the privacy policy on the portal.
+    PORTAL_URL: portalUrl,
     GUIDE_MEDIA_URL: $interpolate`https://${media.domain}`,
     // Feature 009: partner photo hosts the CSP allows (research R9).
     ...(stageConfig.experienceImageOrigins

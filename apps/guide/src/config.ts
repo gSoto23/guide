@@ -15,6 +15,8 @@ export interface GuideConfig {
   edgeSecret: string | null;
   /** Feature 009: HTTPS origins of partner photos, allowed by the CSP (research R9). */
   experienceImageOrigins: string[];
+  /** Feature 014: the portal's origin, where the privacy policy lives. */
+  portalUrl: string;
 }
 
 function originOf(url: string | undefined): string | null {
@@ -38,5 +40,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): GuideConfig {
       .split(",")
       .map((value) => originOf(value.trim()))
       .filter((origin): origin is string => origin !== null && origin.startsWith("https://")),
+    portalUrl: originOf(env.PORTAL_URL) ?? "http://localhost:3000",
   };
 }

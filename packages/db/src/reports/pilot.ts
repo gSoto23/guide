@@ -34,7 +34,10 @@ const share = (numerator: number, denominator: number): Share => ({
   value: denominator === 0 ? null : numerator / denominator,
 });
 
-/** The cohort: users who signed up between `from` and `to` (UTC days, inclusive). */
+/**
+ * The cohort: users who signed up between `from` and `to` (UTC days, inclusive). Demo workspaces
+ * (feature 014) are left out of every metric, and so are users whose only workspaces are demo ones.
+ */
 export async function pilotMetrics(
   db: Database,
   cohort: { from: string; to: string },
@@ -44,9 +47,17 @@ export async function pilotMetrics(
   const users = sql`
     SELECT u.id, u.created_at FROM "user" u
      WHERE u.created_at >= ${cohort.from}::date
-       AND u.created_at < (${cohort.to}::date + 1)`;
+       AND u.created_at < (${cohort.to}::date + 1)
+       AND NOT (
+         EXISTS (SELECT 1 FROM membership m WHERE m.user_id = u.id)
+         AND NOT EXISTS (
+           SELECT 1 FROM membership m JOIN workspace w ON w.id = m.workspace_id
+            WHERE m.user_id = u.id AND NOT w.demo
+         )
+       )`;
   const owned = sql`
     SELECT DISTINCT m.workspace_id FROM membership m
+      JOIN workspace w ON w.id = m.workspace_id AND NOT w.demo
      WHERE m.role = 'owner' AND m.user_id IN (SELECT id FROM (${users}) c)`;
 
   const [activation] = (
@@ -55,6 +66,7 @@ export async function pilotMetrics(
       SELECT count(*)::int AS total,
              count(*) FILTER (WHERE EXISTS (
                SELECT 1 FROM membership m
+                 JOIN workspace w ON w.id = m.workspace_id AND NOT w.demo
                  JOIN property p ON p.workspace_id = m.workspace_id
                  JOIN guide_open_daily g ON g.property_id = p.id
                 WHERE m.user_id = c.id AND m.role = 'owner'
@@ -70,6 +82,7 @@ export async function pilotMetrics(
         SELECT c.id, min(v.published_at) AS first_publish, c.created_at
           FROM c
           JOIN membership m ON m.user_id = c.id AND m.role = 'owner'
+          JOIN workspace w ON w.id = m.workspace_id AND NOT w.demo
           JOIN guide gd ON gd.workspace_id = m.workspace_id
           JOIN guide_version v ON v.guide_id = gd.id AND v.cause = 'publish'
          GROUP BY c.id, c.created_at

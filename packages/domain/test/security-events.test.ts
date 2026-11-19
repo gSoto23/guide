@@ -134,3 +134,14 @@ describe("feature 002 event metadata (T015)", () => {
     ).toThrow();
   });
 });
+
+describe("feature 014 event metadata (T025)", () => {
+  it("lets the demo seed event carry counts only", () => {
+    expect(SECURITY_EVENT_TYPES).toContain("workspace.demo_seeded");
+    expect(() =>
+      assertSafeMetadata({ properties: 2, stays: 20 }, "workspace.demo_seeded"),
+    ).not.toThrow();
+    expect(() => assertSafeMetadata({ doorCode: "1234" }, "workspace.demo_seeded")).toThrow();
+    expect(() => assertSafeMetadata({ guestName: "Ana" }, "workspace.demo_seeded")).toThrow();
+  });
+});

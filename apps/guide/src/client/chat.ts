@@ -208,6 +208,17 @@ function introOf(chat: Chat): void {
     intro.append(line);
   }
   intro.append(el("p", "chat-muted", text("chat.introPlatform")));
+  // Feature 014 FR-010: the privacy policy, on the portal, in a new tab.
+  const privacyHref = root.dataset.privacyHref;
+  if (privacyHref) {
+    const line = el("p", "chat-muted");
+    const link = el("a", undefined, text("privacy.link"));
+    link.href = privacyHref;
+    link.target = "_blank";
+    link.rel = "noopener";
+    line.append(link);
+    intro.append(line);
+  }
   const asks = suggestions.map((key) => text(`chat.suggestions.${key}`)).filter(Boolean);
   if (asks.length > 0) {
     intro.append(el("p", "chat-muted", text("chat.suggestionsTitle")));

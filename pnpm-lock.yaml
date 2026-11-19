@@ -336,6 +336,9 @@ importers:
       '@guidesk/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@guidesk/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@guidesk/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n

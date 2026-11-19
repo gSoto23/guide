@@ -1,4 +1,5 @@
 import { setRequestLocale } from "next-intl/server";
+import { ConsentLine } from "@/components/consent-line";
 import { InvitationAccept } from "@/components/invitation-accept";
 
 export default async function InvitePage({
@@ -11,6 +12,7 @@ export default async function InvitePage({
   return (
     <main>
       <InvitationAccept locale={locale} token={token} />
+      <ConsentLine locale={locale} />
     </main>
   );
 }

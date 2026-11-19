@@ -15,6 +15,7 @@ export function fixtureHandler(overrides: { secure?: boolean } = {}) {
       fixtures: true,
       edgeSecret: null,
       experienceImageOrigins: ["https://media.example-cdn.test"],
+      portalUrl: "http://localhost:3000",
     },
     assets: {
       script: "/assets/guide.test.js",

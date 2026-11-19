@@ -15,6 +15,7 @@
   "dependencies": {
     "@better-auth/passkey": "1.7.21",
     "@guidesk/contracts": "workspace:*",
+    "@guidesk/domain": "workspace:*",
     "@guidesk/i18n": "workspace:*",
     "@guidesk/ui": "workspace:*",
     "@tiptap/extension-link": "3.34.0",

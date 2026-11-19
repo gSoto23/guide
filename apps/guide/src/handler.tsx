@@ -64,7 +64,12 @@ export function createHandler({ config, assets }: HandlerDeps) {
       "cache-control": cache,
     });
 
-  const chrome = (locale: GuestLocale): PageChrome => ({ t: translator(locale), locale, assets });
+  const chrome = (locale: GuestLocale): PageChrome => ({
+    t: translator(locale),
+    locale,
+    assets,
+    privacyHref: `${config.portalUrl}/${locale}/privacy`,
+  });
 
   const requestLocale = (request: Request): GuestLocale => {
     const cookie = readCookie(request.headers.get("cookie"), LANGUAGE_COOKIE);

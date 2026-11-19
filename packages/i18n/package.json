@@ -9,11 +9,13 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./messages/*.json": "./messages/*.json"
+    "./messages/*.json": "./messages/*.json",
+    "./public/*.json": "./public/*.json"
   },
   "files": [
     "dist",
-    "messages"
+    "messages",
+    "public"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",

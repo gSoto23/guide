@@ -1,0 +1,398 @@
+{
+  "meta": {
+    "home": {
+      "title": "Guidesk · Your property guide with an AI concierge",
+      "description": "Build your vacation rental's guide in minutes. An AI assistant answers your guests with your information and hands sensitive topics to you. Free to start."
+    },
+    "privacy": {
+      "title": "Privacy policy · Guidesk",
+      "description": "What data Guidesk handles, why, with which providers, how long it keeps it, and how to exercise your rights."
+    },
+    "terms": {
+      "title": "Terms of service · Guidesk",
+      "description": "The terms for using Guidesk as a host or property manager."
+    }
+  },
+  "nav": {
+    "home": "Guidesk, home",
+    "signIn": "Sign in",
+    "language": "Español",
+    "skip": "Skip to content"
+  },
+  "footer": {
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contact": "Contact: {email}",
+    "rights": "© {year} {company}"
+  },
+  "legal": {
+    "updated": "Last updated: {date}",
+    "toc": "On this page"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "For vacation rental hosts",
+      "title": "Your home, always ready to answer.",
+      "lead": "Guidesk builds your property's digital guide and adds an AI assistant that answers your guests at any hour, in their language, with your information. Sensitive topics come to you.",
+      "cta": "Start free",
+      "secondary": "I have an account"
+    },
+    "audience": {
+      "title": "Who it's for",
+      "items": [
+        {
+          "title": "Hosts",
+          "text": "If you have one to five properties and answer the same questions again and again, Guidesk gives you time back without losing the personal touch."
+        },
+        {
+          "title": "Property managers",
+          "text": "If you run many properties with a team, Guidesk organizes each home's information, splits the work by role, and shows you what needs attention."
+        }
+      ]
+    },
+    "steps": {
+      "title": "How it works",
+      "items": [
+        {
+          "title": "Build the guide from what you already have",
+          "text": "Paste your listing text or import your data. Guidesk drafts the guide in Spanish and English for you to review and publish."
+        },
+        {
+          "title": "Share the link with your guests",
+          "text": "Send the link or the QR code in your scheduled messages. Access codes are shown only to guests with an active stay."
+        },
+        {
+          "title": "The assistant answers and keeps you posted",
+          "text": "It answers with your guide's information. Emergencies, complaints, money, and booking changes come to you with an alert."
+        }
+      ]
+    },
+    "features": {
+      "title": "What Guidesk does",
+      "items": [
+        {
+          "id": "guide",
+          "title": "Property guide",
+          "text": "Arrival, Wi-Fi, house rules, amenities, checkout, and local tips, in a fast page that works on any phone, even with a weak signal."
+        },
+        {
+          "id": "chat",
+          "title": "AI chat in the guide",
+          "text": "Your guests ask and get answers right away. You decide which topics it answers alone and which need your approval."
+        },
+        {
+          "id": "copilot",
+          "title": "Copilot for Airbnb, Booking.com, and Vrbo",
+          "text": "Paste a guest's message and get a suggested reply with your information, ready to copy into the platform's chat."
+        },
+        {
+          "id": "extras",
+          "title": "Extras and experiences",
+          "text": "Offer pickups, cleanings, or rentals you define, and show partner tours. Buying is always optional, and every offer says so clearly."
+        },
+        {
+          "id": "analytics",
+          "title": "Analytics",
+          "text": "See how many guests open the guide, what they ask, how many answers the assistant handles, and which extras they request."
+        }
+      ]
+    },
+    "plans": {
+      "title": "Plans",
+      "lead": "Start free. Paid plan prices will be announced after the pilot.",
+      "pilot": "Free during the pilot",
+      "tba": "Price to be announced",
+      "free": "USD 0",
+      "propertiesOne": "{count} active property",
+      "propertiesOther": "{count} active properties",
+      "propertiesUnlimited": "Unlimited properties",
+      "repliesFixed": "{count} AI replies a month",
+      "repliesPooled": "{count} AI replies a month per active property, pooled",
+      "seatsOne": "{count} seat",
+      "seatsOther": "{count} seats",
+      "seatsUnlimited": "Unlimited seats",
+      "fee": "Fee on extras: {percent}",
+      "feesNote": "The fee applies only to extras the guest pays online through Guidesk. The guest pays the listed price with no added charges; the host covers the card fee.",
+      "items": [
+        {
+          "id": "free",
+          "name": "Free",
+          "audience": "To try Guidesk with your first properties."
+        },
+        {
+          "id": "pro",
+          "name": "Pro",
+          "audience": "For hosts and small managers."
+        },
+        {
+          "id": "business",
+          "name": "Business",
+          "audience": "For managers with teams and many properties."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Set up your first guide today",
+      "text": "Create your account with Google, a passkey, or an email code. No card needed.",
+      "button": "Start free"
+    }
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "intro": [
+      "This policy explains what data Guidesk handles, what we use it for, who we share it with, how long we keep it, and how you can exercise your rights.",
+      "Guidesk is a tool for vacation rental hosts and property managers. Their guests use the guide and the chat the host shares with them."
+    ],
+    "sections": [
+      {
+        "id": "responsible",
+        "title": "Who is responsible",
+        "paragraphs": [
+          "{company} is responsible for the data in host and team accounts, and for the data we handle to run Guidesk and keep it secure.",
+          "When a host uses Guidesk to serve their guests, the host decides which information about their property and stays to include. Guidesk handles that information on the host's behalf, to provide the service.",
+          "For any privacy question, write to {email}."
+        ]
+      },
+      {
+        "id": "data-hosts",
+        "title": "Data from hosts and their teams",
+        "paragraphs": ["When you create an account or work in a workspace, we handle:"],
+        "items": [
+          "Your account: name, email, language, and sign-in methods (Google, passkeys, or email codes). We don't store passwords.",
+          "Your workspace: members, roles, and invitations.",
+          "Your properties and guides: addresses, times, house rules, texts, photos, videos, and documents you upload.",
+          "Locked values, such as door and alarm codes, which we store encrypted.",
+          "Stays: dates, the guest's first name if you enter it, and each stay's links.",
+          "Extras, requests, and, once online payments are on, the status of your payments. The payment provider, not Guidesk, handles your bank details.",
+          "Usage and security records: sign-ins, important changes, and use of the AI assistant.",
+          "Alert subscriptions on your devices, if you turn them on."
+        ]
+      },
+      {
+        "id": "data-guests",
+        "title": "Data from guests",
+        "paragraphs": ["When a guest uses the guide their host shared, we handle:"],
+        "items": [
+          "Visits to the guide and the chosen language, with a session cookie.",
+          "Chat messages: the questions and the answers. The host can read them.",
+          "Extra requests: what was requested, when, and any notes the guest adds.",
+          "The guest's first name, if the host entered it on the stay.",
+          "Payments for extras, made on the payment provider's secure page. Card details never reach Guidesk."
+        ]
+      },
+      {
+        "id": "purposes",
+        "title": "What we use the data for",
+        "paragraphs": [
+          "We use the data to provide the service: show the guide, answer guests, notify the host by email and alerts, manage extras and payments, and give the host analytics.",
+          "We also use it to protect the service and accounts, prevent abuse, comply with the law, and improve Guidesk with aggregated metrics.",
+          "We don't sell data, we don't use it for advertising, and we don't ask guests for their phone number, email, or identity documents."
+        ]
+      },
+      {
+        "id": "ai",
+        "title": "The AI assistant",
+        "paragraphs": [
+          "To answer, the assistant uses the information published in the guide and the current conversation. That content is processed by our AI provider.",
+          "We never send access codes or other locked values to the AI provider, and we send only the personal data an answer needs. Under its commercial terms, the provider does not use this data to train its models.",
+          "Answers can contain mistakes. Sensitive topics, such as emergencies, complaints, money, or booking changes, go to the host."
+        ]
+      },
+      {
+        "id": "providers",
+        "title": "Providers that handle data for us",
+        "paragraphs": [
+          "We work with these providers, which handle data only to provide their service to us:"
+        ],
+        "items": [
+          "Amazon Web Services: hosting, database, and files, in the United States (us-east-1 region).",
+          "Anthropic: the AI assistant's answers, in the United States.",
+          "Amazon SES: sending the service's emails.",
+          "Google: sign-in, only for people who choose to sign in with Google.",
+          "The payment provider, once online payments are on: it collects payments for extras and pays hosts.",
+          "Viator and Civitatis: only when a guest opens an experience's link; from then on, their own policies apply.",
+          "Sentry: error reports, only when enabled, without personal data where possible."
+        ],
+        "footer": ["If we change providers, we update this list."]
+      },
+      {
+        "id": "retention",
+        "title": "How long we keep data",
+        "paragraphs": ["We keep each kind of data only as long as needed:"],
+        "items": [
+          "Guest messages and assistant records: deleted or anonymized 12 months after the stay's checkout.",
+          "Account, workspace, and property data: while the account is active. When it is closed, we delete it within 30 days, except what the law requires us to keep.",
+          "Access codes and other locked values: until the host deletes them or the property.",
+          "Security records: as long as needed to protect the service and meet legal obligations.",
+          "Aggregated statistics, which identify no one: while the account is active."
+        ]
+      },
+      {
+        "id": "cookies",
+        "title": "Cookies",
+        "paragraphs": ["We use only cookies the service needs to work:"],
+        "items": [
+          "In the portal: the session cookie that keeps you signed in, and the language cookie.",
+          "In the guide: the stay cookie, created when a stay link is opened, and the language cookie."
+        ],
+        "footer": [
+          "We don't use analytics or advertising cookies, or third-party trackers. That's why we don't show a cookie notice.",
+          "The guide may store its public content on the phone so it works with a weak signal. Access codes are never stored that way."
+        ]
+      },
+      {
+        "id": "rights",
+        "title": "Your rights",
+        "paragraphs": [
+          "You can ask to access, correct, export, or delete your data, or object to a use. We answer within 30 days and may ask you to confirm your identity.",
+          "Hosts can view, correct, and delete most of their data from the portal. If you are a guest, you can write to your host or to us.",
+          "To exercise your rights, write to {email}.",
+          "If you think we didn't handle your request well, you can contact your country's data protection authority; in Costa Rica, the Agencia de Protección de Datos de los Habitantes (PRODHAB)."
+        ]
+      },
+      {
+        "id": "transfers",
+        "title": "International transfers",
+        "paragraphs": [
+          "Data is stored in the United States. When data leaves your country, we do so with providers that offer appropriate protection safeguards."
+        ]
+      },
+      {
+        "id": "security",
+        "title": "Security",
+        "paragraphs": [
+          "We encrypt data in transit and at rest, and we separately encrypt access codes and stay links with keys kept outside the database. Each workspace is isolated from the others.",
+          "We protect accounts with passkeys and two-step verification, and we record important actions in a security log that can't be changed."
+        ]
+      },
+      {
+        "id": "children",
+        "title": "Children",
+        "paragraphs": [
+          "Guidesk is not directed at children. You must be an adult to create a host account."
+        ]
+      },
+      {
+        "id": "changes",
+        "title": "Changes to this policy",
+        "paragraphs": [
+          "If we change this policy, we update the date above. If the change is important, we email hosts before it applies."
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Contact",
+        "paragraphs": [
+          "Write to {email} with any question about this policy or your data.",
+          "If you are a guest, you can also write to your host."
+        ]
+      }
+    ]
+  },
+  "terms": {
+    "title": "Terms of service",
+    "intro": [
+      "These terms govern the use of Guidesk by hosts, property managers, and their teams. By creating an account or using the service, you accept them.",
+      "Guests use the guide their host shares with them; their relationship for the stay is with the host and with the platform where they booked."
+    ],
+    "sections": [
+      {
+        "id": "service",
+        "title": "The service",
+        "paragraphs": [
+          "Guidesk offers digital property guides, an AI assistant in the guide, a copilot that suggests replies for the platforms' chats, extras the host offers, partner experience recommendations, and analytics.",
+          "Guidesk is not a booking platform and is not part of the stay agreement between the host and the guest."
+        ]
+      },
+      {
+        "id": "accounts",
+        "title": "Accounts and roles",
+        "paragraphs": [
+          "To create an account you must be an adult and give truthful information. You are responsible for your account's security and the methods you use to sign in.",
+          "Each workspace has an owner, who answers for their team's actions and decides their roles (owner, admin, or agent)."
+        ]
+      },
+      {
+        "id": "acceptable-use",
+        "title": "Acceptable use",
+        "paragraphs": ["When you use Guidesk, you agree not to:"],
+        "items": [
+          "Publish content that is unlawful, misleading, or infringes others' rights.",
+          "Use Guidesk to break the rules of Airbnb, Booking.com, Vrbo, or other platforms, for example to collect deposits or move a booking or its payment off the platform.",
+          "Use guests' data for anything other than their stay, or send them unsolicited advertising.",
+          "Attack, overload, scrape, or try to breach the service.",
+          "Publish access codes or other sensitive information outside the places meant for it."
+        ]
+      },
+      {
+        "id": "host-content",
+        "title": "Your content and your responsibilities",
+        "paragraphs": [
+          "The content you upload remains yours. You allow us to store, process, translate, and show it to your guests and your team, only to provide the service to you.",
+          "You are responsible for keeping your guide's information correct and up to date, including codes, house rules, safety notices, and emergency numbers.",
+          "You are responsible for the extras you offer: their description, price, taxes, any permits they need, and their delivery."
+        ]
+      },
+      {
+        "id": "assistant",
+        "title": "The AI assistant",
+        "paragraphs": [
+          "The assistant answers with your guide's information and follows the settings you choose. It can make mistakes, and you can review, correct, and decide which topics it answers alone.",
+          "Sensitive topics, such as emergencies, safety, complaints, money, booking changes, or legal matters, always go to you. Guidesk is not an emergency service: the guide shows the emergency numbers you set."
+        ]
+      },
+      {
+        "id": "payments",
+        "title": "Fees and payments",
+        "paragraphs": [
+          "Once online payments are on, guests pay for extras on the payment provider's secure page, and you receive your share in your account with the provider. Guidesk never holds your money.",
+          "For each extra paid online, Guidesk charges your plan's fee: Free 10%, Pro 7%, and Business 5%, or the fee we agreed in writing. The host covers the card fee. You make refunds from the portal, and the provider handles disputes under its terms.",
+          "For partner experiences, Guidesk may earn a commission from the partner; the guide says so on each offer."
+        ]
+      },
+      {
+        "id": "pilot",
+        "title": "Pilot and plans",
+        "paragraphs": [
+          "During the pilot, Guidesk is free. Each plan's limits apply from the start.",
+          "We will announce paid plan prices at least 30 days before charging them, and you can choose whether to continue."
+        ]
+      },
+      {
+        "id": "suspension",
+        "title": "Suspension and closure",
+        "paragraphs": [
+          "We may suspend or close an account if it breaks these terms, puts guests, other users, or the service at risk, or if the law requires it. Where possible, we will tell you first.",
+          "You can stop using Guidesk and close your account at any time. We handle your data after closure as described in the privacy policy."
+        ]
+      },
+      {
+        "id": "liability",
+        "title": "Warranties and liability",
+        "paragraphs": [
+          "We provide the service with care, but as is and as available, without guaranteeing that it is free of errors or interruptions.",
+          "To the extent the law allows, we are not liable for indirect damages, lost profits, or data loss, and our total liability is limited to what you paid Guidesk in the 12 months before the claim."
+        ]
+      },
+      {
+        "id": "changes",
+        "title": "Changes to these terms",
+        "paragraphs": [
+          "If we change these terms, we update the date above. If the change is important, we email you at least 15 days before it applies."
+        ]
+      },
+      {
+        "id": "law",
+        "title": "Governing law",
+        "paragraphs": [
+          "These terms are governed by the laws of Costa Rica. Any dispute will be resolved before the courts of San José, Costa Rica, unless your country's consumer protection law provides otherwise."
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Contact",
+        "paragraphs": ["Write to {email} with any question about these terms."]
+      }
+    ]
+  }
+}
