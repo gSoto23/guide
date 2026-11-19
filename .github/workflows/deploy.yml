@@ -46,3 +46,21 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: pnpm sst deploy --stage ${{ github.event.inputs.stage || 'staging' }}
+        # Stage settings (infra/config.ts, infra/alerts.ts) come from the GitHub environment's
+        # variables (Settings > Environments > staging or production > Variables). Unset variables
+        # arrive empty, which the stage config treats as not set. Secrets stay in SST (infra/secrets.ts).
+        env:
+          GUIDESK_PORTAL_DOMAIN: ${{ vars.GUIDESK_PORTAL_DOMAIN }}
+          GUIDESK_API_DOMAIN: ${{ vars.GUIDESK_API_DOMAIN }}
+          GUIDESK_GUIDE_DOMAIN: ${{ vars.GUIDESK_GUIDE_DOMAIN }}
+          GUIDESK_EMAIL_SENDER: ${{ vars.GUIDESK_EMAIL_SENDER }}
+          GUIDESK_ALERT_EMAIL: ${{ vars.GUIDESK_ALERT_EMAIL }}
+          GUIDESK_SENTRY_DSN: ${{ vars.GUIDESK_SENTRY_DSN }}
+          GUIDESK_PLAN_CONTACT_EMAIL: ${{ vars.GUIDESK_PLAN_CONTACT_EMAIL }}
+          GUIDESK_CIVITATIS_AFFILIATE_ID: ${{ vars.GUIDESK_CIVITATIS_AFFILIATE_ID }}
+          GUIDESK_EXPERIENCE_IMAGE_ORIGINS: ${{ vars.GUIDESK_EXPERIENCE_IMAGE_ORIGINS }}
+          GUIDESK_PMS_BEDS24: ${{ vars.GUIDESK_PMS_BEDS24 }}
+          GUIDESK_PMS_HOSTEX: ${{ vars.GUIDESK_PMS_HOSTEX }}
+          GUIDESK_EXTRACTION_SCREENSHOTS: ${{ vars.GUIDESK_EXTRACTION_SCREENSHOTS }}
+          GUIDESK_GUIDE_INTERVIEW_VOICE: ${{ vars.GUIDESK_GUIDE_INTERVIEW_VOICE }}
+          GUIDESK_GUIDE_SCANNED_PDF: ${{ vars.GUIDESK_GUIDE_SCANNED_PDF }}
