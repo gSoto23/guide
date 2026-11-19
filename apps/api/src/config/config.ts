@@ -9,6 +9,8 @@ import { loadIntegrationSettings, type IntegrationSettings } from "@guidesk/inte
 const schema = z
   .object({
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+    /** Feature 014 (research R11): the SST stage on AWS (dev, staging, production); unset locally. */
+    STAGE: z.string().min(1).max(40).optional(),
     PORT: z.coerce.number().int().positive().default(4000),
     DATABASE_URL: z.string().min(1),
     /**

@@ -98,6 +98,8 @@ export const SECURITY_EVENT_TYPES = [
   "payment.event_refused",
   "payouts.onboarding_started",
   "payouts.status_changed",
+  // Feature 014: the founder's demo command made a demo workspace (actor: its owner).
+  "workspace.demo_seeded",
 ] as const;
 
 export type SecurityEventType = (typeof SECURITY_EVENT_TYPES)[number];
@@ -209,6 +211,8 @@ const METADATA_ALLOWLIST: Partial<Record<SecurityEventType, readonly string[]>> 
   "payment.event_refused": ["provider", "reason"],
   "payouts.onboarding_started": ["provider"],
   "payouts.status_changed": ["provider", "status"],
+  // Counts only; never guest names, codes, or links (feature 014).
+  "workspace.demo_seeded": ["properties", "stays"],
 };
 
 /** Short labels, numbers, booleans, and calendar dates; nothing that could carry free text. */

@@ -4,6 +4,7 @@
  */
 import { sql } from "drizzle-orm";
 import {
+  boolean,
   check,
   index,
   integer,
@@ -48,6 +49,11 @@ export const workspace = pgTable(
     /** Feature 005 pilot budgets (FR-028): assistant replies and drafts per day. */
     chatDailyLimit: integer("chat_daily_limit").notNull().default(1000),
     chatPropertyDailyLimit: integer("chat_property_daily_limit").notNull().default(200),
+    /**
+     * Feature 014: synthetic data made by the founder's demo command. Never set or read by the API's
+     * HTTP surface or the portal; the pilot report leaves these workspaces out.
+     */
+    demo: boolean("demo").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .notNull()

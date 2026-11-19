@@ -119,6 +119,30 @@ beforeAll(async () => {
   await stays(ana, 4, 1);
   await stays(beto, 1, 0);
   await stays(outside, 5, 5);
+
+  // Feature 014: demo workspaces change nothing. One account in the cohort owns only a demo
+  // workspace with full activity, and ana also owns a demo workspace with activity.
+  const demoOnly = await host(5, "2025-03-03T18:00:00Z", { publishAfterMinutes: 1, openOnDay: 0 });
+  await handle.db.execute(sql`UPDATE workspace SET demo = true WHERE id = ${demoOnly.workspaceId}`);
+  await questions(demoOnly, ["answered", "answered"], 90_000);
+  await stays(demoOnly, 3, 3);
+  const anaDemoId = randomUUID();
+  ids.push(anaDemoId);
+  await handle.db.execute(sql`
+    INSERT INTO workspace (id, name, created_by, created_at, demo)
+    VALUES (${anaDemoId}, 'Demo · Guidesk', ${ana.userId}, '2025-03-03T15:00:00Z', true)`);
+  await handle.db.execute(sql`
+    INSERT INTO membership (workspace_id, user_id, role) VALUES (${anaDemoId}, ${ana.userId}, 'owner')`);
+  const anaDemoProperty = await handle.db.execute<{ id: string }>(sql`
+    INSERT INTO property (workspace_id, name, guide_languages, setup_status, source, created_by)
+    VALUES (${anaDemoId}, 'Casa Demo', ARRAY['es'], 'ready', 'manual', ${ana.userId}) RETURNING id`);
+  const anaDemo: Host = {
+    userId: ana.userId,
+    workspaceId: anaDemoId,
+    propertyId: anaDemoProperty.rows[0]!.id,
+  };
+  await questions(anaDemo, ["held", "held", "held"], 70_000);
+  await stays(anaDemo, 6, 6);
 });
 
 afterAll(async () => {
@@ -126,7 +150,8 @@ afterAll(async () => {
 });
 
 describe("pilot metrics (feature 010 US5)", () => {
-  it("computes each metric for the cohort only", async () => {
+  // Feature 014 AC-SEC-004: the demo workspaces added in beforeAll leave every number unchanged.
+  it("computes each metric for the cohort only, leaving demo workspaces out", async () => {
     const m = await pilotMetrics(handle.db, { from: FROM, to: TO }, NOW);
     expect(m.cohort).toEqual({ from: FROM, to: TO, signUps: 3 });
     expect(m.activation).toMatchObject({ numerator: 1, denominator: 3 });
