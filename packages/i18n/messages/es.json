@@ -78,7 +78,8 @@
     "not_requestable": "Ahora no se pueden hacer solicitudes para esta estadía.",
     "rule_failed": "La solicitud no cumple las reglas del extra.",
     "duplicate": "Se acaba de hacer la misma solicitud.",
-    "too_many_requests": "Demasiadas solicitudes para esta estadía."
+    "too_many_requests": "Demasiadas solicitudes para esta estadía.",
+    "refund_first": "Primero reembolsa todo el pago de esta solicitud; luego podrás cancelarla."
   },
   "auth": {
     "signInCta": "Entrar o crear cuenta",
@@ -830,6 +831,7 @@
     "sections": {
       "workspace": "Workspace",
       "plan": "Plan y límites",
+      "payouts": "Pagos",
       "team": "Equipo",
       "account": "Tu cuenta",
       "security": "Seguridad",
@@ -2306,5 +2308,68 @@
     "link": "Ver plan y límites",
     "bannerWarning": "Quedan {left} de {limit} respuestas de IA este mes.",
     "bannerReached": "Se acabaron las respuestas de IA de este mes. Vuelven el {date}."
+  },
+  "payments": {
+    "title": "Pagos",
+    "loading": "Cargando…",
+    "intro": "Los huéspedes pueden pagar en línea los extras confirmados. El pago lo procesa el proveedor de pagos y tu parte va a tu cuenta de pagos; Guidesk nunca ve los datos de la tarjeta.",
+    "off": "Los pagos en línea todavía no están disponibles. Mientras tanto, acuerda el pago directamente con el huésped.",
+    "simulated": "Entorno de prueba: el proveedor de pagos es simulado y no se mueve dinero real.",
+    "accountTitle": "Tu cuenta de pagos",
+    "account": {
+      "none": "Sin configurar",
+      "pending": "En revisión",
+      "active": "Activa",
+      "rejected": "No aprobada"
+    },
+    "accountHint": {
+      "none": "Configúrala para que los huéspedes puedan pagar en línea. El proveedor verifica tu identidad y tu cuenta bancaria.",
+      "pending": "El proveedor está revisando tus datos. Puedes retomar el proceso si no lo terminaste.",
+      "active": "Los huéspedes pueden pagar en línea los extras confirmados.",
+      "rejected": "El proveedor no aprobó la cuenta. Retoma el proceso para revisar lo que falta."
+    },
+    "setUp": "Configurar pagos",
+    "resume": "Retomar la configuración",
+    "ownerOnly": "Solo el dueño del workspace puede configurar la cuenta de pagos.",
+    "feesTitle": "Comisiones",
+    "fee": "Comisión de Guidesk: {percent} %.",
+    "feePlan": "Depende de tu plan.",
+    "feeCustom": "Acordada con Guidesk.",
+    "feesHow": "El huésped paga el precio del extra, sin cargos extra. De ese monto se descuentan la comisión de Guidesk y la de la tarjeta; el resto es tu parte.",
+    "monthTitle": "Este mes",
+    "monthEmpty": "Todavía no hay pagos este mes.",
+    "monthCaption": "Pagos de este mes por moneda",
+    "columns": {
+      "currency": "Moneda",
+      "orders": "Pagos",
+      "paid": "Cobrado",
+      "refunded": "Reembolsado",
+      "platformFee": "Comisión de Guidesk",
+      "providerFee": "Comisión de la tarjeta",
+      "hostShare": "Tu parte"
+    },
+    "states": {
+      "open": "Pago en proceso",
+      "paid": "Pagado",
+      "partially_refunded": "Reembolsado en parte",
+      "refunded": "Reembolsado",
+      "disputed": "En disputa",
+      "failed": "Pago rechazado",
+      "expired": "Pago sin completar",
+      "cancelled": "Pago cancelado"
+    },
+    "refunded": "reembolsado {amount}",
+    "split": "Comisión de Guidesk {fee} · tarjeta {card} · tu parte {share}",
+    "refundDue": "Este pago llegó después de que la solicitud dejó de estar confirmada. Reembólsalo al huésped.",
+    "refund": "Reembolsar",
+    "refundAmount": "Monto a reembolsar ({currency})",
+    "refundHint": "Hasta {max}.",
+    "refundAmountInvalid": "Escribe un monto mayor que cero y de hasta {max}.",
+    "refundConfirm": "Confirmar el reembolso",
+    "back": "Volver",
+    "errors": {
+      "amount_too_large": "El monto es mayor que lo que queda por reembolsar.",
+      "not_refundable": "Este pago ya no se puede reembolsar desde Guidesk."
+    }
   }
 }

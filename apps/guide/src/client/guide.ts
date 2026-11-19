@@ -372,6 +372,14 @@ interface ExtraRequest {
   status: string;
   reasonCode: string | null;
   reasonText: string | null;
+  /** Feature 013: null when online payment isn't possible for this request. */
+  payment: {
+    state: "payable" | "open" | "paid" | "partially_refunded" | "refunded" | "disputed";
+    amountMinor: number;
+    currency: string;
+    refundedMinor: number;
+    reference: string | null;
+  } | null;
 }
 
 interface ExtraRequests {
@@ -449,6 +457,66 @@ function wireExtras(): void {
     return button;
   };
 
+  // Feature 013: Pay opens the provider's page; the guide only shows "paid" once the provider
+  // confirms it to Guidesk (the return alone never does).
+  const payButton = (request: ExtraRequest, message: HTMLElement) => {
+    const payment = request.payment!;
+    const amount = money(payment.amountMinor / 100, payment.currency);
+    const button = el("button", "button", text("extras.payment.pay", { amount }));
+    button.type = "button";
+    button.disabled = offline();
+    button.addEventListener("click", () => {
+      button.disabled = true;
+      message.textContent = text("extras.payment.redirecting");
+      void api(`extras/requests/${request.id}/checkout?lang=${lang}`, { publicId })
+        .then(async (response) => {
+          if (response.ok) {
+            const { checkoutUrl } = (await response.json()) as { checkoutUrl: string };
+            window.location.assign(checkoutUrl);
+            return;
+          }
+          const problem = (await response.json().catch(() => ({}))) as { code?: string };
+          message.textContent =
+            text(`extras.payment.errors.${problem.code ?? ""}`) || text("extras.errors.generic");
+          if (problem.code === "not_payable" || problem.code === "already_paid") await load();
+          button.disabled = false;
+        })
+        .catch(() => {
+          message.textContent = text(offline() ? "extras.errors.offline" : "extras.errors.generic");
+          button.disabled = false;
+        });
+    });
+    return button;
+  };
+
+  const paymentPart = (request: ExtraRequest): HTMLElement[] => {
+    const payment = request.payment;
+    if (!payment) return [];
+    const amount = money(payment.amountMinor / 100, payment.currency);
+    if (payment.state === "payable" || payment.state === "open") {
+      const message = el("p", "error");
+      message.setAttribute("role", "alert");
+      return [
+        el("p", "muted", text("extras.payment.total", { amount })),
+        ...(payment.state === "open" ? [el("p", "muted", text("extras.payment.open"))] : []),
+        payButton(request, message),
+        message,
+      ];
+    }
+    const parts = [el("p", "request-paid", text("extras.payment.paid", { amount }))];
+    if (payment.refundedMinor > 0) {
+      const refunded = money(payment.refundedMinor / 100, payment.currency);
+      parts.push(el("p", "", text("extras.payment.refunded", { amount: refunded })));
+    }
+    if (payment.state === "disputed") parts.push(el("p", "", text("extras.payment.disputed")));
+    if (payment.reference) {
+      parts.push(
+        el("p", "muted", text("extras.payment.reference", { reference: payment.reference })),
+      );
+    }
+    return parts;
+  };
+
   const item = (request: ExtraRequest) => {
     const li = el("li", "card request");
     li.dataset.status = request.status;
@@ -459,7 +527,15 @@ function wireExtras(): void {
     li.append(
       el("h3", "request-name", name),
       el("p", "muted", [when, money(request.price, request.currency)].filter(Boolean).join(" · ")),
-      el("p", "request-status", text(`extras.status.${request.status}`)),
+      el(
+        "p",
+        "request-status",
+        text(
+          request.payment && request.status === "confirmed"
+            ? "extras.status.confirmed_payable"
+            : `extras.status.${request.status}`,
+        ),
+      ),
     );
     const reason = [
       request.reasonCode ? text(`extras.reasons.${request.reasonCode}`) : "",
@@ -468,6 +544,7 @@ function wireExtras(): void {
     if (reason.length > 0) li.append(el("p", "", reason.join(" ")));
     const charged = text(`extras.statusNote.${request.status}`);
     if (charged) li.append(el("p", "muted", charged));
+    li.append(...paymentPart(request));
     if (request.status === "waiting" && state?.canRequest) {
       const message = el("p", "error");
       message.setAttribute("role", "alert");
@@ -573,6 +650,20 @@ function wireExtras(): void {
       });
   });
   window.addEventListener("online", () => void load());
+  // Back from the provider's page: wait for its confirmation (a few checks), never assume it.
+  if (new URLSearchParams(window.location.search).has("payment")) {
+    if (done) done.textContent = text("extras.payment.processing");
+    let checks = 0;
+    const recheck = () => {
+      checks += 1;
+      void load().then(() => {
+        const pending = (state?.requests ?? []).some((r) => r.payment?.state === "open");
+        if (!pending && done) done.textContent = "";
+        else if (checks < 6) setTimeout(recheck, 2000);
+      });
+    };
+    setTimeout(recheck, 1500);
+  }
   window.addEventListener("offline", () => {
     applyForm();
     render();

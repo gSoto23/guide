@@ -1149,3 +1149,48 @@ describe("feature 011 plan across workspaces (T020, AC-SEC-001)", () => {
     expect(own.body).not.toContain(bruno.workspaceId);
   });
 });
+
+describe("feature 013 payments across workspaces (T018, AC-SEC-005)", () => {
+  it("answers 404 for another workspace's payouts and orders, and logs foreign refunds", async () => {
+    const { rows } = await db.query<{ id: string }>(
+      `INSERT INTO property (workspace_id, name, guide_languages, setup_status, source)
+       VALUES ($1, 'Casa Pagos de Bruno', ARRAY['es'], 'ready', 'manual') RETURNING id`,
+      [bruno.workspaceId],
+    );
+    const order = await db.query<{ id: string }>(
+      `INSERT INTO payment_order (workspace_id, property_id, provider, status, currency, amount_minor,
+         platform_fee_bps, platform_fee_minor, expires_at, paid_at)
+       VALUES ($1, $2, 'simulated', 'paid', 'USD', 5000, 1000, 500, now(), now()) RETURNING id`,
+      [bruno.workspaceId, rows[0]!.id],
+    );
+    const request = (method: "GET" | "POST", url: string, payload?: object) =>
+      ctx.fastify.inject({
+        method,
+        url,
+        headers: {
+          origin: "http://localhost:3000",
+          cookie: alice.cookie,
+          ...(payload ? { "content-type": "application/json" } : {}),
+        },
+        ...(payload ? { payload } : {}),
+      });
+    for (const url of [`/api/v1/workspaces/${bruno.workspaceId}/payouts`]) {
+      const before = await deniedCount();
+      expect((await request("GET", url)).statusCode, url).toBe(404);
+      expect(await deniedCount()).toBe(before + 1);
+    }
+    const before = await deniedCount();
+    const refund = await request(
+      "POST",
+      `/api/v1/workspaces/${alice.workspaceId}/payment-orders/${order.rows[0]!.id}/refunds`,
+      { amountMinor: 100 },
+    );
+    expect(refund.statusCode).toBe(404);
+    expect(await deniedCount()).toBe(before + 1);
+    const { rows: after } = await db.query<{ refunded_minor: string }>(
+      `SELECT refunded_minor FROM payment_order WHERE id = $1`,
+      [order.rows[0]!.id],
+    );
+    expect(after[0]!.refunded_minor).toBe("0");
+  });
+});

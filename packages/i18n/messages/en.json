@@ -78,7 +78,8 @@
     "not_requestable": "Requests aren't available for this stay now.",
     "rule_failed": "The request doesn't meet the extra's rules.",
     "duplicate": "The same request was just made.",
-    "too_many_requests": "Too many requests for this stay."
+    "too_many_requests": "Too many requests for this stay.",
+    "refund_first": "Refund this request's payment in full first; then you can cancel it."
   },
   "auth": {
     "signInCta": "Sign in or create an account",
@@ -830,6 +831,7 @@
     "sections": {
       "workspace": "Workspace",
       "plan": "Plan and limits",
+      "payouts": "Payouts",
       "team": "Team",
       "account": "Your account",
       "security": "Security",
@@ -2306,5 +2308,68 @@
     "link": "See plan and limits",
     "bannerWarning": "{left} of {limit} AI replies left this month.",
     "bannerReached": "AI replies for this month are used up. They renew on {date}."
+  },
+  "payments": {
+    "title": "Payouts",
+    "loading": "Loading…",
+    "intro": "Guests can pay online for confirmed extras. The payment provider processes the payment and your share goes to your payout account; Guidesk never sees card details.",
+    "off": "Online payments aren't available yet. Meanwhile, arrange payment directly with the guest.",
+    "simulated": "Test environment: the payment provider is simulated and no real money moves.",
+    "accountTitle": "Your payout account",
+    "account": {
+      "none": "Not set up",
+      "pending": "Under review",
+      "active": "Active",
+      "rejected": "Not approved"
+    },
+    "accountHint": {
+      "none": "Set it up so guests can pay online. The provider checks your identity and your bank account.",
+      "pending": "The provider is reviewing your details. You can resume if you didn't finish.",
+      "active": "Guests can pay online for confirmed extras.",
+      "rejected": "The provider didn't approve the account. Resume to see what's missing."
+    },
+    "setUp": "Set up payouts",
+    "resume": "Resume setup",
+    "ownerOnly": "Only the workspace owner can set up the payout account.",
+    "feesTitle": "Fees",
+    "fee": "Guidesk's fee: {percent}%.",
+    "feePlan": "It depends on your plan.",
+    "feeCustom": "Agreed with Guidesk.",
+    "feesHow": "The guest pays the extra's price with no added charges. Guidesk's fee and the card fee come out of that amount; the rest is your share.",
+    "monthTitle": "This month",
+    "monthEmpty": "No payments this month yet.",
+    "monthCaption": "This month's payments by currency",
+    "columns": {
+      "currency": "Currency",
+      "orders": "Payments",
+      "paid": "Collected",
+      "refunded": "Refunded",
+      "platformFee": "Guidesk's fee",
+      "providerFee": "Card fee",
+      "hostShare": "Your share"
+    },
+    "states": {
+      "open": "Payment in progress",
+      "paid": "Paid",
+      "partially_refunded": "Partly refunded",
+      "refunded": "Refunded",
+      "disputed": "Disputed",
+      "failed": "Payment declined",
+      "expired": "Payment not completed",
+      "cancelled": "Payment cancelled"
+    },
+    "refunded": "refunded {amount}",
+    "split": "Guidesk's fee {fee} · card {card} · your share {share}",
+    "refundDue": "This payment arrived after the request stopped being confirmed. Refund it to the guest.",
+    "refund": "Refund",
+    "refundAmount": "Amount to refund ({currency})",
+    "refundHint": "Up to {max}.",
+    "refundAmountInvalid": "Enter an amount above zero and up to {max}.",
+    "refundConfirm": "Confirm the refund",
+    "back": "Back",
+    "errors": {
+      "amount_too_large": "The amount is more than what is left to refund.",
+      "not_refundable": "This payment can't be refunded from Guidesk any more."
+    }
   }
 }

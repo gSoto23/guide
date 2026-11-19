@@ -3,7 +3,13 @@ import { afterAll, beforeAll, describe, expect, inject, it } from "vitest";
 import { sql } from "drizzle-orm";
 import { PLANS } from "@guidesk/domain";
 import { createDb, PLAN_VALUES, type DbHandle } from "../../src/index.js";
-import { formatPlanReport, parseCustomLimit, setPlan, showPlan } from "../../src/plans/admin.js";
+import {
+  formatPlanReport,
+  parseCustomLimit,
+  parseFeePercent,
+  setPlan,
+  showPlan,
+} from "../../src/plans/admin.js";
 
 /**
  * The founder's plan tool (feature 011 US3, T014): plans and custom limits change in one
@@ -72,7 +78,7 @@ describe("plan:set (FR-017, FR-018)", () => {
     expect(result).toEqual({
       from: "free",
       to: "business",
-      custom: { properties: null, seats: null, aiReplies: null },
+      custom: { properties: null, seats: null, aiReplies: null, feeBps: null },
     });
     const stored = await row(ws);
     expect(stored).toMatchObject({ plan: "business", plan_note: "Piloto: socia de diseño" });
@@ -87,6 +93,7 @@ describe("plan:set (FR-017, FR-018)", () => {
           properties: "plan",
           seats: "plan",
           aiReplies: "plan",
+          feeBps: "plan",
         },
       },
     ]);
@@ -120,7 +127,28 @@ describe("plan:set (FR-017, FR-018)", () => {
       properties: 5,
       seats: "plan",
       aiReplies: "plan",
+      feeBps: "plan",
     });
+  });
+
+  it("sets a custom platform fee and clears it (feature 013 FR-021)", async () => {
+    const ws = await workspace();
+    expect(parseFeePercent("4")).toBe(400);
+    expect(parseFeePercent("7.5")).toBe(750);
+    expect(parseFeePercent("plan")).toBe("plan");
+    expect(() => parseFeePercent("31")).toThrow("--fee-percent");
+    expect(() => parseFeePercent("-1")).toThrow("--fee-percent");
+    await setPlan(handle.db, { workspaceId: ws, plan: "business", feeBps: 400, note: "Negociado" });
+    const fee = await handle.db.execute<{ platform_fee_bps: number | null }>(
+      sql`SELECT platform_fee_bps FROM workspace WHERE id = ${ws}`,
+    );
+    expect(fee.rows[0]!.platform_fee_bps).toBe(400);
+    expect((await events(ws)).at(-1)!.metadata).toMatchObject({ feeBps: 400 });
+    await setPlan(handle.db, { workspaceId: ws, plan: "business", feeBps: "plan", note: "Plan" });
+    const cleared = await handle.db.execute<{ platform_fee_bps: number | null }>(
+      sql`SELECT platform_fee_bps FROM workspace WHERE id = ${ws}`,
+    );
+    expect(cleared.rows[0]!.platform_fee_bps).toBeNull();
   });
 
   it("changes nothing on bad input", async () => {

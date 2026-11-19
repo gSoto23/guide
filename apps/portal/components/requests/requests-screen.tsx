@@ -12,6 +12,7 @@ import { ANSWER_REASONS } from "@/lib/extras";
 import { problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
 import { formatPrice } from "../extras/property-extras";
+import { RequestPayment } from "../payments/request-payment";
 
 type StatusFilter = "all" | "waiting" | "confirmed" | "closed";
 type Answering = { request: MemberServiceRequest; action: "decline" | "cancel" } | null;
@@ -221,6 +222,25 @@ export function RequestsScreen({ locale }: { locale: string }) {
                   </li>
                 )}
               </ul>
+              {request.payment && (
+                <RequestPayment
+                  locale={locale}
+                  payment={request.payment}
+                  canRefund={workspace?.canManage ?? false}
+                  onChange={(payment) =>
+                    setPage((current) =>
+                      current
+                        ? {
+                            ...current,
+                            items: current.items.map((item) =>
+                              item.id === request.id ? { ...item, payment } : item,
+                            ),
+                          }
+                        : current,
+                    )
+                  }
+                />
+              )}
               {request.note && (
                 <>
                   <h3>{t("note")}</h3>

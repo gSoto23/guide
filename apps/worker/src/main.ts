@@ -77,6 +77,7 @@ import {
   createServiceRequestTickHandler,
   SERVICE_REQUEST_TICK_CRON,
 } from "./jobs/service-request-tick.js";
+import { createPaymentNotifyHandler } from "./jobs/payment-notify.js";
 import { createPlanUsageTickHandler, PLAN_USAGE_TICK_CRON } from "./jobs/plan-usage-tick.js";
 import { createWorkerServices } from "./services.js";
 
@@ -305,6 +306,16 @@ async function main(): Promise<void> {
     }),
   );
   await boss.schedule(JOB_QUEUES.planUsageTick, PLAN_USAGE_TICK_CRON, null, { tz: "UTC" });
+  // Feature 013 (research R8): emails when an add-on is paid or disputed.
+  await createQueue(JOB_QUEUES.paymentNotify);
+  await boss.work(
+    JOB_QUEUES.paymentNotify,
+    createPaymentNotifyHandler({
+      db: services.db.db,
+      queueEmail: services.queueEmail,
+      portalUrl: services.portalUrl,
+    }),
+  );
   // Shared-block fan-out (research R14): one job per publish or delete.
   await createQueue(JOB_QUEUES.sharedBlockPublish);
   await boss.work(
