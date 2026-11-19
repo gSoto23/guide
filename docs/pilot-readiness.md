@@ -8,12 +8,16 @@ devices). Each item links to where it was recorded. Tick items as they close and
 Order of work: start the long-lead items in section 1 first (weeks of lead time), then the AWS stage
 (section 2), then the checks with real services (section 3), then the staging run (section 4).
 
+The questions for Tilopay, Beds24, Hostex, Viator, and Civitatis, and the text of the SES production
+access request, are drafted in [partner outreach](partner-outreach.md).
+
 ## 1. Decisions, accounts, and legal (long lead)
 
 - [ ] **Legal entity** that bills and collects (OQ-01). Blocks Tilopay and real payments.
 - [ ] **Tilopay merchant account** and written answers (OQ-37): split settlement for hosts under the
   payment-facilitator model, host onboarding requirements, countries covered, international cards,
-  refunds through the API, the event signature scheme, and fees. Then the Tilopay adapter (a new spec)
+  refunds through the API, the event signature scheme, and fees ([draft](partner-outreach.md#1-tilopay)).
+  Then the Tilopay adapter (a new spec)
   and the sandbox confirmation steps of [ADR-0007](architecture/adr/0007-tilopay-initial-payment-provider.md).
   Until then production runs with `PAYMENTS_MODE=off` (spec 013).
 - [ ] **Legal review (OQ-35)** of every text guests and hosts see, in one pass:
@@ -29,12 +33,17 @@ Order of work: start the long-lead items in section 1 first (weeks of lead time)
 - [ ] **Fee policy and plan numbers:** confirm or change the defaults chosen during the build:
   - who absorbs the card fee: the host (OQ-09, spec 013);
   - Guidesk's platform fee: Free 10%, Pro 7%, Business 5% (`packages/domain/src/payments/`);
+  - what happens to that fee when a host refunds: today each order keeps the fee fixed at payment and
+    no rule returns it, so decide whether a refund returns the fee in proportion (spec 013; the Tilopay
+    answer on how refunds reverse a split settlement shapes it);
   - plan limits: Free 2 properties, 100 AI replies a month, 1 seat; Pro 300 AI replies per active
     property and 3 seats; Business unlimited seats (OQ-10, `packages/domain/src/plans/`).
 - [ ] **PMS read-only import permission** in writing from Beds24 and Hostex for a customer's own token
-  (OQ-26, spec 002 R15). Blocks `GUIDESK_PMS_BEDS24` and `GUIDESK_PMS_HOSTEX`.
+  (OQ-26, spec 002 R15). Blocks `GUIDESK_PMS_BEDS24` and `GUIDESK_PMS_HOSTEX`. Drafts:
+  [Beds24](partner-outreach.md#2-beds24), [Hostex](partner-outreach.md#3-hostex).
 - [ ] **Affiliate programs** (OQ-34, spec 009 R13): join Viator (basic-access API key) and Civitatis
   (affiliate number), ask Civitatis for its feed or API, and confirm each partner's content terms.
+  Drafts: [Viator](partner-outreach.md#4-viator), [Civitatis](partner-outreach.md#5-civitatis).
 - [ ] **Brand and domains** (OQ-11): trademark search, the guide's own domain, and merging the chosen
   visual identity (direction "A · Bienvenida", branch `claude/brand-identity-1a6c99`) when ready.
 - [ ] **Design partners and dates** (OQ-03, OQ-02): the 10 to 20 hosts and 3 to 5 managers, their PMS,
@@ -47,7 +56,8 @@ Order of work: start the long-lead items in section 1 first (weeks of lead time)
 - [ ] **Domains** for the stage: `GUIDESK_PORTAL_DOMAIN`, `GUIDESK_API_DOMAIN`, and
   `GUIDESK_GUIDE_DOMAIN` (required in production), and the email sender `GUIDESK_EMAIL_SENDER`.
 - [ ] **Email:** verify the sending domain in Amazon SES and request production access (sending to any
-  address) well before the pilot ([ADR-0009](architecture/adr/0009-mvp-hosting-and-transactional-email.md)).
+  address) well before the pilot ([ADR-0009](architecture/adr/0009-mvp-hosting-and-transactional-email.md);
+  [request text](partner-outreach.md#6-amazon-ses-production-access)).
 - [ ] **Secrets per stage** with `pnpm sst secret set <Name> <value> --stage <stage>`
   (`infra/secrets.ts`): `BetterAuthSecret`, `GoogleClientId`, `GoogleClientSecret`, `EdgeSharedSecret`,
   `AnthropicApiKey`, `FeedUrlPepper`, `VapidPublicKey` and `VapidPrivateKey` (generate with
