@@ -1,0 +1,1312 @@
+<title>Recorrido por Guidesk</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Presentación interactiva del proyecto Guidesk: problema, producto, arquitectura, negocio y estado.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&display=swap">
+<link rel="stylesheet" href="styles.css">
+<script>document.documentElement.classList.add('js');</script>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5z" fill="currentColor"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></symbol>
+    <symbol id="i-arch" viewBox="0 0 12 15"><path d="M0 15V6a6 6 0 0 1 12 0v9z" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+
+<div class="deck" id="deck">
+  <header class="topbar">
+    <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 199.46 48.35" role="img" aria-label="Guidesk"><g transform="translate(-4 -4) scale(2)"><path fill="#B4452A" d="M2 21V8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v7a6 6 0 0 1-6 6Z"/><path fill="#F5BC4C" d="M8.5 21v-8.5a3.5 3.5 0 0 1 7 0V21Z"/></g><g transform="translate(48.75 38)"><path fill="currentColor" d="M17.78 -18.01V-21H23.12V.15Q23.12 3.07 21.95 5.36Q20.77 7.66 18.42 9Q16.07 10.35 12.74 10.35Q8.26 10.35 5.4 8.26Q2.54 6.18 2.16 2.58H7.43Q7.85 4.02 9.23 4.87Q10.61 5.72 12.58 5.72Q14.9 5.72 16.34 4.34Q17.78 2.96 17.78 .15V-3.11Q16.75 -1.63 14.95 -.64Q13.15 .34 10.84 .34Q8.19 .34 5.99 -1.02Q3.79 -2.39 2.52 -4.87Q1.25 -7.35 1.25 -10.58Q1.25 -13.76 2.52 -16.22Q3.79 -18.69 5.97 -20.01Q8.15 -21.34 10.84 -21.34Q13.19 -21.34 14.97 -20.41Q16.75 -19.48 17.78 -18.01ZM12.21 -16.68Q10.73 -16.68 9.48 -15.96Q8.23 -15.24 7.45 -13.85Q6.67 -12.47 6.67 -10.58Q6.67 -8.68 7.45 -7.26Q8.23 -5.84 9.5 -5.08Q10.77 -4.32 12.21 -4.32Q13.68 -4.32 14.97 -5.06Q16.26 -5.8 17.02 -7.18Q17.78 -8.57 17.78 -10.5Q17.78 -12.43 17.02 -13.82Q16.26 -15.2 14.97 -15.94Q13.68 -16.68 12.21 -16.68ZM47.76 -21V0H42.42V-2.65Q41.39 -1.29 39.74 -.51Q38.1 .27 36.16 .27Q33.7 .27 31.8 -.78Q29.91 -1.82 28.83 -3.85Q27.75 -5.88 27.75 -8.68V-21H33.05V-9.44Q33.05 -6.94 34.31 -5.59Q35.56 -4.25 37.72 -4.25Q39.92 -4.25 41.17 -5.59Q42.42 -6.94 42.42 -9.44V-21ZM57.92 -21V0H52.61V-21ZM71.04 -21.34Q73.08 -21.34 74.94 -20.45Q76.8 -19.56 77.9 -18.08V-28.05H83.28V0H77.9V-3.11Q76.91 -1.55 75.13 -.61Q73.35 .34 71 .34Q68.34 .34 66.15 -1.02Q63.95 -2.39 62.68 -4.87Q61.41 -7.35 61.41 -10.58Q61.41 -13.76 62.68 -16.22Q63.95 -18.69 66.15 -20.01Q68.34 -21.34 71.04 -21.34ZM72.36 -16.68Q70.88 -16.68 69.63 -15.96Q68.38 -15.24 67.61 -13.85Q66.83 -12.47 66.83 -10.58Q66.83 -8.68 67.61 -7.26Q68.38 -5.84 69.65 -5.08Q70.92 -4.32 72.36 -4.32Q73.84 -4.32 75.13 -5.06Q76.42 -5.8 77.18 -7.18Q77.94 -8.57 77.94 -10.5Q77.94 -12.43 77.18 -13.82Q76.42 -15.2 75.13 -15.94Q73.84 -16.68 72.36 -16.68ZM107.46 -8.91H92.11Q92.3 -6.63 93.7 -5.34Q95.11 -4.06 97.15 -4.06Q100.11 -4.06 101.36 -6.6H107.08Q106.18 -3.56 103.6 -1.61Q101.02 .34 97.27 .34Q94.23 .34 91.83 -1Q89.42 -2.35 88.07 -4.81Q86.73 -7.28 86.73 -10.5Q86.73 -13.76 88.06 -16.22Q89.38 -18.69 91.77 -20.01Q94.16 -21.34 97.27 -21.34Q100.26 -21.34 102.63 -20.05Q105 -18.76 106.31 -16.39Q107.62 -14.03 107.62 -10.95Q107.62 -9.82 107.46 -8.91ZM102.12 -12.47Q102.08 -14.52 100.64 -15.75Q99.2 -16.98 97.12 -16.98Q95.14 -16.98 93.8 -15.79Q92.45 -14.59 92.15 -12.47ZM109.97 -6.63H115.31Q115.46 -5.42 116.5 -4.62Q117.55 -3.83 119.1 -3.83Q120.62 -3.83 121.47 -4.44Q122.32 -5.04 122.32 -5.99Q122.32 -7.01 121.28 -7.52Q120.24 -8.04 117.96 -8.64Q115.61 -9.21 114.12 -9.82Q112.62 -10.42 111.54 -11.68Q110.46 -12.93 110.46 -15.05Q110.46 -16.79 111.46 -18.23Q112.47 -19.67 114.34 -20.51Q116.22 -21.34 118.76 -21.34Q122.51 -21.34 124.75 -19.46Q126.99 -17.59 127.21 -14.4H122.13Q122.02 -15.66 121.09 -16.39Q120.16 -17.13 118.61 -17.13Q117.17 -17.13 116.39 -16.6Q115.61 -16.07 115.61 -15.12Q115.61 -14.06 116.68 -13.51Q117.74 -12.96 119.97 -12.4Q122.25 -11.83 123.73 -11.22Q125.2 -10.61 126.28 -9.34Q127.36 -8.07 127.4 -5.99Q127.4 -4.17 126.4 -2.73Q125.39 -1.29 123.52 -.47Q121.64 .34 119.14 .34Q116.56 .34 114.51 -.59Q112.47 -1.52 111.27 -3.11Q110.08 -4.7 109.97 -6.63ZM143.82 0 136.69 -8.95V0H131.38V-28.05H136.69V-12.09L143.74 -21H150.64L141.39 -10.46L150.71 0Z"/><path fill="#F5BC4C" d="M52.05 -26.61Q52.05 -27.94 52.97 -28.83Q53.9 -29.72 55.31 -29.72Q56.71 -29.72 57.64 -28.83Q58.56 -27.94 58.56 -26.61Q58.56 -25.28 57.64 -24.39Q56.71 -23.5 55.31 -23.5Q53.9 -23.5 52.97 -24.39Q52.05 -25.28 52.05 -26.61Z"/></g></svg>
+    <span class="chapter-label" id="chapterLabel" aria-live="polite"></span>
+    <div class="tb-actions">
+      <button class="pill-btn lang-btn" id="langBtn" type="button" aria-label="Cambiar idioma / Switch language"><span class="es"><b>ES</b> · EN</span><span class="en">ES · <b>EN</b></span></button>
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="Cambiar tema claro u oscuro"><svg aria-hidden="true"><use href="#i-moon"/></svg></button>
+      <button class="icon-btn" id="indexBtn" type="button" aria-haspopup="dialog" aria-controls="index" aria-label="Índice / Index"><svg aria-hidden="true"><use href="#i-menu"/></svg><span class="es">Índice</span><span class="en">Index</span></button>
+    </div>
+  </header>
+
+  <main class="stage" id="stage">
+
+<!-- ============ INICIO ============ -->
+<section class="slide" id="portada" data-chapter="inicio" data-es="Portada" data-en="Cover">
+  <div class="inner center-y">
+    <div class="cover">
+      <div class="stack" style="gap:18px">
+        <p class="eyebrow" data-build><span class="es">Presentación del proyecto · Noviembre 2026</span><span class="en">Project presentation · November 2026</span></p>
+        <h1 class="h1" data-build><span class="es">Tu casa, siempre lista para responder.</span><span class="en">Your home, always ready to answer.</span></h1>
+        <p class="lead" data-build><span class="es">Guidesk es la guía digital de cada alquiler vacacional y un asistente con IA que responde a los huéspedes a cualquier hora, en español o inglés. Lo delicado siempre pasa al anfitrión.</span><span class="en">Guidesk is a digital guidebook for every vacation rental, plus an AI assistant that answers guests at any hour, in Spanish or English. Anything sensitive always goes to the host.</span></p>
+        <p class="status-pill" data-build><span class="es">Fase 1 construida: 12 funciones en main</span><span class="en">Phase 1 built: 12 features merged</span></p>
+        <div class="row" data-build>
+          <button class="btn" type="button" data-go="next"><span class="es">Empezar</span><span class="en">Start</span><svg aria-hidden="true"><use href="#i-right"/></svg></button>
+          <a class="btn ghost" href="#demo-huesped"><span class="es">Ver la estadía de un huésped</span><span class="en">See a guest's stay</span></a>
+          <button class="btn ghost" type="button" data-open-index><span class="es">Índice</span><span class="en">Index</span></button>
+        </div>
+        <div class="cover-meta" data-build>
+          <span><span class="kbd">←</span> <span class="kbd">→</span> <span class="es">o desliza para avanzar</span><span class="en">or swipe to move</span></span>
+          <span><span class="kbd">M</span> <span class="es">abre el índice</span><span class="en">opens the index</span></span>
+          <span><span class="kbd">L</span> <span class="es">cambia el idioma</span><span class="en">switches language</span></span>
+        </div>
+      </div>
+      <div class="cover-art" aria-hidden="true">
+        <svg class="big-mark" viewBox="-4 -6 28 27">
+          <circle class="glow" cx="18.5" cy="0.5" r="5.5"/>
+          <g transform="translate(-2 -2)">
+            <path class="bubble" fill="#B4452A" d="M2 21V8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v7a6 6 0 0 1-6 6Z"/>
+            <path class="door" fill="#F5BC4C" d="M8.5 21v-8.5a3.5 3.5 0 0 1 7 0V21Z"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="en-un-minuto" data-chapter="inicio" data-es="Guidesk en un minuto" data-en="Guidesk in one minute">
+  <div class="inner narrow">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">En un minuto</span><span class="en">In one minute</span></p>
+      <h2 class="h2" data-build><span class="es">Una guía para cada propiedad y un asistente que la conoce</span><span class="en">A guide for every property and an assistant that knows it</span></h2>
+    </div>
+    <dl class="minute">
+      <div data-build><dt><span class="es">Qué es</span><span class="en">What it is</span></dt><dd><span class="es">Una guía web por propiedad (llegada, Wi-Fi, normas, electrodomésticos, recomendaciones, emergencias y salida) y un asistente con IA que la leyó y responde a los huéspedes.</span><span class="en">A web guide for each property (arrival, Wi-Fi, house rules, appliances, local tips, emergencies, and checkout) and an AI assistant that has read it and answers guests.</span></dd></div>
+      <div data-build><dt><span class="es">Para quién</span><span class="en">Who it is for</span></dt><dd><span class="es">Anfitriones de Airbnb, Booking.com y Vrbo: desde quien tiene un apartamento hasta empresas con decenas de unidades, en Costa Rica, LATAM y Estados Unidos.</span><span class="en">Hosts on Airbnb, Booking.com, and Vrbo, from someone with one apartment to companies with dozens of units, in Costa Rica, Latin America, and the US.</span></dd></div>
+      <div data-build><dt><span class="es">Por qué importa</span><span class="en">Why it matters</span></dt><dd><span class="es">Los anfitriones responden las mismas preguntas una y otra vez, de noche y en otro idioma. Guidesk atiende lo rutinario y pasa lo delicado a una persona.</span><span class="en">Hosts answer the same questions over and over, at night and in a second language. Guidesk handles the routine and passes anything sensitive to a person.</span></dd></div>
+      <div data-build><dt><span class="es">Cómo gana dinero</span><span class="en">How it earns</span></dt><dd><span class="es">Un plan gratis para empezar, planes pagos por propiedad y comisiones en servicios opcionales que el huésped elige: tours de socios y extras del anfitrión.</span><span class="en">A free plan to start, paid plans per property, and commissions on optional services guests choose: partner tours and the host's own extras.</span></dd></div>
+      <div data-build><dt><span class="es">Dónde está</span><span class="en">Where it stands</span></dt><dd><span class="es">Las 12 especificaciones de la fase 1 (001 a 011 y 013) están construidas y fusionadas en <span class="mono">main</span>. Los pagos funcionan con un proveedor simulado hasta tener la cuenta de Tilopay.</span><span class="en">All 12 Phase 1 specs (001 to 011 and 013) are built and merged into <span class="mono">main</span>. Payments run against a simulated provider until the Tilopay account exists.</span></dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ PROBLEMA Y VISIÓN ============ -->
+<section class="slide" id="problema" data-chapter="vision" data-es="El problema" data-en="The problem">
+  <div class="inner">
+    <div class="split">
+      <div class="stack" style="gap:20px">
+        <div class="head">
+          <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">El problema</span><span class="en">The problem</span></p>
+          <h2 class="h2" data-build><span class="es">Cada estadía, las mismas preguntas. A cualquier hora.</span><span class="en">Every stay, the same questions. At any hour.</span></h2>
+          <p class="lead" data-build><span class="es">Los anfitriones manejan un negocio de hospitalidad desde el teléfono.</span><span class="en">Short-term rental hosts run a hospitality business from their phones.</span></p>
+        </div>
+        <ul class="pain-list">
+          <li data-build><b><span class="es">Las mismas preguntas, cada estadía</span><span class="en">The same questions, every stay</span></b><span class="es">Wi-Fi, llegada, parqueo, aire acondicionado, basura y salida. Muchas veces de noche y en un idioma que el anfitrión no domina.</span><span class="en">Wi-Fi, check-in, parking, air conditioning, trash, checkout. Often at night, in a language the host is not fluent in.</span></li>
+          <li data-build><b><span class="es">El conocimiento está disperso</span><span class="en">Knowledge is scattered</span></b><span class="es">En el anuncio, en PDFs, en notas del teléfono y en la memoria del anfitrión. Los huéspedes no leen manuales largos.</span><span class="en">In listing text, PDFs, phone notes, and the host's memory. Guests don't read long house manuals.</span></li>
+          <li data-build><b><span class="es">Se queda dinero sobre la mesa</span><span class="en">Revenue is left on the table</span></b><span class="es">El huésped pregunta qué hacer o si hay traslado al aeropuerto. El anfitrión improvisa o dice que no.</span><span class="en">Guests ask what to do or whether there's an airport pickup. The host improvises or says no.</span></li>
+          <li data-build><b><span class="es">Las herramientas no son para ellos</span><span class="en">The tools were built for someone else</span></b><span class="es">Casi todas están en inglés, se venden por cotización o exigen un PMS. Los anfitriones individuales de LATAM quedan fuera.</span><span class="en">Most are English-first, sold by quote, or require a PMS. Individual hosts in Latin America are left out.</span></li>
+        </ul>
+      </div>
+      <div class="night-phone" role="img" aria-label="Pantalla de bloqueo a las 11:03 pm con cinco mensajes de huéspedes / Lock screen at 11:03 pm with five guest messages">
+        <div class="night-screen">
+          <div class="night-time">11:03</div>
+          <div class="night-date"><span class="es">martes, 18 de noviembre</span><span class="en">Tuesday, November 18</span></div>
+          <div class="notif" style="--n:0"><span class="who"><span><span class="es">Huésped · Casa Colibrí</span><span class="en">Guest · Casa Colibrí</span></span><span>10:47 pm</span></span><span class="msg"><span class="es">¿Cuál es la clave del Wi-Fi?</span><span class="en">What's the Wi-Fi password?</span></span></div>
+          <div class="notif" style="--n:1"><span class="who"><span><span class="es">Huésped · Casa Colibrí</span><span class="en">Guest · Casa Colibrí</span></span><span>10:58 pm</span></span><span class="msg"><span class="es">Ya llegamos. ¿Dónde está la caja de llaves?</span><span class="en">We're here. Where's the key box?</span></span></div>
+          <div class="notif" style="--n:2"><span class="who"><span><span class="es">Huésped · Casa Colibrí</span><span class="en">Guest · Casa Colibrí</span></span><span>11:01 pm</span></span><span class="msg"><span class="es">¿Cómo se enciende el aire del cuarto?</span><span class="en">How do we turn on the bedroom AC?</span></span></div>
+          <div class="notif" style="--n:3"><span class="who"><span><span class="es">Huésped · Casa Colibrí</span><span class="en">Guest · Casa Colibrí</span></span><span>11:02 pm</span></span><span class="msg"><span class="es">¿Podemos salir más tarde el domingo?</span><span class="en">Can we check out later on Sunday?</span></span></div>
+          <div class="notif" style="--n:4"><span class="who"><span><span class="es">Huésped · Casa Colibrí</span><span class="en">Guest · Casa Colibrí</span></span><span>11:03 pm</span></span><span class="msg"><span class="es">¿Qué tour nos recomiendas para mañana?</span><span class="en">Which tour do you recommend for tomorrow?</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="personas" data-chapter="vision" data-es="Para quién" data-en="Who it is for">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Para quién</span><span class="en">Who it is for</span></p>
+      <h2 class="h2" data-build><span class="es">Cuatro personas, cuatro necesidades distintas</span><span class="en">Four people, four different needs</span></h2>
+      <p class="small" data-build><span class="es">Toca una tarjeta para ver el detalle. Son personajes ilustrativos basados en la investigación de mercado; el piloto los reemplaza con entrevistas reales.</span><span class="en">Tap a card for details. These are illustrative composites from market research; the pilot replaces them with real interviews.</span></p>
+    </div>
+    <div class="grid-4" id="personaGrid">
+      <div class="persona" data-build><button class="persona-btn" type="button" aria-expanded="false">
+        <span class="persona-top"><span class="avatar-arch" aria-hidden="true">A</span><span><b>Ana</b><br><span class="role"><span class="es">Anfitriona individual · 2 apartamentos de playa · sin PMS</span><span class="en">Individual host · 2 beach apartments · no PMS</span></span></span></span>
+        <span class="need"><span class="es">Una guía lista desde el teléfono en menos de 30 minutos, gratis, en español y sin riesgo para su cuenta de Airbnb.</span><span class="en">A guide set up from her phone in under 30 minutes, free, in Spanish, with no risk to her Airbnb account.</span></span>
+        <span class="open-hint"><span class="es">Ver detalle</span><span class="en">See details</span></span></button>
+        <dl class="persona-detail" hidden>
+          <dt><span class="es">Dolor</span><span class="en">Pain</span></dt><dd><span class="es">Las mismas preguntas a las 11 pm. Responder en inglés le toma más tiempo. Nadie lee su manual en PDF.</span><span class="en">The same questions at 11 pm. Answering in English takes her longer. Nobody reads her PDF manual.</span></dd>
+          <dt><span class="es">Decide por</span><span class="en">Decides on</span></dt><dd><span class="es">Gratis o muy barato, desde el teléfono, en español, sin riesgo para su anuncio.</span><span class="en">Free or very cheap, from her phone, in Spanish, no risk to her listing.</span></dd>
+          <dt><span class="es">Éxito</span><span class="en">Success</span></dt><dd><span class="es">«Los huéspedes dejaron de pedirme la clave del Wi-Fi, y dos reservaron el traslado desde la guía.»</span><span class="en">"Guests stopped asking me for the Wi-Fi password, and two of them booked the transfer through the guide."</span></dd>
+        </dl>
+      </div>
+      <div class="persona" data-build><button class="persona-btn" type="button" aria-expanded="false">
+        <span class="persona-top"><span class="avatar-arch" aria-hidden="true">M</span><span><b>Marco</b><br><span class="role"><span class="es">Administrador profesional · 60 unidades · equipo de 3 · usa un PMS</span><span class="en">Professional manager · 60 units · team of 3 · on a PMS</span></span></span></span>
+        <span class="need"><span class="es">Un asistente que pueda controlar tema por tema, dentro de sus herramientas, que muestre el tiempo y el dinero que ahorra.</span><span class="en">An assistant he controls topic by topic, inside his tools, that shows the time and money it saves.</span></span>
+        <span class="open-hint"><span class="es">Ver detalle</span><span class="en">See details</span></span></button>
+        <dl class="persona-detail" hidden>
+          <dt><span class="es">Dolor</span><span class="en">Pain</span></dt><dd><span class="es">El equipo de soporte crece con cada unidad y las respuestas no son consistentes. Apagó un respondedor automático después de un error sobre el parqueo.</span><span class="en">Support headcount grows with every unit and answers are inconsistent. He turned off an auto-responder after a wrong answer about parking.</span></dd>
+          <dt><span class="es">Decide por</span><span class="en">Decides on</span></dt><dd><span class="es">Integración con su PMS, control de lo que hace la IA, registro de auditoría, roles de equipo, retorno en el primer mes.</span><span class="en">PMS integration, control over the AI, an audit trail, team roles, ROI in the first month.</span></dd>
+          <dt><span class="es">Éxito</span><span class="en">Success</span></dt><dd><span class="es">«El 70% de las preguntas de rutina se atiende solo y de forma segura, y los extras pagan la herramienta.»</span><span class="en">"70% of routine questions are handled automatically and safely, and add-ons pay for the tool."</span></dd>
+        </dl>
+      </div>
+      <div class="persona" data-build><button class="persona-btn" type="button" aria-expanded="false">
+        <span class="persona-top"><span class="avatar-arch" aria-hidden="true">E</span><span><b>Emily</b><br><span class="role"><span class="es">Huésped de EE. UU. · llega de noche · no habla español</span><span class="en">US guest · arrives at night · no Spanish</span></span></span></span>
+        <span class="need"><span class="es">El código de la puerta y el Wi-Fi en segundos, respuestas a medianoche y sugerencias que no parezcan venta.</span><span class="en">The door code and Wi-Fi in seconds, answers at midnight, and suggestions that don't feel like a sales pitch.</span></span>
+        <span class="open-hint"><span class="es">Ver detalle</span><span class="en">See details</span></span></button>
+        <dl class="persona-detail" hidden>
+          <dt><span class="es">Dolor</span><span class="en">Pain</span></dt><dd><span class="es">Buscar el código entre mensajes largos, esperar al anfitrión, recomendaciones genéricas.</span><span class="en">Hunting for the door code in long messages, waiting for the host, generic tour suggestions.</span></dd>
+          <dt><span class="es">Espera</span><span class="en">Expects</span></dt><dd><span class="es">Sin descargar una app ni crear una cuenta. Que funcione en inglés y con poca señal.</span><span class="en">No app download, no account. Works in English and on a weak signal.</span></dd>
+          <dt><span class="es">Éxito</span><span class="en">Success</span></dt><dd><span class="es">«Pregunté por el control del aire a medianoche y tuve la respuesta en segundos.»</span><span class="en">"I asked about the AC remote at midnight and got the answer in seconds."</span></dd>
+        </dl>
+      </div>
+      <div class="persona" data-build><button class="persona-btn" type="button" aria-expanded="false">
+        <span class="persona-top"><span class="avatar-arch" aria-hidden="true">L</span><span><b>Luis</b><br><span class="role"><span class="es">Proveedor local de tours y traslados · fase 3</span><span class="en">Local tour and transfer operator · Phase 3</span></span></span></span>
+        <span class="need"><span class="es">Que los anfitriones de su zona recomienden sus servicios desde la guía y cobrar de forma confiable.</span><span class="en">Hosts in his area recommend his services in their guides, and he gets paid reliably.</span></span>
+        <span class="open-hint"><span class="es">Ver detalle</span><span class="en">See details</span></span></button>
+        <dl class="persona-detail" hidden>
+          <dt><span class="es">Dolor</span><span class="en">Pain</span></dt><dd><span class="es">Depende del boca a boca. Los grandes marketplaces apenas cubren su destino.</span><span class="en">He depends on word of mouth. Big tour marketplaces barely cover his destination.</span></dd>
+          <dt><span class="es">Qué implica</span><span class="en">What it implies</span></dt><dd><span class="es">Un marketplace de proveedores locales en la fase 3, que además fortalece el inventario donde los catálogos globales son débiles.</span><span class="en">A local provider marketplace in Phase 3, which also strengthens inventory where global catalogs are thin.</span></dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="vision" data-chapter="vision" data-es="La visión" data-en="The vision">
+  <div class="inner">
+    <div class="split top">
+      <div class="stack" style="gap:18px">
+        <div class="head">
+          <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">La visión</span><span class="en">The vision</span></p>
+          <h2 class="h2" data-build><span class="es">Tres capas, cada una construida sobre la anterior</span><span class="en">Three layers, each built on the one before</span></h2>
+          <p class="lead" data-build><span class="es">Cada huésped recibe una respuesta inmediata y correcta sobre su estadía, en su idioma. Cada anfitrión gana más por estadía y pasa menos tiempo en la bandeja.</span><span class="en">Every guest gets an instant, accurate answer about their stay, in their language. Every host earns more from each stay and spends less time in the inbox.</span></p>
+        </div>
+        <div class="layers" id="layers">
+          <div data-build>
+            <button class="layer" type="button" aria-expanded="true"><span class="n">1</span><span><b><span class="es">La guía</span><span class="en">The guide</span></b><br><span class="small"><span class="es">Guía móvil por propiedad, sin app ni cuenta</span><span class="en">A mobile guide per property, no app, no account</span></span></span><svg class="chev" aria-hidden="true"><use href="#i-down"/></svg></button>
+            <div class="layer-detail"><p><span class="es">Llegada, Wi-Fi, normas, electrodomésticos, recomendaciones, emergencias y salida, desde un enlace o un QR. Es útil desde el primer día y gratis para empezar: el anfitrión la adopta sin tener que confiar primero en la IA.</span><span class="en">Arrival, Wi-Fi, house rules, appliances, local tips, emergencies, and checkout, from a link or a QR code. Useful on day one and free to start, so hosts adopt it before trusting AI.</span></p><div class="tags"><span class="tag">spec 002</span><span class="tag">spec 003</span><span class="tag">spec 004</span></div></div>
+          </div>
+          <div data-build>
+            <button class="layer" type="button" aria-expanded="false"><span class="n">2</span><span><b><span class="es">El asistente</span><span class="en">The assistant</span></b><br><span class="small"><span class="es">IA que leyó la guía y responde a los huéspedes</span><span class="en">AI that read the guide and answers guests</span></span></span><svg class="chev" aria-hidden="true"><use href="#i-down"/></svg></button>
+            <div class="layer-detail" hidden><p><span class="es">Hoy responde dentro de la guía y redacta respuestas para los chats de Airbnb, Booking.com y Vrbo (copiloto). En la fase 2 responderá dentro de esos chats a través del PMS. El anfitrión decide por tema si responde solo o prepara un borrador; emergencias, quejas, dinero y cambios de reserva siempre van a una persona.</span><span class="en">Today it answers inside the guide and drafts replies for Airbnb, Booking.com, and Vrbo chats (the copilot). In Phase 2 it will answer inside those chats through the host's PMS. Hosts choose per topic whether it answers or drafts; emergencies, complaints, money, and booking changes always go to a person.</span></p><div class="tags"><span class="tag">spec 005</span><span class="tag">spec 006</span><span class="tag">spec 007</span></div></div>
+          </div>
+          <div data-build>
+            <button class="layer" type="button" aria-expanded="false"><span class="n">3</span><span><b><span class="es">El marketplace</span><span class="en">The marketplace</span></b><br><span class="small"><span class="es">Servicios opcionales en el momento justo</span><span class="en">Optional services at the right moment</span></span></span><svg class="chev" aria-hidden="true"><use href="#i-down"/></svg></button>
+            <div class="layer-detail" hidden><p><span class="es">Extras del anfitrión (traslado, limpieza, compras antes de llegar), tours de socios y, más adelante, reservas y seguros. Cada oferta dice cuándo alguien gana una comisión, y comprar siempre es opcional.</span><span class="en">The host's own extras (pickup, cleaning, groceries), partner tours, and later reservations and insurance. Every offer says when someone earns a commission, and buying is always optional.</span></p><div class="tags"><span class="tag">spec 008</span><span class="tag">spec 009</span><span class="tag">spec 013</span></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="stack" style="gap:14px">
+        <div class="northstar" data-build>
+          <p class="eyebrow"><span class="es">Métrica North Star</span><span class="en">North Star metric</span></p>
+          <p><span class="es">Preguntas de huéspedes resueltas sin intervención del anfitrión, por propiedad activa al mes.</span><span class="en">Guest questions resolved without host intervention, per active property per month.</span></p>
+          <p class="small"><span class="es">Apoyo: tiempo ahorrado al anfitrión · ingresos por servicios por estadía · conversión de gratis a pago.</span><span class="en">Supporting: host time saved · services revenue per stay · free-to-paid conversion.</span></p>
+        </div>
+        <div class="card" data-build>
+          <p class="h3"><span class="es">Apuestas estratégicas</span><span class="en">Strategic bets</span></p>
+          <ol class="small" style="color:var(--text)">
+            <li><span class="es">Una guía gratis y excelente adquiere anfitriones más barato que la venta directa.</span><span class="en">A free, excellent guide acquires hosts more cheaply than outbound sales.</span></li>
+            <li><span class="es">Los programas de socios de PMS (Hospitable y Hostaway primero) abren el chat de las plataformas.</span><span class="en">PMS partner programs (Hospitable and Hostaway first) open the platform chats.</span></li>
+            <li><span class="es">El huésped compra servicios opcionales si la oferta llega en el momento justo y en su idioma.</span><span class="en">Guests buy optional services when the offer arrives at the right moment, in their language.</span></li>
+            <li><span class="es">El anfitrión da más autonomía cuando el asistente demuestra que acierta.</span><span class="en">Hosts grant more autonomy once the assistant proves itself.</span></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="diferencia" data-chapter="vision" data-es="Por qué Guidesk" data-en="Why Guidesk">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Posicionamiento</span><span class="en">Positioning</span></p>
+      <h2 class="h2" data-build><span class="es">Con o sin PMS, en español y en inglés, gratis para empezar</span><span class="en">With or without a PMS, in Spanish and English, free to start</span></h2>
+    </div>
+    <div class="grid-3">
+      <div class="card" data-build><p class="h3"><span class="es">Con o sin PMS</span><span class="en">With or without a PMS</span></p><p><span class="es">Cualquier anfitrión empieza hoy: guía, chat en la guía y copiloto. Con un PMS aliado, también responderá dentro del chat de la plataforma.</span><span class="en">Any host can start today: the guide, the in-guide chat, and the copilot. On a partner PMS it will also answer inside the platform chat.</span></p></div>
+      <div class="card" data-build><p class="h3"><span class="es">Hecho para las Américas</span><span class="en">Built for the Americas</span></p><p><span class="es">Español e inglés desde el primer día, con la misma calidad, y medios de pago de la región.</span><span class="en">Spanish and English from day one, with equal quality, and regional payment methods.</span></p></div>
+      <div class="card" data-build><p class="h3"><span class="es">Primero la guía</span><span class="en">Guide first</span></p><p><span class="es">La guía vale por sí sola, así que la adopción no depende de confiar en la IA el primer día.</span><span class="en">The guide is valuable on its own, so adoption doesn't depend on trusting AI on day one.</span></p></div>
+      <div class="card" data-build><p class="h3"><span class="es">Cumplimiento por diseño</span><span class="en">Compliant by design</span></p><p><span class="es">Sigue las políticas 2025–2026 de Airbnb: guía opcional, beneficios declarados, sin pedir datos de contacto al huésped.</span><span class="en">Follows Airbnb's 2025–2026 policies: the guide is optional, benefits are disclosed, no guest contact data is collected.</span></p></div>
+      <div class="card" data-build><p class="h3"><span class="es">Confianza que se gana</span><span class="en">Earned trust</span></p><p><span class="es">El asistente empieza redactando borradores y gana autonomía tema por tema.</span><span class="en">The assistant starts by drafting and earns autonomy topic by topic.</span></p></div>
+      <div class="card" data-build><p class="h3"><span class="es">Lo que no es</span><span class="en">What it is not</span></p><p><span class="es">No es un PMS ni un channel manager. No es un bot de WhatsApp o SMS. Nunca mueve una reserva ni su pago fuera de la plataforma.</span><span class="en">Not a PMS or channel manager. Not a WhatsApp or SMS bot. It never moves a booking or its payment off the platform.</span></p></div>
+    </div>
+    <div class="table-wrap wide" data-build>
+      <table>
+        <thead><tr><th><span class="es">Quién</span><span class="en">Who</span></th><th><span class="es">Qué ofrecen</span><span class="en">What they offer</span></th><th><span class="es">Dónde dejan un hueco</span><span class="en">Where they leave a gap</span></th></tr></thead>
+        <tbody>
+          <tr><td><span class="es">Software de gestión (Hostaway, Guesty, Hospitable)</span><span class="en">Property management software (Hostaway, Guesty, Hospitable)</span></td><td><span class="es">Suites completas, agregando IA y ventas adicionales</span><span class="en">Full suites, adding AI and upsells</span></td><td><span class="es">Hechas para profesionales; también son nuestros futuros socios</span><span class="en">Built for professionals; also our future partners</span></td></tr>
+          <tr><td><span class="es">Plataformas de experiencia (Enso Connect, Duve, Touch Stay, Hostfully)</span><span class="en">Guest-experience platforms (Enso Connect, Duve, Touch Stay, Hostfully)</span></td><td><span class="es">Guías, check-in, ventas adicionales</span><span class="en">Guidebooks, check-in, upsells</span></td><td><span class="es">En inglés primero, por unidad o por cotización, a menudo con mínimos</span><span class="en">English-first, per unit or by quote, often with minimums</span></td></tr>
+          <tr><td><span class="es">Respondedores con IA (HostBuddy y otros)</span><span class="en">AI responders (HostBuddy and others)</span></td><td><span class="es">Respuestas automáticas a través del PMS</span><span class="en">Automatic replies through a PMS</span></td><td><span class="es">Requieren PMS; poca guía y poco comercio local</span><span class="en">Need a PMS; little guide or local commerce</span></td></tr>
+          <tr><td>Airbnb</td><td><span class="es">Guía básica; sus propios Servicios y Experiencias</span><span class="en">A basic guidebook; its own Services and Experiences</span></td><td><span class="es">No está pensada para los servicios propios del anfitrión</span><span class="en">Not built around the host's own services</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EL PRODUCTO ============ -->
+<section class="slide" id="mapa" data-chapter="producto" data-es="Mapa del producto" data-en="Product map">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">El producto, como está construido</span><span class="en">The product, as built</span></p>
+      <h2 class="h2" data-build><span class="es">Doce funciones de la fase 1, todas en main</span><span class="en">Twelve Phase 1 features, all in main</span></h2>
+      <p class="small" data-build><span class="es">Cada tarjeta es una especificación de Spec Kit. Tócala para ver qué hace y cómo quedó construida.</span><span class="en">Each card is a Spec Kit specification. Tap one to see what it does and how it was built.</span></p>
+    </div>
+    <div class="chips" role="group" aria-label="Filtrar / Filter" data-build id="featureFilter">
+      <button class="chip" type="button" aria-pressed="true" data-filter="all"><span class="es">Todas</span><span class="en">All</span></button>
+      <button class="chip" type="button" aria-pressed="false" data-filter="host"><span class="es">Anfitrión</span><span class="en">Host</span></button>
+      <button class="chip" type="button" aria-pressed="false" data-filter="guest"><span class="es">Huésped</span><span class="en">Guest</span></button>
+      <button class="chip" type="button" aria-pressed="false" data-filter="platform"><span class="es">Plataforma</span><span class="en">Platform</span></button>
+    </div>
+    <div class="feature-grid" id="featureGrid">
+      <button class="feature" type="button" data-feature="001" data-who="host" data-build><span class="top"><span class="tag">001</span><span class="tag ok">main ✓</span></span><span class="title"><span class="es">Cuentas, workspaces y roles</span><span class="en">Accounts, workspaces, and roles</span></span><span class="sum"><span class="es">Sin contraseñas, equipos con roles, varios workspaces.</span><span class="en">Passwordless, teams with roles, several workspaces.</span></span><span class="who"><span class="es">Anfitrión</span><span class="en">Host</span></span></button>
+      <button class="feature" type="button" data-feature="002" data-who="host" data-build><span class="top"><span class="tag">002</span><span class="tag ok">main ✓</span></span><span class="title"><span class="es">Alta de propiedades</span><span class="en">Property onboarding</span></span><span class="sum"><span class="es">Seis formas de empezar, más el calendario iCal.</span><span class="en">Six ways to start, plus the iCal calendar.</span></span><span class="who"><span class="es">Anfitrión</span><span class="en">Host</span></span></button>
+      <button class="feature" type="button" data-feature="003" data-who="host" data-build><span class="top"><span class="tag">003</span><span class="tag ok">main ✓</span></span><span class="title"><span class="es">Constructor de guías</span><span class="en">Guide builder</span></span><span class="sum"><span class="es">Borrador de 9 secciones, entrevista con IA, códigos bloqueados.</span><span class="en">Nine-section draft, AI interview, locked codes.</span></span><span class="who"><span class="es">Anfitrión</span><span class="en">Host</span></span></button>
+      <button class="feature" type="button" data-feature="004" data-who="guest" data-build><span class="top"><span class="tag">004</span><span class="tag ok">main ✓</span></span><span class="title"><span class="es">Guía del huésped</span><span class="en">Guest guide</span></span><span class="sum"><span class="es">PWA sin app ni cuenta; códigos solo durante la estadía.</span><span class="en">A PWA with no app or account; codes only during the stay.</span></span><span class="who"><span class="es">Huésped</span><span class="en">Guest</span></span></button>
+      <button class="feature" type="button" data-feature="005" data-who="guest" data-build><span class="top"><span class="tag">005</span><span class="tag ok">main ✓</span></span><span class="title"><span class="es">Chat con IA en la guía</span><span class="en">In-guide AI chat</span></span><span class="sum"><span class="es">Responde con la guía y pasa lo delicado al anfitrión.</span><span class="en">Answers from the guide, hands the sensitive to the host.</span></span><span class="who"><span class="es">Huésped</span><span class="en">Guest</span></span></button>
+      <button class="feature" type="button" data-feature="006" data-who="host" data-build><span class="top"><span class="tag">006</span><span class="tag ok">main ✓</span></span><span class="title"><span class="es">Bandeja y copiloto</span><span class="en">Inbox and copilot</span></span><span class="sum"><span class="es">Aprobar borradores, tomar conversaciones, alertas push.</span><span class="en">Approve drafts, take over, push alerts.</span></span><span class="who"><span class="es">Anfitrión</span><span class="en">Host</span></span></button>
+      <button class="feature" type="button" data-feature="007" data-who="host" data-build><span class="top"><span class="tag">007</span><span class="tag ok">main ✓</span></span><span class="title"><span class="es">Ajustes del asistente</span><span class="en">Assistant settings</span></span><span class="sum"><span class="es">Autonomía por tema, tono, horas de silencio.</span><span class="en">Autonomy per topic, tone, quiet hours.</span></span><span class="who"><span class="es">Anfitrión</span><span class="en">Host</span></span></button>
+      <button class="feature" type="button" data-feature="008" data-who="guest host" data-build><span class="top"><span class="tag">008</span><span class="tag ok">main ✓</span></span><span class="title"><span class="es">Extras y solicitudes</span><span class="en">Extras and requests</span></span><span class="sum"><span class="es">Catálogo del anfitrión; el huésped pide, el anfitrión confirma.</span><span class="en">The host's catalog; guests request, hosts confirm.</span></span><span class="who"><span class="es">Huésped y anfitrión</span><span class="en">Guest and host</span></span></button>
+      <button class="feature" type="button" data-feature="009" data-who="guest" data-build><span class="top"><span class="tag">009</span><span class="tag ok">main ✓</span></span><span class="title"><span class="es">Explorar: tours y experiencias</span><span class="en">Explore: tours and experiences</span></span><span class="sum"><span class="es">Viator y Civitatis con aviso de comisión.</span><span class="en">Viator and Civitatis with a commission disclosure.</span></span><span class="who"><span class="es">Huésped</span><span class="en">Guest</span></span></button>
+      <button class="feature" type="button" data-feature="010" data-who="host" data-build><span class="top"><span class="tag">010</span><span class="tag ok">main ✓</span></span><span class="title"><span class="es">Estadísticas</span><span class="en">Analytics</span></span><span class="sum"><span class="es">Uso de la guía, preguntas, resolución automática.</span><span class="en">Guide use, questions, automated resolution.</span></span><span class="who"><span class="es">Anfitrión</span><span class="en">Host</span></span></button>
+      <button class="feature" type="button" data-feature="011" data-who="platform" data-build><span class="top"><span class="tag">011</span><span class="tag ok">main ✓</span></span><span class="title"><span class="es">Planes y límites</span><span class="en">Plan limits</span></span><span class="sum"><span class="es">Free, Pro y Business: propiedades, respuestas de IA, puestos.</span><span class="en">Free, Pro, and Business: properties, AI replies, seats.</span></span><span class="who"><span class="es">Plataforma</span><span class="en">Platform</span></span></button>
+      <button class="feature" type="button" data-feature="013" data-who="guest host" data-build><span class="top"><span class="tag">013</span><span class="tag ok">main ✓</span></span><span class="title"><span class="es">Pagos de extras</span><span class="en">Add-on payments</span></span><span class="sum"><span class="es">Checkout del proveedor, pagos al anfitrión, reembolsos.</span><span class="en">Hosted checkout, host payouts, refunds.</span></span><span class="who"><span class="es">Huésped y anfitrión</span><span class="en">Guest and host</span></span></button>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="onboarding" data-chapter="producto" data-es="De cero a guía publicada" data-en="From zero to a published guide">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Portal del anfitrión</span><span class="en">Host portal</span> <span class="tag">001</span><span class="tag">002</span><span class="tag">003</span></p>
+      <h2 class="h2" data-build><span class="es">De cero a guía publicada en menos de 30 minutos</span><span class="en">From zero to a published guide in under 30 minutes</span></h2>
+      <p class="small" data-build><span class="es">Meta del piloto: mediana de 30 minutos o menos desde el registro. Toca cada paso.</span><span class="en">Pilot target: a median of 30 minutes or less from sign-up. Tap each step.</span></p>
+    </div>
+    <div data-tabs class="stack" style="gap:14px">
+      <div class="flow" style="--steps:5" role="tablist" aria-label="Pasos / Steps" data-build>
+        <button class="flow-step" role="tab" type="button" aria-selected="true" data-tab="o1"><span class="k">1 · 001</span><span class="t"><span class="es">Crea tu cuenta</span><span class="en">Create your account</span></span></button>
+        <button class="flow-step" role="tab" type="button" aria-selected="false" data-tab="o2"><span class="k">2 · 002</span><span class="t"><span class="es">Agrega la propiedad</span><span class="en">Add the property</span></span></button>
+        <button class="flow-step" role="tab" type="button" aria-selected="false" data-tab="o3"><span class="k">3 · 003</span><span class="t"><span class="es">Revisa el borrador</span><span class="en">Review the draft</span></span></button>
+        <button class="flow-step" role="tab" type="button" aria-selected="false" data-tab="o4"><span class="k">4 · 003</span><span class="t"><span class="es">Llena los vacíos</span><span class="en">Fill the gaps</span></span></button>
+        <button class="flow-step" role="tab" type="button" aria-selected="false" data-tab="o5"><span class="k">5 · 003 · 004</span><span class="t"><span class="es">Publica y comparte</span><span class="en">Publish and share</span></span></button>
+      </div>
+
+      <div class="flow-panel" role="tabpanel" data-panel="o1" data-build>
+        <div class="panel-grid">
+          <div class="stack">
+            <p class="h3"><span class="es">Registro sin contraseñas, equipo con roles</span><span class="en">Passwordless sign-up, a team with roles</span></p>
+            <ul>
+              <li><span class="es">Google, una passkey (rostro o huella) o un código por correo. No hay contraseñas que robar.</span><span class="en">Google, a passkey (face or fingerprint), or an email code. No passwords to steal.</span></li>
+              <li><span class="es">Hasta tres preguntas (cuántas propiedades, qué PMS, país e idioma) y el workspace queda listo.</span><span class="en">Up to three questions (how many properties, which PMS, country and language) and the workspace is ready.</span></li>
+              <li><span class="es">Roles: Dueño, Administrador y Agente. Los agentes atienden conversaciones y nunca ven códigos de acceso.</span><span class="en">Roles: Owner, Admin, and Agent. Agents handle conversations and never see access codes.</span></li>
+              <li><span class="es">Segundo factor obligatorio para dueños y administradores con más de 2 propiedades; reautenticación antes de revelar códigos o invitar.</span><span class="en">A second factor is required for owners and admins with more than 2 properties; re-authentication before revealing codes or inviting.</span></li>
+              <li><span class="es">Una persona puede estar en varios workspaces y cambiar con el selector.</span><span class="en">One person can belong to several workspaces and switch between them.</span></li>
+            </ul>
+          </div>
+          <div class="mini" aria-hidden="true">
+            <div class="mini-bar"><span class="sq"></span>guidesk</div>
+            <div class="mini-body">
+              <b><span class="es">Entra a Guidesk</span><span class="en">Sign in to Guidesk</span></b>
+              <span class="mini-btn ghost"><span class="es">Continuar con Google</span><span class="en">Continue with Google</span></span>
+              <span class="mini-btn ghost"><span class="es">Usar passkey</span><span class="en">Use a passkey</span></span>
+              <span class="field">ana@ejemplo.cr</span>
+              <span class="mini-btn"><span class="es">Enviarme un código</span><span class="en">Email me a code</span></span>
+              <div class="mini-row"><span class="l"><span class="es">Equipo · Marta</span><span class="en">Team · Marta</span></span><span class="tag"><span class="es">Agente</span><span class="en">Agent</span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-panel" role="tabpanel" data-panel="o2" hidden>
+        <div class="panel-grid">
+          <div class="stack">
+            <p class="h3"><span class="es">Seis formas de empezar; siempre confirma el anfitrión</span><span class="en">Six ways to start; the host always confirms</span></p>
+            <ul>
+              <li><span class="es">Pegar el texto o las capturas del anuncio: la IA extrae los datos.</span><span class="en">Paste the listing text or screenshots: AI extracts the facts.</span></li>
+              <li><span class="es">Importar de un PMS en modo solo lectura con el token del cliente (Beds24, Hostex).</span><span class="en">Import read-only from a PMS with the customer's own token (Beds24, Hostex).</span></li>
+              <li><span class="es">Un CSV para muchas propiedades (500 filas validadas en 30 s o menos), duplicar una existente, a mano o en blanco.</span><span class="en">A CSV for many properties (500 rows validated in 30 s or less), duplicate one, manual entry, or blank.</span></li>
+              <li><span class="es">Los códigos que aparezcan en el anuncio pasan a campos cifrados y nunca llegan a la IA.</span><span class="en">Codes found in the listing move to encrypted fields and never reach the AI.</span></li>
+              <li><span class="es">El calendario iCal del OTA da las fechas de cada estadía; un lector aislado lo descarga.</span><span class="en">The OTA's iCal calendar gives each stay's dates; an isolated reader fetches it.</span></li>
+            </ul>
+          </div>
+          <div class="mini" aria-hidden="true">
+            <div class="mini-bar"><span class="sq"></span><span class="es">Agregar propiedad</span><span class="en">Add property</span></div>
+            <div class="mini-body">
+              <div class="mini-row"><span class="l"><span class="es">Pegar texto o capturas</span><span class="en">Paste text or screenshots</span></span><span class="tag ok"><span class="es">Recomendado</span><span class="en">Recommended</span></span></div>
+              <div class="mini-row"><span class="l"><span class="es">Importar de mi PMS</span><span class="en">Import from my PMS</span></span><span class="tag">Beds24 · Hostex</span></div>
+              <div class="mini-row"><span class="l"><span class="es">Subir un CSV</span><span class="en">Upload a CSV</span></span></div>
+              <div class="mini-row"><span class="l"><span class="es">Duplicar una propiedad</span><span class="en">Duplicate a property</span></span></div>
+              <div class="mini-row"><span class="l"><span class="es">Empezar en blanco</span><span class="en">Start blank</span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-panel" role="tabpanel" data-panel="o3" hidden>
+        <div class="panel-grid">
+          <div class="stack">
+            <p class="h3"><span class="es">Un borrador de nueve secciones, con su origen</span><span class="en">A nine-section draft, labeled by source</span></p>
+            <p><span class="es">Cada propiedad empieza con un borrador hecho con sus propios datos. Ana ve «De tu anuncio» en Normas y Comodidades, corrige una frase, agrega una foto de la entrada y un video de 40 segundos de la cafetera, y oculta Parqueo porque la casa no tiene.</span><span class="en">Every property starts with a draft built from its own data. Ana sees "From your listing" on House rules and Amenities, fixes a sentence, adds an entrance photo and a 40-second coffee-machine video, and hides Parking because the house has none.</span></p>
+            <p class="small"><span class="es">Lo importado, pegado o redactado por IA siempre es borrador hasta que el anfitrión lo aprueba.</span><span class="en">Imported, pasted, or AI-drafted content is always a draft until the host approves it.</span></p>
+          </div>
+          <div class="mini" aria-hidden="true">
+            <div class="mini-bar"><span class="sq"></span>Casa Colibrí · <span class="es">borrador</span><span class="en">draft</span></div>
+            <div class="mini-body" style="gap:5px">
+              <div class="mini-row"><span class="l"><span class="es">Llegada y acceso</span><span class="en">Arrival and access</span></span><span class="status-chip ok"><span class="es">Lista</span><span class="en">Ready</span></span></div>
+              <div class="mini-row"><span class="l">Wi-Fi</span><span class="status-chip ok"><span class="es">Lista</span><span class="en">Ready</span></span></div>
+              <div class="mini-row"><span class="l"><span class="es">Normas de la casa</span><span class="en">House rules</span></span><span class="status-chip wait"><span class="es">Revisar</span><span class="en">Review</span></span></div>
+              <div class="mini-row"><span class="l"><span class="es">Electrodomésticos</span><span class="en">Appliances</span></span><span class="status-chip wait"><span class="es">Revisar</span><span class="en">Review</span></span></div>
+              <div class="mini-row"><span class="l"><span class="es">Comodidades</span><span class="en">Amenities</span></span><span class="status-chip ok"><span class="es">Lista</span><span class="en">Ready</span></span></div>
+              <div class="mini-row"><span class="l"><span class="es">Parqueo y transporte</span><span class="en">Parking and transport</span></span><span class="status-chip info"><span class="es">Oculta</span><span class="en">Hidden</span></span></div>
+              <div class="mini-row"><span class="l"><span class="es">Recomendaciones locales</span><span class="en">Local recommendations</span></span><span class="status-chip bad"><span class="es">Falta</span><span class="en">Missing</span></span></div>
+              <div class="mini-row"><span class="l"><span class="es">Emergencias y contactos</span><span class="en">Emergencies and contacts</span></span><span class="status-chip wait"><span class="es">Revisar</span><span class="en">Review</span></span></div>
+              <div class="mini-row"><span class="l"><span class="es">Salida</span><span class="en">Checkout</span></span><span class="status-chip ok"><span class="es">Lista</span><span class="en">Ready</span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-panel" role="tabpanel" data-panel="o4" hidden>
+        <div class="panel-grid">
+          <div class="stack">
+            <p class="h3"><span class="es">El puntaje de completitud guía la entrevista</span><span class="en">The completeness score drives the interview</span></p>
+            <ul>
+              <li><span class="es">El puntaje sugiere lo que más preguntan los huéspedes y todavía falta.</span><span class="en">The score suggests what guests ask most that is still missing.</span></li>
+              <li><span class="es">Entrevista con IA: una pregunta a la vez, por texto o nota de voz, con vista previa de dónde queda cada respuesta.</span><span class="en">AI interview: one question at a time, by text or voice note, with a preview of where each answer goes.</span></li>
+              <li><span class="es">Subir manuales y fotos: el sistema extrae contenido sugerido en un entorno aislado y quita los metadatos de las imágenes.</span><span class="en">Upload manuals and photos: suggested content is extracted in an isolated sandbox, and image metadata is stripped.</span></li>
+              <li><span class="es">Contenido compartido del workspace que cada propiedad hereda o sobrescribe.</span><span class="en">Shared workspace content that each property inherits or overrides.</span></li>
+            </ul>
+          </div>
+          <div class="mini" aria-hidden="true">
+            <div class="mini-bar"><span class="sq"></span><span class="es">Entrevista</span><span class="en">Interview</span></div>
+            <div class="mini-body">
+              <div class="row" style="gap:12px"><span class="ring" id="ring" style="--v:68" data-label="68%"></span><span class="small"><span class="es">Faltan: recomendaciones locales, cómo usar el aire.</span><span class="en">Missing: local tips, how to use the AC.</span></span></div>
+              <span class="bubble-a"><span class="es">¿Qué playa le recomiendas a tus huéspedes y a cuántos minutos queda?</span><span class="en">Which beach do you recommend to guests, and how many minutes away is it?</span></span>
+              <span class="bubble-g"><span class="es">Playa Conchal, 8 minutos en carro.</span><span class="en">Playa Conchal, 8 minutes by car.</span></span>
+              <span class="small"><span class="es">Va a: Recomendaciones locales</span><span class="en">Goes to: Local recommendations</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-panel" role="tabpanel" data-panel="o5" hidden>
+        <div class="panel-grid">
+          <div class="stack">
+            <p class="h3"><span class="es">Publicar es explícito y versionado; compartir es un clic</span><span class="en">Publishing is explicit and versioned; sharing is one tap</span></p>
+            <ul>
+              <li><span class="es">Español e inglés con traducción automática y revisión por sección.</span><span class="en">Spanish and English with machine translation and per-section review.</span></li>
+              <li><span class="es">Mensaje listo para pegar en los mensajes programados de Airbnb, Booking.com o Vrbo, en ES y EN, con las instrucciones de acceso como texto.</span><span class="en">A ready-to-paste message for the Airbnb, Booking.com, or Vrbo scheduled messages, in ES and EN, with the access steps as text.</span></li>
+              <li><span class="es">QR imprimible (PNG y SVG) que solo muestra lo público, y un enlace por estadía para cada reserva.</span><span class="en">A printable QR code (PNG and SVG) that shows only public content, and a link per stay for each booking.</span></li>
+              <li><span class="es">La guía es opcional para el huésped: lo esencial sigue en el chat de la plataforma.</span><span class="en">The guide is optional for guests: the essentials stay in the platform's messages.</span></li>
+            </ul>
+          </div>
+          <div class="mini" aria-hidden="true">
+            <div class="mini-bar"><span class="sq"></span><span class="es">Compartir la guía de Casa Colibrí</span><span class="en">Share the Casa Colibrí guide</span></div>
+            <div class="mini-body">
+              <div class="mini-row"><span class="l"><span class="es">Mensaje para la plataforma (ES · EN)</span><span class="en">Platform message (ES · EN)</span></span><span class="mini-btn ghost"><span class="es">Copiar</span><span class="en">Copy</span></span></div>
+              <div class="mini-row"><span class="l"><span class="es">Póster con QR (solo público)</span><span class="en">QR poster (public only)</span></span><span class="mini-btn ghost">PNG · SVG</span></div>
+              <div class="mini-row"><span class="l"><span class="es">Emily · 21–28 nov</span><span class="en">Emily · Nov 21–28</span></span><span class="mini-btn"><span class="es">Copiar enlace</span><span class="en">Copy link</span></span></div>
+              <div class="mini-row"><span class="l"><span class="es">Versión publicada</span><span class="en">Published version</span></span><span class="tag ok">v3</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="acceso" data-chapter="producto" data-es="Códigos solo para quien se hospeda" data-en="Codes only for the guest staying">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Guía del huésped</span><span class="en">Guest guide</span> <span class="tag">004</span><span class="tag">SEC-01…04</span></p>
+      <h2 class="h2" data-build><span class="es">El código de la puerta, solo para quien se hospeda y solo durante su estadía</span><span class="en">The door code, only for the guest staying, only during the stay</span></h2>
+    </div>
+    <div class="split top">
+      <div class="stack" style="gap:16px">
+        <p class="small" data-build><span class="es">Prueba: elige el enlace y el momento, y mira lo que vería el huésped.</span><span class="en">Try it: pick the link and the moment, and see what the guest would see.</span></p>
+        <div class="stack" data-build>
+          <span class="h3" id="lblLink"><span class="es">¿Cómo abrió la guía?</span><span class="en">How did they open the guide?</span></span>
+          <div class="chips" role="group" aria-labelledby="lblLink" id="accessLink">
+            <button class="chip" type="button" aria-pressed="false" data-v="property"><span class="es">Enlace de la propiedad o QR</span><span class="en">Property link or QR</span></button>
+            <button class="chip" type="button" aria-pressed="true" data-v="stay"><span class="es">Enlace de su estadía</span><span class="en">Their stay link</span></button>
+          </div>
+        </div>
+        <div class="stack" data-build>
+          <span class="h3" id="lblWhen"><span class="es">¿Cuándo?</span><span class="en">When?</span></span>
+          <div class="chips" role="group" aria-labelledby="lblWhen" id="accessWhen">
+            <button class="chip" type="button" aria-pressed="false" data-v="before"><span class="es">Dos días antes</span><span class="en">Two days before</span></button>
+            <button class="chip" type="button" aria-pressed="true" data-v="arrival"><span class="es">Día de llegada</span><span class="en">Arrival day</span></button>
+            <button class="chip" type="button" aria-pressed="false" data-v="after"><span class="es">3 horas después de salir</span><span class="en">3 hours after checkout</span></button>
+          </div>
+        </div>
+        <div class="stack" data-build>
+          <span class="h3" id="lblVerify"><span class="es">¿El anfitrión pide código de confirmación?</span><span class="en">Does the host require a confirmation code?</span></span>
+          <div class="chips" role="group" aria-labelledby="lblVerify" id="accessVerify">
+            <button class="chip" type="button" aria-pressed="true" data-v="no"><span class="es">No</span><span class="en">No</span></button>
+            <button class="chip" type="button" aria-pressed="false" data-v="yes"><span class="es">Sí, 6 caracteres</span><span class="en">Yes, 6 characters</span></button>
+          </div>
+        </div>
+        <div class="detail-box" data-build>
+          <p class="h3"><span class="es">Qué lo protege</span><span class="en">What protects it</span></p>
+          <ul class="small" style="color:var(--text)">
+            <li><span class="es">Enlace de estadía con token aleatorio de 256 bits, que vence 2 horas después de la salida, se puede revocar y sirve en hasta 10 dispositivos.</span><span class="en">A stay link with a random 256-bit token that ends 2 hours after checkout, can be revoked, and works on up to 10 devices.</span></li>
+            <li><span class="es">El token se cambia por una cookie segura y la dirección queda limpia: no se filtra al compartir ni en el «Referer».</span><span class="en">The token is swapped for a secure cookie and the address is cleaned, so it never leaks when shared or in the Referer.</span></li>
+            <li><span class="es">5 intentos fallidos pausan 15 minutos, y la pausa se duplica hasta 24 horas.</span><span class="en">5 failed tries pause for 15 minutes, doubling up to 24 hours.</span></li>
+            <li><span class="es">Los códigos nunca se guardan en caché ni sin conexión, la IA nunca los ve y cada vez que se muestran queda registrado.</span><span class="en">Codes are never cached or saved offline, the AI never sees them, and every reveal is logged.</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="phone" aria-live="polite">
+        <div class="phone-screen">
+          <div>
+            <div class="ph-status"><span id="accClock">15:05</span><span>4G</span></div>
+            <div class="ph-top"><span class="ph-title"><span class="es">Llegada y acceso</span><span class="en">Arrival and access</span></span><span class="ph-emerg"><span class="es">Emergencia</span><span class="en">Emergency</span></span></div>
+          </div>
+          <div class="ph-body" id="accessScreen"></div>
+          <div class="ph-nav"><span class="on"><span class="es">Guía</span><span class="en">Guide</span></span><span><span class="es">Explorar</span><span class="en">Explore</span></span><span>Extras</span><span><span class="es">Preguntar</span><span class="en">Ask</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="flujo-mensaje" data-chapter="producto" data-es="De la pregunta a la respuesta" data-en="From question to answer">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Chat en la guía</span><span class="en">In-guide chat</span> <span class="tag">005</span><span class="tag">007</span><span class="tag">011</span></p>
+      <h2 class="h2" data-build><span class="es">El modelo propone; el código decide</span><span class="en">The model proposes; code decides</span></h2>
+      <p class="small" data-build><span class="es">Elige una pregunta de Emily y sigue el mensaje por cada control hasta la respuesta o el escalamiento.</span><span class="en">Pick one of Emily's questions and follow the message through each check to an answer or an escalation.</span></p>
+    </div>
+    <div class="chips" id="scenarioChips" role="group" aria-label="Preguntas / Questions" data-build></div>
+    <div class="pipe-wrap">
+      <div class="stack" style="gap:12px" data-build>
+        <div class="chat-preview" id="pipeChat" aria-live="polite"></div>
+        <div class="outcome" id="pipeOutcome" aria-live="polite"></div>
+        <div class="row">
+          <button class="btn ghost" type="button" id="pipeReplay"><svg aria-hidden="true"><use href="#i-play"/></svg><span class="es">Repetir</span><span class="en">Replay</span></button>
+        </div>
+      </div>
+      <ol class="pipeline" id="pipeline" data-build>
+        <li data-s="0"><span class="node">1</span><span><span class="lbl"><span class="es">Guarda el mensaje</span><span class="en">Store the message</span> <span class="tag">API</span></span><br><span class="res"></span></span></li>
+        <li data-s="1"><span class="node">2</span><span><span class="lbl"><span class="es">Revisa límites y presupuesto</span><span class="en">Check limits and budget</span> <span class="tag">worker</span></span><br><span class="res"></span></span></li>
+        <li data-s="2"><span class="node">3</span><span><span class="lbl"><span class="es">Clasifica, sin ver la guía</span><span class="en">Classify, without the guide</span> <span class="tag">Claude</span></span><br><span class="res"></span></span></li>
+        <li data-s="3"><span class="node">4</span><span><span class="lbl"><span class="es">Aplica la política</span><span class="en">Apply the policy</span> <span class="tag"><span class="es">código</span><span class="en">code</span></span></span><br><span class="res"></span></span></li>
+        <li data-s="4"><span class="node">5</span><span><span class="lbl"><span class="es">Responde con la guía publicada</span><span class="en">Answer from the published guide</span> <span class="tag">Claude</span></span><br><span class="res"></span></span></li>
+        <li data-s="5"><span class="node">6</span><span><span class="lbl"><span class="es">Revisiones de salida</span><span class="en">Output checks</span> <span class="tag"><span class="es">código</span><span class="en">code</span></span></span><br><span class="res"></span></span></li>
+        <li data-s="6"><span class="node">7</span><span><span class="lbl"><span class="es">Entrega y traza</span><span class="en">Deliver and trace</span></span><br><span class="res"></span></span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="autonomia" data-chapter="producto" data-es="Escalera de confianza" data-en="Trust ladder">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Ajustes del asistente</span><span class="en">Assistant settings</span> <span class="tag">007</span><span class="tag">006</span></p>
+      <h2 class="h2" data-build><span class="es">Una escalera de confianza, tema por tema</span><span class="en">A trust ladder, topic by topic</span></h2>
+      <p class="small" data-build><span class="es">Todo empieza en «Reviso cada respuesta»; en este ejemplo, Wi-Fi y Electrodomésticos ya subieron a «Responde si está en la guía». Cambia la autonomía de un tema y mira qué escalón activa.</span><span class="en">Everything starts at "I review every reply"; in this example, Wi-Fi and Appliances already moved up to "Answers if it's in the guide". Change a topic's autonomy and see which rung it uses.</span></p>
+    </div>
+    <div class="ladder" id="ladder" data-build>
+      <div class="rung" data-level="draft"><span class="lvl">draft</span><b><span class="es">Reviso cada respuesta</span><span class="en">I review every reply</span></b><span class="small"><span class="es">Tu equipo aprueba cada respuesta antes de que llegue al huésped.</span><span class="en">Your team approves every reply before it reaches the guest.</span></span></div>
+      <div class="rung" data-level="auto"><span class="lvl">auto</span><b><span class="es">Responde si está en la guía</span><span class="en">Answers if it's in the guide</span></b><span class="small"><span class="es">Envía solo respuestas que citan la guía y pasan las revisiones; lo demás llega como borrador.</span><span class="en">Sends only answers that cite the guide and pass the checks; the rest arrives as a draft.</span></span></div>
+      <div class="rung" data-level="full_auto"><span class="lvl">full_auto</span><b><span class="es">Responde y pregunta solo</span><span class="en">Answers and asks on its own</span></b><span class="small"><span class="es">Además puede hacer una pregunta para aclarar y dar información general del destino, sin precios.</span><span class="en">It may also ask one clarifying question and give general destination information, with no prices.</span></span></div>
+    </div>
+    <div class="grid-2">
+      <div class="table-wrap topic-table" data-build>
+        <table>
+          <thead><tr><th><span class="es">Tema</span><span class="en">Topic</span></th><th><span class="es">Autonomía</span><span class="en">Autonomy</span></th></tr></thead>
+          <tbody id="topicRows"></tbody>
+        </table>
+      </div>
+      <div class="stack" style="gap:14px">
+        <div class="card" data-build>
+          <p class="h3"><svg width="16" height="16" aria-hidden="true" style="vertical-align:-2px"><use href="#i-lock"/></svg> <span class="es">Siempre pasan a tu equipo</span><span class="en">Always go to your team</span></p>
+          <ul class="locked-list">
+            <li><span class="es">Emergencias y seguridad</span><span class="en">Emergencies and safety</span></li>
+            <li><span class="es">Daños o algo que no funciona</span><span class="en">Damage or something broken</span></li>
+            <li><span class="es">Quejas</span><span class="en">Complaints</span></li>
+            <li><span class="es">Reembolsos, pagos y compensaciones</span><span class="en">Refunds, payments, and compensation</span></li>
+            <li><span class="es">Cambios de reserva</span><span class="en">Reservation changes</span></li>
+            <li><span class="es">Temas legales, discriminación o acoso</span><span class="en">Legal topics, discrimination, or harassment</span></li>
+            <li><span class="es">Pedidos de códigos y contraseñas (se indica la sección de la guía)</span><span class="en">Requests for codes and passwords (the guide section is shown)</span></li>
+            <li><span class="es">Lo que el asistente no sabe con certeza</span><span class="en">Anything the assistant isn't sure about</span></li>
+          </ul>
+        </div>
+        <div class="card" data-build>
+          <p class="h3"><span class="es">También se ajusta</span><span class="en">Also adjustable</span></p>
+          <ul class="small" style="color:var(--text)">
+            <li><span class="es">Tono cercano (tú) o formal (usted) e instrucciones propias que no pueden saltarse las reglas.</span><span class="en">A casual or formal tone, and custom instructions that can't override the rules.</span></li>
+            <li><span class="es">Horas de silencio: lo no urgente espera y llega en un resumen; las emergencias alertan siempre.</span><span class="en">Quiet hours: non-urgent alerts wait for one summary; emergencies always alert.</span></li>
+            <li><span class="es">Contactos de escalamiento, valores del workspace con ajustes por propiedad y «Probar el asistente» antes de que lo vean los huéspedes.</span><span class="en">Escalation contacts, workspace defaults with per-property overrides, and "Test the assistant" before guests see a change.</span></li>
+          </ul>
+        </div>
+        <div class="note" data-build><b><span class="es">Sugerencia de confianza:</span><span class="en">Trust suggestion:</span></b> <span class="es">después de 5 borradores de un tema enviados sin cambios en 30 días, la bandeja propone dejar que el asistente responda ese tema solo.</span><span class="en">after 5 drafts on a topic are sent unchanged within 30 days, the inbox suggests letting the assistant answer that topic on its own.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="bandeja" data-chapter="producto" data-es="Bandeja y copiloto" data-en="Inbox and copilot">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Bandeja y copiloto</span><span class="en">Inbox and copilot</span> <span class="tag">006</span></p>
+      <h2 class="h2" data-build><span class="es">Una bandeja para el equipo y un copiloto para los chats de las plataformas</span><span class="en">One inbox for the team, and a copilot for the platform chats</span></h2>
+    </div>
+    <div class="grid-2">
+      <div class="stack" style="gap:12px" data-build>
+        <div class="mini">
+          <div class="mini-bar"><span class="sq"></span><span class="es">Bandeja</span><span class="en">Inbox</span></div>
+          <div class="mini-body">
+            <div class="chips" role="tablist" aria-label="Bandeja / Inbox" id="inboxTabs">
+              <button class="chip" role="tab" type="button" aria-selected="true" data-v="needs"><span class="es">Te necesitan</span><span class="en">Needs you</span> · 3</button>
+              <button class="chip" role="tab" type="button" aria-selected="false" data-v="all"><span class="es">Todas</span><span class="en">All</span> · 5</button>
+              <button class="chip" role="tab" type="button" aria-selected="false" data-v="done"><span class="es">Listas</span><span class="en">Done</span> · 1</button>
+            </div>
+            <div class="stack" style="gap:6px" id="inboxList"></div>
+          </div>
+        </div>
+        <ul class="small" style="color:var(--text)">
+          <li><span class="es">Emergencias primero, filtro por propiedad, se actualiza cada 15 segundos.</span><span class="en">Emergencies first, filter by property, refreshes every 15 seconds.</span></li>
+          <li><span class="es">Enviar, editar o descartar el borrador; «Yo respondo» para tomar la conversación (el asistente sigue clasificando, así que una emergencia igual alerta a todos).</span><span class="en">Send, edit, or discard a draft; "I'll reply myself" takes the conversation over (the assistant still classifies, so an emergency still alerts everyone).</span></li>
+          <li><span class="es">«Marta está respondiendo» evita respuestas dobles. Alertas push en el teléfono, sin texto del huésped.</span><span class="en">"Marta is replying" avoids double answers. Push alerts on the phone, with no guest text.</span></li>
+        </ul>
+      </div>
+      <div class="stack" style="gap:12px" data-build>
+        <div class="mini">
+          <div class="mini-bar"><span class="sq"></span><span class="es">Responder un mensaje de la plataforma</span><span class="en">Reply to a platform message</span></div>
+          <div class="mini-body">
+            <span class="field" style="color:var(--text)">Hi Ana! Before we book: is there air conditioning in both bedrooms? You can also reach me at my email.</span>
+            <div class="row" style="gap:6px"><span class="tag">Casa Colibrí</span><span class="tag info"><span class="es">Consulta (antes de reservar)</span><span class="en">Inquiry (before booking)</span></span></div>
+            <button class="btn" type="button" id="copilotBtn" style="min-height:36px"><span class="es">Redactar respuesta</span><span class="en">Draft reply</span></button>
+            <div class="stack" id="copilotOut" style="gap:6px" aria-live="polite"></div>
+          </div>
+        </div>
+        <ul class="small" style="color:var(--text)">
+          <li><span class="es">Para anfitriones sin integración: pegan el mensaje de Airbnb, Booking.com o Vrbo y reciben una respuesta desde la guía, lista para copiar.</span><span class="en">For hosts without an integration: paste the Airbnb, Booking.com, or Vrbo message and get a reply from the guide, ready to copy.</span></li>
+          <li><span class="es">Pasa las mismas revisiones que las respuestas automáticas. Antes de reservar, quita enlaces y datos de contacto, como piden las plataformas.</span><span class="en">It passes the same checks as automatic replies. Before booking, it removes links and contact details, as the platforms require.</span></li>
+          <li><span class="es">Nunca ofrece extras ni tours en los chats de las plataformas.</span><span class="en">It never offers extras or tours in platform chats.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="extras-tours" data-chapter="producto" data-es="Extras y Explorar" data-en="Extras and Explore">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Comercio en la guía</span><span class="en">Commerce in the guide</span> <span class="tag">008</span><span class="tag">009</span></p>
+      <h2 class="h2" data-build><span class="es">Ofertas útiles, declaradas y siempre opcionales</span><span class="en">Useful offers, disclosed, always optional</span></h2>
+    </div>
+    <div class="grid-2">
+      <div class="pair" data-build>
+        <div class="mini" aria-hidden="true">
+          <div class="mini-bar"><span class="sq"></span><span class="es">Servicios extra</span><span class="en">Extras</span></div>
+          <div class="mini-body">
+            <div class="disc"><span class="es">Los servicios extra son opcionales.</span><span class="en">Extras are optional.</span></div>
+            <div class="mini-row"><span class="l"><b><span class="es">Traslado al aeropuerto</span><span class="en">Airport pickup</span></b><br><span class="small"><span class="es">Ofrecido por tu anfitrión</span><span class="en">Offered by your host</span></span></span><b class="num">USD 85</b></div>
+            <div class="mini-row"><span class="l"><b><span class="es">Compras antes de llegar</span><span class="en">Groceries before arrival</span></b></span><b class="num">USD 25</b></div>
+            <div class="mini-row"><span class="l"><b><span class="es">Limpieza extra</span><span class="en">Extra cleaning</span></b></span><b class="num">USD 40</b></div>
+            <span class="status-chip wait"><span class="es">Esperando a tu anfitrión</span><span class="en">Waiting for your host</span></span>
+          </div>
+        </div>
+        <div class="stack">
+          <p class="h3"><span class="es">Extras del anfitrión</span><span class="en">The host's extras</span></p>
+          <ul class="small" style="color:var(--text)">
+            <li><span class="es">Catálogo por propiedad: precio, moneda, anticipación, días, cuántos por estadía y preaprobación.</span><span class="en">A catalog per property: price, currency, notice, days, how many per stay, and pre-approval.</span></li>
+            <li><span class="es">El huésped con su enlace de estadía elige fecha y hora, deja una nota y lo pide.</span><span class="en">A guest with a stay link picks the date and time, adds a note, and requests it.</span></li>
+            <li><span class="es">El equipo confirma o declina desde Solicitudes; lo preaprobado se confirma al instante y lo que nadie responde vence solo.</span><span class="en">The team confirms or declines from Requests; pre-approved extras confirm at once, and unanswered ones expire.</span></li>
+            <li><span class="es">Nada cambia la reserva ni es obligatorio para la estadía.</span><span class="en">Nothing changes the booking or is mandatory for the stay.</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pair" data-build>
+        <div class="mini" aria-hidden="true">
+          <div class="mini-bar"><span class="sq"></span><span class="es">Explorar</span><span class="en">Explore</span></div>
+          <div class="mini-body">
+            <div class="disc"><span class="es">Guidesk podría recibir una comisión si reservas, sin costo extra para ti.</span><span class="en">Guidesk may earn a commission if you book, at no extra cost to you.</span></div>
+            <span class="small"><b><span class="es">Recomendaciones de tu anfitrión</span><span class="en">Your host's tips</span></b></span>
+            <div class="mini-row"><span class="l">Playa Conchal · <span class="es">8 min</span><span class="en">8 min</span></span></div>
+            <span class="small"><b><span class="es">Experiencias cerca</span><span class="en">Experiences nearby</span></b></span>
+            <div class="xp"><span class="ph"></span><span class="m"><b><span class="es">Tour de catarata y cacao</span><span class="en">Waterfall and cacao tour</span></b><span><span class="es">Con Viator · Desde USD 89</span><span class="en">With Viator · From USD 89</span></span></span></div>
+          </div>
+        </div>
+        <div class="stack">
+          <p class="h3"><span class="es">Explorar: tours y experiencias</span><span class="en">Explore: tours and experiences</span></p>
+          <ul class="small" style="color:var(--text)">
+            <li><span class="es">Primero las recomendaciones del anfitrión; luego hasta 12 experiencias cercanas por categoría.</span><span class="en">The host's tips first, then up to 12 nearby experiences by category.</span></li>
+            <li><span class="es">Viator por su API de afiliados (se refresca cada 30 minutos y se guarda una hora como máximo) y una lista curada de Civitatis.</span><span class="en">Viator through its affiliate API (refreshed every 30 minutes, kept an hour at most) and a curated Civitatis list.</span></li>
+            <li><span class="es">«Reservar en Viator» pasa por un redireccionamiento seguro que cuenta clics sin datos personales.</span><span class="en">"Book on Viator" goes through a safe redirect that counts clicks with no personal data.</span></li>
+            <li><span class="es">El anfitrión elige categorías y oculta experiencias. El chat puede señalar Explorar; el copiloto nunca.</span><span class="en">Hosts choose categories and hide experiences. The chat may point to Explore; the copilot never does.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="checkout" data-chapter="producto" data-es="El pago de un extra" data-en="Paying for an extra">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Pagos</span><span class="en">Payments</span> <span class="tag">013</span><span class="tag">SEC-21</span><span class="tag">ADR-0007</span></p>
+      <h2 class="h2" data-build><span class="es">El pago de un extra, sin que Guidesk toque una tarjeta</span><span class="en">Paying for an extra, without Guidesk touching a card</span></h2>
+      <p class="status-pill" style="background:var(--info-bg);color:var(--info)" data-build><span class="es">Hoy corre con un proveedor simulado; en producción espera el adaptador de Tilopay</span><span class="en">Runs on a simulated provider today; production waits for the Tilopay adapter</span></p>
+    </div>
+    <div data-tabs class="stack" style="gap:12px">
+      <div class="flow" style="--steps:6" role="tablist" aria-label="Pasos del pago / Payment steps" data-build>
+        <button class="flow-step" role="tab" type="button" aria-selected="true" data-tab="c1"><span class="k">1</span><span class="t"><span class="es">Pide y se confirma</span><span class="en">Request, then confirm</span></span><span class="actor"><span class="es">Huésped · Anfitrión</span><span class="en">Guest · Host</span></span></button>
+        <button class="flow-step" role="tab" type="button" aria-selected="false" data-tab="c2"><span class="k">2</span><span class="t"><span class="es">Toca «Pagar»</span><span class="en">Taps "Pay"</span></span><span class="actor"><span class="es">Huésped · API</span><span class="en">Guest · API</span></span></button>
+        <button class="flow-step" role="tab" type="button" aria-selected="false" data-tab="c3"><span class="k">3</span><span class="t"><span class="es">Página segura del proveedor</span><span class="en">Provider's secure page</span></span><span class="actor"><span class="es">Proveedor</span><span class="en">Provider</span></span></button>
+        <button class="flow-step" role="tab" type="button" aria-selected="false" data-tab="c4"><span class="k">4</span><span class="t"><span class="es">Evento verificado</span><span class="en">Verified event</span></span><span class="actor"><span class="es">Proveedor · API</span><span class="en">Provider · API</span></span></button>
+        <button class="flow-step" role="tab" type="button" aria-selected="false" data-tab="c5"><span class="k">5</span><span class="t"><span class="es">Liquidación dividida</span><span class="en">Split settlement</span></span><span class="actor"><span class="es">Proveedor</span><span class="en">Provider</span></span></button>
+        <button class="flow-step" role="tab" type="button" aria-selected="false" data-tab="c6"><span class="k">6</span><span class="t"><span class="es">Reembolso o disputa</span><span class="en">Refund or dispute</span></span><span class="actor"><span class="es">Dueño · Admin</span><span class="en">Owner · Admin</span></span></button>
+      </div>
+      <div class="flow-panel" role="tabpanel" data-panel="c1" data-build><p><span class="es">Emily pide el traslado al aeropuerto desde la guía. Ana lo confirma en Solicitudes (o se confirma solo si está preaprobado). Solo las solicitudes confirmadas se pueden pagar. Antes del pago, el dueño configuró los pagos en la página del proveedor, donde ocurren las verificaciones de identidad y banco.</span><span class="en">Emily requests the airport pickup from the guide. Ana confirms it in Requests (or it confirms itself when pre-approved). Only confirmed requests can be paid. Beforehand, the owner set up payouts on the provider's page, where identity and bank checks happen.</span></p></div>
+      <div class="flow-panel" role="tabpanel" data-panel="c2" hidden><p><span class="es">La API crea un checkout desde la sesión de la estadía, con el monto guardado en la solicitud y nunca con lo que mande el navegador. Hay un solo checkout abierto por solicitud y como máximo 10 inicios por estadía por hora.</span><span class="en">The API starts a checkout from the stay session, using the amount stored on the request and never what the browser sends. There is one open checkout per request, and at most 10 starts per stay per hour.</span></p></div>
+      <div class="flow-panel" role="tabpanel" data-panel="c3" hidden><p><span class="es">El huésped paga en la página alojada del proveedor. Los datos de tarjeta nunca pasan por Guidesk, así que el alcance PCI DSS es el mínimo (SAQ A). Las herramientas antifraude del proveedor frenan las pruebas de tarjetas.</span><span class="en">The guest pays on the provider's hosted page. Card data never passes through Guidesk, so the PCI DSS scope is the smallest (SAQ A). The provider's fraud tools counter card testing.</span></p></div>
+      <div class="flow-panel" role="tabpanel" data-panel="c4" hidden><p><span class="es">Al volver, la guía dice «Estamos confirmando tu pago con el proveedor…». El pedido queda pagado solo cuando llega un evento firmado del proveedor, verificado y registrado una sola vez; la redirección del navegador nunca basta. Los pedidos siguen una máquina de estados idempotente.</span><span class="en">Back in the guide it reads "Confirming your payment with the provider…". The order becomes paid only when a signed provider event arrives, verified and recorded once; the browser redirect is never enough. Orders follow an idempotent state machine.</span></p></div>
+      <div class="flow-panel" role="tabpanel" data-panel="c5" hidden><p><span class="es">La parte del anfitrión se liquida directo a su cuenta en el proveedor, así que Guidesk nunca retiene el dinero del anfitrión. Cada pedido guarda el precio, la comisión de plataforma, la comisión del proveedor y la parte del anfitrión, en unidades menores.</span><span class="en">The host's share settles straight to the host's provider account, so Guidesk never holds the host's money. Each order stores the price, the platform fee, the provider fee, and the host's share, in minor units.</span></p></div>
+      <div class="flow-panel" role="tabpanel" data-panel="c6" hidden><p><span class="es">Dueños y administradores reembolsan total o parcialmente desde el portal, después de reautenticarse; un bloqueo impide reembolsar de más y todo queda en el registro de seguridad. Las disputas se marcan y se avisan por correo.</span><span class="en">Owners and admins refund fully or partly from the portal after re-authenticating; a lock prevents over-refunds, and everything goes to the security log. Disputes are flagged and emailed.</span></p></div>
+    </div>
+    <div class="calc" data-build>
+      <div class="stack" style="gap:14px">
+        <p class="h3"><span class="es">¿Cómo se reparte un pago?</span><span class="en">How is a payment split?</span></p>
+        <div class="ctrl">
+          <label for="feePrice"><span><span class="es">Precio del extra</span><span class="en">Extra price</span></span><output id="feePriceOut" for="feePrice">USD 85</output></label>
+          <input type="range" id="feePrice" min="10" max="300" step="5" value="85">
+        </div>
+        <div class="chips" role="group" aria-label="Plan" id="feePlan">
+          <button class="chip" type="button" aria-pressed="true" data-v="10">Free · 10%</button>
+          <button class="chip" type="button" aria-pressed="false" data-v="7">Pro · 7%</button>
+          <button class="chip" type="button" aria-pressed="false" data-v="5">Business · 5%</button>
+        </div>
+        <p class="small"><span class="es">El fundador puede acordar una comisión distinta por workspace.</span><span class="en">The founder can agree a different fee per workspace.</span></p>
+      </div>
+      <div class="stack" style="gap:10px">
+        <div class="split-bar" aria-hidden="true"><span class="host" id="barHost" style="flex-grow:90">90%</span><span class="fee" id="barFee" style="flex-grow:10">10%</span><span class="prov" style="flex-grow:4">?</span></div>
+        <div class="ledger">
+          <div><span><span class="es">El huésped paga</span><span class="en">Guest pays</span></span><span class="v" id="lgPrice">USD 85.00</span></div>
+          <div class="neg"><span><span class="es">Comisión de plataforma (Guidesk)</span><span class="en">Platform fee (Guidesk)</span></span><span class="v" id="lgFee">− USD 8.50</span></div>
+          <div class="neg"><span><span class="es">Comisión del proveedor (la absorbe el anfitrión)</span><span class="en">Provider fee (the host absorbs it)</span></span><span class="v"><span class="es">por confirmar</span><span class="en">to be confirmed</span></span></div>
+          <div class="tot"><span><span class="es">Para el anfitrión, antes de la comisión del proveedor</span><span class="en">To the host, before the provider fee</span></span><span class="v" id="lgHost">USD 76.50</span></div>
+        </div>
+        <p class="small"><span class="es">Las tarifas de Tilopay no son públicas (OQ-37). La barra rayada marca ese monto pendiente, sin escala.</span><span class="en">Tilopay's fees are not public (OQ-37). The striped segment marks that pending amount, not to scale.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="estadisticas" data-chapter="producto" data-es="Estadísticas y límites" data-en="Analytics and limits">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Medir y limitar</span><span class="en">Measure and limit</span> <span class="tag">010</span><span class="tag">011</span></p>
+      <h2 class="h2" data-build><span class="es">Ver qué funciona, sin rastrear huéspedes; y límites claros por plan</span><span class="en">See what works without tracking guests, and clear limits per plan</span></h2>
+    </div>
+    <div class="grid-2">
+      <div class="stack" style="gap:12px" data-build>
+        <div class="mini">
+          <div class="mini-bar"><span class="sq"></span><span class="es">Estadísticas · Casa Colibrí · 30 días</span><span class="en">Analytics · Casa Colibrí · 30 days</span><span class="tag warn" style="margin-left:auto"><span class="es">Datos de ejemplo</span><span class="en">Sample data</span></span></div>
+          <div class="mini-body">
+            <div class="kpis" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+              <div class="kpi"><span class="v" data-count="312">312</span><span class="k"><span class="es">Vistas de la guía</span><span class="en">Guide views</span></span></div>
+              <div class="kpi"><span class="v" data-count="146">146</span><span class="k"><span class="es">Preguntas</span><span class="en">Questions</span></span></div>
+              <div class="kpi"><span class="v"><span data-count="64">64</span>%</span><span class="k"><span class="es">Resueltas solas</span><span class="en">Resolved alone</span></span></div>
+            </div>
+            <span class="small"><b><span class="es">Temas más preguntados</span><span class="en">Top topics</span></b></span>
+            <div class="budget-row"><div class="lab"><span>Wi-Fi</span><span class="num">38</span></div><div class="meter"><i style="--v:100%"></i></div></div>
+            <div class="budget-row"><div class="lab"><span><span class="es">Llegada y acceso</span><span class="en">Arrival and access</span></span><span class="num">29</span></div><div class="meter"><i style="--v:76%"></i></div></div>
+            <div class="budget-row"><div class="lab"><span><span class="es">Electrodomésticos</span><span class="en">Appliances</span></span><span class="num">22</span></div><div class="meter"><i style="--v:58%"></i></div></div>
+            <div class="mini-row"><span class="l"><span class="es">Sin respuesta: «¿Hay secadora de pelo?»</span><span class="en">Unanswered: "Is there a hair dryer?"</span></span><span class="mini-btn ghost"><span class="es">Abrir</span><span class="en">Open</span></span></div>
+          </div>
+        </div>
+        <ul class="small" style="color:var(--text)">
+          <li><span class="es">Por propiedad o workspace, 7, 30 o 90 días, contra el período anterior.</span><span class="en">Per property or workspace, 7, 30, or 90 days, against the previous period.</span></li>
+          <li><span class="es">Vistas, estadías que abrieron la guía, preguntas por resultado, motivos de escalamiento, clics a socios, solicitudes de extras y tasa de adopción.</span><span class="en">Views, stays that opened the guide, questions by outcome, escalation reasons, partner clicks, extra requests, and attach rate.</span></li>
+          <li><span class="es">Lee los registros que ya existen: no hay almacén de analítica ni rastreo de huéspedes.</span><span class="en">It reads the records that already exist: no analytics store, no guest tracking.</span></li>
+        </ul>
+      </div>
+      <div class="stack" style="gap:12px" data-build>
+        <div class="mini">
+          <div class="mini-bar"><span class="sq"></span><span class="es">Plan y límites · Free</span><span class="en">Plan and limits · Free</span></div>
+          <div class="mini-body">
+            <div class="note" style="max-width:none"><span class="es">Usaste el 82% de las respuestas de IA de este mes.</span><span class="en">You've used 82% of this month's AI replies.</span></div>
+            <div class="budget-row"><div class="lab"><span><span class="es">Respuestas de IA este mes</span><span class="en">AI replies this month</span></span><span class="num">82 / 100</span></div><div class="meter"><i style="--v:82%"></i></div></div>
+            <div class="budget-row"><div class="lab"><span><span class="es">Propiedades activas</span><span class="en">Active properties</span></span><span class="num">2 / 2</span></div><div class="meter"><i style="--v:100%"></i></div></div>
+            <div class="budget-row"><div class="lab"><span><span class="es">Puestos</span><span class="en">Seats</span></span><span class="num">1 / 1</span></div><div class="meter"><i style="--v:100%"></i></div></div>
+          </div>
+        </div>
+        <ul class="small" style="color:var(--text)">
+          <li><span class="es">Al llegar al límite del mes no se llama al modelo: el huésped recibe la respuesta de espera y la conversación espera al anfitrión.</span><span class="en">At the month's limit no model call is made: the guest gets the holding reply and the conversation waits for the host.</span></li>
+          <li><span class="es">Correo a los dueños al 80% y al 100%, y un aviso en cada página del portal.</span><span class="en">Owners get an email at 80% and at 100%, and a banner shows on every portal page.</span></li>
+          <li><span class="es">Un workspace por encima del límite conserva todo lo que tiene. Sin cobro todavía: el fundador asigna planes con una herramienta interna, y cada cambio queda en el registro de seguridad.</span><span class="en">A workspace above a limit keeps everything it has. No billing yet: the founder assigns plans with an internal tool, and each change is in the security log.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DEMOS ============ -->
+<section class="slide" id="demo-huesped" data-chapter="demo" data-es="La estadía de Emily" data-en="Emily's stay">
+  <div class="inner">
+    <div class="demo" data-demo="guest">
+      <div class="stack" style="gap:16px">
+        <div class="head">
+          <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Demo guiada · huésped</span><span class="en">Guided demo · guest</span></p>
+          <h2 class="h2" data-build><span class="es">Una semana de Emily en Casa Colibrí</span><span class="en">Emily's week at Casa Colibrí</span></h2>
+          <p class="small" data-build><span class="es">Estadía del 21 al 28 de noviembre. Toca un momento o usa «Reproducir».</span><span class="en">Staying November 21 to 28. Tap a moment or press "Play".</span></p>
+        </div>
+        <div class="demo-bar" data-build>
+          <button class="btn" type="button" data-demo-play><svg aria-hidden="true"><use href="#i-play"/></svg><span class="es">Reproducir</span><span class="en">Play</span></button>
+          <button class="btn ghost" type="button" data-demo-prev aria-label="Paso anterior / Previous step"><svg aria-hidden="true"><use href="#i-left"/></svg></button>
+          <button class="btn ghost" type="button" data-demo-next aria-label="Paso siguiente / Next step"><svg aria-hidden="true"><use href="#i-right"/></svg></button>
+        </div>
+        <ol class="demo-steps" data-build>
+          <li><button type="button"><span class="time"><span class="es">día −3</span><span class="en">day −3</span></span><span><span class="st"><span class="es">Recibe el enlace de su estadía</span><span class="en">Gets her stay link</span></span><span class="sd"><span class="es">El mensaje programado de Ana en Airbnb trae el enlace. Emily lo abre: sin app ni cuenta, y en inglés porque su teléfono está en inglés.</span><span class="en">Ana's scheduled Airbnb message carries the link. Emily opens it: no app, no account, and in English because her phone is in English.</span></span></span></button></li>
+          <li><button type="button"><span class="time"><span class="es">día 1 · 9:40 pm</span><span class="en">day 1 · 9:40 pm</span></span><span><span class="st"><span class="es">Llega de noche y abre la puerta</span><span class="en">Arrives at night, opens the door</span></span><span class="sd"><span class="es">Dentro de su estadía, «Mostrar código» revela el código en grande. Ana puede ver cuándo se mostró.</span><span class="en">Inside her stay window, "Show code" reveals the code in large digits. Ana can see when it was viewed.</span></span></span></button></li>
+          <li><button type="button"><span class="time"><span class="es">día 1 · 11:05 pm</span><span class="en">day 1 · 11:05 pm</span></span><span><span class="st"><span class="es">Pregunta por el aire</span><span class="en">Asks about the AC</span></span><span class="sd"><span class="es">Ana dejó Electrodomésticos en «Responde si está en la guía». La respuesta llega en segundos y cita la sección.</span><span class="en">Ana set Appliances to "Answers if it's in the guide". The answer arrives in seconds and cites the section.</span></span></span></button></li>
+          <li><button type="button"><span class="time"><span class="es">día 2 · 11:00 pm</span><span class="en">day 2 · 11:00 pm</span></span><span><span class="st"><span class="es">El aire gotea</span><span class="en">The AC is leaking</span></span><span class="sd"><span class="es">Es una avería: el asistente no intenta arreglarla. Responde que avisó a Ana, repite la instrucción de la guía de apagar el aire, y Ana recibe la alerta.</span><span class="en">It's a malfunction, so the assistant doesn't try to fix it. It says Ana has been told, repeats the guide's instruction to switch the AC off, and Ana gets the alert.</span></span></span></button></li>
+          <li><button type="button"><span class="time"><span class="es">día 3 · 8:30 am</span><span class="en">day 3 · 8:30 am</span></span><span><span class="st"><span class="es">Busca qué hacer</span><span class="en">Looks for things to do</span></span><span class="sd"><span class="es">En Explorar ve primero las recomendaciones de Ana y luego tours cercanos, cada uno con el aviso de comisión.</span><span class="en">In Explore she sees Ana's tips first, then nearby tours, each with the commission disclosure.</span></span></span></button></li>
+          <li><button type="button"><span class="time"><span class="es">día 4 · 10:00 am</span><span class="en">day 4 · 10:00 am</span></span><span><span class="st"><span class="es">Pide el traslado al aeropuerto</span><span class="en">Requests the airport pickup</span></span><span class="sd"><span class="es">Elige fecha y hora para el día de salida. Ana lo confirma y aparece «Pagar».</span><span class="en">She picks a date and time for checkout day. Ana confirms it and "Pay" appears.</span></span></span></button></li>
+          <li><button type="button"><span class="time"><span class="es">día 4 · 10:20 am</span><span class="en">day 4 · 10:20 am</span></span><span><span class="st"><span class="es">Paga en la página del proveedor</span><span class="en">Pays on the provider's page</span></span><span class="sd"><span class="es">Al volver, la guía espera el evento verificado del proveedor y luego muestra «Pagado» con la referencia.</span><span class="en">Back in the guide, it waits for the provider's verified event, then shows "Paid" with the reference.</span></span></span></button></li>
+          <li><button type="button"><span class="time"><span class="es">día 5 · 7:15 pm</span><span class="en">day 5 · 7:15 pm</span></span><span><span class="st"><span class="es">Huele a gas</span><span class="en">Smells gas</span></span><span class="sd"><span class="es">Emergencia: la tarjeta con el 911 y el contacto de emergencia de Ana aparece antes que cualquier texto. Todo el equipo recibe la alerta, aunque sean horas de silencio.</span><span class="en">Emergency: the card with 911 and Ana's emergency contact appears before any text. The whole team is alerted, even during quiet hours.</span></span></span></button></li>
+          <li><button type="button"><span class="time"><span class="es">día 8 · 10:00 am</span><span class="en">day 8 · 10:00 am</span></span><span><span class="st"><span class="es">Sale y la guía se cierra</span><span class="en">Checks out, the guide locks</span></span><span class="sd"><span class="es">La sección Salida guía los pasos. Dos horas después de la salida, los códigos vuelven a ocultarse.</span><span class="en">The Checkout section walks her through. Two hours after checkout, the codes are hidden again.</span></span></span></button></li>
+        </ol>
+      </div>
+      <div class="phone" data-build>
+        <div class="phone-screen">
+          <div>
+            <div class="ph-status"><span data-demo-clock>9:40</span><span>4G</span></div>
+            <div class="ph-top"><span class="ph-title" data-demo-title>Casa Colibrí</span><span class="ph-emerg"><span class="es">Emergencia</span><span class="en">Emergency</span></span></div>
+          </div>
+          <div class="ph-body" data-demo-screen aria-live="polite"></div>
+          <div class="ph-nav" data-demo-nav><span class="on"><span class="es">Guía</span><span class="en">Guide</span></span><span><span class="es">Explorar</span><span class="en">Explore</span></span><span>Extras</span><span><span class="es">Preguntar</span><span class="en">Ask</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="demo-anfitrion" data-chapter="demo" data-es="Un día de Ana" data-en="A day with Ana">
+  <div class="inner">
+    <div class="demo" data-demo="host">
+      <div class="stack" style="gap:16px">
+        <div class="head">
+          <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Demo guiada · anfitriona</span><span class="en">Guided demo · host</span></p>
+          <h2 class="h2" data-build><span class="es">Un jueves de Ana, desde el teléfono</span><span class="en">Ana's Thursday, from her phone</span></h2>
+          <p class="small" data-build><span class="es">El portal es una web app que se instala en la pantalla de inicio y recibe alertas push.</span><span class="en">The portal is a web app installed on the home screen, with push alerts.</span></p>
+        </div>
+        <div class="demo-bar" data-build>
+          <button class="btn" type="button" data-demo-play><svg aria-hidden="true"><use href="#i-play"/></svg><span class="es">Reproducir</span><span class="en">Play</span></button>
+          <button class="btn ghost" type="button" data-demo-prev aria-label="Paso anterior / Previous step"><svg aria-hidden="true"><use href="#i-left"/></svg></button>
+          <button class="btn ghost" type="button" data-demo-next aria-label="Paso siguiente / Next step"><svg aria-hidden="true"><use href="#i-right"/></svg></button>
+        </div>
+        <ol class="demo-steps" data-build>
+          <li><button type="button"><span class="time">7:30 am</span><span><span class="st"><span class="es">Una alerta en el teléfono</span><span class="en">An alert on her phone</span></span><span class="sd"><span class="es">«Casa Colibrí · Borrador listo». La alerta lleva solo el nombre de la propiedad y el motivo, nunca el texto del huésped.</span><span class="en">"Casa Colibrí · Draft ready". The alert carries only the property name and the reason, never the guest's text.</span></span></span></button></li>
+          <li><button type="button"><span class="time">7:32 am</span><span><span class="st"><span class="es">Aprueba un borrador</span><span class="en">Approves a draft</span></span><span class="sd"><span class="es">«Por qué esta respuesta» muestra la sección usada, el tema, la autonomía y las revisiones. Un toque y le llega a Emily.</span><span class="en">"Why this reply" shows the section used, the topic, the autonomy, and the checks. One tap and it reaches Emily.</span></span></span></button></li>
+          <li><button type="button"><span class="time">9:10 am</span><span><span class="st"><span class="es">Responde una consulta de Airbnb</span><span class="en">Answers an Airbnb inquiry</span></span><span class="sd"><span class="es">Pega el mensaje en el copiloto y copia una respuesta que pasó las revisiones, sin enlaces ni datos de contacto.</span><span class="en">She pastes the message into the copilot and copies a reply that passed the checks, with no links or contact details.</span></span></span></button></li>
+          <li><button type="button"><span class="time">12:00 pm</span><span><span class="st"><span class="es">Confirma un extra</span><span class="en">Confirms an extra</span></span><span class="sd"><span class="es">En Solicitudes confirma el traslado de Emily. Si no responde, la solicitud vence sola.</span><span class="en">In Requests she confirms Emily's pickup. If nobody answers, the request expires on its own.</span></span></span></button></li>
+          <li><button type="button"><span class="time">3:00 pm</span><span><span class="st"><span class="es">Sube un escalón de confianza</span><span class="en">Climbs one rung of trust</span></span><span class="sd"><span class="es">La bandeja nota que envió 5 borradores de Wi-Fi sin cambios y le propone dejar que el asistente responda ese tema solo.</span><span class="en">The inbox notices she sent 5 Wi-Fi drafts unchanged and suggests letting the assistant answer that topic on its own.</span></span></span></button></li>
+          <li><button type="button"><span class="time">6:00 pm</span><span><span class="st"><span class="es">Revisa las estadísticas</span><span class="en">Checks the analytics</span></span><span class="sd"><span class="es">Ve qué se resolvió solo y una pregunta sin respuesta. La agrega a la guía y publica una nueva versión.</span><span class="en">She sees what was resolved alone and one unanswered question. She adds it to the guide and publishes a new version.</span></span></span></button></li>
+          <li><button type="button"><span class="time">10:00 pm</span><span><span class="st"><span class="es">Empiezan las horas de silencio</span><span class="en">Quiet hours begin</span></span><span class="sd"><span class="es">Lo no urgente espera un resumen a la mañana. Una emergencia igual la alerta al instante.</span><span class="en">Non-urgent alerts wait for a morning summary. An emergency still alerts her at once.</span></span></span></button></li>
+        </ol>
+      </div>
+      <div class="phone" data-build>
+        <div class="phone-screen">
+          <div>
+            <div class="ph-status"><span data-demo-clock>7:30</span><span>5G</span></div>
+            <div class="ph-top"><span class="ph-title" data-demo-title>guidesk</span><span class="tag">Ana · <span class="es">Dueña</span><span class="en">Owner</span></span></div>
+          </div>
+          <div class="ph-body" data-demo-screen aria-live="polite"></div>
+          <div class="ph-nav" data-demo-nav><span class="on"><span class="es">Bandeja</span><span class="en">Inbox</span></span><span><span class="es">Solicitudes</span><span class="en">Requests</span></span><span><span class="es">Propiedades</span><span class="en">Properties</span></span><span><span class="es">Estadísticas</span><span class="en">Analytics</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CÓMO FUNCIONA ============ -->
+<section class="slide" id="arquitectura" data-chapter="tecnica" data-es="Arquitectura" data-en="Architecture">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Cómo funciona</span><span class="en">How it works</span> <span class="tag">ADR-0004</span><span class="tag">ADR-0009</span><span class="tag">ADR-0010</span></p>
+      <h2 class="h2" data-build><span class="es">Un monorepo TypeScript sobre AWS, con puertos para cada proveedor</span><span class="en">A TypeScript monorepo on AWS, with a port for every provider</span></h2>
+      <p class="small" data-build><span class="es">Toca una pieza para ver qué hace, o sigue un recorrido de punta a punta.</span><span class="en">Tap a piece to see what it does, or follow a journey end to end.</span></p>
+    </div>
+    <div class="chips" id="traceChips" role="group" aria-label="Recorridos / Journeys" data-build>
+      <button class="chip" type="button" data-trace="question"><span class="es">Una pregunta del huésped</span><span class="en">A guest question</span></button>
+      <button class="chip" type="button" data-trace="guide"><span class="es">Abrir la guía y el código</span><span class="en">Opening the guide and a code</span></button>
+      <button class="chip" type="button" data-trace="payment"><span class="es">El pago de un extra</span><span class="en">Paying for an extra</span></button>
+      <button class="chip" type="button" data-trace="import"><span class="es">Importar del PMS</span><span class="en">Importing from a PMS</span></button>
+    </div>
+    <div class="split top arch-split">
+      <div class="arch" id="arch" data-build>
+        <div class="arch-layer"><span class="lname"><span class="es">Clientes</span><span class="en">Clients</span></span>
+          <div class="arch-nodes" style="--n:2">
+            <button class="arch-node" type="button" data-node="portal"><span class="hop"></span><span class="nm"><span class="es">Portal del anfitrión</span><span class="en">Host portal</span></span><span class="tech">Next.js · PWA</span></button>
+            <button class="arch-node" type="button" data-node="guide"><span class="hop"></span><span class="nm"><span class="es">Guía del huésped</span><span class="en">Guest guide</span></span><span class="tech">React SSR · Lambda · CloudFront</span></button>
+          </div>
+        </div>
+        <div class="arch-sep" aria-hidden="true"></div>
+        <div class="arch-layer"><span class="lname">Backend</span>
+          <div class="arch-nodes" style="--n:3">
+            <button class="arch-node" type="button" data-node="api"><span class="hop"></span><span class="nm">API</span><span class="tech">NestJS · Fastify · Zod</span></button>
+            <button class="arch-node" type="button" data-node="worker"><span class="hop"></span><span class="nm">Worker</span><span class="tech">Node.js · pg-boss</span></button>
+            <button class="arch-node" type="button" data-node="sandbox"><span class="hop"></span><span class="nm">Sandbox</span><span class="tech">Lambda <span class="es">fuera de la VPC</span><span class="en">outside the VPC</span></span></button>
+          </div>
+        </div>
+        <div class="arch-sep" aria-hidden="true"></div>
+        <div class="arch-layer"><span class="lname"><span class="es">Datos</span><span class="en">Data</span></span>
+          <div class="arch-nodes" style="--n:3">
+            <button class="arch-node" type="button" data-node="db"><span class="hop"></span><span class="nm">PostgreSQL 16</span><span class="tech">RDS · RLS · <span class="es">cola</span><span class="en">queue</span></span></button>
+            <button class="arch-node" type="button" data-node="s3"><span class="hop"></span><span class="nm">S3</span><span class="tech">uploads · media</span></button>
+            <button class="arch-node" type="button" data-node="kms"><span class="hop"></span><span class="nm">KMS</span><span class="tech"><span class="es">claves por workspace</span><span class="en">per-workspace keys</span></span></button>
+          </div>
+        </div>
+        <div class="arch-sep" aria-hidden="true"></div>
+        <div class="arch-layer"><span class="lname"><span class="es">Externos</span><span class="en">External</span></span>
+          <div class="arch-nodes" style="--n:3">
+            <button class="arch-node ext" type="button" data-node="claude"><span class="hop"></span><span class="nm">Claude API</span><span class="tech">LlmPort</span></button>
+            <button class="arch-node ext" type="button" data-node="pay"><span class="hop"></span><span class="nm"><span class="es">Proveedor de pagos</span><span class="en">Payment provider</span></span><span class="tech">PaymentPort</span></button>
+            <button class="arch-node ext" type="button" data-node="notify"><span class="hop"></span><span class="nm"><span class="es">Correo y push</span><span class="en">Email and push</span></span><span class="tech">SES · Web Push</span></button>
+            <button class="arch-node ext" type="button" data-node="tours"><span class="hop"></span><span class="nm"><span class="es">Socios de tours</span><span class="en">Tour partners</span></span><span class="tech">Viator · Civitatis</span></button>
+            <button class="arch-node ext" type="button" data-node="pms"><span class="hop"></span><span class="nm">PMS</span><span class="tech">Beds24 · Hostex</span></button>
+            <button class="arch-node ext" type="button" data-node="ota"><span class="hop"></span><span class="nm">OTA iCal</span><span class="tech">Airbnb · Booking · Vrbo</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="detail-box" id="archDetail" aria-live="polite" data-build></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="agente" data-chapter="tecnica" data-es="Diseño del agente" data-en="Agent design">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">El agente</span><span class="en">The agent</span> <span class="tag">ADR-0005</span><span class="tag">PRD §6</span><span class="tag">SEC-08</span></p>
+      <h2 class="h2" data-build><span class="es">Reglas fijas alrededor del modelo, y la guía completa como contexto</span><span class="en">Fixed rules around the model, and the whole guide as context</span></h2>
+    </div>
+    <div class="grid-2">
+      <div class="stack" style="gap:14px">
+        <div class="stack" data-build>
+          <p class="h3"><span class="es">Cómo se arma cada respuesta</span><span class="en">How each answer is assembled</span></p>
+          <div class="prompt-stack">
+            <div class="ps"><span><span class="es">Reglas del sistema</span><span class="en">System rules</span></span><span class="small"><span class="es">fijas, en código</span><span class="en">fixed, in code</span></span></div>
+            <div class="ps"><span><span class="es">Tono e instrucciones del anfitrión</span><span class="en">Host tone and instructions</span></span><span class="small"><span class="es">preferencias, bajo las reglas</span><span class="en">preferences, below the rules</span></span></div>
+            <div class="ps cache"><span><span class="es">Conocimiento de la propiedad</span><span class="en">Property knowledge</span></span><span class="small"><span class="es">guía publicada · 5–30k tokens</span><span class="en">published guide · 5–30k tokens</span></span></div>
+            <div class="cache-mark">▲ cache_control · <span class="es">prefijo idéntico, se reutiliza</span><span class="en">identical prefix, reused</span></div>
+            <div class="ps conv"><span><span class="es">Conversación</span><span class="en">Conversation</span></span><span class="small"><span class="es">cambia en cada mensaje</span><span class="en">changes every message</span></span></div>
+          </div>
+        </div>
+        <ul class="small" style="color:var(--text)" data-build>
+          <li><span class="es">Modelo por defecto <span class="mono">claude-opus-5-5</span>, con esfuerzo bajo para chat y clasificación y medio para redactar guías. Modelos más baratos solo si las evals no muestran pérdida y el fundador lo aprueba.</span><span class="en">Default model <span class="mono">claude-opus-5-5</span>, low effort for chat and classification, medium for drafting guides. Cheaper models only if evals show no regression and the founder approves.</span></li>
+          <li><span class="es">Contexto completo de la propiedad ahora: ve toda la guía, así sabe cuando algo no está y escala. Estrategia híbrida (pgvector) solo cuando se activen sus disparadores.</span><span class="en">Full property context now: it sees the whole guide, so it knows when something is missing and escalates. A hybrid strategy (pgvector) only when its triggers fire.</span></li>
+          <li><span class="es">Los campos bloqueados entran como etiquetas, nunca como valores. Los mensajes del huésped y el texto subido se tratan como datos, nunca como instrucciones.</span><span class="en">Locked fields go in as labels, never values. Guest messages and uploaded text are framed as data, never as instructions.</span></li>
+          <li><span class="es">Costo estimado por respuesta: USD 0.03–0.11. Alerta si el promedio de 7 días pasa de USD 0.10. Una suite de evals bloquea cambios de prompt, modelo o esfuerzo.</span><span class="en">Estimated cost per reply: USD 0.03–0.11. An alert fires if the 7-day average passes USD 0.10. An eval suite gates prompt, model, and effort changes.</span></li>
+        </ul>
+      </div>
+      <div class="stack" style="gap:14px">
+        <div class="stack" data-build>
+          <p class="h3"><span class="es">Escalamiento obligatorio (nunca automático)</span><span class="en">Mandatory escalation (never automated)</span></p>
+          <ol class="esc-grid">
+            <li><span class="es">Emergencias y seguridad</span><span class="en">Emergencies and safety</span></li>
+            <li><span class="es">Daños que impiden la estadía</span><span class="en">Damage that prevents the stay</span></li>
+            <li><span class="es">Quejas y sentimiento negativo</span><span class="en">Complaints and negative sentiment</span></li>
+            <li><span class="es">Reembolsos, pagos o disputas</span><span class="en">Refunds, payments, or disputes</span></li>
+            <li><span class="es">Cambios de reserva</span><span class="en">Reservation changes</span></li>
+            <li><span class="es">Temas legales, discriminación o acoso</span><span class="en">Legal, discrimination, or harassment</span></li>
+            <li><span class="es">Datos sensibles sin verificación</span><span class="en">Sensitive data without verification</span></li>
+            <li><span class="es">Lo que no sabe con certeza</span><span class="en">Anything it can't answer confidently</span></li>
+          </ol>
+        </div>
+        <div class="card" data-build>
+          <p class="h3"><span class="es">Reglas de comercio y estilo</span><span class="en">Commerce and style rules</span></p>
+          <ul class="small" style="color:var(--text)">
+            <li><span class="es">Nunca promete reembolsos, descuentos, cambios de fecha ni excepciones a las normas.</span><span class="en">Never promises refunds, discounts, date changes, or exceptions to house rules.</span></li>
+            <li><span class="es">En los chats de las plataformas no envía ofertas que nadie pidió. Toda oferta lleva su aviso.</span><span class="en">No unsolicited offers in platform chats. Every offer carries its disclosure.</span></li>
+            <li><span class="es">Nunca pide teléfono, correo ni documentos a huéspedes de Airbnb.</span><span class="en">Never asks Airbnb guests for phone numbers, emails, or IDs.</span></li>
+            <li><span class="es">Breve, cálido y en el idioma del huésped. Si duda, hace una sola pregunta en vez de adivinar.</span><span class="en">Concise, warm, in the guest's language. When unsure, one clarifying question instead of a guess.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="seguridad" data-chapter="tecnica" data-es="Seguridad" data-en="Security">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Seguridad</span><span class="en">Security</span> <span class="tag">SEC-01…21</span><span class="tag">OWASP ASVS L2</span></p>
+      <h2 class="h2" data-build><span class="es">21 controles para proteger hogares, cuentas y datos</span><span class="en">21 controls that protect homes, accounts, and data</span></h2>
+      <p class="small" data-build><span class="es">Los anfitriones temen dos cosas: perder su anuncio y que alguien entre a su casa. Toca un control para ver cómo se cumple.</span><span class="en">Hosts fear two things: losing their listing and someone getting into their home. Tap a control to see how it's met.</span></p>
+    </div>
+    <div class="grid-2" id="secGroups"></div>
+  </div>
+</section>
+
+<section class="slide" id="rendimiento" data-chapter="tecnica" data-es="Rendimiento" data-en="Performance">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Rendimiento</span><span class="en">Performance</span> <span class="tag">NFR-01</span><span class="tag">ADR-0010</span></p>
+      <h2 class="h2" data-build><span class="es">Rápida en un teléfono común con 4G, y legible aunque falle el asistente</span><span class="en">Fast on a mid-range phone over 4G, and readable even if the assistant fails</span></h2>
+    </div>
+    <div class="kpis" data-build>
+      <div class="kpi"><span class="v">≤ 2.5 s</span><span class="k"><span class="es">LCP de la guía (p75, 4G)</span><span class="en">Guide LCP (p75, 4G)</span></span></div>
+      <div class="kpi"><span class="v">≤ 200 ms</span><span class="k"><span class="es">INP de la guía (p75)</span><span class="en">Guide INP (p75)</span></span></div>
+      <div class="kpi"><span class="v">≤ 2 s</span><span class="k"><span class="es">Respuesta de espera (p90)</span><span class="en">Holding reply (p90)</span></span></div>
+      <div class="kpi"><span class="v">≤ 60 s</span><span class="k"><span class="es">Alerta de escalamiento (p95)</span><span class="en">Escalation alert (p95)</span></span></div>
+      <div class="kpi"><span class="v">≤ 300 ms</span><span class="k"><span class="es">API p95, sin el modelo</span><span class="en">API p95, excluding the model</span></span></div>
+      <div class="kpi"><span class="v">99.5%</span><span class="k"><span class="es">Disponibilidad mensual</span><span class="en">Monthly availability</span></span></div>
+      <div class="kpi"><span class="v">≤ 5 s</span><span class="k"><span class="es">Llegada, Wi-Fi y normas en 3G lento</span><span class="en">Arrival, Wi-Fi, rules on slow 3G</span></span></div>
+      <div class="kpi"><span class="v">≤ 150 KB</span><span class="k"><span class="es">JavaScript por ruta del portal</span><span class="en">JavaScript per portal route</span></span></div>
+    </div>
+    <div class="grid-2">
+      <div class="stack" style="gap:12px" data-build>
+        <p class="h3"><span class="es">JavaScript inicial de la guía, a escala</span><span class="en">Guide initial JavaScript, to scale</span></p>
+        <div class="budget-row">
+          <div class="lab"><span><span class="es">Script de la guía (medido al cerrar la spec 004)</span><span class="en">Guide script (measured at the end of spec 004)</span></span><b class="num">2.7 KB gzip</b></div>
+          <div class="bar" id="jsBar"><span class="used" data-w="2.7"></span><span class="cap" style="left:15%"></span><span class="cap-lab" style="left:15%"><span class="es">tope del script 15 KB</span><span class="en">script budget 15 KB</span></span><span class="cap" style="left:calc(100% - 2px)"></span></div>
+          <div class="lab small"><span>0 KB</span><span><span class="es">límite por ruta 100 KB</span><span class="en">per-route cap 100 KB</span></span></div>
+        </div>
+        <p class="small"><span class="es">La guía se renderiza en el servidor con React y no se hidrata: el chat se carga solo cuando el huésped lo toca.</span><span class="en">The guide is server-rendered with React and never hydrated; the chat loads only when the guest taps it.</span></p>
+      </div>
+      <div class="card" data-build>
+        <p class="h3"><span class="es">Decisiones que lo logran</span><span class="en">Choices that get there</span></p>
+        <ul class="small" style="color:var(--text)">
+          <li><span class="es">Primero estático: la CDN guarda cada página publicada 60 s y la sirve hasta un día si el origen falla, así que la guía sigue disponible aunque la API caiga.</span><span class="en">Static first: the CDN keeps each published page 60 s and serves it for up to a day if the origin fails, so the guide stays up when the API is down.</span></li>
+          <li><span class="es">Fuentes del sistema, imágenes AVIF y WebP en varios tamaños, videos solo al tocar.</span><span class="en">System fonts, AVIF and WebP images in several sizes, videos only on tap.</span></li>
+          <li><span class="es">Sin scripts de terceros en la guía; los tours son enlaces, no widgets.</span><span class="en">No third-party scripts on the guide; tours are links, not widgets.</span></li>
+          <li><span class="es">Presupuestos de bundle y Lighthouse CI en cada cambio.</span><span class="en">Bundle budgets and Lighthouse CI on every change.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="metodo" data-chapter="tecnica" data-es="Cómo se construye" data-en="How it's built">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Método</span><span class="en">Method</span> <span class="tag">ADR-0002</span></p>
+      <h2 class="h2" data-build><span class="es">Primero la especificación: un fundador y agentes de IA, con reglas escritas</span><span class="en">Spec first: one founder and AI agents, with written rules</span></h2>
+    </div>
+    <div class="flow" style="--steps:5" data-build>
+      <div class="flow-step" style="cursor:default"><span class="k">/speckit-specify</span><span class="t"><span class="es">Qué y por qué</span><span class="en">What and why</span></span><span class="actor">spec.md</span></div>
+      <div class="flow-step" style="cursor:default"><span class="k">/speckit-clarify</span><span class="t"><span class="es">Preguntas abiertas</span><span class="en">Open questions</span></span><span class="actor"><span class="es">respuestas en la spec</span><span class="en">answers in the spec</span></span></div>
+      <div class="flow-step" style="cursor:default"><span class="k">/speckit-plan</span><span class="t"><span class="es">Cómo</span><span class="en">How</span></span><span class="actor">plan · research · contracts</span></div>
+      <div class="flow-step" style="cursor:default"><span class="k">/speckit-tasks</span><span class="t"><span class="es">Tareas ordenadas</span><span class="en">Ordered tasks</span></span><span class="actor">tasks.md</span></div>
+      <div class="flow-step" style="cursor:default"><span class="k">/speckit-implement</span><span class="t"><span class="es">Código y pruebas</span><span class="en">Code and tests</span></span><span class="actor">PR → main</span></div>
+    </div>
+    <div class="grid-3">
+      <div class="card" data-build>
+        <p class="h3"><span class="es">Constitución: 9 principios</span><span class="en">Constitution: 9 principles</span></p>
+        <ol class="small" style="color:var(--text)">
+          <li><span class="es">Primero la especificación</span><span class="en">Spec-first development</span></li>
+          <li><span class="es">Cumplimiento de plataformas por diseño</span><span class="en">Platform compliance by design</span></li>
+          <li><span class="es">Confianza del huésped y una persona en el ciclo</span><span class="en">Guest trust and human-in-the-loop AI</span></li>
+          <li><span class="es">Núcleo independiente del canal, con adaptadores</span><span class="en">Channel-agnostic core, adapters</span></li>
+          <li><span class="es">Pruebas y evals primero</span><span class="en">Test-first, eval-driven quality</span></li>
+          <li><span class="es">Seguridad y privacidad por defecto</span><span class="en">Security and privacy by default</span></li>
+          <li><span class="es">Simplicidad que una persona pueda mantener</span><span class="en">Simplicity a solo developer can maintain</span></li>
+          <li><span class="es">Observabilidad y responsabilidad</span><span class="en">Observability and accountability</span></li>
+          <li><span class="es">Internacional desde el primer día</span><span class="en">International from day one</span></li>
+        </ol>
+      </div>
+      <div class="card" data-build>
+        <p class="h3"><span class="es">Decisiones de arquitectura</span><span class="en">Architecture decisions</span></p>
+        <ul class="plain-list small" style="color:var(--text)">
+          <li><span class="tag">0003</span><span><span class="es">Canales por fases: guía y copiloto, luego PMS, luego marca blanca</span><span class="en">Phased channels: guide and copilot, then PMS, then white-label</span></span></li>
+          <li><span class="tag">0004</span><span><span class="es">Monorepo TypeScript de punta a punta</span><span class="en">End-to-end TypeScript monorepo</span></span></li>
+          <li><span class="tag">0005</span><span><span class="es">Claude detrás de un puerto propio</span><span class="en">Claude behind our own port</span></span></li>
+          <li><span class="tag">0006</span><span><span class="es">Web apps instalables, sin apps nativas</span><span class="en">Installable web apps, no native apps</span></span></li>
+          <li><span class="tag">0007</span><span><span class="es">Tilopay como primer proveedor de pagos</span><span class="en">Tilopay as the first payment provider</span></span></li>
+          <li><span class="tag">0008</span><span><span class="es">Better Auth, sin contraseñas</span><span class="en">Better Auth, passwordless</span></span></li>
+          <li><span class="tag">0009</span><span><span class="es">AWS us-east-1 con SST, correo con SES</span><span class="en">AWS us-east-1 with SST, email with SES</span></span></li>
+          <li><span class="tag">0010</span><span><span class="es">Guía renderizada en el servidor, sin framework en el cliente</span><span class="en">Server-rendered guide, no client framework</span></span></li>
+        </ul>
+      </div>
+      <div class="card" data-build>
+        <p class="h3"><span class="es">Calidad en cada cambio</span><span class="en">Quality on every change</span></p>
+        <ul class="small" style="color:var(--text)">
+          <li><span class="es">Pruebas unitarias, de contrato, de integración con PostgreSQL real y de aislamiento entre inquilinos.</span><span class="en">Unit, contract, integration tests on a real PostgreSQL, and cross-tenant isolation tests.</span></li>
+          <li><span class="es">End-to-end y accesibilidad con Playwright; carga con k6.</span><span class="en">End-to-end and accessibility tests with Playwright; load tests with k6.</span></li>
+          <li><span class="es">Evals del agente con conversaciones de referencia.</span><span class="en">Agent evals on golden conversations.</span></li>
+          <li><span class="es">CI: CodeQL, escaneo de secretos, auditoría de dependencias, acciones fijadas por SHA, presupuestos de bundle y Lighthouse.</span><span class="en">CI: CodeQL, secret scanning, dependency audit, SHA-pinned actions, bundle budgets, and Lighthouse.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NEGOCIO ============ -->
+<section class="slide" id="planes" data-chapter="negocio" data-es="Planes" data-en="Plans">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Modelo de negocio</span><span class="en">Business model</span> <span class="tag">011</span><span class="tag">013</span></p>
+      <h2 class="h2" data-build><span class="es">Gratis para empezar; se paga por propiedad cuando crece</span><span class="en">Free to start; pay per property as you grow</span></h2>
+    </div>
+    <div class="plans">
+      <div class="plan" data-build>
+        <span class="pname">Free</span>
+        <span class="price">USD 0</span>
+        <span class="small"><span class="es">Para anfitriones que prueban Guidesk</span><span class="en">For hosts trying Guidesk</span></span>
+        <dl>
+          <div><dt><span class="es">Propiedades activas</span><span class="en">Active properties</span></dt><dd>2</dd></div>
+          <div><dt><span class="es">Respuestas de IA al mes</span><span class="en">AI replies a month</span></dt><dd>100</dd></div>
+          <div><dt><span class="es">Puestos</span><span class="en">Seats</span></dt><dd>1</dd></div>
+          <div><dt><span class="es">Comisión en extras</span><span class="en">Fee on extras</span></dt><dd>10%</dd></div>
+        </dl>
+      </div>
+      <div class="plan feat" data-build>
+        <span class="pname">Pro</span>
+        <span class="price"><span class="es">~USD 9–12 por propiedad al mes</span><span class="en">~USD 9–12 per property a month</span></span>
+        <span class="small"><span class="es">Anfitriones individuales y administradores pequeños</span><span class="en">Individual hosts and small managers</span></span>
+        <dl>
+          <div><dt><span class="es">Propiedades activas</span><span class="en">Active properties</span></dt><dd><span class="es">Sin límite</span><span class="en">Unlimited</span></dd></div>
+          <div><dt><span class="es">Respuestas de IA al mes</span><span class="en">AI replies a month</span></dt><dd><span class="es">300 por propiedad, compartidas</span><span class="en">300 per property, pooled</span></dd></div>
+          <div><dt><span class="es">Puestos</span><span class="en">Seats</span></dt><dd>3</dd></div>
+          <div><dt><span class="es">Comisión en extras</span><span class="en">Fee on extras</span></dt><dd>7%</dd></div>
+        </dl>
+      </div>
+      <div class="plan" data-build>
+        <span class="pname">Business</span>
+        <span class="price"><span class="es">Precio por volumen</span><span class="en">Volume pricing</span></span>
+        <span class="small"><span class="es">Administradores con 10+ propiedades y equipos</span><span class="en">Managers with 10+ properties and teams</span></span>
+        <dl>
+          <div><dt><span class="es">Propiedades activas</span><span class="en">Active properties</span></dt><dd><span class="es">Sin límite</span><span class="en">Unlimited</span></dd></div>
+          <div><dt><span class="es">Respuestas de IA al mes</span><span class="en">AI replies a month</span></dt><dd><span class="es">300 por propiedad, compartidas</span><span class="en">300 per property, pooled</span></dd></div>
+          <div><dt><span class="es">Puestos</span><span class="en">Seats</span></dt><dd><span class="es">Sin límite</span><span class="en">Unlimited</span></dd></div>
+          <div><dt><span class="es">Comisión en extras</span><span class="en">Fee on extras</span></dt><dd>5%</dd></div>
+        </dl>
+      </div>
+    </div>
+    <p class="note" data-build><span class="es">Los límites y las comisiones ya están construidos. Los precios son hipótesis que el piloto debe validar: el piloto es gratis y el cobro de suscripciones llega en la fase 2. Referencias: Touch Stay desde ~USD 8.25 y HostBuddy ~USD 7–12 por propiedad; Enso Connect USD 16–28 por unidad con mínimo de 5.</span><span class="en">Limits and fees are already built. Prices are hypotheses for the pilot to validate: the pilot is free and subscription billing arrives in Phase 2. Benchmarks: Touch Stay from ~USD 8.25 and HostBuddy ~USD 7–12 per property; Enso Connect USD 16–28 per unit with a 5-unit minimum.</span></p>
+  </div>
+</section>
+
+<section class="slide" id="ingresos" data-chapter="negocio" data-es="Comisiones y economía por propiedad" data-en="Commissions and unit economics">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Ingresos</span><span class="en">Revenue</span></p>
+      <h2 class="h2" data-build><span class="es">Comisiones en servicios opcionales, y la IA como costo principal</span><span class="en">Commissions on optional services, with AI as the main cost</span></h2>
+    </div>
+    <div class="table-wrap wide" data-build>
+      <table>
+        <thead><tr><th><span class="es">Servicio</span><span class="en">Service</span></th><th><span class="es">Cómo gana Guidesk</span><span class="en">How Guidesk earns</span></th><th><span class="es">Tasa típica</span><span class="en">Typical rate</span></th><th><span class="es">Cuándo</span><span class="en">When</span></th></tr></thead>
+        <tbody>
+          <tr><td><span class="es">Tours y experiencias</span><span class="en">Tours and experiences</span></td><td><span class="es">Comisión de afiliado (Viator, Civitatis)</span><span class="en">Affiliate commission (Viator, Civitatis)</span></td><td>~8–10%</td><td><span class="tag ok"><span class="es">construido · 009</span><span class="en">built · 009</span></span></td></tr>
+          <tr><td><span class="es">Extras del anfitrión</span><span class="en">Host extras</span></td><td><span class="es">Comisión de plataforma sobre lo que paga el huésped</span><span class="en">Platform fee on what the guest pays</span></td><td>5–10%</td><td><span class="tag ok"><span class="es">construido · 013</span><span class="en">built · 013</span></span></td></tr>
+          <tr><td><span class="es">Reservas (autos, traslados, restaurantes)</span><span class="en">Reservations (cars, transfers, restaurants)</span></td><td><span class="es">Comisión del socio</span><span class="en">Partner commission</span></td><td><span class="es">Según el socio</span><span class="en">Partner-defined</span></td><td><span class="tag"><span class="es">fase 2</span><span class="en">Phase 2</span></span></td></tr>
+          <tr><td><span class="es">Seguros</span><span class="en">Insurance</span></td><td><span class="es">Participación con un socio con licencia</span><span class="en">Revenue share with a licensed partner</span></td><td><span class="es">No pública</span><span class="en">Not public</span></td><td><span class="tag"><span class="es">fase 3</span><span class="en">Phase 3</span></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="calc" data-build>
+      <div class="stack" style="gap:12px">
+        <p class="h3"><span class="es">Una propiedad activa en un mes</span><span class="en">One active property in one month</span></p>
+        <div class="ctrl"><label for="ueStays"><span><span class="es">Estadías al mes</span><span class="en">Stays a month</span></span><output id="ueStaysOut" for="ueStays">4</output></label><input type="range" id="ueStays" min="1" max="12" step="1" value="4"></div>
+        <div class="ctrl"><label for="ueReplies"><span><span class="es">Respuestas del asistente por estadía</span><span class="en">Assistant replies per stay</span></span><output id="ueRepliesOut" for="ueReplies">15</output></label><input type="range" id="ueReplies" min="5" max="40" step="1" value="15"></div>
+        <div class="ctrl"><label for="ueTour"><span><span class="es">Estadías que reservan un tour (USD 120, 8%)</span><span class="en">Stays booking a tour (USD 120, 8%)</span></span><output id="ueTourOut" for="ueTour">10%</output></label><input type="range" id="ueTour" min="0" max="40" step="1" value="10"></div>
+        <div class="ctrl"><label for="ueAddon"><span><span class="es">Estadías que compran un extra (USD 35, 8%)</span><span class="en">Stays buying an extra (USD 35, 8%)</span></span><output id="ueAddonOut" for="ueAddon">25%</output></label><input type="range" id="ueAddon" min="0" max="60" step="1" value="25"></div>
+        <div class="chips" role="group" aria-label="Plan" id="uePlan">
+          <button class="chip" type="button" aria-pressed="true" data-v="free"><span class="es">Sin suscripción</span><span class="en">No subscription</span></button>
+          <button class="chip" type="button" aria-pressed="false" data-v="pro"><span class="es">Con Pro (USD 9–12)</span><span class="en">With Pro (USD 9–12)</span></button>
+        </div>
+      </div>
+      <div class="stack" style="gap:10px">
+        <div class="ledger" aria-live="polite">
+          <div><span><span class="es">Comisiones de tours</span><span class="en">Tour commissions</span></span><span class="v" id="ueTourV">USD 3.84</span></div>
+          <div><span><span class="es">Comisiones de extras</span><span class="en">Extras fees</span></span><span class="v" id="ueAddonV">USD 2.80</span></div>
+          <div id="ueSubRow" hidden><span><span class="es">Suscripción Pro</span><span class="en">Pro subscription</span></span><span class="v">USD 9.00–12.00</span></div>
+          <div class="neg"><span><span class="es">Costo de IA (con o sin caché)</span><span class="en">AI cost (with or without cache)</span></span><span class="v" id="ueAiV">− USD 1.80–6.60</span></div>
+          <div class="tot"><span><span class="es">Resultado por propiedad</span><span class="en">Result per property</span></span><span class="v" id="ueNetV">USD 0.04–4.84</span></div>
+        </div>
+        <p class="small"><span class="es">Supuestos del modelo de negocio (USD 0.03–0.11 por respuesta). El piloto mide las respuestas por estadía, el uso de caché y las tasas de adopción reales.</span><span class="en">Business model assumptions (USD 0.03–0.11 per reply). The pilot measures real replies per stay, cache hits, and attach rates.</span></p>
+        <p class="note"><span class="es">Lectura: las comisiones solas apenas cubren la IA de una propiedad gratis. Por eso el plan Free tiene un tope de respuestas, y la conversión a pago y los extras (el anfitrión pone el precio) son las palancas.</span><span class="en">Reading: commissions alone barely cover a free property's AI. That's why Free caps replies, and paid conversion and extras (the host sets the price) are the levers.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="metricas" data-chapter="negocio" data-es="Métricas de éxito" data-en="Success metrics">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Métricas del piloto</span><span class="en">Pilot metrics</span> <span class="tag">PRD §8</span></p>
+      <h2 class="h2" data-build><span class="es">Qué tiene que demostrar el piloto en 90 días</span><span class="en">What the pilot must prove in 90 days</span></h2>
+      <p class="small" data-build><span class="es">Metas iniciales (hipótesis) con los socios de diseño. Se leen en Estadísticas y en el reporte del piloto, siempre con datos agregados.</span><span class="en">Initial targets (hypotheses) with design partners. Read in Analytics and in the pilot report, always as aggregates.</span></p>
+    </div>
+    <div class="metric-grid">
+      <div class="metric" data-build><span class="v">≥ 50%</span><span class="t"><span class="es">Activación</span><span class="en">Activation</span></span><span class="d"><span class="es">Registros que publican la guía y la envían a un huésped en 7 días.</span><span class="en">Sign-ups that publish a guide and send it to a guest within 7 days.</span></span></div>
+      <div class="metric" data-build><span class="v">≤ 30 min</span><span class="t"><span class="es">Tiempo hasta la guía</span><span class="en">Time to guide</span></span><span class="d"><span class="es">Mediana desde el registro hasta la guía publicada.</span><span class="en">Median from sign-up to a published guide.</span></span></div>
+      <div class="metric" data-build><span class="v">≥ 60%</span><span class="t"><span class="es">Resolución automática</span><span class="en">Automated resolution</span></span><span class="d"><span class="es">Preguntas respondidas sin el anfitrión. Alimenta la North Star.</span><span class="en">Questions answered without the host. Feeds the North Star.</span></span></div>
+      <div class="metric" data-build><span class="v">≥ 95%</span><span class="t"><span class="es">Precisión de respuestas</span><span class="en">Answer accuracy</span></span><span class="d"><span class="es">Respuestas evaluadas como correctas por el anfitrión y las evals.</span><span class="en">Sampled answers rated correct by hosts and evals.</span></span></div>
+      <div class="metric" data-build><span class="v">≥ 80%</span><span class="t"><span class="es">Precisión del escalamiento</span><span class="en">Escalation precision</span></span><span class="d"><span class="es">Escalamientos que el anfitrión considera necesarios.</span><span class="en">Escalations the host agrees were needed.</span></span></div>
+      <div class="metric" data-build><span class="v">≥ 15% · 5%</span><span class="t"><span class="es">Adopción de servicios</span><span class="en">Attach rate</span></span><span class="d"><span class="es">Estadías con un clic a un servicio · con una solicitud.</span><span class="en">Stays with a service click · with a request.</span></span></div>
+      <div class="metric" data-build><span class="v">≥ 70%</span><span class="t"><span class="es">Retención a 60 días</span><span class="en">60-day retention</span></span><span class="d"><span class="es">Anfitriones del piloto que siguen activos.</span><span class="en">Pilot hosts still active.</span></span></div>
+      <div class="metric" data-build><span class="v"><span class="es">Medir</span><span class="en">Measure</span></span><span class="t"><span class="es">Costo de IA por estadía</span><span class="en">AI cost per stay</span></span><span class="d"><span class="es">Primero se mide; después se fija la meta.</span><span class="en">Measured first, then a target is set.</span></span></div>
+      <div class="metric" data-build><span class="v">0</span><span class="t"><span class="es">Incidentes con plataformas</span><span class="en">Platform incidents</span></span><span class="d"><span class="es">Advertencias o suspensiones de anuncios causadas por Guidesk.</span><span class="en">Listing warnings or suspensions caused by Guidesk.</span></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="costos" data-chapter="negocio" data-es="Costos" data-en="Costs">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Presupuesto</span><span class="en">Budget</span></p>
+      <h2 class="h2" data-build><span class="es">Costos de operación por escenario</span><span class="en">Operating costs by scenario</span></h2>
+      <p class="small" data-build><span class="es">Estimaciones en USD por mes, con 60 respuestas del asistente por propiedad. La IA es el costo que más pesa a cualquier escala después del piloto.</span><span class="en">Estimates in USD per month, with 60 assistant replies per property. AI is the main cost driver at every scale beyond the pilot.</span></p>
+    </div>
+    <div class="table-wrap wide" data-build>
+      <table>
+        <thead><tr><th></th><th class="num"><span class="es">Piloto</span><span class="en">Pilot</span></th><th class="num"><span class="es">Lanzamiento</span><span class="en">Launch</span></th><th class="num"><span class="es">Meta año 1</span><span class="en">Year-1 target</span></th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><span class="es">Propiedades</span><span class="en">Properties</span></th><td class="num">~30</td><td class="num">~500</td><td class="num">5,000</td></tr>
+          <tr><th scope="row"><span class="es">Respuestas del asistente al mes</span><span class="en">Assistant replies a month</span></th><td class="num">1,800</td><td class="num">30,000</td><td class="num">300,000</td></tr>
+          <tr><th scope="row"><span class="es">Costo mensual total</span><span class="en">Total monthly cost</span></th><td class="num"><b>370–1,100</b></td><td class="num"><b>1,500–6,200</b></td><td class="num"><b>11,500–48,700</b></td></tr>
+          <tr><th scope="row"><span class="es">· AWS</span><span class="en">· AWS</span></th><td class="num">150–260</td><td class="num">230–550</td><td class="num">620–1,310</td></tr>
+          <tr><th scope="row"><span class="es">· IA</span><span class="en">· AI</span></th><td class="num">110–600</td><td class="num">1,160–5,400</td><td class="num">10,700–47,100</td></tr>
+          <tr><th scope="row"><span class="es">· Otros servicios</span><span class="en">· Other services</span></th><td class="num">100–240</td><td class="num">130–270</td><td class="num">180–360</td></tr>
+          <tr><th scope="row"><span class="es">Costo por propiedad</span><span class="en">Cost per property</span></th><td class="num">12–37</td><td class="num">3.0–12.4</td><td class="num">2.3–9.7</td></tr>
+          <tr><th scope="row"><span class="es">Ingreso ilustrativo</span><span class="en">Illustrative revenue</span></th><td class="num"><span class="es">~200 (piloto gratis)</span><span class="en">~200 (free pilot)</span></td><td class="num">4,200–5,700</td><td class="num">42,200–57,200</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid-3">
+      <div class="card" data-build><p class="h3"><span class="es">Antes del lanzamiento</span><span class="en">Before launch</span></p><p><b class="num">USD 9,700–41,100</b></p><p class="small"><span class="es">Revisión legal, prueba de penetración, marca y registro de marca.</span><span class="en">Legal review, penetration test, brand, and trademarks.</span></p></div>
+      <div class="card" data-build><p class="h3"><span class="es">Construir el MVP (4 meses)</span><span class="en">Building the MVP (4 months)</span></p><p><b class="num">USD 1,200–5,900</b></p><p class="small"><span class="es">Herramientas, IA y nube, más la compensación del fundador.</span><span class="en">Tools, AI, and cloud, plus the founder's compensation.</span></p></div>
+      <div class="card" data-build><p class="h3"><span class="es">Comisiones de pago</span><span class="en">Payment fees</span></p><p><b><span class="es">Por confirmar</span><span class="en">To be confirmed</span></b></p><p class="small"><span class="es">Las tarifas de Tilopay no son públicas (OQ-37).</span><span class="en">Tilopay's fees are not public (OQ-37).</span></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="roadmap" data-chapter="negocio" data-es="Hoja de ruta" data-en="Roadmap">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Hoja de ruta</span><span class="en">Roadmap</span> <span class="tag">ADR-0003</span></p>
+      <h2 class="h2" data-build><span class="es">De la guía al chat de las plataformas y al marketplace</span><span class="en">From the guide to the platform chats and the marketplace</span></h2>
+      <p class="small" data-build><span class="es">Meses contados desde el inicio del desarrollo. Toca una fase.</span><span class="en">Months counted from the start of development. Tap a phase.</span></p>
+    </div>
+    <div data-tabs class="stack" style="gap:16px">
+      <div class="roadmap" role="tablist" aria-label="Fases / Phases" data-build>
+        <button class="rm done" role="tab" type="button" aria-selected="false" data-tab="f0"><span class="pin">F0</span><span class="when"><span class="es">hecha</span><span class="en">done</span></span><span class="nm"><span class="es">Descubrimiento y planificación</span><span class="en">Discovery and planning</span></span></button>
+        <button class="rm now" role="tab" type="button" aria-selected="true" data-tab="f1"><span class="pin">F1</span><span class="when"><span class="es">meses 0–4 · código listo</span><span class="en">months 0–4 · code done</span></span><span class="nm"><span class="es">MVP: guía, chat, extras y pagos</span><span class="en">MVP: guide, chat, extras, payments</span></span></button>
+        <button class="rm" role="tab" type="button" aria-selected="false" data-tab="f2"><span class="pin">F2</span><span class="when"><span class="es">meses 4–7</span><span class="en">months 4–7</span></span><span class="nm"><span class="es">Chat en las plataformas y cobro</span><span class="en">Platform chats and billing</span></span></button>
+        <button class="rm" role="tab" type="button" aria-selected="false" data-tab="f3"><span class="pin">F3</span><span class="when"><span class="es">meses 7–13</span><span class="en">months 7–13</span></span><span class="nm"><span class="es">Escala y marketplace</span><span class="en">Scale and marketplace</span></span></button>
+      </div>
+      <div class="flow-panel" role="tabpanel" data-panel="f0" hidden>
+        <ul><li><span class="es">Decisiones de descubrimiento, investigación de integraciones, competencia, socios y políticas de plataformas.</span><span class="en">Discovery decisions; research on integrations, competitors, partners, and platform policies.</span></li><li><span class="es">Visión, modelo de negocio, personas, PRD, hoja de ruta, constitución, ADR-0001 a 0010, seguridad y rendimiento.</span><span class="en">Vision, business model, personas, PRD, roadmap, constitution, ADR-0001 to 0010, security, and performance.</span></li></ul>
+      </div>
+      <div class="flow-panel" role="tabpanel" data-panel="f1" data-build>
+        <div class="grid-2">
+          <ul><li><span class="es">Las 12 especificaciones (001 a 011 y 013) construidas y en main.</span><span class="en">All 12 specs (001 to 011 and 013) built and in main.</span></li><li><span class="es">Piloto: 10–20 anfitriones individuales y 3–5 administradores con huéspedes reales, con todos los controles de seguridad activos antes del primer huésped.</span><span class="en">Pilot: 10–20 individual hosts and 3–5 managers with real guests, every security control in place before the first guest.</span></li><li><span class="es">Pagos de extras en vivo cuando existan la entidad legal y la cuenta de Tilopay.</span><span class="en">Extras payments go live once the legal entity and the Tilopay account exist.</span></li></ul>
+          <ul><li><span class="es">Salida del piloto: metas medidas, cero incidentes con plataformas, primeras comisiones cobradas y precios decididos con evidencia.</span><span class="en">Pilot exit: targets measured, zero platform incidents, first commissions collected, and pricing decided from evidence.</span></li><li><span class="es">En paralelo: solicitudes a los programas de socios de Hospitable, Hostaway, Guesty y Smoobu.</span><span class="en">In parallel: applications to the Hospitable, Hostaway, Guesty, and Smoobu partner programs.</span></li></ul>
+        </div>
+      </div>
+      <div class="flow-panel" role="tabpanel" data-panel="f2" hidden>
+        <div class="grid-2">
+          <ul><li><span class="es">El asistente responde dentro de Airbnb, Booking.com y Vrbo para anfitriones con un PMS aliado: Hospitable y Hostaway primero, luego Guesty y Smoobu.</span><span class="en">The assistant answers inside Airbnb, Booking.com, and Vrbo for hosts on a partner PMS: Hospitable and Hostaway first, then Guesty and Smoobu.</span></li><li><span class="es">Bandeja unificada con los chats de las plataformas y de la guía.</span><span class="en">A unified inbox across platform and guide chats.</span></li><li><span class="es">Suscripciones Free, Pro y Business en autoservicio.</span><span class="en">Self-serve Free, Pro, and Business subscriptions.</span></li></ul>
+          <ul><li><span class="es">Grupos de propiedades, permisos por propiedad y acceso de solo lectura para dueños.</span><span class="en">Property groups, per-property permissions, and read-only owner access.</span></li><li><span class="es">Socios de reservas: autos, traslados y restaurantes.</span><span class="en">Reservation partners: car rental, transfers, and restaurants.</span></li><li><span class="es">Salida: al menos una integración de PMS en producción y planes pagos activos.</span><span class="en">Exit: at least one PMS integration live and paid plans live.</span></li></ul>
+        </div>
+      </div>
+      <div class="flow-panel" role="tabpanel" data-panel="f3" hidden>
+        <div class="grid-2">
+          <ul><li><span class="es">Chat de las plataformas para anfitriones sin PMS (piloto con Channex o alianza con Hospitable).</span><span class="en">Platform chats for hosts without a PMS (a Channex pilot or a Hospitable partnership).</span></li><li><span class="es">Seguros integrados con un socio con licencia, después de la revisión legal.</span><span class="en">Embedded insurance with a licensed partner, after legal review.</span></li><li><span class="es">Marketplace de proveedores locales y reserva de tours dentro de la guía.</span><span class="en">A local provider marketplace and tour booking inside the guide.</span></li></ul>
+          <ul><li><span class="es">API pública y webhooks para el plan Business.</span><span class="en">A public API and webhooks for the Business plan.</span></li><li><span class="es">Portugués si se confirma Brasil.</span><span class="en">Portuguese if Brazil is confirmed.</span></li><li><span class="es">Revaluar una app nativa para anfitriones si el piloto lo justifica.</span><span class="en">Re-evaluate a native host app if the pilot calls for it.</span></li></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ESTADO ============ -->
+<section class="slide" id="estado" data-chapter="estado" data-es="Dónde estamos" data-en="Where we are">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Estado</span><span class="en">Status</span></p>
+      <h2 class="h2" data-build><span class="es">El MVP está construido. Lo que falta depende del fundador, no del código.</span><span class="en">The MVP is built. What remains depends on the founder, not the code.</span></h2>
+    </div>
+    <div class="grid-2">
+      <div class="stack" style="gap:10px">
+        <p class="h3" data-build><span class="es">Fusionado en main</span><span class="en">Merged into main</span></p>
+        <ul class="checks" id="checks">
+          <li><span class="ck"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="tag">001</span><span><span class="es">Cuentas y roles</span><span class="en">Accounts and roles</span></span></li>
+          <li><span class="ck"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="tag">002</span><span><span class="es">Alta de propiedades</span><span class="en">Property onboarding</span></span></li>
+          <li><span class="ck"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="tag">003</span><span><span class="es">Constructor de guías</span><span class="en">Guide builder</span></span></li>
+          <li><span class="ck"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="tag">004</span><span><span class="es">Guía del huésped</span><span class="en">Guest guide</span></span></li>
+          <li><span class="ck"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="tag">005</span><span><span class="es">Chat con IA</span><span class="en">AI chat</span></span></li>
+          <li><span class="ck"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="tag">006</span><span><span class="es">Bandeja y copiloto</span><span class="en">Inbox and copilot</span></span></li>
+          <li><span class="ck"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="tag">007</span><span><span class="es">Ajustes del asistente</span><span class="en">Assistant settings</span></span></li>
+          <li><span class="ck"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="tag">008</span><span><span class="es">Extras y solicitudes</span><span class="en">Extras and requests</span></span></li>
+          <li><span class="ck"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="tag">009</span><span><span class="es">Explorar</span><span class="en">Explore</span></span></li>
+          <li><span class="ck"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="tag">010</span><span><span class="es">Estadísticas</span><span class="en">Analytics</span></span></li>
+          <li><span class="ck"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="tag">011</span><span><span class="es">Planes y límites</span><span class="en">Plan limits</span></span></li>
+          <li><span class="ck"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span class="tag">013</span><span><span class="es">Pagos (proveedor simulado)</span><span class="en">Payments (simulated provider)</span></span></li>
+        </ul>
+      </div>
+      <div class="stack" style="gap:10px">
+        <p class="h3" data-build><span class="es">Pendiente del fundador</span><span class="en">Founder gates</span></p>
+        <div class="gates">
+          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Entidad legal</span><span class="en">Legal entity</span> · <span class="mono">OQ-01</span></b><span><span class="es">Necesaria para la cuenta de comercio y para cobrar.</span><span class="en">Needed for the merchant account and to collect payments.</span></span></span></div>
+          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Cuenta de Tilopay y su adaptador</span><span class="en">Tilopay account and adapter</span> · <span class="mono">OQ-37</span></b><span><span class="es">Hoy los pagos usan el proveedor simulado; en producción están apagados.</span><span class="en">Payments use the simulated provider today; they're off in production.</span></span></span></div>
+          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Cuenta de AWS y ambiente de staging</span><span class="en">AWS account and staging</span></b><span><span class="es">El despliegue espera la cuenta; el correo con SES y el DNS toman semanas.</span><span class="en">Deployment waits for the account; SES email and DNS take weeks.</span></span></span></div>
+          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Revisión legal</span><span class="en">Legal review</span> · <span class="mono">OQ-35</span></b><span><span class="es">Textos del chat y avisos, extras de entrada temprana y salida tarde, privacidad.</span><span class="en">Chat texts and disclosures, early check-in and late checkout extras, privacy.</span></span></span></div>
+          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Llaves y cuentas</span><span class="en">Keys and accounts</span></b><span><span class="es">Clave de Anthropic para las evals con el modelo real, afiliación a Viator y Civitatis, llaves de push.</span><span class="en">An Anthropic key for real-model evals, Viator and Civitatis affiliate accounts, push keys.</span></span></span></div>
+          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Socios de diseño</span><span class="en">Design partners</span> · <span class="mono">OQ-03</span></b><span><span class="es">10–20 anfitriones y 3–5 administradores para el piloto.</span><span class="en">10–20 hosts and 3–5 managers for the pilot.</span></span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="cierre" data-chapter="estado" data-es="Lo que buscamos" data-en="What we're looking for">
+  <div class="inner narrow center-y">
+    <div class="closing">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Lo que buscamos</span><span class="en">What we're looking for</span></p>
+      <h2 class="h2" data-build><span class="es">Anfitriones para el piloto, socios y consejo</span><span class="en">Pilot hosts, partners, and advice</span></h2>
+      <ul class="plain-list" style="font-size:var(--step-1)">
+        <li data-build><span class="dot" aria-hidden="true"></span><span><span class="es">Anfitriones y administradores para el piloto, sobre todo en destinos de playa de Costa Rica y LATAM, y quienes usan Hostaway, Hospitable, Beds24 o Hostex.</span><span class="en">Pilot hosts and managers, especially in Costa Rica and Latin American beach destinations, and anyone on Hostaway, Hospitable, Beds24, or Hostex.</span></span></li>
+        <li data-build><span class="dot" aria-hidden="true"></span><span><span class="es">Presentaciones con programas de socios de PMS y de tours.</span><span class="en">Introductions to PMS and tour partner programs.</span></span></li>
+        <li data-build><span class="dot" aria-hidden="true"></span><span><span class="es">Asesoría legal en plataformas, pagos y protección de datos en Costa Rica y EE. UU.</span><span class="en">Legal counsel on platforms, payments, and data protection in Costa Rica and the US.</span></span></li>
+        <li data-build><span class="dot" aria-hidden="true"></span><span><span class="es">Créditos para startups (por ejemplo AWS Activate) y financiamiento temprano.</span><span class="en">Startup credits (for example AWS Activate) and early funding.</span></span></li>
+      </ul>
+      <div data-build style="display:grid;gap:10px;margin-top:10px">
+        <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 199.46 48.35" role="img" aria-label="Guidesk"><g transform="translate(-4 -4) scale(2)"><path fill="#B4452A" d="M2 21V8a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v7a6 6 0 0 1-6 6Z"/><path fill="#F5BC4C" d="M8.5 21v-8.5a3.5 3.5 0 0 1 7 0V21Z"/></g><g transform="translate(48.75 38)"><path fill="currentColor" d="M17.78 -18.01V-21H23.12V.15Q23.12 3.07 21.95 5.36Q20.77 7.66 18.42 9Q16.07 10.35 12.74 10.35Q8.26 10.35 5.4 8.26Q2.54 6.18 2.16 2.58H7.43Q7.85 4.02 9.23 4.87Q10.61 5.72 12.58 5.72Q14.9 5.72 16.34 4.34Q17.78 2.96 17.78 .15V-3.11Q16.75 -1.63 14.95 -.64Q13.15 .34 10.84 .34Q8.19 .34 5.99 -1.02Q3.79 -2.39 2.52 -4.87Q1.25 -7.35 1.25 -10.58Q1.25 -13.76 2.52 -16.22Q3.79 -18.69 5.97 -20.01Q8.15 -21.34 10.84 -21.34Q13.19 -21.34 14.97 -20.41Q16.75 -19.48 17.78 -18.01ZM12.21 -16.68Q10.73 -16.68 9.48 -15.96Q8.23 -15.24 7.45 -13.85Q6.67 -12.47 6.67 -10.58Q6.67 -8.68 7.45 -7.26Q8.23 -5.84 9.5 -5.08Q10.77 -4.32 12.21 -4.32Q13.68 -4.32 14.97 -5.06Q16.26 -5.8 17.02 -7.18Q17.78 -8.57 17.78 -10.5Q17.78 -12.43 17.02 -13.82Q16.26 -15.2 14.97 -15.94Q13.68 -16.68 12.21 -16.68ZM47.76 -21V0H42.42V-2.65Q41.39 -1.29 39.74 -.51Q38.1 .27 36.16 .27Q33.7 .27 31.8 -.78Q29.91 -1.82 28.83 -3.85Q27.75 -5.88 27.75 -8.68V-21H33.05V-9.44Q33.05 -6.94 34.31 -5.59Q35.56 -4.25 37.72 -4.25Q39.92 -4.25 41.17 -5.59Q42.42 -6.94 42.42 -9.44V-21ZM57.92 -21V0H52.61V-21ZM71.04 -21.34Q73.08 -21.34 74.94 -20.45Q76.8 -19.56 77.9 -18.08V-28.05H83.28V0H77.9V-3.11Q76.91 -1.55 75.13 -.61Q73.35 .34 71 .34Q68.34 .34 66.15 -1.02Q63.95 -2.39 62.68 -4.87Q61.41 -7.35 61.41 -10.58Q61.41 -13.76 62.68 -16.22Q63.95 -18.69 66.15 -20.01Q68.34 -21.34 71.04 -21.34ZM72.36 -16.68Q70.88 -16.68 69.63 -15.96Q68.38 -15.24 67.61 -13.85Q66.83 -12.47 66.83 -10.58Q66.83 -8.68 67.61 -7.26Q68.38 -5.84 69.65 -5.08Q70.92 -4.32 72.36 -4.32Q73.84 -4.32 75.13 -5.06Q76.42 -5.8 77.18 -7.18Q77.94 -8.57 77.94 -10.5Q77.94 -12.43 77.18 -13.82Q76.42 -15.2 75.13 -15.94Q73.84 -16.68 72.36 -16.68ZM107.46 -8.91H92.11Q92.3 -6.63 93.7 -5.34Q95.11 -4.06 97.15 -4.06Q100.11 -4.06 101.36 -6.6H107.08Q106.18 -3.56 103.6 -1.61Q101.02 .34 97.27 .34Q94.23 .34 91.83 -1Q89.42 -2.35 88.07 -4.81Q86.73 -7.28 86.73 -10.5Q86.73 -13.76 88.06 -16.22Q89.38 -18.69 91.77 -20.01Q94.16 -21.34 97.27 -21.34Q100.26 -21.34 102.63 -20.05Q105 -18.76 106.31 -16.39Q107.62 -14.03 107.62 -10.95Q107.62 -9.82 107.46 -8.91ZM102.12 -12.47Q102.08 -14.52 100.64 -15.75Q99.2 -16.98 97.12 -16.98Q95.14 -16.98 93.8 -15.79Q92.45 -14.59 92.15 -12.47ZM109.97 -6.63H115.31Q115.46 -5.42 116.5 -4.62Q117.55 -3.83 119.1 -3.83Q120.62 -3.83 121.47 -4.44Q122.32 -5.04 122.32 -5.99Q122.32 -7.01 121.28 -7.52Q120.24 -8.04 117.96 -8.64Q115.61 -9.21 114.12 -9.82Q112.62 -10.42 111.54 -11.68Q110.46 -12.93 110.46 -15.05Q110.46 -16.79 111.46 -18.23Q112.47 -19.67 114.34 -20.51Q116.22 -21.34 118.76 -21.34Q122.51 -21.34 124.75 -19.46Q126.99 -17.59 127.21 -14.4H122.13Q122.02 -15.66 121.09 -16.39Q120.16 -17.13 118.61 -17.13Q117.17 -17.13 116.39 -16.6Q115.61 -16.07 115.61 -15.12Q115.61 -14.06 116.68 -13.51Q117.74 -12.96 119.97 -12.4Q122.25 -11.83 123.73 -11.22Q125.2 -10.61 126.28 -9.34Q127.36 -8.07 127.4 -5.99Q127.4 -4.17 126.4 -2.73Q125.39 -1.29 123.52 -.47Q121.64 .34 119.14 .34Q116.56 .34 114.51 -.59Q112.47 -1.52 111.27 -3.11Q110.08 -4.7 109.97 -6.63ZM143.82 0 136.69 -8.95V0H131.38V-28.05H136.69V-12.09L143.74 -21H150.64L141.39 -10.46L150.71 0Z"/><path fill="#F5BC4C" d="M52.05 -26.61Q52.05 -27.94 52.97 -28.83Q53.9 -29.72 55.31 -29.72Q56.71 -29.72 57.64 -28.83Q58.56 -27.94 58.56 -26.61Q58.56 -25.28 57.64 -24.39Q56.71 -23.5 55.31 -23.5Q53.9 -23.5 52.97 -24.39Q52.05 -25.28 52.05 -26.61Z"/></g></svg>
+        <p class="h2" style="font-size:var(--step-2)"><span class="es">Tu casa, siempre lista para responder.</span><span class="en">Your home, always ready to answer.</span></p>
+      </div>
+      <div class="row" data-build>
+        <button class="btn ghost" type="button" data-go="first"><span class="es">Volver al inicio</span><span class="en">Back to the start</span></button>
+        <button class="btn ghost" type="button" data-open-index><span class="es">Índice</span><span class="en">Index</span></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+  </main>
+
+  <nav class="controls" aria-label="Navegación de diapositivas / Slide navigation">
+    <button class="nav-btn prev" id="prevBtn" type="button" aria-label="Anterior / Back"><svg aria-hidden="true"><use href="#i-left"/></svg><span class="es">Anterior</span><span class="en">Back</span></button>
+    <div class="progress">
+      <div class="progress-track" aria-hidden="true"><span class="progress-fill" id="progressFill"></span></div>
+      <div class="progress-meta" aria-live="polite"><span class="hint" id="slideTitle"></span><span class="count" id="slideCount"></span></div>
+    </div>
+    <button class="nav-btn next" id="nextBtn" type="button"><span class="es">Siguiente</span><span class="en">Next</span><svg aria-hidden="true"><use href="#i-right"/></svg></button>
+  </nav>
+</div>
+
+<div class="index" id="index" hidden role="dialog" aria-modal="true" aria-labelledby="indexTitle">
+  <div class="inner">
+    <div class="index-head">
+      <h2 class="h2" id="indexTitle"><span class="es">Índice</span><span class="en">Index</span></h2>
+      <button class="icon-btn" type="button" id="indexClose" aria-label="Cerrar / Close"><svg aria-hidden="true"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="index-chapters" id="indexChapters"></div>
+  </div>
+</div>
+
+<dialog class="sheet" id="featureSheet" aria-labelledby="sheetTitle">
+  <div class="sheet-body">
+    <div class="sheet-head">
+      <div class="stack" style="gap:6px"><span class="tags" id="sheetTags"></span><h3 class="h2" id="sheetTitle" style="font-size:var(--step-2)"></h3></div>
+      <button class="icon-btn" type="button" id="sheetClose" aria-label="Cerrar / Close"><svg aria-hidden="true"><use href="#i-close"/></svg></button>
+    </div>
+    <p class="lead" id="sheetLead" style="font-size:var(--step-0)"></p>
+    <ul id="sheetList"></ul>
+    <p class="small" id="sheetScreens"></p>
+  </div>
+</dialog>
+
+<script src="app.js"></script>
