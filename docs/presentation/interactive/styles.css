@@ -696,7 +696,7 @@ input[type="range"] { width: 100%; accent-color: var(--primary); min-height: 28p
 .split-bar > span { display: grid; place-items: center; font-size: 0.75rem; font-weight: 700; white-space: nowrap; overflow: hidden; transition: flex-grow 500ms var(--ease); min-width: 0; }
 .split-bar .host { background: var(--success-bg); color: var(--success); }
 .split-bar .fee { background: var(--primary); color: var(--on-primary); }
-.split-bar .prov { background: repeating-linear-gradient(45deg, var(--surface-2) 0 6px, var(--bg) 6px 12px); color: var(--muted); }
+.split-bar .prov { background: var(--surface-2); color: var(--text); }
 
 /* Metrics */
 .metric-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }

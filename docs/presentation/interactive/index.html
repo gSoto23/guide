@@ -679,14 +679,14 @@
         <p class="small"><span class="es">El fundador puede acordar una comisión distinta por workspace.</span><span class="en">The founder can agree a different fee per workspace.</span></p>
       </div>
       <div class="stack" style="gap:10px">
-        <div class="split-bar" aria-hidden="true"><span class="host" id="barHost" style="flex-grow:90">90%</span><span class="fee" id="barFee" style="flex-grow:10">10%</span><span class="prov" style="flex-grow:4">?</span></div>
+        <div class="split-bar" aria-hidden="true"><span class="host" id="barHost" style="flex-grow:85.4">85.4%</span><span class="fee" id="barFee" style="flex-grow:10">10%</span><span class="prov" id="barProv" style="flex-grow:4.6">4.6%</span></div>
         <div class="ledger">
           <div><span><span class="es">El huésped paga</span><span class="en">Guest pays</span></span><span class="v" id="lgPrice">USD 85.00</span></div>
           <div class="neg"><span><span class="es">Comisión de plataforma (Guidesk)</span><span class="en">Platform fee (Guidesk)</span></span><span class="v" id="lgFee">− USD 8.50</span></div>
-          <div class="neg"><span><span class="es">Comisión del proveedor (la absorbe el anfitrión)</span><span class="en">Provider fee (the host absorbs it)</span></span><span class="v"><span class="es">por confirmar</span><span class="en">to be confirmed</span></span></div>
-          <div class="tot"><span><span class="es">Para el anfitrión, antes de la comisión del proveedor</span><span class="en">To the host, before the provider fee</span></span><span class="v" id="lgHost">USD 76.50</span></div>
+          <div class="neg"><span><span class="es">Tarjeta: Tilopay, 4.2% + USD 0.30 (la absorbe el anfitrión)</span><span class="en">Card: Tilopay, 4.2% + USD 0.30 (the host absorbs it)</span></span><span class="v" id="lgProv">− USD 3.87</span></div>
+          <div class="tot"><span><span class="es">Para el anfitrión</span><span class="en">To the host</span></span><span class="v" id="lgHost">USD 72.63</span></div>
         </div>
-        <p class="small"><span class="es">Las tarifas de Tilopay no son públicas (OQ-37). La barra rayada marca ese monto pendiente, sin escala.</span><span class="en">Tilopay's fees are not public (OQ-37). The striped segment marks that pending amount, not to scale.</span></p>
+        <p class="small"><span class="es">Comisiones de plataforma confirmadas por el fundador el 19 nov 2026. La tarifa de Tilopay la reportó el fundador; falta confirmarla por escrito para tarjetas internacionales, colones y pagos divididos (OQ-37).</span><span class="en">Platform fees confirmed by the founder on 19 Nov 2026. The founder reported Tilopay's rate; it still needs written confirmation for international cards, colones, and split payments (OQ-37).</span></p>
       </div>
     </div>
   </div>
@@ -1074,7 +1074,67 @@
         </dl>
       </div>
     </div>
-    <p class="note" data-build><span class="es">Los límites y las comisiones ya están construidos. Los precios son hipótesis que el piloto debe validar: el piloto es gratis y el cobro de suscripciones llega en la fase 2. Referencias: Touch Stay desde ~USD 8.25 y HostBuddy ~USD 7–12 por propiedad; Enso Connect USD 16–28 por unidad con mínimo de 5.</span><span class="en">Limits and fees are already built. Prices are hypotheses for the pilot to validate: the pilot is free and subscription billing arrives in Phase 2. Benchmarks: Touch Stay from ~USD 8.25 and HostBuddy ~USD 7–12 per property; Enso Connect USD 16–28 per unit with a 5-unit minimum.</span></p>
+    <p class="note" data-build><span class="es">Las comisiones en extras quedaron confirmadas por el fundador el 19 nov 2026, y los límites ya están construidos. Los precios son hipótesis que el piloto debe validar: el piloto es gratis y el cobro de suscripciones llega en la fase 2. Referencias: Touch Stay desde ~USD 8.25 y HostBuddy ~USD 7–12 por propiedad; Enso Connect USD 16–28 por unidad con mínimo de 5.</span><span class="en">The founder confirmed the fees on extras on 19 Nov 2026, and the limits are already built. Prices are hypotheses for the pilot to validate: the pilot is free and subscription billing arrives in Phase 2. Benchmarks: Touch Stay from ~USD 8.25 and HostBuddy ~USD 7–12 per property; Enso Connect USD 16–28 per unit with a 5-unit minimum.</span></p>
+  </div>
+</section>
+
+<section class="slide" id="comisiones" data-chapter="negocio" data-es="Comisiones: quién paga qué" data-en="Fees: who pays what">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Comisiones</span><span class="en">Fees</span> <span class="tag">013</span><span class="tag">009</span><span class="tag">OQ-09</span><span class="tag">OQ-37</span></p>
+      <h2 class="h2" data-build><span class="es">Guidesk gana cuando el huésped compra algo opcional, sin recargos para él</span><span class="en">Guidesk earns when a guest buys something optional, with no surcharge for the guest</span></h2>
+      <p class="status-pill" style="background:var(--success-bg);color:var(--success)" data-build><span class="es">Comisiones confirmadas por el fundador · 19 nov 2026</span><span class="en">Fees confirmed by the founder · 19 Nov 2026</span></p>
+    </div>
+    <div class="grid-3">
+      <div class="card" data-build>
+        <p class="h3"><span class="es">Extras del anfitrión</span><span class="en">Host extras</span> <span class="tag ok">013</span></p>
+        <p><b>Free 10% · Pro 7% · Business 5%</b></p>
+        <ul class="small" style="color:var(--text)">
+          <li><span class="es">Sale de lo que paga el huésped por un traslado, una limpieza o un alquiler.</span><span class="en">It comes out of what the guest pays for a pickup, a cleaning, or a rental.</span></li>
+          <li><span class="es">El huésped paga el precio publicado, sin cargos extra.</span><span class="en">The guest pays the listed price, with no added charges.</span></li>
+          <li><span class="es">La tarjeta (Tilopay, 4.2% + USD 0.30) la absorbe el anfitrión.</span><span class="en">The host absorbs the card fee (Tilopay, 4.2% + USD 0.30).</span></li>
+          <li><span class="es">El fundador puede pactar otra comisión por workspace, de 0 a 30%.</span><span class="en">The founder can agree a different fee per workspace, from 0 to 30%.</span></li>
+          <li><span class="es">La parte del anfitrión va directo a su cuenta (pago dividido); Guidesk no la retiene.</span><span class="en">The host's share goes straight to their account (split payment); Guidesk never holds it.</span></li>
+        </ul>
+      </div>
+      <div class="card" data-build>
+        <p class="h3"><span class="es">Tours y experiencias</span><span class="en">Tours and experiences</span> <span class="tag ok">009</span></p>
+        <p><b>Viator ~8% · Civitatis 8–10%</b></p>
+        <ul class="small" style="color:var(--text)">
+          <li><span class="es">La paga el socio cuando el huésped reserva en su sitio; el huésped paga el mismo precio.</span><span class="en">The partner pays it when the guest books on its site; the guest pays the same price.</span></li>
+          <li><span class="es">Viator atribuye la reserva hasta 30 días después del clic.</span><span class="en">Viator attributes the booking for up to 30 days after the click.</span></li>
+          <li><span class="es">Cada tarjeta avisa que Guidesk puede recibir una comisión.</span><span class="en">Every card discloses that Guidesk may earn a commission.</span></li>
+          <li><span class="es">En el piloto el anfitrión no recibe una parte (OQ-08).</span><span class="en">In the pilot the host gets no share (OQ-08).</span></li>
+        </ul>
+      </div>
+      <div class="card" data-build>
+        <p class="h3"><span class="es">Suscripciones</span><span class="en">Subscriptions</span> <span class="tag"><span class="es">fase 2</span><span class="en">Phase 2</span></span></p>
+        <p><b><span class="es">Pro ~USD 9–12 por propiedad al mes</span><span class="en">Pro ~USD 9–12 per property a month</span></b></p>
+        <ul class="small" style="color:var(--text)">
+          <li><span class="es">Free cuesta USD 0, con límites: 2 propiedades y 100 respuestas de IA al mes.</span><span class="en">Free costs USD 0, with limits: 2 properties and 100 AI replies a month.</span></li>
+          <li><span class="es">Business tiene precio por volumen.</span><span class="en">Business has volume pricing.</span></li>
+          <li><span class="es">El piloto es gratis; el cobro llega en la fase 2, con precios decididos con datos del piloto (OQ-10).</span><span class="en">The pilot is free; billing arrives in Phase 2, with prices decided from pilot data (OQ-10).</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="stack" style="gap:8px" data-build>
+      <p class="h3"><span class="es">Lo que recibe el anfitrión por un extra</span><span class="en">What the host receives for an extra</span></p>
+      <div class="table-wrap wide">
+        <table>
+          <thead><tr><th><span class="es">Precio del extra</span><span class="en">Extra price</span></th><th class="num"><span class="es">Tarjeta</span><span class="en">Card</span></th><th class="num">Free 10%</th><th class="num">Pro 7%</th><th class="num">Business 5%</th></tr></thead>
+          <tbody>
+            <tr><td>USD 10</td><td class="num">USD 0.72</td><td class="num">USD 8.28 <span class="small">(17.2%)</span></td><td class="num">USD 8.58 <span class="small">(14.2%)</span></td><td class="num">USD 8.78 <span class="small">(12.2%)</span></td></tr>
+            <tr><td>USD 35</td><td class="num">USD 1.77</td><td class="num">USD 29.73 <span class="small">(15.1%)</span></td><td class="num">USD 30.78 <span class="small">(12.1%)</span></td><td class="num">USD 31.48 <span class="small">(10.1%)</span></td></tr>
+            <tr><td>USD 85</td><td class="num">USD 3.87</td><td class="num">USD 72.63 <span class="small">(14.6%)</span></td><td class="num">USD 75.18 <span class="small">(11.6%)</span></td><td class="num">USD 76.88 <span class="small">(9.6%)</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small"><span class="es">Entre paréntesis, lo que el anfitrión pagó en comisiones (Guidesk más tarjeta). Los USD 0.30 fijos pesan más en los extras baratos. En el piloto los anfitriones estarán en Pro o Business. USD 35 es el extra promedio que supone el modelo de negocio.</span><span class="en">In parentheses, what the host paid in fees (Guidesk plus card). The fixed USD 0.30 weighs more on cheap extras. Pilot hosts will be on Pro or Business. USD 35 is the average extra the business model assumes.</span></p>
+    </div>
+    <div class="grid-2">
+      <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">¿Se devuelve la comisión en un reembolso?</span><span class="en">Is the fee returned on a refund?</span></b><span><span class="es">Hoy la comisión de Guidesk queda fija en el pedido aunque el anfitrión reembolse. Decisión pendiente del fundador; depende de cómo Tilopay revierte un pago dividido.</span><span class="en">Today Guidesk's fee stays fixed on the order even when the host refunds. A founder decision is pending; it depends on how Tilopay reverses a split payment.</span></span></span></div>
+      <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Tilopay por escrito</span><span class="en">Tilopay in writing</span> · <span class="mono">OQ-37</span></b><span><span class="es">Confirmar la tarifa para tarjetas internacionales, el cargo fijo en colones y cómo se cobra en pagos divididos. El borrador del correo está listo.</span><span class="en">Confirm the rate for international cards, the fixed part in colones, and how it applies to split payments. The email draft is ready.</span></span></span></div>
+    </div>
   </div>
 </section>
 
@@ -1088,8 +1148,8 @@
       <table>
         <thead><tr><th><span class="es">Servicio</span><span class="en">Service</span></th><th><span class="es">Cómo gana Guidesk</span><span class="en">How Guidesk earns</span></th><th><span class="es">Tasa típica</span><span class="en">Typical rate</span></th><th><span class="es">Cuándo</span><span class="en">When</span></th></tr></thead>
         <tbody>
-          <tr><td><span class="es">Tours y experiencias</span><span class="en">Tours and experiences</span></td><td><span class="es">Comisión de afiliado (Viator, Civitatis)</span><span class="en">Affiliate commission (Viator, Civitatis)</span></td><td>~8–10%</td><td><span class="tag ok"><span class="es">construido · 009</span><span class="en">built · 009</span></span></td></tr>
-          <tr><td><span class="es">Extras del anfitrión</span><span class="en">Host extras</span></td><td><span class="es">Comisión de plataforma sobre lo que paga el huésped</span><span class="en">Platform fee on what the guest pays</span></td><td>5–10%</td><td><span class="tag ok"><span class="es">construido · 013</span><span class="en">built · 013</span></span></td></tr>
+          <tr><td><span class="es">Tours y experiencias</span><span class="en">Tours and experiences</span></td><td><span class="es">Comisión de afiliado que paga el socio (Viator, Civitatis); el huésped paga el mismo precio</span><span class="en">Affiliate commission the partner pays (Viator, Civitatis); the guest pays the same price</span></td><td>~8–10%</td><td><span class="tag ok"><span class="es">construido · 009</span><span class="en">built · 009</span></span></td></tr>
+          <tr><td><span class="es">Extras del anfitrión</span><span class="en">Host extras</span></td><td><span class="es">Comisión de plataforma sobre lo que paga el huésped; la tarjeta (Tilopay, 4.2% + USD 0.30) la absorbe el anfitrión</span><span class="en">Platform fee on what the guest pays; the host absorbs the card fee (Tilopay, 4.2% + USD 0.30)</span></td><td>Free 10% · Pro 7% · Business 5%</td><td><span class="tag ok"><span class="es">construido · 013</span><span class="en">built · 013</span></span></td></tr>
           <tr><td><span class="es">Reservas (autos, traslados, restaurantes)</span><span class="en">Reservations (cars, transfers, restaurants)</span></td><td><span class="es">Comisión del socio</span><span class="en">Partner commission</span></td><td><span class="es">Según el socio</span><span class="en">Partner-defined</span></td><td><span class="tag"><span class="es">fase 2</span><span class="en">Phase 2</span></span></td></tr>
           <tr><td><span class="es">Seguros</span><span class="en">Insurance</span></td><td><span class="es">Participación con un socio con licencia</span><span class="en">Revenue share with a licensed partner</span></td><td><span class="es">No pública</span><span class="en">Not public</span></td><td><span class="tag"><span class="es">fase 3</span><span class="en">Phase 3</span></span></td></tr>
         </tbody>
@@ -1101,19 +1161,19 @@
         <div class="ctrl"><label for="ueStays"><span><span class="es">Estadías al mes</span><span class="en">Stays a month</span></span><output id="ueStaysOut" for="ueStays">4</output></label><input type="range" id="ueStays" min="1" max="12" step="1" value="4"></div>
         <div class="ctrl"><label for="ueReplies"><span><span class="es">Respuestas del asistente por estadía</span><span class="en">Assistant replies per stay</span></span><output id="ueRepliesOut" for="ueReplies">15</output></label><input type="range" id="ueReplies" min="5" max="40" step="1" value="15"></div>
         <div class="ctrl"><label for="ueTour"><span><span class="es">Estadías que reservan un tour (USD 120, 8%)</span><span class="en">Stays booking a tour (USD 120, 8%)</span></span><output id="ueTourOut" for="ueTour">10%</output></label><input type="range" id="ueTour" min="0" max="40" step="1" value="10"></div>
-        <div class="ctrl"><label for="ueAddon"><span><span class="es">Estadías que compran un extra (USD 35, 8%)</span><span class="en">Stays buying an extra (USD 35, 8%)</span></span><output id="ueAddonOut" for="ueAddon">25%</output></label><input type="range" id="ueAddon" min="0" max="60" step="1" value="25"></div>
+        <div class="ctrl"><label for="ueAddon"><span><span class="es">Estadías que compran un extra (USD 35)</span><span class="en">Stays buying an extra (USD 35)</span></span><output id="ueAddonOut" for="ueAddon">25%</output></label><input type="range" id="ueAddon" min="0" max="60" step="1" value="25"></div>
         <div class="chips" role="group" aria-label="Plan" id="uePlan">
-          <button class="chip" type="button" aria-pressed="true" data-v="free"><span class="es">Sin suscripción</span><span class="en">No subscription</span></button>
+          <button class="chip" type="button" aria-pressed="true" data-v="free"><span class="es">Free (sin suscripción)</span><span class="en">Free (no subscription)</span></button>
           <button class="chip" type="button" aria-pressed="false" data-v="pro"><span class="es">Con Pro (USD 9–12)</span><span class="en">With Pro (USD 9–12)</span></button>
         </div>
       </div>
       <div class="stack" style="gap:10px">
         <div class="ledger" aria-live="polite">
           <div><span><span class="es">Comisiones de tours</span><span class="en">Tour commissions</span></span><span class="v" id="ueTourV">USD 3.84</span></div>
-          <div><span><span class="es">Comisiones de extras</span><span class="en">Extras fees</span></span><span class="v" id="ueAddonV">USD 2.80</span></div>
+          <div><span><span class="es">Comisiones de extras</span><span class="en">Extras fees</span> (<span id="ueAddonRate">10%</span>)</span><span class="v" id="ueAddonV">USD 3.50</span></div>
           <div id="ueSubRow" hidden><span><span class="es">Suscripción Pro</span><span class="en">Pro subscription</span></span><span class="v">USD 9.00–12.00</span></div>
           <div class="neg"><span><span class="es">Costo de IA (con o sin caché)</span><span class="en">AI cost (with or without cache)</span></span><span class="v" id="ueAiV">− USD 1.80–6.60</span></div>
-          <div class="tot"><span><span class="es">Resultado por propiedad</span><span class="en">Result per property</span></span><span class="v" id="ueNetV">USD 0.04–4.84</span></div>
+          <div class="tot"><span><span class="es">Resultado por propiedad</span><span class="en">Result per property</span></span><span class="v" id="ueNetV">USD 0.74 … USD 5.54</span></div>
         </div>
         <p class="small"><span class="es">Supuestos del modelo de negocio (USD 0.03–0.11 por respuesta). El piloto mide las respuestas por estadía, el uso de caché y las tasas de adopción reales.</span><span class="en">Business model assumptions (USD 0.03–0.11 per reply). The pilot measures real replies per stay, cache hits, and attach rates.</span></p>
         <p class="note"><span class="es">Lectura: las comisiones solas apenas cubren la IA de una propiedad gratis. Por eso el plan Free tiene un tope de respuestas, y la conversión a pago y los extras (el anfitrión pone el precio) son las palancas.</span><span class="en">Reading: commissions alone barely cover a free property's AI. That's why Free caps replies, and paid conversion and extras (the host sets the price) are the levers.</span></p>
@@ -1217,7 +1277,7 @@
   <div class="inner">
     <div class="head">
       <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Estado</span><span class="en">Status</span></p>
-      <h2 class="h2" data-build><span class="es">El MVP está construido. Lo que falta depende del fundador, no del código.</span><span class="en">The MVP is built. What remains depends on the founder, not the code.</span></h2>
+      <h2 class="h2" data-build><span class="es">Las 12 funciones del MVP están construidas. Falta publicarlas, preparar el demo y conectar los pagos reales.</span><span class="en">All 12 MVP features are built. What remains: deploying them, preparing the demo, and connecting real payments.</span></h2>
     </div>
     <div class="grid-2">
       <div class="stack" style="gap:10px">
@@ -1240,13 +1300,63 @@
       <div class="stack" style="gap:10px">
         <p class="h3" data-build><span class="es">Pendiente del fundador</span><span class="en">Founder gates</span></p>
         <div class="gates">
-          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Entidad legal</span><span class="en">Legal entity</span> · <span class="mono">OQ-01</span></b><span><span class="es">Necesaria para la cuenta de comercio y para cobrar.</span><span class="en">Needed for the merchant account and to collect payments.</span></span></span></div>
-          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Cuenta de Tilopay y su adaptador</span><span class="en">Tilopay account and adapter</span> · <span class="mono">OQ-37</span></b><span><span class="es">Hoy los pagos usan el proveedor simulado; en producción están apagados.</span><span class="en">Payments use the simulated provider today; they're off in production.</span></span></span></div>
-          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Cuenta de AWS y ambiente de staging</span><span class="en">AWS account and staging</span></b><span><span class="es">El despliegue espera la cuenta; el correo con SES y el DNS toman semanas.</span><span class="en">Deployment waits for the account; SES email and DNS take weeks.</span></span></span></div>
-          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Revisión legal</span><span class="en">Legal review</span> · <span class="mono">OQ-35</span></b><span><span class="es">Textos del chat y avisos, extras de entrada temprana y salida tarde, privacidad.</span><span class="en">Chat texts and disclosures, early check-in and late checkout extras, privacy.</span></span></span></div>
-          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Llaves y cuentas</span><span class="en">Keys and accounts</span></b><span><span class="es">Clave de Anthropic para las evals con el modelo real, afiliación a Viator y Civitatis, llaves de push.</span><span class="en">An Anthropic key for real-model evals, Viator and Civitatis affiliate accounts, push keys.</span></span></span></div>
+          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Dominio y AWS</span><span class="en">Domain and AWS</span></b><span><span class="es">Cuenta, dominio con DNS en Route 53, rol de despliegue, secretos y correo con SES. Sin esto no hay staging ni demo. En curso desde el 20 nov.</span><span class="en">Account, domain with DNS in Route 53, deploy role, secrets, and SES email. Without them there is no staging and no demo. In progress from 20 Nov.</span></span></span></div>
+          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Llaves y cuentas</span><span class="en">Keys and accounts</span></b><span><span class="es">Clave de Anthropic con límite de gasto (chat y evals), cliente de Google para iniciar sesión, llaves de push y afiliación a Viator y Civitatis.</span><span class="en">An Anthropic key with a spending limit (chat and evals), a Google sign-in client, push keys, and Viator and Civitatis affiliate accounts.</span></span></span></div>
+          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Entidad legal</span><span class="en">Legal entity</span> · <span class="mono">OQ-01</span></b><span><span class="es">Necesaria para la cuenta de Tilopay y para cobrar.</span><span class="en">Needed for the Tilopay account and to collect payments.</span></span></span></div>
+          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Cuenta de Tilopay y su adaptador</span><span class="en">Tilopay account and adapter</span> · <span class="mono">OQ-37</span></b><span><span class="es">La tarifa ya se conoce (4.2% + USD 0.30). Faltan la cuenta y las respuestas por escrito; el borrador está listo. Hoy los pagos usan el proveedor simulado.</span><span class="en">The rate is known (4.2% + USD 0.30). The account and written answers are missing; the draft is ready. Payments use the simulated provider today.</span></span></span></div>
+          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Revisión legal</span><span class="en">Legal review</span> · <span class="mono">OQ-35</span></b><span><span class="es">Textos del chat y avisos, extras de entrada temprana y salida tarde, privacidad y términos.</span><span class="en">Chat texts and disclosures, early check-in and late checkout extras, privacy policy and terms.</span></span></span></div>
+          <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Permisos de Beds24 y Hostex</span><span class="en">Beds24 and Hostex permission</span> · <span class="mono">OQ-26</span></b><span><span class="es">Para encender la importación desde esos PMS. Borradores listos.</span><span class="en">To turn on imports from those PMS. Drafts are ready.</span></span></span></div>
           <div class="gate" data-build><span class="gi" aria-hidden="true"></span><span><b><span class="es">Socios de diseño</span><span class="en">Design partners</span> · <span class="mono">OQ-03</span></b><span><span class="es">10–20 anfitriones y 3–5 administradores para el piloto.</span><span class="en">10–20 hosts and 3–5 managers for the pilot.</span></span></span></div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="camino-demo" data-chapter="estado" data-es="Camino al demo y al piloto" data-en="Road to the demo and the pilot">
+  <div class="inner">
+    <div class="head">
+      <p class="eyebrow" data-build><svg class="arch" aria-hidden="true"><use href="#i-arch"/></svg><span class="es">Próximos pasos</span><span class="en">Next steps</span></p>
+      <h2 class="h2" data-build><span class="es">Del código en main al demo con socios y al piloto</span><span class="en">From the code in main to the partner demo and the pilot</span></h2>
+      <p class="small" data-build><span class="es">Toca un paso.</span><span class="en">Tap a step.</span></p>
+    </div>
+    <div data-tabs class="stack" style="gap:12px">
+      <div class="flow" style="--steps:6" role="tablist" aria-label="Pasos / Steps" data-build>
+        <button class="flow-step" role="tab" type="button" aria-selected="true" data-tab="d1"><span class="k">1</span><span class="t"><span class="es">Dominio y AWS</span><span class="en">Domain and AWS</span></span><span class="actor"><span class="es">Fundador</span><span class="en">Founder</span></span></button>
+        <button class="flow-step" role="tab" type="button" aria-selected="false" data-tab="d2"><span class="k">2</span><span class="t"><span class="es">Primer despliegue</span><span class="en">First deploy</span></span><span class="actor"><span class="es">Fundador · Claude</span><span class="en">Founder · Claude</span></span></button>
+        <button class="flow-step" role="tab" type="button" aria-selected="false" data-tab="d3"><span class="k">3</span><span class="t"><span class="es">Páginas públicas y demo</span><span class="en">Public pages and demo data</span></span><span class="actor"><span class="es">Claude</span><span class="en">Claude</span></span></button>
+        <button class="flow-step" role="tab" type="button" aria-selected="false" data-tab="d4"><span class="k">4</span><span class="t"><span class="es">IA real y evals</span><span class="en">Real AI and evals</span></span><span class="actor"><span class="es">Fundador aprueba · Claude</span><span class="en">Founder approves · Claude</span></span></button>
+        <button class="flow-step" role="tab" type="button" aria-selected="false" data-tab="d5"><span class="k">5</span><span class="t"><span class="es">Ensayo y demo</span><span class="en">Rehearsal and demo</span></span><span class="actor"><span class="es">Fundador</span><span class="en">Founder</span></span></button>
+        <button class="flow-step" role="tab" type="button" aria-selected="false" data-tab="d6"><span class="k">6</span><span class="t"><span class="es">Piloto</span><span class="en">Pilot</span></span><span class="actor"><span class="es">Fundador · Claude</span><span class="en">Founder · Claude</span></span></button>
+      </div>
+      <div class="flow-panel" role="tabpanel" data-panel="d1" data-build><ul><li><span class="es">Cuenta de AWS con MFA, alertas de gasto y créditos para startups (AWS Activate).</span><span class="en">An AWS account with MFA, billing alerts, and startup credits (AWS Activate).</span></li><li><span class="es">El dominio con su DNS en Route 53: subdominios para el portal, la API y la guía, y el remitente de correo.</span><span class="en">The domain with its DNS in Route 53: subdomains for the portal, the API, and the guide, plus the email sender.</span></li><li><span class="es">Un rol de despliegue para GitHub (OIDC) en la variable AWS_DEPLOY_ROLE_ARN; los dominios van como variables del ambiente de GitHub.</span><span class="en">A GitHub deploy role (OIDC) in the AWS_DEPLOY_ROLE_ARN variable; the domains go in as GitHub environment variables.</span></li><li><span class="es">Los secretos de cada ambiente con sst secret set.</span><span class="en">Each stage's secrets with sst secret set.</span></li><li><span class="es">SES: verificar el dominio y pedir acceso a producción (el texto está listo).</span><span class="en">SES: verify the domain and request production access (the text is ready).</span></li></ul></div>
+      <div class="flow-panel" role="tabpanel" data-panel="d2" hidden><ul><li><span class="es">El primer despliegue de staging desde GitHub.</span><span class="en">The first staging deploy from GitHub.</span></li><li><span class="es">Corregir lo que aparezca: la infraestructura está escrita y revisada, pero nunca se ha desplegado.</span><span class="en">Fix whatever comes up: the infrastructure is written and reviewed, but it has never been deployed.</span></li><li><span class="es">GuardDuty en el bucket de subidas (las fotos esperan su escaneo) y el bloqueo de servicios de IA de AWS.</span><span class="en">GuardDuty on the uploads bucket (photos wait for their scan) and the AWS AI-services opt-out.</span></li><li><span class="es">Correr la guía de prueba de cada función con teléfonos reales y datos móviles.</span><span class="en">Run each feature's quickstart on real phones over mobile data.</span></li></ul></div>
+      <div class="flow-panel" role="tabpanel" data-panel="d3" hidden><ul><li><span class="es">Página de inicio de Guidesk, política de privacidad y términos, como borradores para la revisión legal. Las piden SES y el inicio de sesión con Google.</span><span class="en">A Guidesk home page, privacy policy, and terms, as drafts for the legal review. SES and Google sign-in ask for them.</span></li><li><span class="es">Un comando que crea un workspace de demo: propiedad, guía publicada, estadías, conversaciones, extras y estadísticas de 30 días.</span><span class="en">A command that creates a demo workspace: a property, a published guide, stays, conversations, extras, and 30 days of analytics.</span></li></ul></div>
+      <div class="flow-panel" role="tabpanel" data-panel="d4" hidden><ul><li><span class="es">Clave de Anthropic con límite de gasto en staging y en el CI.</span><span class="en">An Anthropic key with a spending limit in staging and in CI.</span></li><li><span class="es">Correr las evals con el modelo real (guía, chat, copiloto, extras y Explorar) y ajustar los prompts hasta que pasen.</span><span class="en">Run the evals with the real model (guide, chat, copilot, extras, and Explore) and tune prompts until they pass.</span></li><li><span class="es">Cada corrida tiene costo, así que el fundador la aprueba.</span><span class="en">Every run costs money, so the founder approves it.</span></li></ul></div>
+      <div class="flow-panel" role="tabpanel" data-panel="d5" hidden><ul><li><span class="es">El guion: la estadía de Emily y un día de Ana, del capítulo Demo.</span><span class="en">The script: Emily's stay and a day of Ana, from the Demo chapter.</span></li><li><span class="es">Ensayo en teléfonos con datos móviles, en español e inglés.</span><span class="en">A rehearsal on phones over mobile data, in Spanish and English.</span></li><li><span class="es">Pagos: staging no acepta el proveedor simulado (regla de seguridad), así que el pago se muestra en local o en un ambiente de demo aparte. Lo decide el fundador.</span><span class="en">Payments: staging refuses the simulated provider (a security rule), so the payment is shown locally or in a separate demo stage. The founder decides.</span></li></ul></div>
+      <div class="flow-panel" role="tabpanel" data-panel="d6" hidden><ul><li><span class="es">Entidad legal, cuenta de Tilopay y su adaptador (una spec nueva) para cobrar en el mes 4.</span><span class="en">The legal entity, the Tilopay account, and its adapter (a new spec) to collect payments in month 4.</span></li><li><span class="es">Revisión legal de los textos, socios de diseño y permisos de Beds24 y Hostex.</span><span class="en">The legal review of the texts, design partners, and the Beds24 and Hostex permissions.</span></li><li><span class="es">Pasar a los socios del piloto a Pro o Business y medir con el reporte del piloto.</span><span class="en">Move pilot partners to Pro or Business and measure with the pilot report.</span></li></ul></div>
+    </div>
+    <div class="grid-2">
+      <div class="card" data-build>
+        <p class="h3"><span class="es">Lo que falta desarrollar</span><span class="en">What is left to build</span></p>
+        <ul class="small" style="color:var(--text)">
+          <li><span class="es">Ajustes del primer despliegue en AWS.</span><span class="en">Fixes from the first AWS deploy.</span> <span class="tag warn"><span class="es">espera AWS</span><span class="en">waits for AWS</span></span></li>
+          <li><span class="es">Página de inicio, privacidad y términos.</span><span class="en">Home page, privacy policy, and terms.</span> <span class="tag info"><span class="es">nuevo</span><span class="en">new</span></span></li>
+          <li><span class="es">Datos de demo.</span><span class="en">Demo data.</span> <span class="tag info"><span class="es">nuevo</span><span class="en">new</span></span></li>
+          <li><span class="es">Evals con el modelo real y ajustes de prompts.</span><span class="en">Real-model evals and prompt tuning.</span> <span class="tag warn"><span class="es">espera la clave</span><span class="en">waits for the key</span></span></li>
+          <li><span class="es">Adaptador de Tilopay.</span><span class="en">The Tilopay adapter.</span> <span class="tag warn"><span class="es">espera OQ-01 y OQ-37</span><span class="en">waits for OQ-01 and OQ-37</span></span></li>
+          <li><span class="es">Regla de la comisión en reembolsos.</span><span class="en">The refund rule for the fee.</span> <span class="tag warn"><span class="es">espera decisión</span><span class="en">waits for a decision</span></span></li>
+        </ul>
+        <p class="small"><span class="es">El código de las 12 funciones ya está en main, con pruebas, revisiones de seguridad y accesibilidad.</span><span class="en">The code for all 12 features is already in main, with tests, security reviews, and accessibility checks.</span></p>
+      </div>
+      <div class="card" data-build>
+        <p class="h3"><span class="es">Qué verán los socios en el demo</span><span class="en">What partners will see in the demo</span></p>
+        <ul class="small" style="color:var(--text)">
+          <li><span class="es">Ana pega el texto de su anuncio, la IA arma la guía y Ana la publica.</span><span class="en">Ana pastes her listing text, the AI builds the guide, and Ana publishes it.</span></li>
+          <li><span class="es">Emily abre la guía en su teléfono, ve el código de la puerta solo en su estadía, pregunta en el chat y pide un traslado.</span><span class="en">Emily opens the guide on her phone, sees the door code only during her stay, asks in the chat, and requests a pickup.</span></li>
+          <li><span class="es">Una emergencia escala a Ana con una alerta push; Ana responde desde la bandeja y usa el copiloto para Airbnb.</span><span class="en">An emergency escalates to Ana with a push alert; Ana answers from the inbox and uses the copilot for Airbnb.</span></li>
+          <li><span class="es">Explorar con tours, las estadísticas y los planes con sus comisiones.</span><span class="en">Explore with tours, the analytics, and the plans with their fees.</span></li>
+        </ul>
       </div>
     </div>
   </div>
