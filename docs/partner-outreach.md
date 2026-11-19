@@ -74,9 +74,11 @@ Antes de integrar, quisiéramos confirmar por escrito:
 7. **Notificaciones (webhook).** Para pagos con tarjeta por la página alojada o por links de pago, ¿qué
    esquema de firma o cifrado usa la notificación? ¿Dónde está documentado? ¿Hay reintentos? ¿Podemos
    consultar el estado de una orden por API para verificarla del lado del servidor?
-8. **Comisiones.** ¿Cuál es la tarifa por transacción (porcentaje y monto fijo)? ¿Hay mensualidad,
-   costo de afiliación por anfitrión, costo por split, por reembolso o por contracargo? ¿Se puede
-   descontar la comisión de procesamiento solo de la parte del anfitrión?
+8. **Comisiones.** Entendemos que la tarifa es 4.2% más USD 0.30 por transacción. ¿Aplica igual a
+   tarjetas internacionales? ¿Cuál es el monto fijo en colones? En una orden con split, ¿el cargo fijo
+   se cobra una vez o por cada comercio que recibe parte? ¿Hay mensualidad, costo de afiliación por
+   anfitrión, costo por reembolso o por contracargo? ¿Se puede descontar la comisión de procesamiento
+   solo de la parte del anfitrión?
 9. **Liquidación.** ¿En qué plazo y en qué moneda se deposita a cada anfitrión y a Guidesk?
 10. **Factura electrónica.** ¿Ofrecen o integran factura electrónica (Hacienda) para los comercios
     afiliados?

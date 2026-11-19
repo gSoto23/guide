@@ -61,8 +61,8 @@ describe("simulated payment adapter", () => {
   });
 
   it("charges an illustrative fee and refunds at once; off has no adapter", async () => {
-    expect(simulatedFee(8500, "USD")).toBe(328);
-    expect(simulatedFee(1_000_000, "CRC")).toBe(50_000);
+    expect(simulatedFee(8500, "USD")).toBe(387);
+    expect(simulatedFee(1_000_000, "CRC")).toBe(57_000);
     await expect(
       adapter.refund({ orderId: "o", providerReference: "p", amountMinor: 100, currency: "USD" }),
     ).resolves.toMatchObject({ status: "succeeded" });

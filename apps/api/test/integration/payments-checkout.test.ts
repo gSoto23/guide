@@ -132,8 +132,8 @@ describe("guest checkout (US1)", () => {
       status: "paid",
       amount_minor: "8500",
       platform_fee_minor: "850",
-      provider_fee_minor: "328",
-      host_share_minor: "7322",
+      provider_fee_minor: "387",
+      host_share_minor: "7263",
       refund_due: false,
     });
     const shown = (await guestRequests(ctx, fixture))[0]!.payment!;
@@ -171,7 +171,7 @@ describe("guest checkout (US1)", () => {
     expect((await post(signed.body, signed.headers)).json()).toEqual({ status: "handled" });
     expect((await post(signed.body, signed.headers)).json()).toEqual({ status: "duplicate" });
     // Already paid: the second payment event changes nothing.
-    expect((await order(paidOrder)).provider_fee_minor).toBe("328");
+    expect((await order(paidOrder)).provider_fee_minor).toBe("387");
     const forged = await post({ ...event, eventId: "evt-forged" }, signed.headers);
     expect(forged.statusCode).toBe(400);
     const unsigned = await post({ ...event, eventId: "evt-unsigned" }, {});

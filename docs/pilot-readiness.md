@@ -32,7 +32,9 @@ access request, are drafted in [partner outreach](partner-outreach.md).
   - the privacy policy and terms of service.
 - [ ] **Fee policy and plan numbers:** confirm or change the defaults chosen during the build:
   - who absorbs the card fee: the host (OQ-09, spec 013);
-  - Guidesk's platform fee: Free 10%, Pro 7%, Business 5% (`packages/domain/src/payments/`);
+  - Guidesk's platform fee: Free 10%, Pro 7%, Business 5% (`packages/domain/src/payments/`), confirmed
+    by the founder on 2026-11-19. With Tilopay's reported card fee of 4.2% plus USD 0.30, a USD 35
+    add-on costs the host about 15% in total on Free, 12% on Pro, and 10% on Business;
   - what happens to that fee when a host refunds: today each order keeps the fee fixed at payment and
     no rule returns it, so decide whether a refund returns the fee in proportion (spec 013; the Tilopay
     answer on how refunds reverse a split settlement shapes it);
