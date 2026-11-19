@@ -30,25 +30,26 @@
 Locally: `CONTACT_EMAIL`, `COMPANY_NAME`, and `PORTAL_URL` may be set in `.env`. `PORTAL_URL` defaults to
 `http://localhost:3000` in the guide app. `STAGE` stays unset.
 
-## Public catalogs (`packages/i18n/messages/public.{es,en}.json`)
+## Public catalogs (`packages/i18n/public/{es,en}.json`)
 
-Plain JSON. Values are strings, or arrays of strings or objects. Placeholders are `{company}`, `{email}`,
-and `{date}` only. Both files have the same structure, keys, and array lengths (checked by test).
+Plain JSON, outside `messages/` (which next-intl precompiles). Values are strings, or arrays of strings
+or objects. Placeholders are `{company}`, `{email}`, `{date}`, `{year}`, `{count}`, and `{percent}`
+only. Both files have the same structure, keys, and array lengths (checked by test).
 
 ```text
 meta.home.title / meta.home.description / meta.privacy.* / meta.terms.*
-nav.signIn / nav.language / nav.home
+nav.signIn / nav.language / nav.home / nav.skip
 home.tagline, home.hero.title, home.hero.lead, home.hero.cta
 home.audience: [{ title, text }]                       # hosts, managers
 home.steps: [{ title, text }]                          # exactly 3
 home.features: [{ id, title, text }]                   # guide, chat, copilot, extras-explore, analytics
-home.plans.title, .lead, .pilot, .tba, .perMonth, .fees, .feeRow, .limits.{properties,replies,seats,unlimited}
+home.plans.title, .lead, .pilot, .tba, .free, .properties{One,Other,Unlimited}, .replies{Fixed,Pooled}, .seats{One,Other,Unlimited}, .fee, .feesNote
 home.plans.items: [{ id: free|pro|business, name, audience }]
 home.cta.title, .text, .button
 footer.privacy, .terms, .contact, .rights
 legal.updated ("Última actualización: {date}"), legal.toc
 privacy.title, privacy.intro: [string]
-privacy.sections: [{ id, title, paragraphs: [string], items?: [string] }]
+privacy.sections: [{ id, title, paragraphs: [string], items?: [string], footer?: [string] }]
 terms.title, terms.intro: [string]
 terms.sections: [{ id, title, paragraphs: [string], items?: [string] }]
 ```

@@ -47,7 +47,8 @@ How to check that spec 014 works. Contracts:
 5. `curl -s localhost:3000/robots.txt` and `curl -s localhost:3000/sitemap.xml` list only the six public
    URLs.
 6. Expected: `pnpm --filter @guidesk/i18n test` passes (public catalogs parity), and `cd e2e && pnpm exec
-   playwright test public-pages a11y --workers=1` passes.
+   playwright test public-pages smoke --workers=1` passes (the axe checks for the public pages are in
+   `public-pages.spec.ts`).
 
 ## Scenario 3: Installed app (US4)
 

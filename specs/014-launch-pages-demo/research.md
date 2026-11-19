@@ -4,10 +4,12 @@ Decisions for [spec 014](spec.md). Facts about the current code were checked on 
 
 ## R1. Where the public pages live and how they render
 
-- **Decision:** a `(public)` route group under `apps/portal/app/[locale]/` with its own layout (header
-  with sign-in and language switch, footer with the legal links, contact, and company). The current
+- **Decision:** a `(public)` route group under `apps/portal/app/[locale]/`. The current
   `[locale]/page.tsx` moves into the group (same URL, `/{locale}`), and `privacy/page.tsx` and
   `terms/page.tsx` join it. Every public page is a server component; no client component is added.
+  *Implementation note:* the header (sign-in, language link) and footer (legal links, contact,
+  company) are a `PublicShell` server component each page renders, not a group layout, because the
+  language link needs the current page and a layout doesn't know it.
 - **Rationale:** the portal already renders each page per request (the locale layout reads
   `headers()` for the CSP nonce), so runtime stage settings work. Server components keep the public
   routes at the framework's baseline JavaScript, well under 150 KB. One domain, no new deployable
@@ -18,10 +20,12 @@ Decisions for [spec 014](spec.md). Facts about the current code were checked on 
 
 ## R2. Where the public texts live
 
-- **Decision:** two new catalogs, `packages/i18n/messages/public.es.json` and `public.en.json`, read
-  only by the public pages' server components. They are plain JSON with structured content (sections
-  with titles, paragraphs, and lists, as arrays), not ICU messages. A small helper fills the three
-  placeholders they use (`{company}`, `{email}`, `{date}`). The catalog test checks that both files have
+- **Decision:** two new catalogs, `packages/i18n/public/es.json` and `en.json`, read only by the
+  public pages' server components. *Implementation note:* they started in `messages/`, but the
+  next-intl plugin precompiles every JSON file in that folder into ICU structures, which broke the
+  plain strings at runtime; the separate folder keeps them out of it. They are plain JSON with structured content (sections
+  with titles, paragraphs, and lists, as arrays), not ICU messages. A small helper fills the
+  placeholders they use (`{company}`, `{email}`, `{date}`, `{year}`, `{count}`, `{percent}`). The catalog test checks that both files have
   the same structure, keys, and array lengths.
 - **Rationale:** the locale layout's `NextIntlClientProvider` inherits the whole portal catalog, so
   every key added to `es.json`/`en.json` ships in every portal page's payload; the legal texts are long
@@ -61,7 +65,8 @@ Decisions for [spec 014](spec.md). Facts about the current code were checked on 
     `/es/terms`, `/en/terms`, then `Disallow: /`, plus the sitemap URL.
   - `app/sitemap.ts` (`/sitemap.xml`): the six public URLs with language alternates.
   - Both live at the app root; the proxy matcher already skips paths with a dot, so they are not
-    locale-prefixed.
+    locale-prefixed. *Implementation note:* both export `dynamic = "force-dynamic"`, because Next.js
+    would otherwise prerender them at build time, before the runtime `PORTAL_URL` exists.
   - The guest guide keeps its `noindex` meta and `x-robots-tag`.
 - **Rationale:** FR-011, FR-012, AC-SEC-005, with no new dependency.
 
