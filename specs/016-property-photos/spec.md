@@ -19,8 +19,8 @@ founder can change any of them.
 
 - Q: Does the guest guide greet the guest by first name? → A: Not in this feature. Spec 004 FR-028
   keeps guest names off the guest guide (a forwarded stay link would reveal the name), and the
-  guest's name is confidential data. It stays a founder decision for later; the guide keeps its
-  current stay card.
+  guest's name is confidential data. The guide keeps its current stay card. **Founder decision
+  (2026-11-20): keep guest names off the guide.**
 - Q: Do avatars use the Google profile picture? → A: No. Avatars show the person's initials on a
   brand-tinted circle. Google pictures live on a third-party host that the portal's content policy
   blocks, and loading them would tell Google when the portal is open.
@@ -220,5 +220,6 @@ where the inbox shows who took over a conversation.
 - The guide row of a property exists before photos are uploaded (it does for every property created
   through onboarding).
 - Duplicating a property copies its cover reference.
-- The first-name welcome is out of scope (Clarifications); the stay card is unchanged.
+- The first-name welcome is out of scope and the founder decided on 2026-11-20 not to show guest
+  names in the guide (Clarifications); the stay card is unchanged.
 - Demo photos and the public home hero are phase D, with the founder's own photos.

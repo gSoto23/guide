@@ -387,7 +387,7 @@
         ['Una foto de portada por propiedad: arriba en la guía, en la vista previa de WhatsApp, en las tarjetas del portal y en el póster QR.', 'One cover photo per property: at the top of the guide, in the WhatsApp preview, on the portal cards, and on the QR poster.'],
         ['Una foto opcional por extra, para que el traslado o la tabla de surf se vean antes de pedirlos.', 'An optional photo per extra, so the pickup or the surfboard shows before guests request it.'],
         ['Sugerencias para agregar fotos donde más ayudan: la puerta, el parqueo, el router.', 'Prompts to add photos where they help most: the door, the parking, the router.'],
-        ['Avatares con iniciales en el portal. La bienvenida con el nombre del huésped espera una decisión de privacidad.', 'Initials avatars in the portal. A welcome with the guest\'s name waits for a privacy decision.']
+        ['Avatares con iniciales en el portal. El nombre del huésped no se muestra en la guía, por privacidad: un enlace reenviado no revela quién se hospeda.', 'Initials avatars in the portal. The guest\'s name is not shown in the guide, for privacy: a forwarded link does not reveal who is staying.']
       ], screens: 'G-01 · G-08 · H-04', adr: 'Brand guide §6' }
   };
 
