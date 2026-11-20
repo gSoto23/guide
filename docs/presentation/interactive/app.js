@@ -363,7 +363,32 @@
         ['El dueño configura los pagos en la página del proveedor; la parte del anfitrión se liquida directo a su cuenta.', 'The owner sets up payouts on the provider\'s page; the host\'s share settles straight to their account.'],
         ['Reembolsos totales o parciales con reautenticación; disputas marcadas y avisadas por correo.', 'Full or partial refunds with re-authentication; disputes flagged and emailed.'],
         ['Hoy corre con un proveedor simulado; en producción los pagos están apagados hasta el adaptador de Tilopay.', 'Today it runs on a simulated provider; in production payments are off until the Tilopay adapter exists.']
-      ], screens: 'G-09 · G-10 · H-23 · H-33', adr: 'SEC-21 · ADR-0007' }
+      ], screens: 'G-09 · G-10 · H-23 · H-33', adr: 'SEC-21 · ADR-0007' },
+    '014': { t: ['Páginas públicas y demo', 'Public pages and demo'],
+      lead: ['Una cara pública para Guidesk y un workspace de demo listo en un comando.', 'A public face for Guidesk and a demo workspace ready in one command.'],
+      items: [
+        ['Página de inicio, política de privacidad y términos en español e inglés, enlazados desde el inicio de sesión y la guía. Son borradores para la revisión legal (OQ-35).', 'Home page, privacy policy, and terms in Spanish and English, linked from sign-in and the guide. They are drafts for the legal review (OQ-35).'],
+        ['Búsqueda: títulos, idiomas alternos, robots y sitemap solo con las páginas públicas; la guía del huésped no se indexa.', 'Search: titles, language alternates, robots, and a sitemap with only the public pages; the guest guide is not indexed.'],
+        ['El comando demo:seed crea dos propiedades en Costa Rica con guías publicadas, estadías, extras, una escalación abierta y 60 días de estadísticas, sin llamar a la IA.', 'The demo:seed command creates two Costa Rican properties with published guides, stays, extras, an open escalation, and 60 days of analytics, without calling the AI.'],
+        ['Se niega a correr en producción y el workspace de demo queda fuera del reporte del piloto.', 'It refuses to run in production, and the demo workspace stays out of the pilot report.']
+      ], screens: 'P-01 · P-02 · P-03', adr: 'OQ-35' },
+    '015': { t: ['La marca en el producto', 'The brand in the product'],
+      lead: ['La identidad «Bienvenida» en cada pantalla, en el teléfono y en la computadora.', 'The "Bienvenida" identity on every screen, on the phone and the computer.'],
+      items: [
+        ['Portal responsive: barra inferior en el teléfono (Bandeja, Solicitudes, Propiedades y Más) y menú lateral en la computadora, con la página actual marcada.', 'A responsive portal: a bottom bar on the phone (Inbox, Requests, Properties, and More) and a sidebar on the computer, with the current page marked.'],
+        ['Sin textos cortados: ninguna palabra se parte ni termina en «…», ni siquiera a 320 px.', 'No cut-off text: no word splits or ends in "…", even at 320 px.'],
+        ['45 íconos y 9 ilustraciones propios, con las formas del logo, sin librerías ni imágenes de terceros.', '45 icons and 9 illustrations of our own, with the logo\'s shapes, no libraries or third-party images.'],
+        ['Pantalla de entrar con el logo y el lema, pantallas vacías ilustradas y «Hecho con Guidesk» en las guías del plan Free.', 'A sign-in screen with the logo and the tagline, illustrated empty screens, and "Made with Guidesk" on Free-plan guides.'],
+        ['Vista previa de marca al compartir el enlace de la guía, sin datos del huésped.', 'A branded preview when the guide link is shared, with no guest data.']
+      ], screens: 'Portal · G-01 · G-13', adr: 'Brand guide' },
+    '016': { t: ['Fotos de la propiedad (en curso)', 'Property photos (in progress)'],
+      lead: ['Fotos que hacen la guía más visual, subidas por el anfitrión.', 'Photos that make the guide more visual, uploaded by the host.'],
+      items: [
+        ['Una foto de portada por propiedad: arriba en la guía, en la vista previa de WhatsApp, en las tarjetas del portal y en el póster QR.', 'One cover photo per property: at the top of the guide, in the WhatsApp preview, on the portal cards, and on the QR poster.'],
+        ['Una foto opcional por extra, para que el traslado o la tabla de surf se vean antes de pedirlos.', 'An optional photo per extra, so the pickup or the surfboard shows before guests request it.'],
+        ['Sugerencias para agregar fotos donde más ayudan: la puerta, el parqueo, el router.', 'Prompts to add photos where they help most: the door, the parking, the router.'],
+        ['Bienvenida con el nombre del huésped y avatares con iniciales en el portal.', 'A welcome with the guest\'s name and initials avatars in the portal.']
+      ], screens: 'G-01 · G-08 · H-04', adr: 'Brand guide §6', inProgress: true }
   };
 
   $$('#featureFilter .chip').forEach(function (chip) {
@@ -382,7 +407,10 @@
       var key = card.getAttribute('data-feature');
       var f = FEATURES[key];
       if (!f) return;
-      $('#sheetTags').innerHTML = '<span class="tag">spec ' + esc(key) + '</span><span class="tag ok">main ✓</span><span class="tag">' + f.adr + '</span>';
+      var status = f.inProgress
+        ? '<span class="tag warn">' + L('en curso', 'in progress') + '</span>'
+        : '<span class="tag ok">main ✓</span>';
+      $('#sheetTags').innerHTML = '<span class="tag">spec ' + esc(key) + '</span>' + status + '<span class="tag">' + f.adr + '</span>';
       $('#sheetTitle').innerHTML = L(f.t[0], f.t[1]);
       $('#sheetLead').innerHTML = L(f.lead[0], f.lead[1]);
       $('#sheetList').innerHTML = f.items.map(function (it) { return '<li>' + L(it[0], it[1]) + '</li>'; }).join('');
