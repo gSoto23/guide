@@ -228,6 +228,11 @@ export const link: IconData = [
   { d: "M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" },
   { d: "M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" },
 ];
+/** Feature 016: photo prompts. */
+export const camera: IconData = [
+  { d: "M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" },
+  { cx: 12, cy: 13, r: 3.5 },
+];
 export const qr: IconData = [
   { x: 4, y: 4, width: 6, height: 6, rx: 1.5 },
   { x: 14, y: 4, width: 6, height: 6, rx: 1.5 },

@@ -15,6 +15,7 @@ import { EmptyState } from "@/components/empty-state";
 import { AlertsCard } from "@/components/notifications/alerts-card";
 import { PageHeader } from "@/components/shell/page-header";
 import { useWorkspace } from "@/lib/use-workspace";
+import { Avatar } from "@/components/avatar";
 
 const REFRESH_MS = 15_000;
 const TABS: InboxTab[] = ["needs", "all", "done"];
@@ -233,10 +234,13 @@ export function InboxView({
                   </span>
                 )}
                 {item.takenOver && (
-                  <span className="badge">
-                    {item.takenOverBy
-                      ? t("takenOver", { name: item.takenOverBy })
-                      : t("takenOverAnon")}
+                  <span className="badge badge-icon">
+                    {item.takenOverBy ? <Avatar name={item.takenOverBy} size={24} /> : null}
+                    <span>
+                      {item.takenOverBy
+                        ? t("takenOver", { name: item.takenOverBy })
+                        : t("takenOverAnon")}
+                    </span>
                   </span>
                 )}
                 <span className="muted">{when(item.lastMessageAt)}</span>

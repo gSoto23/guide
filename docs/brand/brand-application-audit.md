@@ -1,7 +1,8 @@
 # Brand Application Audit
 
-> **Status:** phases A and B built in [spec 015](../../specs/015-brand-presence-shell/spec.md)
-> (2026-11-19); C and D open · **Owner:** Founder · **Related:** [Brand guide](README.md) ·
+> **Status:** phases A and B built in [spec 015](../../specs/015-brand-presence-shell/spec.md),
+> phase C in [spec 016](../../specs/016-property-photos/spec.md) (2026-11-19); D waits for the
+> founder's own photos · **Owner:** Founder · **Related:** [Brand guide](README.md) ·
 > [Design system](../ux/design-system.md) · [Screens](../ux/screens.md) ·
 > [Performance](../architecture/performance.md)
 

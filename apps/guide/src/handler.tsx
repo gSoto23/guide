@@ -70,6 +70,7 @@ export function createHandler({ config, assets }: HandlerDeps) {
     assets,
     privacyHref: `${config.portalUrl}/${locale}/privacy`,
     portalUrl: config.portalUrl,
+    ...(config.guideUrl ? { guideUrl: config.guideUrl } : {}),
   });
 
   const requestLocale = (request: Request): GuestLocale => {

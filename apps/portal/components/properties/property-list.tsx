@@ -9,7 +9,7 @@ import type {
   PropertyList,
   PropertySummary,
 } from "@guidesk/contracts";
-import { Icon, plus } from "@guidesk/ui";
+import { house, Icon, plus } from "@guidesk/ui";
 import { PageHeader } from "@/components/shell/page-header";
 import { useWorkspace } from "@/lib/use-workspace";
 import { StartOptionsPanel } from "./start-options";
@@ -156,6 +156,20 @@ export function PropertyListView({ locale }: { locale: string }) {
         {items.map((item) => (
           <li key={item.id}>
             <Link className="property-row" href={`/${locale}/properties/${item.id}`}>
+              {item.cover ? (
+                <img
+                  className="property-thumb"
+                  src={item.cover.smallUrl ?? item.cover.url}
+                  alt=""
+                  width={640}
+                  height={360}
+                  loading="lazy"
+                />
+              ) : (
+                <span className="property-thumb property-thumb-empty" aria-hidden="true">
+                  <Icon data={house} size={28} />
+                </span>
+              )}
               <strong>{item.name}</strong>
               <span className="property-meta">
                 <span

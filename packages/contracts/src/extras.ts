@@ -74,6 +74,8 @@ export const extraInputSchema = z
     preApproved: z.boolean(),
     turnover: z.enum(EXTRA_TURNOVER_VALUES).nullable(),
     visible: z.boolean(),
+    /** Feature 016: an optional photo, a ready image of this workspace (`null` removes it). */
+    mediaId: z.uuid().nullable().optional(),
   })
   .strict()
   .refine((value) => Boolean(value.name[value.sourceLanguage]), {
@@ -106,6 +108,8 @@ export interface MemberExtra extends ExtraInput {
   position: number;
   version: number;
   updatedAt: string;
+  /** Feature 016: the photo for members (signed URLs, valid for 15 minutes). */
+  media: { url: string; smallUrl: string | null } | null;
 }
 
 export interface MemberExtras {
@@ -128,6 +132,16 @@ export interface GuestExtra {
   weekdays: number[];
   maxPerStay: number;
   turnover: ExtraTurnover | null;
+  /** Feature 016: the extra's photo on the guest media path, or null. */
+  image: GuestImage | null;
+}
+
+/** A photo for guests: stable guest media paths, sizes for layout. */
+export interface GuestImage {
+  url: string;
+  smallUrl: string | null;
+  width: number | null;
+  height: number | null;
 }
 
 export interface GuestExtras {

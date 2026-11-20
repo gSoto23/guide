@@ -22,6 +22,9 @@ import { useWorkspace } from "@/lib/use-workspace";
 import { ItemCard, type ItemActions } from "./item-card";
 import { MediaUploadButton } from "./media-upload";
 
+/** Sections where a photo answers guests' questions better than text (feature 016 FR-011). */
+const PHOTO_PROMPT_KINDS = ["arrival", "parking", "wifi", "appliances", "checkout"] as const;
+
 // Opened only when adding or editing a recommendation (Performance Budget, 150 KB per route).
 const RecommendationForm = dynamic(
   () => import("./recommendation-form").then((m) => m.RecommendationForm),
@@ -278,6 +281,17 @@ export function SectionEditor({
           ))}
         </ul>
       )}
+
+      {canEdit &&
+        PHOTO_PROMPT_KINDS.includes(section.kind as (typeof PHOTO_PROMPT_KINDS)[number]) &&
+        !section.items.some((item) => item.kind === "image") && (
+          // Feature 016 FR-011: suggest the photo that answers questions best in this section.
+          <p className="photo-prompt" role="note">
+            {/* The camera icon is drawn in CSS: this route is near its JavaScript budget. */}
+            <span className="section-icon photo-prompt-icon" aria-hidden="true" />
+            <span>{t(`photoPrompt.${section.kind}`)}</span>
+          </p>
+        )}
 
       {canEdit && (
         <>

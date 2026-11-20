@@ -8,6 +8,7 @@ import { BrandLogo } from "./brand-logo";
 import { DESTINATIONS, type DestinationId } from "./shell/destinations";
 import { MoreButton, NavLink } from "./shell/nav-link";
 import { WorkspaceSwitcher } from "./workspace-switcher";
+import { Avatar } from "./avatar";
 
 export type ShellIcons = Record<DestinationId | "more", ReactNode>;
 
@@ -57,6 +58,13 @@ export function AppHeader({ locale, icons }: { locale: string; icons: ShellIcons
               </li>
             ))}
           </ul>
+          <Link href={href("/settings/account")} className="side-account">
+            <Avatar name={me.user.name} email={me.user.email} />
+            <span>
+              <span className="side-account-name">{me.user.name || me.user.email}</span>
+              <span className="side-account-hint">{t("nav.account")}</span>
+            </span>
+          </Link>
         </nav>
       </header>
       <nav aria-label="Guidesk" className="bottom-bar">

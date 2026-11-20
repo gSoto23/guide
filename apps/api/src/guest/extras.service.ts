@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { and, asc, desc, eq, gte, inArray, ne } from "drizzle-orm";
-import { extra, serviceRequest, stay, type Database } from "@guidesk/db";
+import { extra, mediaObject, serviceRequest, stay, type Database } from "@guidesk/db";
 import { checkRequest, EXTRA_LIMITS, localized, lockState, type ExtraRules } from "@guidesk/domain";
 import type {
   GuestCheckout,
   GuestExtra,
   GuestExtras,
+  GuestImage,
   GuestPayment,
   GuestServiceRequest,
   GuestServiceRequestBody,
@@ -21,7 +22,11 @@ import { GuestSessions, type GuestDevice } from "./sessions.service.js";
 type ExtraRow = typeof extra.$inferSelect;
 type RequestRow = typeof serviceRequest.$inferSelect;
 
-function guestExtra(row: ExtraRow, language: "es" | "en"): GuestExtra {
+function guestExtra(
+  row: ExtraRow,
+  language: "es" | "en",
+  image: GuestImage | null = null,
+): GuestExtra {
   const name = localized(row.name, language, row.sourceLanguage);
   const description = localized(row.description, name.language, row.sourceLanguage);
   return {
@@ -38,7 +43,44 @@ function guestExtra(row: ExtraRow, language: "es" | "en"): GuestExtra {
     weekdays: row.weekdays,
     maxPerStay: row.maxPerStay,
     turnover: row.turnover,
+    image,
   };
+}
+
+/** Feature 016: guest paths of the ready photos among extras, gated by the guide's public ID. */
+async function guestImages(
+  db: Database,
+  publicId: string,
+  ids: readonly (string | null)[],
+): Promise<Map<string, GuestImage>> {
+  const wanted = [...new Set(ids.filter((id): id is string => Boolean(id)))];
+  const images = new Map<string, GuestImage>();
+  if (wanted.length === 0) return images;
+  const rows = await db
+    .select({
+      id: mediaObject.id,
+      width: mediaObject.width,
+      height: mediaObject.height,
+      variants: mediaObject.variants,
+    })
+    .from(mediaObject)
+    .where(
+      and(
+        inArray(mediaObject.id, wanted),
+        eq(mediaObject.kind, "image"),
+        eq(mediaObject.status, "ready"),
+      ),
+    );
+  for (const row of rows) {
+    const path = (variant: string) => `/api/v1/guest/media/${publicId}/${row.id}/${variant}`;
+    images.set(row.id, {
+      url: path("large"),
+      smallUrl: row.variants.small ? path("small") : null,
+      width: row.width,
+      height: row.height,
+    });
+  }
+  return images;
 }
 
 function guestRequest(
@@ -126,7 +168,16 @@ export class GuestExtrasService {
     const target = await this.context.byPublicId(publicId);
     const language = lang ?? target.languages[0] ?? "es";
     const rows = await this.visible(this.context.db, target);
-    return { extras: rows.map((row) => guestExtra(row, language)) };
+    const images = await guestImages(
+      this.context.db,
+      target.publicId,
+      rows.map((row) => row.mediaId),
+    );
+    return {
+      extras: rows.map((row) =>
+        guestExtra(row, language, row.mediaId ? (images.get(row.mediaId) ?? null) : null),
+      ),
+    };
   }
 
   /** Whether this device may request, and why not (FR-008). */

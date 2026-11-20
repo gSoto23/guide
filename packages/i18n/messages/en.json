@@ -697,6 +697,20 @@
         "other": "Other code"
       },
       "masked": "Hidden"
+    },
+    "cover": {
+      "title": "Cover photo",
+      "emptyTitle": "Add a cover photo",
+      "emptyHint": "A photo of the front or the main view. It shows at the top of the guide, when the link is shared, and on the QR poster.",
+      "add": "Add a cover photo",
+      "change": "Change photo",
+      "remove": "Remove photo",
+      "altLabel": "Photo description",
+      "altHint": "Screen readers read it aloud. For example: “White house front with palm trees”.",
+      "saveAlt": "Save description",
+      "saved": "Cover photo saved.",
+      "removed": "Cover photo removed.",
+      "processing": "The photo is still being processed. Try again in a moment."
     }
   },
   "security": {
@@ -823,7 +837,8 @@
       "inbox": "Inbox",
       "requests": "Requests",
       "analytics": "Analytics",
-      "more": "More"
+      "more": "More",
+      "account": "My account"
     },
     "loading": "Loading…",
     "none": "No workspace: create one"
@@ -1436,6 +1451,13 @@
       "excluded": "You excluded “{name}” from this property.",
       "include": "Include again",
       "resetConfirm": "Your copy of “{name}” will be replaced with the shared version. Continue?"
+    },
+    "photoPrompt": {
+      "arrival": "A photo of the door or the lockbox helps guests arrive without calling you.",
+      "parking": "A photo of the parking spot avoids doubts on arrival.",
+      "wifi": "A photo of the router with the network name helps if the Wi-Fi fails.",
+      "appliances": "Photos of the controls (AC, washer, stove) answer questions before they come.",
+      "checkout": "A photo of where to leave the keys or the trash makes checkout easier."
     }
   },
   "sharedContent": {
@@ -2068,7 +2090,12 @@
       "maxPerStay": "Most per stay",
       "preApproved": "Confirm requests automatically when they meet the rules",
       "preApprovedHint": "Otherwise each request waits for you or your team.",
-      "visible": "Show it to guests"
+      "visible": "Show it to guests",
+      "photo": "Photo (optional)",
+      "photoHint": "A photo helps guests understand the service, for example the pickup vehicle.",
+      "photoAdd": "Add a photo",
+      "photoChange": "Change photo",
+      "photoRemove": "Remove photo"
     },
     "errorsForm": {
       "name": "Write a name in the language it's written in.",

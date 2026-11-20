@@ -54,6 +54,8 @@ const TITLES: Record<ProblemCode, string> = {
   wifi_only: "Only the Wi-Fi password can be public",
   shared_block_limit: "Shared block limit reached",
   storage_limit_reached: "Media storage limit reached",
+  invalid_media: "Invalid photo",
+  media_not_ready: "Photo still processing",
   ai_limit_reached: "Daily AI limit reached",
   reveal_limit_reached: "Reveal limit reached",
   unavailable: "Guide not available",

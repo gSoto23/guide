@@ -46,6 +46,9 @@ export type ProblemCode =
   | "wifi_only"
   | "shared_block_limit"
   | "storage_limit_reached"
+  // Feature 016: cover and extra photos.
+  | "invalid_media"
+  | "media_not_ready"
   | "ai_limit_reached"
   | "reveal_limit_reached"
   // Feature 004 (contracts/http-api.md).

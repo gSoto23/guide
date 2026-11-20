@@ -56,6 +56,7 @@ const CONTRACT_NAMES = [
   "lock",
   "link",
   "qr",
+  "camera",
 ];
 
 const SECTION_KINDS = [

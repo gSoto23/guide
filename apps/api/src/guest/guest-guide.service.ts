@@ -8,7 +8,7 @@ import type {
   GuidePreview,
   PreviewItem,
 } from "@guidesk/contracts";
-import { guide, guideVersion, mediaObject, property, restrictedValue } from "@guidesk/db";
+import { extra, guide, guideVersion, mediaObject, property, restrictedValue } from "@guidesk/db";
 import { emergencyNumberFor, mainLanguage, type GuideLanguage } from "@guidesk/domain";
 import type { MediaStoragePort } from "@guidesk/integrations";
 import { PublishService } from "../guides/publish.service.js";
@@ -56,19 +56,9 @@ export class GuestGuideService {
   /** A signed URL for one media variant of the published guide, or `unavailable` (research R11). */
   async mediaUrl(publicId: string, mediaId: string, variant: GuestMediaVariant): Promise<string> {
     const target = await this.context.byPublicId(publicId);
-    // Only media the published version references: never draft or removed media.
-    const [published] = await this.context.db
-      .select({ id: guideVersion.id })
-      .from(guide)
-      .innerJoin(guideVersion, eq(guideVersion.id, guide.publishedVersionId))
-      .where(
-        and(
-          eq(guide.id, target.guideId),
-          sql`jsonb_path_exists(${guideVersion.snapshot}, '$.sections[*].items[*] ? (@.mediaId == $id)', jsonb_build_object('id', ${mediaId}::text))`,
-        ),
-      )
-      .limit(1);
-    if (!published) throw unavailable();
+    // Only media the published version references, the property's cover, or a visible extra's
+    // photo (feature 016 FR-005): never draft or removed media.
+    if (!(await this.isPhotoOf(target, mediaId))) await this.assertPublished(target, mediaId);
     const [row] = await this.context.db
       .select({
         kind: mediaObject.kind,
@@ -82,6 +72,70 @@ export class GuestGuideService {
     if (!row || !stored) throw unavailable();
     const type = (stored as { contentType?: string }).contentType ?? MEDIA_TYPES[row.kind]!;
     return this.media.signedUrl(stored.key, type);
+  }
+
+  /** The property's current cover or the photo of one of its visible extras (feature 016). */
+  private async isPhotoOf(target: GuestTarget, mediaId: string): Promise<boolean> {
+    if (target.coverMediaId === mediaId) return true;
+    const [row] = await this.context.db
+      .select({ id: extra.id })
+      .from(extra)
+      .where(
+        and(
+          eq(extra.propertyId, target.propertyId),
+          eq(extra.workspaceId, target.workspaceId),
+          eq(extra.visible, true),
+          eq(extra.mediaId, mediaId),
+        ),
+      )
+      .limit(1);
+    return Boolean(row);
+  }
+
+  private async assertPublished(target: GuestTarget, mediaId: string): Promise<void> {
+    const [published] = await this.context.db
+      .select({ id: guideVersion.id })
+      .from(guide)
+      .innerJoin(guideVersion, eq(guideVersion.id, guide.publishedVersionId))
+      .where(
+        and(
+          eq(guide.id, target.guideId),
+          sql`jsonb_path_exists(${guideVersion.snapshot}, '$.sections[*].items[*] ? (@.mediaId == $id)', jsonb_build_object('id', ${mediaId}::text))`,
+        ),
+      )
+      .limit(1);
+    if (!published) throw unavailable();
+  }
+
+  /** Feature 016: the cover for guests, on the gated guest media path. */
+  private async coverOf(target: GuestTarget): Promise<GuestGuide["cover"]> {
+    if (!target.coverMediaId) return null;
+    const [row] = await this.context.db
+      .select({
+        width: mediaObject.width,
+        height: mediaObject.height,
+        variants: mediaObject.variants,
+      })
+      .from(mediaObject)
+      .where(
+        and(
+          eq(mediaObject.id, target.coverMediaId),
+          eq(mediaObject.workspaceId, target.workspaceId),
+          eq(mediaObject.kind, "image"),
+          eq(mediaObject.status, "ready"),
+        ),
+      )
+      .limit(1);
+    if (!row) return null;
+    const path = (variant: string) =>
+      `/api/v1/guest/media/${target.publicId}/${target.coverMediaId}/${variant}`;
+    return {
+      url: path("large"),
+      smallUrl: row.variants.small ? path("small") : null,
+      width: row.width,
+      height: row.height,
+      alt: target.coverAlt ?? target.propertyName,
+    };
   }
 
   private async toGuest(target: GuestTarget, preview: GuidePreview): Promise<GuestGuide> {
@@ -186,6 +240,7 @@ export class GuestGuideService {
       extras: { visible: (await this.extras.visible(db, target)).length > 0 },
       // Feature 015 FR-022: only Free-plan guides carry the Guidesk credit.
       credit: target.plan === "free",
+      cover: await this.coverOf(target),
     };
   }
 

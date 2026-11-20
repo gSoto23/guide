@@ -45,6 +45,7 @@ const hostile: GuestExtra = {
   weekdays: [1, 3, 5],
   maxPerStay: 3,
   turnover: null,
+  image: null,
 };
 
 const textsOf = (html: string): Record<string, string> => {

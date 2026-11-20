@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import type { ConversationDetail, MemberChatMessage, MemberTrace } from "@guidesk/contracts";
 import { problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
+import { Avatar } from "@/components/avatar";
 
 const REFRESH_MS = 10_000;
 const MAX = 2000;
@@ -217,12 +218,15 @@ export function ConversationView({
             />
             {a("takeOver")}
           </label>
-          <p className="field-hint">
-            {detail.takenOver
-              ? detail.takenOver.by
-                ? a("takenOverBy", { name: detail.takenOver.by, when: when(detail.takenOver.at) })
-                : a("takenOverAnon", { when: when(detail.takenOver.at) })
-              : a("takeOverHint")}
+          <p className="field-hint with-avatar">
+            {detail.takenOver?.by ? <Avatar name={detail.takenOver.by} size={24} /> : null}
+            <span>
+              {detail.takenOver
+                ? detail.takenOver.by
+                  ? a("takenOverBy", { name: detail.takenOver.by, when: when(detail.takenOver.at) })
+                  : a("takenOverAnon", { when: when(detail.takenOver.at) })
+                : a("takeOverHint")}
+            </span>
           </p>
           <div className="actions">
             {detail.status === "done" ? (

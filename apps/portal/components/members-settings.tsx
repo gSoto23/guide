@@ -9,6 +9,7 @@ import type { StepUpMethod } from "@/lib/step-up";
 import { useMe } from "@/lib/use-me";
 import { useStepUp } from "@/lib/use-step-up";
 import { StepUpDialog } from "./step-up-dialog";
+import { Avatar } from "@/components/avatar";
 
 const KNOWN_ERRORS = new Set([
   "forbidden",
@@ -231,7 +232,8 @@ export function MembersSettings({ locale }: { locale: string }) {
             <h2 id="members-title">{t("membersTitle")}</h2>
             <ul>
               {members.map((member) => (
-                <li key={member.membershipId}>
+                <li key={member.membershipId} className="member-row">
+                  <Avatar name={member.name} email={member.email} />
                   {member.name ? `${member.name} · ` : ""}
                   {member.email}
                   {member.userId === me.user.id ? ` (${t("you")})` : ""} ·{" "}

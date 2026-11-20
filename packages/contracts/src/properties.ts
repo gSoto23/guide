@@ -111,6 +111,24 @@ export type ListPropertiesQuery = z.infer<typeof listPropertiesQuerySchema>;
 /** Calendar status in the list (FR-006): no feed, all feeds working, or one failing. */
 export const calendarStatusSchema = z.enum(["none", "ok", "failing"]);
 
+/** Feature 016: a property's cover photo for members (signed URLs, valid for 15 minutes). */
+export const propertyCoverSchema = z.object({
+  mediaId: z.uuid(),
+  url: z.string(),
+  smallUrl: z.string().nullable(),
+  alt: z.string(),
+});
+export type PropertyCover = z.infer<typeof propertyCoverSchema>;
+
+/** Feature 016: set (a ready image of this workspace) or remove (`null`) the cover. */
+export const setCoverSchema = z
+  .object({
+    mediaId: z.uuid().nullable(),
+    alt: z.string().trim().min(1).max(160).optional(),
+  })
+  .strict();
+export type SetCoverBody = z.infer<typeof setCoverSchema>;
+
 export const propertySummarySchema = z.object({
   id: z.uuid(),
   name: z.string(),
@@ -133,6 +151,8 @@ export const propertySummarySchema = z.object({
     })
     .nullable()
     .optional(),
+  /** Feature 016: the cover photo, when one is set and ready. */
+  cover: propertyCoverSchema.nullable().optional(),
 });
 export type PropertySummary = z.infer<typeof propertySummarySchema>;
 

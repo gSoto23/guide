@@ -33,3 +33,9 @@
 
 ## R7. First-name welcome
 - **Decision**: Deferred; spec 004 FR-028 stands until the founder decides.
+
+## R8. Bundle size of the icon set in client components
+- **Finding**: Importing one icon in a client component bundles the whole icon data module
+  (about 1.3 KB gzip); unused exports of a module are not dropped.
+- **Decision**: Keep icons server-rendered where possible; on routes near the budget, draw the
+  icon in CSS or inline. A later change can split icons into one module each.

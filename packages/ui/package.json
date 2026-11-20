@@ -8,6 +8,30 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./icon": {
+      "types": "./dist/icons/icon.d.ts",
+      "default": "./dist/icons/icon.js"
+    },
+    "./icons": {
+      "types": "./dist/icons/data.d.ts",
+      "default": "./dist/icons/data.js"
+    },
+    "./illustration": {
+      "types": "./dist/illustrations/illustration.d.ts",
+      "default": "./dist/illustrations/illustration.js"
+    },
+    "./illustrations": {
+      "types": "./dist/illustrations/data.d.ts",
+      "default": "./dist/illustrations/data.js"
+    },
+    "./reasons": {
+      "types": "./dist/icons/reasons.d.ts",
+      "default": "./dist/icons/reasons.js"
+    },
+    "./sections": {
+      "types": "./dist/icons/sections.d.ts",
+      "default": "./dist/icons/sections.js"
     }
   },
   "files": [

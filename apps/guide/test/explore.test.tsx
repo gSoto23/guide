@@ -123,6 +123,7 @@ describe("Explore (feature 009 US1, US3)", () => {
         edgeSecret: null,
         experienceImageOrigins: [],
         portalUrl: "http://localhost:3000",
+        guideUrl: null,
       }),
     ).toContain("img-src 'self' data:;");
   });

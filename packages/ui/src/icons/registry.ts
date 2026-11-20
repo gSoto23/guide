@@ -48,6 +48,7 @@ export const ICONS = {
   lock: icons.lock,
   link: icons.link,
   qr: icons.qr,
+  camera: icons.camera,
 } as const satisfies Record<string, IconData>;
 
 export type IconName = keyof typeof ICONS;

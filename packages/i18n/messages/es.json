@@ -697,6 +697,20 @@
         "other": "Otro código"
       },
       "masked": "Oculto"
+    },
+    "cover": {
+      "title": "Foto de portada",
+      "emptyTitle": "Agrega una foto de portada",
+      "emptyHint": "Una foto de la fachada o de la vista principal. Aparece arriba en la guía, al compartir el enlace y en el póster QR.",
+      "add": "Agregar foto de portada",
+      "change": "Cambiar foto",
+      "remove": "Quitar foto",
+      "altLabel": "Descripción de la foto",
+      "altHint": "La leen los lectores de pantalla. Por ejemplo: «Fachada blanca con palmeras».",
+      "saveAlt": "Guardar descripción",
+      "saved": "Foto de portada guardada.",
+      "removed": "Foto de portada quitada.",
+      "processing": "La foto todavía se está procesando. Prueba otra vez en un momento."
     }
   },
   "security": {
@@ -823,7 +837,8 @@
       "inbox": "Bandeja",
       "requests": "Solicitudes",
       "analytics": "Estadísticas",
-      "more": "Más"
+      "more": "Más",
+      "account": "Mi cuenta"
     },
     "loading": "Cargando…",
     "none": "Sin workspace: crea uno"
@@ -1436,6 +1451,13 @@
       "excluded": "Excluiste «{name}» de esta propiedad.",
       "include": "Incluir de nuevo",
       "resetConfirm": "Tu copia de «{name}» se reemplazará por la versión compartida. ¿Continuar?"
+    },
+    "photoPrompt": {
+      "arrival": "Una foto de la puerta o de la caja de llaves ayuda a llegar sin llamarte.",
+      "parking": "Una foto del espacio de parqueo evita dudas al llegar.",
+      "wifi": "Una foto del router con el nombre de la red ayuda si el Wi-Fi falla.",
+      "appliances": "Fotos de los controles (aire, lavadora, cocina) responden preguntas antes de que lleguen.",
+      "checkout": "Una foto de cómo dejar las llaves o la basura hace más fácil la salida."
     }
   },
   "sharedContent": {
@@ -2068,7 +2090,12 @@
       "maxPerStay": "Máximo por estadía",
       "preApproved": "Confirmar automáticamente las solicitudes que cumplan las reglas",
       "preApprovedHint": "Si no, cada solicitud espera a que tú o tu equipo respondan.",
-      "visible": "Mostrarlo a los huéspedes"
+      "visible": "Mostrarlo a los huéspedes",
+      "photo": "Foto (opcional)",
+      "photoHint": "Una foto ayuda al huésped a entender el servicio, por ejemplo el vehículo del traslado.",
+      "photoAdd": "Agregar foto",
+      "photoChange": "Cambiar foto",
+      "photoRemove": "Quitar foto"
     },
     "errorsForm": {
       "name": "Escribe un nombre en el idioma en que está escrito.",

@@ -267,6 +267,13 @@
       "when": 1795124741861,
       "tag": "0037_workspace_demo",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1795146994397,
+      "tag": "0038_property_photos",
+      "breakpoints": true
     }
   ]
 }

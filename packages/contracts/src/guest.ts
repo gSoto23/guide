@@ -96,6 +96,14 @@ export interface GuestGuide {
   extras: { visible: boolean };
   /** Feature 015: show the "Made with Guidesk" credit (Free-plan workspaces only). */
   credit: boolean;
+  /** Feature 016: the property's cover photo, with the host's description. */
+  cover: {
+    url: string;
+    smallUrl: string | null;
+    width: number | null;
+    height: number | null;
+    alt: string;
+  } | null;
 }
 
 export const stayExchangeSchema = z.object({ token: stayTokenSchema }).strict();

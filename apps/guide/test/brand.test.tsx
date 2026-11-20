@@ -101,3 +101,38 @@ describe("status pages (FR-019, FR-021)", () => {
     expect(html).not.toContain("og:title");
   });
 });
+
+describe("cover photo (feature 016 FR-004, FR-006)", () => {
+  const cover = {
+    url: `/api/v1/guest/media/${FIXTURE_PUBLIC_ID}/m1/large`,
+    smallUrl: `/api/v1/guest/media/${FIXTURE_PUBLIC_ID}/m1/small`,
+    width: 1600,
+    height: 900,
+    alt: "Fachada con palmeras",
+  };
+
+  it("shows the cover above the title with a fixed size and the host's description", () => {
+    const guide = { ...fixtureGuide(FIXTURE_PUBLIC_ID, "es")!, cover };
+    const html = renderToString(<HomePage {...chrome("es")} guide={guide} />);
+    expect(html).toMatch(/<img class="cover" src="[^"]+\/small"[^>]*alt="Fachada con palmeras"/);
+    expect(html).toContain('width="1600" height="900"');
+    expect(html.indexOf('class="cover"')).toBeLessThan(html.indexOf('<h1 class="title">'));
+  });
+
+  it("uses the cover as the preview image on the guide's origin", () => {
+    const guide = { ...fixtureGuide(FIXTURE_PUBLIC_ID, "es")!, cover };
+    const html = renderToString(
+      <HomePage {...chrome("es")} guideUrl="https://g.example.com" guide={guide} />,
+    );
+    expect(html).toContain(
+      `<meta property="og:image" content="https://g.example.com${cover.url}"/>`,
+    );
+    expect(html).not.toContain("/brand/og-es.png");
+  });
+
+  it("keeps the branded preview image without a cover", () => {
+    const { html } = home("es", false);
+    expect(html).toContain(`<meta property="og:image" content="${PORTAL}/brand/og-es.png"/>`);
+    expect(html).not.toContain('class="cover"');
+  });
+});

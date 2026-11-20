@@ -31,3 +31,12 @@ export const ANSWER_REASONS = [
   "too_late",
   "other",
 ] as const satisfies readonly ServiceRequestAnswerReason[];
+
+/** A price in the page language, or the "free" label (feature 008; shared with Requests). */
+export function formatPrice(locale: string, price: number, currency: string, free: string) {
+  if (price === 0) return free;
+  return new Intl.NumberFormat(locale === "en" ? "en-US" : "es-CR", {
+    style: "currency",
+    currency,
+  }).format(price);
+}
