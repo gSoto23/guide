@@ -1,6 +1,6 @@
 import type { ExperienceCard, GuestExplore, GuestGuide } from "@guidesk/contracts";
 import { Recommendation } from "../components/content.js";
-import { Layout, type PageChrome } from "../components/layout.js";
+import { coverPreview, Layout, type PageChrome } from "../components/layout.js";
 import type { GuestLocale, Translate } from "../i18n.js";
 import { clientTexts } from "./guide-pages.js";
 
@@ -24,6 +24,7 @@ function chrome(input: ExplorePageInput, path: string) {
     emergencyHref: `/g/${guide.publicId}/${locale}/emergency`,
     switchHref: other ? `/g/${guide.publicId}/${other}${path}` : null,
     switchLocale: (other as GuestLocale | null) ?? null,
+    previewImage: coverPreview(guide.cover, input.guideUrl),
   };
 }
 

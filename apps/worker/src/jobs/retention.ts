@@ -242,6 +242,9 @@ export async function runRetention(deps: RetentionDeps): Promise<RetentionCounts
   // Media nothing uses any more starts its 24 hours; media used again stops them.
   const usage = sql`(
     EXISTS (SELECT 1 FROM guide_item i WHERE i.media_id = ${mediaObject.id})
+    -- Feature 016: property covers and extras photos are in use too.
+    OR EXISTS (SELECT 1 FROM property p WHERE p.cover_media_id = ${mediaObject.id})
+    OR EXISTS (SELECT 1 FROM extra x WHERE x.media_id = ${mediaObject.id})
     OR EXISTS (
       SELECT 1 FROM guide_version v
       WHERE v.workspace_id = ${mediaObject.workspaceId}

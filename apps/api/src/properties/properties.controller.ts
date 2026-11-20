@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   Req,
   UseGuards,
@@ -20,6 +21,7 @@ import {
   listPropertiesQuerySchema,
   removePropertyQuerySchema,
   removePropertySchema,
+  setCoverSchema,
   updatePropertySchema,
   type AddressCheck,
   type AddressCheckQuery,
@@ -28,12 +30,14 @@ import {
   type CreatePropertyBody,
   type DuplicateDraft,
   type ListPropertiesQuery,
+  type PropertyCover,
   type PropertyDetail,
   type PropertyLimits,
   type PropertyList,
   type PropertyRemoval,
   type RemovePropertyBody,
   type RestrictedValueList,
+  type SetCoverBody,
   type StartOptions,
   type UpdatePropertyBody,
 } from "@guidesk/contracts";
@@ -176,6 +180,18 @@ export class PropertiesController {
     @Param("propertyId") propertyId: string,
   ): Promise<PropertyDetail> {
     return this.properties.get(callerOf(request), workspaceId, propertyId);
+  }
+
+  /** Feature 016: set or remove the cover photo (contract api.md). */
+  @Put(":propertyId/cover")
+  @WorkspaceAction({ capability: "properties.manage" })
+  setCover(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("propertyId") propertyId: string,
+    @Body(new ZodValidationPipe(setCoverSchema)) body: SetCoverBody,
+  ): Promise<{ cover: PropertyCover | null }> {
+    return this.properties.setCover(callerOf(request), workspaceId, propertyId, body);
   }
 
   @Patch(":propertyId")

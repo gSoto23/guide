@@ -11,6 +11,16 @@ export interface PageChrome {
   privacyHref?: string;
   /** Feature 015: the portal origin, for the credit link and the link-preview image. */
   portalUrl?: string;
+  /** Feature 016: the guide's origin, for an absolute cover preview image. */
+  guideUrl?: string;
+}
+
+/** Feature 016: the cover as the link-preview image, absolute on the guide's origin. */
+export function coverPreview(
+  cover: { url: string } | null,
+  guideUrl: string | undefined,
+): string | null {
+  return cover && guideUrl ? `${guideUrl}${cover.url}` : null;
 }
 
 interface LayoutProps extends PageChrome {
@@ -23,6 +33,8 @@ interface LayoutProps extends PageChrome {
     emergencyHref: string;
     switchHref: string | null;
     switchLocale: GuestLocale | null;
+    /** Feature 016 FR-006: the cover, as an absolute URL, replaces the branded preview image. */
+    previewImage?: string | null;
   };
   /** Strings the browser script needs, as a JSON data block (never executed; CSP-safe). */
   clientTexts?: Record<string, string>;
@@ -77,7 +89,9 @@ export function Layout({
             <meta property="og:title" content={preview} />
             <meta property="og:description" content={t("meta.preview")} />
             <meta property="og:locale" content={locale === "es" ? "es_CR" : "en_US"} />
-            {portalUrl ? (
+            {guide?.previewImage ? (
+              <meta property="og:image" content={guide.previewImage} />
+            ) : portalUrl ? (
               <>
                 <meta property="og:image" content={`${portalUrl}/brand/og-${locale}.png`} />
                 <meta property="og:image:width" content="1200" />

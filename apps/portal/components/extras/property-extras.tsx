@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useId, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import type { ExtraInput, MemberExtra, MemberExtras, PropertyList } from "@guidesk/contracts";
-import { SUGGESTIONS } from "@/lib/extras";
 import { problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
 import { blankExtra, ExtraForm, WEEKDAYS } from "./extra-form";
+import { formatPrice, SUGGESTIONS } from "@/lib/extras";
 
 type Suggestion = (typeof SUGGESTIONS)[number];
 
@@ -27,14 +27,6 @@ const SUGGESTED: Record<Suggestion, Partial<ExtraInput>> = {
     turnover: "late_checkout",
   },
 };
-
-export function formatPrice(locale: string, price: number, currency: string, free: string) {
-  if (price === 0) return free;
-  return new Intl.NumberFormat(locale === "en" ? "en-US" : "es-CR", {
-    style: "currency",
-    currency,
-  }).format(price);
-}
 
 const nameOf = (extra: Pick<MemberExtra, "name" | "sourceLanguage">, locale: string) =>
   extra.name[locale === "en" ? "en" : "es"] ?? extra.name[extra.sourceLanguage] ?? "";
@@ -215,7 +207,13 @@ export function PropertyExtras({ locale, propertyId }: { locale: string; propert
               ? t("editTitle", { name: nameOf(editing.extra, locale) })
               : t("newTitle")
           }
-          initial={editing.kind === "edit" ? inputOf(editing.extra) : editing.input}
+          initial={
+            editing.kind === "edit"
+              ? { ...inputOf(editing.extra), mediaId: editing.extra.mediaId ?? null }
+              : editing.input
+          }
+          propertyId={propertyId}
+          media={editing.kind === "edit" ? editing.extra.media : null}
           busy={busy}
           onSave={(input) => void save(input)}
           onCancel={() => setEditing(null)}
@@ -265,6 +263,16 @@ export function PropertyExtras({ locale, propertyId }: { locale: string; propert
             const name = nameOf(extra, locale);
             return (
               <li key={extra.id} className="card extra-row">
+                {extra.media ? (
+                  <img
+                    className="extra-thumb"
+                    src={extra.media.smallUrl ?? extra.media.url}
+                    alt=""
+                    width={640}
+                    height={360}
+                    loading="lazy"
+                  />
+                ) : null}
                 <h2>{name}</h2>
                 <p>
                   {formatPrice(locale, extra.price, extra.currency, t("free"))}

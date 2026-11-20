@@ -23,12 +23,14 @@ import type {
   CreatePropertyBody,
   DuplicateDraft,
   ListPropertiesQuery,
+  PropertyCover,
   PropertyDetail,
   PropertyLimits,
   PropertyList,
   PropertyRemoval,
   PropertySummary,
   RestrictedValueList,
+  SetCoverBody,
   StartOptions,
   UpdatePropertyBody,
 } from "@guidesk/contracts";
@@ -87,6 +89,7 @@ import { RequestDb } from "../database/request-db.js";
 import { SecurityLogService } from "../security-log/security-log.service.js";
 import { CrossTenantService } from "../tenancy/cross-tenant.js";
 import { PropertyLimitService } from "./property-limit.service.js";
+import { PhotosService } from "../photos/photos.service.js";
 import { toDetail, toSummary, toTimeOfDay, type PropertyRow } from "./property-mapper.js";
 
 /**
@@ -180,7 +183,35 @@ export class PropertiesService {
     @Inject(DB_HANDLE) private readonly handle: DbHandle,
     @Inject(API_CONFIG) private readonly config: ApiConfig,
     private readonly jobs: JobQueueService,
+    private readonly photos: PhotosService,
   ) {}
+
+  /** Feature 016: set or remove a property's cover photo (FR-001 to FR-003). */
+  async setCover(
+    caller: Caller,
+    workspaceId: string,
+    propertyId: string,
+    body: SetCoverBody,
+  ): Promise<{ cover: PropertyCover | null }> {
+    const current = await this.loadActive(caller, workspaceId, propertyId);
+    if (body.mediaId) await this.photos.assertImage(workspaceId, body.mediaId);
+    const alt = body.mediaId ? (body.alt ?? current.coverAlt ?? current.name).slice(0, 160) : null;
+    await this.requestDb
+      .current()
+      .update(property)
+      .set({ coverMediaId: body.mediaId, coverAlt: alt })
+      .where(and(eq(property.id, propertyId), eq(property.workspaceId, workspaceId)));
+    return { cover: await this.coverOf(body.mediaId, alt ?? current.name) };
+  }
+
+  private async coverOf(
+    mediaId: string | null | undefined,
+    alt: string,
+  ): Promise<PropertyCover | null> {
+    if (!mediaId) return null;
+    const image = (await this.photos.memberImages([mediaId])).get(mediaId);
+    return image ? { mediaId, ...image, alt } : null;
+  }
 
   async list(
     caller: Caller,
@@ -220,6 +251,8 @@ export class PropertiesService {
         guideStatus: guide.status,
         guideChanges: guide.hasUnpublishedChanges,
         guideCompleteness: guide.completeness,
+        coverMediaId: property.coverMediaId,
+        coverAlt: property.coverAlt,
       })
       .from(property)
       .leftJoin(guide, eq(guide.propertyId, property.id))
@@ -228,9 +261,16 @@ export class PropertiesService {
       .limit(query.limit + 1);
     const page = rows.slice(0, query.limit);
     const last = page.at(-1);
+    const covers = await this.photos.memberImages(page.map((row) => row.coverMediaId));
     return {
       items: page.map((row) => ({
         ...toSummary(row, row.calendarStatus),
+        cover: (() => {
+          const image = row.coverMediaId ? covers.get(row.coverMediaId) : undefined;
+          return image && row.coverMediaId
+            ? { mediaId: row.coverMediaId, ...image, alt: row.coverAlt ?? row.name }
+            : null;
+        })(),
         guide: row.guideStatus
           ? {
               status: row.guideStatus,
@@ -343,6 +383,9 @@ export class PropertiesService {
         missingFacts: missingFacts(facts),
         source: body.source,
         duplicatedFromId: original?.id ?? null,
+        // Feature 016: a duplicate keeps the cover photo (same workspace, shared reference).
+        coverMediaId: original?.coverMediaId ?? null,
+        coverAlt: original?.coverAlt ?? null,
         createdBy: caller.userId,
       })
       .returning();
@@ -1056,11 +1099,14 @@ export class PropertiesService {
       feeds = feedCount?.count ?? 0;
       restrictedValues = valueCount?.count ?? 0;
     }
-    return toDetail(row, status?.value ?? "none", {
-      stays: stays?.count ?? 0,
-      feeds,
-      restrictedValues,
-    });
+    return {
+      ...toDetail(row, status?.value ?? "none", {
+        stays: stays?.count ?? 0,
+        feeds,
+        restrictedValues,
+      }),
+      cover: await this.coverOf(row.coverMediaId, row.coverAlt ?? row.name),
+    };
   }
 }
 

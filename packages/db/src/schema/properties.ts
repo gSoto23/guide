@@ -20,6 +20,7 @@ import { user } from "./auth.js";
 import { bytea, createdAt, inList, updatedAt } from "./columns.js";
 import { GUIDE_LANGUAGES, PMS_PROVIDERS } from "./enums.js";
 import { extractionRequest } from "./extractions.js";
+import { mediaObject } from "./guides.js";
 import { workspaceDataKey } from "./keys.js";
 import { pmsConnection } from "./pms.js";
 import { workspace } from "./tenancy.js";
@@ -74,6 +75,11 @@ export const property = pgTable(
     duplicatedFromId: uuid("duplicated_from_id").references((): AnyPgColumn => property.id, {
       onDelete: "set null",
     }),
+    /** Feature 016: the cover photo (a ready image of this workspace) and its description. */
+    coverMediaId: uuid("cover_media_id").references((): AnyPgColumn => mediaObject.id, {
+      onDelete: "set null",
+    }),
+    coverAlt: text("cover_alt"),
     status: text("status", { enum: PROPERTY_STATUSES }).notNull().default("active"),
     removedAt: timestamp("removed_at", { withTimezone: true }),
     removedBy: text("removed_by").references(() => user.id, { onDelete: "set null" }),
@@ -94,6 +100,10 @@ export const property = pgTable(
       .on(t.purgeAfter)
       .where(sql`${t.status} = 'removed'`),
     check("property_name_length", sql`char_length(${t.name}) BETWEEN 1 AND 120`),
+    check(
+      "property_cover_alt_length",
+      sql`${t.coverAlt} IS NULL OR char_length(${t.coverAlt}) BETWEEN 1 AND 160`,
+    ),
     check(
       "property_address_line1_length",
       sql`${t.addressLine1} IS NULL OR char_length(${t.addressLine1}) BETWEEN 1 AND 200`,

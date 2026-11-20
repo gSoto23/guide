@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import type { ShareOverview } from "@guidesk/contracts";
+import type { PropertyCover, PropertyDetail, ShareOverview } from "@guidesk/contracts";
 import { useWorkspace } from "@/lib/use-workspace";
 
 /**
@@ -15,12 +15,18 @@ export function Poster({ locale, propertyId }: { locale: string; propertyId: str
   const workspace = useWorkspace();
   const [overview, setOverview] = useState<ShareOverview | null>(null);
   const [network, setNetwork] = useState("");
+  // Feature 016: the cover photo above the name, when the property has one.
+  const [cover, setCover] = useState<PropertyCover | null>(null);
   const base = `/properties/${propertyId}/share`;
 
   useEffect(() => {
     if (!workspace) return;
     workspace.api.get<ShareOverview>(base).then(setOverview, () => setOverview(null));
-  }, [workspace, base]);
+    workspace.api.get<PropertyDetail>(`/properties/${propertyId}`).then(
+      (detail) => setCover(detail.cover ?? null),
+      () => setCover(null),
+    );
+  }, [workspace, base, propertyId]);
 
   if (!workspace || !overview?.propertyLink) return null;
   const qr = `/api/v1/workspaces/${workspace.workspaceId}${base}/qr.svg`;
@@ -45,6 +51,9 @@ export function Poster({ locale, propertyId }: { locale: string; propertyId: str
         </button>
       </div>
       <article className="poster">
+        {cover ? (
+          <img className="poster-cover" src={cover.url} alt={cover.alt} width={1600} height={900} />
+        ) : null}
         <h1>{overview.propertyName}</h1>
         <p className="poster-lead">{t("poster.title")}</p>
         <img src={qr} alt="" width={320} height={320} className="poster-qr" />

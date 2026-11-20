@@ -2116,3 +2116,184 @@ button {
     margin-top: 0;
   }
 }
+
+/* Feature 016: cover photos, thumbnails, extras photos, photo prompts, and initials avatars. ---- */
+
+.cover-card {
+  margin-bottom: var(--space-4);
+}
+
+.cover-photo,
+.property-thumb,
+.extra-thumb,
+.extra-photo-preview,
+.poster-cover {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.cover-empty {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1.5px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.cover-empty p {
+  margin: 0;
+}
+
+.cover-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-3);
+}
+
+.cover-alt {
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+
+.cover-alt label {
+  margin-top: 0;
+}
+
+.property-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.property-thumb {
+  border-radius: var(--radius-sm);
+}
+
+.property-thumb-empty {
+  display: grid;
+  place-items: center;
+  color: var(--color-primary-strong);
+  background: var(--color-primary-tint);
+}
+
+.extra-thumb {
+  max-width: 20rem;
+  margin-bottom: var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.extra-photo-preview {
+  max-width: 20rem;
+  margin: var(--space-2) 0;
+}
+
+.poster-cover {
+  margin-bottom: var(--space-4);
+  border-radius: 16px;
+}
+
+.photo-prompt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  overflow-wrap: break-word;
+}
+
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-tint);
+  color: var(--color-primary-strong);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.avatar-24 {
+  width: 24px;
+  height: 24px;
+  font-size: 0.6875rem;
+}
+
+.avatar-32 {
+  width: 32px;
+  height: 32px;
+  font-size: 0.8125rem;
+}
+
+.avatar-40 {
+  width: 40px;
+  height: 40px;
+  font-size: 0.9375rem;
+}
+
+.member-row,
+.with-avatar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.member-row {
+  margin-bottom: var(--space-2);
+}
+
+.side-account {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap-min);
+  margin-top: auto;
+  padding: 10px 12px;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.side-account > span:last-child {
+  display: grid;
+  min-width: 0;
+}
+
+.side-account-name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.side-account-hint {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 1024px) {
+  .side-nav {
+    flex: 1;
+  }
+}
+
+/* The camera icon of the Guidesk set as a CSS mask (feature 016 photo prompts; no JavaScript). */
+.photo-prompt-icon::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z'/%3E%3Ccircle cx='12' cy='13' r='3.5'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z'/%3E%3Ccircle cx='12' cy='13' r='3.5'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}

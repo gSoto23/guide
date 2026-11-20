@@ -1,5 +1,5 @@
 import type { GuestExtra, GuestExtras, GuestGuide } from "@guidesk/contracts";
-import { Layout, type PageChrome } from "../components/layout.js";
+import { coverPreview, Layout, type PageChrome } from "../components/layout.js";
 import type { GuestLocale, Translate } from "../i18n.js";
 import { clientTexts } from "./guide-pages.js";
 
@@ -48,6 +48,7 @@ function chrome(input: ExtrasPageInput, path: string) {
     emergencyHref: `/g/${guide.publicId}/${locale}/emergency`,
     switchHref: other ? `/g/${guide.publicId}/${other}${path}` : null,
     switchLocale: (other as GuestLocale | null) ?? null,
+    previewImage: coverPreview(guide.cover, input.guideUrl),
   };
 }
 
@@ -195,6 +196,18 @@ export function ExtrasPage(input: ExtrasPageInput) {
         <ul className="extras">
           {extras.extras.map((extra) => (
             <li key={extra.id} className="card extra">
+              {extra.image ? (
+                // Feature 016 FR-009: the extra's photo in a fixed 16:9 box; decorative here.
+                <img
+                  className="extra-image"
+                  src={extra.image.smallUrl ?? extra.image.url}
+                  alt=""
+                  width={extra.image.width ?? 1600}
+                  height={extra.image.height ?? 900}
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : null}
               <h2
                 className="extra-name"
                 lang={extra.language !== locale ? extra.language : undefined}
@@ -237,6 +250,22 @@ export function ExtraPage(input: ExtrasPageInput & { extra: GuestExtra }) {
       <a className="back" href={`/g/${guide.publicId}/${locale}/extras`}>
         {t("extras.back")}
       </a>
+      {extra.image ? (
+        <img
+          className="cover"
+          src={extra.image.smallUrl ?? extra.image.url}
+          srcSet={
+            extra.image.smallUrl
+              ? `${extra.image.smallUrl} 640w, ${extra.image.url} 1600w`
+              : undefined
+          }
+          sizes="(max-width: 40rem) 100vw, 40rem"
+          alt={t("extras.photoAlt", { name: extra.name })}
+          width={extra.image.width ?? 1600}
+          height={extra.image.height ?? 900}
+          decoding="async"
+        />
+      ) : null}
       <h1 className="title" data-extras-page="detail" lang={other}>
         {extra.name}
       </h1>

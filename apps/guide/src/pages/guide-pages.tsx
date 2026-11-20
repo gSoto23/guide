@@ -1,7 +1,7 @@
 import type { GuestGuide } from "@guidesk/contracts";
 import { chevron, compass, gift, Icon, phone, sectionIcon, type IconData } from "@guidesk/ui";
 import { Item, MapLinks, sectionTitle } from "../components/content.js";
-import { Layout, type PageChrome } from "../components/layout.js";
+import { coverPreview, Layout, type PageChrome } from "../components/layout.js";
 import type { GuestLocale, Translate } from "../i18n.js";
 
 /** Suggested-question keys the API may return (domain `suggestionKeys`). */
@@ -110,6 +110,7 @@ function chrome(input: GuidePageInput, path: string) {
     emergencyHref: `/g/${guide.publicId}/${locale}/emergency`,
     switchHref: other ? `/g/${guide.publicId}/${other}${path}` : null,
     switchLocale: (other as GuestLocale | null) ?? null,
+    previewImage: coverPreview(guide.cover, input.guideUrl),
   };
 }
 
@@ -137,6 +138,24 @@ export function HomePage(input: GuidePageInput) {
       clientTexts={clientTexts(t)}
       credit={guide.credit}
     >
+      {guide.cover ? (
+        // Feature 016 FR-004: the cover above the title, with a fixed 16:9 box (no layout shift).
+        <img
+          className="cover"
+          src={guide.cover.smallUrl ?? guide.cover.url}
+          srcSet={
+            guide.cover.smallUrl
+              ? `${guide.cover.smallUrl} 640w, ${guide.cover.url} 1600w`
+              : undefined
+          }
+          sizes="(max-width: 40rem) 100vw, 40rem"
+          alt={guide.cover.alt}
+          width={guide.cover.width ?? 1600}
+          height={guide.cover.height ?? 900}
+          fetchPriority="high"
+          decoding="async"
+        />
+      ) : null}
       <h1 className="title">{guide.propertyName}</h1>
       <p className="lead">{t("home.intro")}</p>
       <section id="stay-card" className="card stay-card" hidden aria-live="polite" />

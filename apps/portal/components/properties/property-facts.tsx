@@ -9,6 +9,7 @@ import { problemNumber, problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
 import type { CoreFactsBody } from "./core-facts-form";
 import { bookmark, chat, Icon, qr } from "@guidesk/ui";
+import { PropertyCoverCard } from "./property-cover";
 
 // Loaded after the facts, so the page stays inside its JavaScript budget (plan, Performance).
 // Shown only while editing, so it isn't part of the page's first download (Performance Budget).
@@ -150,6 +151,13 @@ export function PropertyFacts({ locale, propertyId }: { locale: string; property
       <p>
         <Link href={`/${locale}/properties`}>{t("detail.back")}</Link>
       </p>
+      {!removed ? (
+        <PropertyCoverCard
+          propertyId={propertyId}
+          cover={property.cover ?? null}
+          canManage={workspace.canManage}
+        />
+      ) : null}
       <h1>{property.name}</h1>
       {!removed ? (
         <div className="actions action-row">

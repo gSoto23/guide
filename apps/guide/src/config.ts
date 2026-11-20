@@ -17,6 +17,7 @@ export interface GuideConfig {
   experienceImageOrigins: string[];
   /** Feature 014: the portal's origin, where the privacy policy lives. */
   portalUrl: string;
+  guideUrl: string | null;
 }
 
 function originOf(url: string | undefined): string | null {
@@ -32,7 +33,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): GuideConfig {
   const apiUrl = env.GUIDE_API_URL ?? env.API_URL ?? "http://localhost:4000";
   return {
     apiUrl: apiUrl.replace(/\/$/, ""),
-    mediaOrigin: originOf(env.GUIDE_MEDIA_URL ?? env.LOCAL_MEDIA_URL ?? apiUrl),
+    // In local mode the API signs media on the portal's origin (`/api/v1/local-media`), so the
+    // portal origin is the media origin there; AWS sets GUIDE_MEDIA_URL to the media bucket.
+    mediaOrigin: originOf(env.GUIDE_MEDIA_URL ?? env.LOCAL_MEDIA_URL ?? env.PORTAL_URL ?? apiUrl),
     secure: (env.GUIDE_URL ?? "").startsWith("https://"),
     fixtures: env.GUIDE_FIXTURES === "true",
     edgeSecret: env.EDGE_SHARED_SECRET || null,
@@ -41,5 +44,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): GuideConfig {
       .map((value) => originOf(value.trim()))
       .filter((origin): origin is string => origin !== null && origin.startsWith("https://")),
     portalUrl: originOf(env.PORTAL_URL) ?? "http://localhost:3000",
+    // Feature 016: the guide's own origin, for absolute link-preview images.
+    guideUrl: originOf(env.GUIDE_URL),
   };
 }

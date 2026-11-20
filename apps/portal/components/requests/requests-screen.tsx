@@ -13,7 +13,7 @@ import { problemOf } from "@/lib/properties-api";
 import { Illustration, noRequestsScene } from "@guidesk/ui";
 import { PageHeader } from "@/components/shell/page-header";
 import { useWorkspace } from "@/lib/use-workspace";
-import { formatPrice } from "../extras/property-extras";
+import { formatPrice } from "@/lib/extras";
 import { RequestPayment } from "../payments/request-payment";
 
 type StatusFilter = "all" | "waiting" | "confirmed" | "closed";

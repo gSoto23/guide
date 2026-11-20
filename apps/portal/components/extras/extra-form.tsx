@@ -3,6 +3,7 @@
 import { useId, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import type { ExtraCurrency, ExtraInput } from "@guidesk/contracts";
+import { MediaUploadButton } from "@/components/guide/media-upload";
 import { CURRENCIES } from "@/lib/extras";
 
 /** What the guest picks: no date, a date, a date and a time, or a turnover day (FR-002). */
@@ -130,16 +131,25 @@ export function ExtraForm({
   busy,
   onSave,
   onCancel,
+  propertyId,
+  media,
 }: {
   title: string;
   initial: ExtraInput;
   busy: boolean;
   onSave: (input: ExtraInput) => void;
   onCancel: () => void;
+  /** Feature 016: with a property, the form offers a photo. */
+  propertyId?: string;
+  media?: { url: string; smallUrl: string | null } | null;
 }) {
   const t = useTranslations("extras");
   const id = useId();
   const [fields, setFields] = useState<Fields>(() => fieldsOf(initial));
+  const [photo, setPhoto] = useState<{ id: string | null; url: string | null }>(() => ({
+    id: initial.mediaId ?? null,
+    url: media?.smallUrl ?? media?.url ?? null,
+  }));
   const [errors, setErrors] = useState<FieldError[]>([]);
   const set = <K extends keyof Fields>(key: K, value: Fields[K]) =>
     setFields((current) => ({ ...current, [key]: value }));
@@ -154,7 +164,7 @@ export function ExtraForm({
       return;
     }
     setErrors([]);
-    onSave(result.input);
+    onSave(propertyId ? { ...result.input, mediaId: photo.id } : result.input);
   }
 
   const error = (field: FieldError) =>
@@ -220,6 +230,36 @@ export function ExtraForm({
         rows={3}
         onChange={(event) => set("descriptionEn", event.target.value)}
       />
+
+      {propertyId ? (
+        <fieldset className="extra-photo">
+          <legend>{t("fields.photo")}</legend>
+          <p className="field-hint">{t("fields.photoHint")}</p>
+          {photo.url ? (
+            <img className="extra-photo-preview" src={photo.url} alt="" width={640} height={360} />
+          ) : null}
+          <div className="actions">
+            <MediaUploadButton
+              propertyId={propertyId}
+              kind="image"
+              label={photo.id ? t("fields.photoChange") : t("fields.photoAdd")}
+              disabled={busy}
+              onReady={async (ready) =>
+                setPhoto({ id: ready.id, url: ready.urls.small ?? ready.urls.large ?? null })
+              }
+            />
+            {photo.id ? (
+              <button
+                type="button"
+                className="button-link"
+                onClick={() => setPhoto({ id: null, url: null })}
+              >
+                {t("fields.photoRemove")}
+              </button>
+            ) : null}
+          </div>
+        </fieldset>
+      ) : null}
 
       <div className="field-row">
         <div>

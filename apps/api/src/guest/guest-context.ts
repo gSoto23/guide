@@ -26,6 +26,9 @@ export interface GuestTarget {
   requireConfirmationCode: boolean;
   /** Feature 015: the workspace plan, for the Free-plan credit on the guide. */
   plan: string;
+  /** Feature 016: the property's cover photo and its description. */
+  coverMediaId: string | null;
+  coverAlt: string | null;
 }
 
 /** One body for every unavailable case, so responses never tell them apart (FR-011, FR-054). */
@@ -60,6 +63,8 @@ export class GuestContext {
         languages: property.guideLanguages,
         requireConfirmationCode: guide.requireConfirmationCode,
         plan: workspace.plan,
+        coverMediaId: property.coverMediaId,
+        coverAlt: property.coverAlt,
       })
       .from(guideLink)
       .innerJoin(

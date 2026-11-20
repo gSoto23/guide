@@ -20,9 +20,11 @@ import {
   time,
   timestamp,
   uuid,
+  type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth.js";
 import { inList } from "./columns.js";
+import { mediaObject } from "./guides.js";
 import { property } from "./properties.js";
 import { stay } from "./stays.js";
 import { workspace } from "./tenancy.js";
@@ -81,6 +83,10 @@ export const extra = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
     updatedBy: text("updated_by").references(() => user.id, { onDelete: "set null" }),
+    /** Feature 016: an optional photo (a ready image of this workspace). */
+    mediaId: uuid("media_id").references((): AnyPgColumn => mediaObject.id, {
+      onDelete: "set null",
+    }),
   },
   (t) => [
     index("extra_property_idx").on(t.propertyId, t.position),

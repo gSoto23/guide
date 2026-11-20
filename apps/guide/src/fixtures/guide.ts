@@ -134,6 +134,7 @@ export function fixtureGuide(publicId: string, language: "es" | "en"): GuestGuid
     explore: { visible: true },
     extras: { visible: true },
     credit: true,
+    cover: null,
   };
 }
 
@@ -203,6 +204,7 @@ export function fixtureExtras(publicId: string, language: "es" | "en"): GuestExt
         weekdays: [1, 2, 3, 4, 5, 6, 7],
         maxPerStay: 1,
         turnover: null,
+        image: null,
       },
       {
         id: "00000000-0000-4000-8000-0000000000e2",
@@ -218,6 +220,7 @@ export function fixtureExtras(publicId: string, language: "es" | "en"): GuestExt
         weekdays: [1, 3, 5],
         maxPerStay: 4,
         turnover: null,
+        image: null,
       },
       {
         id: "00000000-0000-4000-8000-0000000000e3",
@@ -233,6 +236,7 @@ export function fixtureExtras(publicId: string, language: "es" | "en"): GuestExt
         weekdays: [1, 2, 3, 4, 5, 6, 7],
         maxPerStay: 1,
         turnover: "late_checkout",
+        image: null,
       },
     ],
   };

@@ -4,6 +4,7 @@ import { extra, property } from "@guidesk/db";
 import { can, type Role } from "@guidesk/domain";
 import type { ExtraInput, MemberExtra, MemberExtras } from "@guidesk/contracts";
 import { ApiProblem } from "../common/problem.js";
+import { PhotosService, type MemberImage } from "../photos/photos.service.js";
 import { RequestDb } from "../database/request-db.js";
 import { SecurityLogService } from "../security-log/security-log.service.js";
 import { CrossTenantService } from "../tenancy/cross-tenant.js";
@@ -15,7 +16,7 @@ export interface ExtrasCaller {
 
 type ExtraRow = typeof extra.$inferSelect;
 
-export function memberExtra(row: ExtraRow): MemberExtra {
+export function memberExtra(row: ExtraRow, media: MemberImage | null = null): MemberExtra {
   return {
     id: row.id,
     propertyId: row.propertyId,
@@ -36,6 +37,8 @@ export function memberExtra(row: ExtraRow): MemberExtra {
     position: row.position,
     version: row.version,
     updatedAt: row.updatedAt.toISOString(),
+    mediaId: row.mediaId,
+    media,
   };
 }
 
@@ -54,6 +57,8 @@ const values = (input: ExtraInput) => ({
   preApproved: input.preApproved,
   turnover: input.turnover,
   visible: input.visible,
+  // Feature 016: an omitted photo keeps the current one; null removes it.
+  ...(input.mediaId !== undefined ? { mediaId: input.mediaId } : {}),
 });
 
 /**
@@ -67,6 +72,7 @@ export class ExtrasService {
     private readonly requestDb: RequestDb,
     private readonly crossTenant: CrossTenantService,
     private readonly securityLog: SecurityLogService,
+    private readonly photos: PhotosService,
   ) {}
 
   private get tx() {
@@ -126,7 +132,13 @@ export class ExtrasService {
       .from(extra)
       .where(and(eq(extra.propertyId, propertyId), eq(extra.workspaceId, workspaceId)))
       .orderBy(asc(extra.position), asc(extra.createdAt));
-    return { extras: rows.map(memberExtra), canEdit: can(caller.role, "properties.manage") };
+    const images = await this.photos.memberImages(rows.map((row) => row.mediaId));
+    return {
+      extras: rows.map((row) =>
+        memberExtra(row, row.mediaId ? (images.get(row.mediaId) ?? null) : null),
+      ),
+      canEdit: can(caller.role, "properties.manage"),
+    };
   }
 
   async create(
@@ -136,6 +148,7 @@ export class ExtrasService {
     input: ExtraInput,
   ): Promise<MemberExtra> {
     await this.propertyOf(workspaceId, propertyId);
+    if (input.mediaId) await this.photos.assertImage(workspaceId, input.mediaId);
     const [next] = await this.tx
       .select({ position: sql<number>`coalesce(max(${extra.position}) + 1, 0)::int` })
       .from(extra)
@@ -151,7 +164,7 @@ export class ExtrasService {
       })
       .returning();
     await this.log(caller, workspaceId, propertyId, "created");
-    return memberExtra(row!);
+    return this.withImage(row!);
   }
 
   async update(
@@ -163,6 +176,7 @@ export class ExtrasService {
     input: ExtraInput,
   ): Promise<MemberExtra> {
     await this.extraOf(workspaceId, propertyId, extraId);
+    if (input.mediaId) await this.photos.assertImage(workspaceId, input.mediaId);
     const [row] = await this.tx
       .update(extra)
       .set({
@@ -175,7 +189,12 @@ export class ExtrasService {
       .returning();
     if (!row) throw new ApiProblem(409, "extra_changed");
     await this.log(caller, workspaceId, propertyId, "updated");
-    return memberExtra(row);
+    return this.withImage(row);
+  }
+
+  private async withImage(row: ExtraRow): Promise<MemberExtra> {
+    const images = await this.photos.memberImages([row.mediaId]);
+    return memberExtra(row, row.mediaId ? (images.get(row.mediaId) ?? null) : null);
   }
 
   async remove(

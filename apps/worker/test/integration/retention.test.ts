@@ -499,6 +499,59 @@ describe("retention.daily for the guide builder (feature 003 T120)", () => {
     expect(left.map((row) => row.id).sort()).toEqual([used, inVersion].sort());
   });
 
+  it("keeps property covers and extras photos while used, and releases them after (feature 016)", async () => {
+    const cover = randomUUID();
+    const photo = randomUUID();
+    await handle.db.insert(mediaObject).values(
+      [cover, photo].map((id) => ({
+        id,
+        workspaceId,
+        kind: "image" as const,
+        status: "ready" as const,
+        objectPrefix: `media/${workspaceId}/${id}/`,
+        createdAt: daysAgo(3),
+      })),
+    );
+    await handle.db
+      .update(property)
+      .set({ coverMediaId: cover })
+      .where(eq(property.id, propertyId));
+    const [created] = await handle.db
+      .insert(extra)
+      .values({
+        workspaceId,
+        propertyId,
+        sourceLanguage: "es",
+        name: { es: "Tabla de surf" },
+        description: {},
+        price: 15,
+        currency: "USD",
+        leadTimeHours: 0,
+        weekdays: [1, 2, 3, 4, 5, 6, 7],
+        mediaId: photo,
+      })
+      .returning({ id: extra.id });
+    const first = await runAll();
+    const marked = await handle.db
+      .select({ id: mediaObject.id, since: mediaObject.unreferencedSince })
+      .from(mediaObject)
+      .where(inArray(mediaObject.id, [cover, photo]));
+    expect(marked.every((row) => row.since === null)).toBe(true);
+    expect(first.deletedMedia).toBe(0);
+
+    // Released references start their day, then go with their objects.
+    await handle.db.update(property).set({ coverMediaId: null }).where(eq(property.id, propertyId));
+    await handle.db.update(extra).set({ mediaId: null }).where(eq(extra.id, created!.id));
+    await runAll();
+    await handle.db
+      .update(mediaObject)
+      .set({ unreferencedSince: daysAgo(2) })
+      .where(inArray(mediaObject.id, [cover, photo]));
+    const last = await runAll();
+    expect(last.deletedMedia).toBe(2);
+    await handle.db.delete(extra).where(eq(extra.id, created!.id));
+  });
+
   it("deletes AI usage rows after 12 months", async () => {
     await handle.db.insert(guideAiRequest).values([
       {

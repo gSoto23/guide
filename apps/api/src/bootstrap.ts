@@ -7,7 +7,11 @@ import { createEdgeHook } from "./common/edge-headers.js";
 import { API_CONFIG, type ApiConfig } from "./config/config.js";
 import type { MediaStoragePort, ObjectStoragePort } from "@guidesk/integrations";
 import { registerLocalUploadRoute } from "./uploads/local-upload.controller.js";
-import { MEDIA_STORAGE, registerLocalMediaRoute } from "./uploads/media.provider.js";
+import {
+  LOCAL_MEDIA_PATH,
+  MEDIA_STORAGE,
+  registerLocalMediaRoute,
+} from "./uploads/media.provider.js";
 import { OBJECT_STORAGE } from "./uploads/storage.provider.js";
 
 /** Proxy hops whose X-Forwarded-For entries Fastify trusts when computing request.ip (T103). */
@@ -71,12 +75,17 @@ export const GUEST_PREFIX = "/api/v1/guest/";
 
 /** Response headers for every API response (SEC-04, SEC-11, T103). */
 export function createSecurityHeadersHook(secure: boolean) {
-  return async (_request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+  return async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     reply.header("x-content-type-options", "nosniff");
     reply.header("referrer-policy", "no-referrer");
     reply.header("content-security-policy", "default-src 'none'; frame-ancestors 'none'");
     reply.header("x-frame-options", "DENY");
-    reply.header("cross-origin-resource-policy", "same-origin");
+    // Local-mode media links are signed and expire, like S3 presigned URLs, and the guest guide
+    // (another origin) embeds them; every other response stays same-origin (feature 016).
+    reply.header(
+      "cross-origin-resource-policy",
+      request.url.startsWith(LOCAL_MEDIA_PATH) ? "cross-origin" : "same-origin",
+    );
     if (!reply.hasHeader("cache-control")) reply.header("cache-control", "no-store");
     if (secure) {
       reply.header("strict-transport-security", "max-age=63072000; includeSubDomains; preload");
