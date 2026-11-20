@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import type { SharedBlockList, SharedBlockView } from "@guidesk/contracts";
 import { problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
+import { PageHeader } from "@/components/shell/page-header";
 
 const SECTION_KINDS = [
   "arrival",
@@ -61,8 +62,7 @@ export function SharedContent({ locale }: { locale: string }) {
 
   return (
     <section aria-labelledby="shared-title">
-      <h1 id="shared-title">{t("title")}</h1>
-      <p className="muted">{t("intro")}</p>
+      <PageHeader title={t("title")} titleId="shared-title" help={t("intro")} />
       {!workspace && <p className="working">{guide("drafting")}</p>}
       {error && (
         <p className="alert alert-error" role="alert">

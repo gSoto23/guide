@@ -13,7 +13,7 @@ export default async function InboxPage({
   const { propertyId } = await searchParams;
   setRequestLocale(locale);
   return (
-    <main>
+    <main className="page-wide">
       <InboxView locale={locale} {...(propertyId ? { initialProperty: propertyId } : {})} />
     </main>
   );

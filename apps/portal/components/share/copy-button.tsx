@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { check, copy, Icon } from "@guidesk/ui";
 
 /** Copies text to the clipboard and confirms in place (feature 004 Share screen). */
 export function CopyButton({
@@ -26,6 +27,7 @@ export function CopyButton({
         });
       }}
     >
+      <Icon data={copied ? check : copy} />
       <span aria-live="polite">{copied ? copiedLabel : label}</span>
     </button>
   );

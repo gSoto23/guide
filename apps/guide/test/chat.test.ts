@@ -20,7 +20,11 @@ describe("chat entry (feature 005 FR-001, FR-002)", () => {
     for (const path of [`/g/${FIXTURE_PUBLIC_ID}/es`, `/g/${FIXTURE_PUBLIC_ID}/es/emergency`]) {
       const html = await page(path);
       expect(html).toContain(
-        '<button type="button" id="ask" class="ask" hidden="" data-chat-script="/assets/chat.test.js" data-chat-style="/assets/chat.test.css">Preguntar</button>',
+        '<button type="button" id="ask" class="ask" hidden="" data-chat-script="/assets/chat.test.js" data-chat-style="/assets/chat.test.css">',
+      );
+      // Feature 015: the chat icon before the label.
+      expect(html).toMatch(
+        /id="ask"[^>]*><svg[^>]*aria-hidden="true".*?<\/svg>Preguntar<\/button>/,
       );
       // Only the page script loads up front; the chat's files are not linked.
       expect(html).not.toContain('src="/assets/chat.test.js"');

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { PageHeader } from "@/components/shell/page-header";
 
 const SECTIONS = [
   "workspace",
@@ -33,7 +34,7 @@ export default async function SettingsPage({ params }: { params: Promise<{ local
   const t = await getTranslations("settings");
   return (
     <main>
-      <h1>{t("title")}</h1>
+      <PageHeader title={t("title")} />
       <ul className="settings-list">
         {SECTIONS.map((section) => (
           <li key={section}>

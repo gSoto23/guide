@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { BrandMark, chat, Icon } from "@guidesk/ui";
 import type { Assets } from "../assets.js";
 import type { GuestLocale, Translate } from "../i18n.js";
 
@@ -8,6 +9,8 @@ export interface PageChrome {
   assets: Assets;
   /** Feature 014 FR-010: the privacy policy on the portal, in the page's language. */
   privacyHref?: string;
+  /** Feature 015: the portal origin, for the credit link and the link-preview image. */
+  portalUrl?: string;
 }
 
 interface LayoutProps extends PageChrome {
@@ -23,6 +26,12 @@ interface LayoutProps extends PageChrome {
   };
   /** Strings the browser script needs, as a JSON data block (never executed; CSP-safe). */
   clientTexts?: Record<string, string>;
+  /** Feature 015 FR-022: the "Made with Guidesk" credit (Free-plan guides). */
+  credit?: boolean;
+  /** Feature 015 FR-023: link-preview title; guide pages use the property name. */
+  previewTitle?: string;
+  /** Feature 015 FR-021: status pages end with the small Guidesk mark. */
+  mark?: boolean;
   children: ReactNode;
 }
 
@@ -40,8 +49,14 @@ export function Layout({
   guide,
   clientTexts,
   privacyHref,
+  portalUrl,
+  credit,
+  previewTitle,
+  mark,
   children,
 }: LayoutProps) {
+  // Link previews never carry stay data: only the property name and fixed texts (FR-023).
+  const preview = previewTitle ?? guide?.propertyName;
   return (
     <html
       lang={locale}
@@ -56,6 +71,22 @@ export function Layout({
         <meta name="referrer" content="no-referrer" />
         <meta name="theme-color" content="#FFFCF8" />
         <title>{title}</title>
+        {preview ? (
+          <>
+            <meta property="og:type" content="website" />
+            <meta property="og:title" content={preview} />
+            <meta property="og:description" content={t("meta.preview")} />
+            <meta property="og:locale" content={locale === "es" ? "es_CR" : "en_US"} />
+            {portalUrl ? (
+              <>
+                <meta property="og:image" content={`${portalUrl}/brand/og-${locale}.png`} />
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="630" />
+              </>
+            ) : null}
+            <meta name="twitter:card" content="summary_large_image" />
+          </>
+        ) : null}
         <link rel="stylesheet" href={assets.style} />
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
@@ -93,6 +124,20 @@ export function Layout({
         <div id="notice" className="banner banner-notice" role="status" hidden />
         <main id="main" className="main">
           {children}
+          {credit && portalUrl ? (
+            <p className="credit">
+              <a href={`${portalUrl}/${locale}`} target="_blank" rel="noopener">
+                <BrandMark size={18} />
+                {t("credit")}
+              </a>
+            </p>
+          ) : null}
+          {mark ? (
+            <p className="status-mark">
+              <BrandMark size={18} />
+              Guidesk
+            </p>
+          ) : null}
         </main>
         {guide ? (
           // Hidden until the page script runs: without scripts there is no chat (edge cases).
@@ -104,6 +149,7 @@ export function Layout({
             data-chat-script={assets.chatScript}
             data-chat-style={assets.chatStyle}
           >
+            <Icon data={chat} />
             {t("chat.ask")}
           </button>
         ) : null}

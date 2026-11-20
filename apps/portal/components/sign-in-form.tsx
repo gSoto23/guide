@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { loadAuthClient, usePreloadAuthClient } from "@/lib/auth-client";
 import { readReturnTo, rememberSignInEmail } from "@/lib/sign-in-email";
+import { Icon, key } from "@guidesk/ui";
 
 /** Sign-in and sign-up in one screen: Google, passkey, or an email code (spec 001 FR-001, T043). */
 export function SignInForm({ locale }: { locale: string }) {
@@ -58,9 +59,11 @@ export function SignInForm({ locale }: { locale: string }) {
       <p className="muted">{t("subtitle")}</p>
 
       <button type="button" className="button button-secondary" onClick={google}>
+        <img src="/brand/google-g.svg" alt="" width={18} height={18} />
         {t("google")}
       </button>
       <button type="button" className="button button-secondary" onClick={passkey}>
+        <Icon data={key} />
         {t("passkey")}
       </button>
 

@@ -14,7 +14,7 @@ export default async function PropertiesPage({
   const { view } = await searchParams;
   setRequestLocale(locale);
   return (
-    <main>
+    <main className="page-wide">
       {view === "removed" ? (
         <RemovedProperties locale={locale} />
       ) : (

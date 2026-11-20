@@ -4,7 +4,7 @@ import type {
   GuestLockedField,
   GuestRecommendation,
 } from "@guidesk/contracts";
-import { GuideDocumentView, type RenderableDocument } from "@guidesk/ui";
+import { GuideDocumentView, Icon, lock, type RenderableDocument } from "@guidesk/ui";
 import type { Translate } from "../i18n.js";
 
 /**
@@ -24,7 +24,10 @@ export function LockedField({ field, t }: { field: GuestLockedField | undefined;
   }
   return (
     <span className="locked" data-field-id={field.id} data-kind={field.kind} data-state="public">
-      <span className="locked-label">{field.label}</span>
+      <span className="locked-label">
+        <Icon data={lock} size={18} />
+        {field.label}
+      </span>
       <span className="locked-status" aria-live="polite">
         {t("locked.public")}
       </span>

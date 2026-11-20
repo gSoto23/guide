@@ -35,7 +35,10 @@ describe("guide pages", () => {
       "Emergencias",
       "Salida",
     ];
-    const positions = order.map((title) => html.indexOf(`>${title}</a>`));
+    // Feature 015: titles sit in their own span inside the icon tile.
+    const positions = order.map((title) =>
+      html.indexOf(`<span class="tile-title">${title}</span>`),
+    );
     expect(positions.every((position) => position > 0)).toBe(true);
     expect([...positions].sort((a, b) => a - b)).toEqual(positions);
     expect(html).toContain('class="tile-wide"');

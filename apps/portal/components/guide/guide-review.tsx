@@ -8,6 +8,7 @@ import type { GuideView, SectionWriteResult } from "@guidesk/contracts";
 import { problemOf } from "@/lib/properties-api";
 import { guideStatusKey, sectionTitle } from "@/lib/guide/labels";
 import { useWorkspace } from "@/lib/use-workspace";
+import { Icon, sectionIconData } from "@guidesk/ui";
 
 /** Loaded when the host opens it, so the guide page keeps its initial JavaScript small. */
 const PublishDialog = dynamic(() => import("./publish-dialog"), { ssr: false });
@@ -274,7 +275,10 @@ export function GuideReview({
           const count = section.items.filter((item) => item.kind !== "fact").length;
           return (
             <li key={section.id} className="property-row">
-              <Link href={`${base}/sections/${section.id}`}>
+              <Link href={`${base}/sections/${section.id}`} className="section-link">
+                <span className="section-icon">
+                  <Icon data={sectionIconData(section.kind)} />
+                </span>
                 <strong>{sectionTitle(t, section, locale)}</strong>
               </Link>
               <span className="property-meta">

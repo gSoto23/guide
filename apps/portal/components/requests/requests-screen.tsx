@@ -10,6 +10,8 @@ import type {
 } from "@guidesk/contracts";
 import { ANSWER_REASONS } from "@/lib/extras";
 import { problemOf } from "@/lib/properties-api";
+import { Illustration, noRequestsScene } from "@guidesk/ui";
+import { PageHeader } from "@/components/shell/page-header";
 import { useWorkspace } from "@/lib/use-workspace";
 import { formatPrice } from "../extras/property-extras";
 import { RequestPayment } from "../payments/request-payment";
@@ -132,8 +134,7 @@ export function RequestsScreen({ locale }: { locale: string }) {
 
   return (
     <section aria-labelledby={`${id}-title`} className="requests">
-      <h1 id={`${id}-title`}>{t("title")}</h1>
-      <p className="muted">{t("intro")}</p>
+      <PageHeader title={t("title")} titleId={`${id}-title`} help={t("intro")} />
       <p>{t("waitingCount", { count: page.waiting })}</p>
       <div className="inbox-controls">
         <label htmlFor={`${id}-property`}>{t("filterProperty")}</label>
@@ -172,7 +173,10 @@ export function RequestsScreen({ locale }: { locale: string }) {
       <p className="muted">{t("payment")}</p>
 
       {page.items.length === 0 ? (
-        <p>{t("empty")}</p>
+        <div className="empty-state">
+          <Illustration data={noRequestsScene} width={200} />
+          <p>{t("empty")}</p>
+        </div>
       ) : (
         <ul className="list-plain request-list">
           {page.items.map((request) => (

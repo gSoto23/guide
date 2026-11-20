@@ -8,6 +8,7 @@ import type { ConfirmPropertiesResult, PropertyDetail } from "@guidesk/contracts
 import { problemNumber, problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
 import type { CoreFactsBody } from "./core-facts-form";
+import { bookmark, chat, Icon, qr } from "@guidesk/ui";
 
 // Loaded after the facts, so the page stays inside its JavaScript budget (plan, Performance).
 // Shown only while editing, so it isn't part of the page's first download (Performance Budget).
@@ -151,26 +152,29 @@ export function PropertyFacts({ locale, propertyId }: { locale: string; property
       </p>
       <h1>{property.name}</h1>
       {!removed ? (
-        <p>
+        <div className="actions action-row">
           <Link
             className="button button-primary"
             href={`/${locale}/properties/${propertyId}/guide`}
           >
+            <Icon data={bookmark} />
             {guide("review.open")}
-          </Link>{" "}
+          </Link>
           <Link
             className="button button-secondary"
             href={`/${locale}/properties/${propertyId}/share`}
           >
+            <Icon data={qr} />
             {share("link")}
-          </Link>{" "}
+          </Link>
           <Link
             className="button button-secondary"
             href={`/${locale}/properties/${propertyId}/conversations`}
           >
+            <Icon data={chat} />
             {conversations("link")}
           </Link>
-        </p>
+        </div>
       ) : null}
       <p className="property-meta">
         <span

@@ -10,7 +10,7 @@ export default async function SharedContentPage({
   const { locale } = await params;
   setRequestLocale(locale);
   return (
-    <main>
+    <main className="page-wide">
       <SharedContent locale={locale} />
     </main>
   );

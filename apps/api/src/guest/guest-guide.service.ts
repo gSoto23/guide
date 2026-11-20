@@ -184,6 +184,8 @@ export class GuestGuideService {
       explore,
       // Feature 008: the Extras entry shows when the property has visible extras (FR-007).
       extras: { visible: (await this.extras.visible(db, target)).length > 0 },
+      // Feature 015 FR-022: only Free-plan guides carry the Guidesk credit.
+      credit: target.plan === "free",
     };
   }
 

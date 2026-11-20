@@ -32,7 +32,10 @@ test("quickstart 3: compare properties", async ({ page, browser }) => {
   await context.close();
 
   await page.goto("/es/inbox");
-  await page.getByRole("navigation", { name: "Guidesk" }).getByRole("link", { name: "Estadísticas" }).click();
+  // Feature 015: on phones, Analytics lives under More in the bottom bar.
+  const nav = page.getByRole("navigation", { name: "Guidesk" });
+  await nav.getByRole("button", { name: "Más" }).click();
+  await nav.getByRole("link", { name: "Estadísticas" }).click();
   await expect(
     page.getByRole("heading", { name: "Estadísticas: todas las propiedades", level: 1 }),
   ).toBeVisible();

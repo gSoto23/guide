@@ -24,6 +24,8 @@ export interface GuestTarget {
   checkoutTime: string | null;
   languages: GuideLanguage[];
   requireConfirmationCode: boolean;
+  /** Feature 015: the workspace plan, for the Free-plan credit on the guide. */
+  plan: string;
 }
 
 /** One body for every unavailable case, so responses never tell them apart (FR-011, FR-054). */
@@ -57,6 +59,7 @@ export class GuestContext {
         checkoutTime: property.checkoutTime,
         languages: property.guideLanguages,
         requireConfirmationCode: guide.requireConfirmationCode,
+        plan: workspace.plan,
       })
       .from(guideLink)
       .innerJoin(

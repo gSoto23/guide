@@ -1,4 +1,5 @@
 import type { GuestGuide } from "@guidesk/contracts";
+import { chevron, compass, gift, Icon, phone, sectionIcon, type IconData } from "@guidesk/ui";
 import { Item, MapLinks, sectionTitle } from "../components/content.js";
 import { Layout, type PageChrome } from "../components/layout.js";
 import type { GuestLocale, Translate } from "../i18n.js";
@@ -112,6 +113,19 @@ function chrome(input: GuidePageInput, path: string) {
   };
 }
 
+/** A home tile: the section icon, the whole title, and a chevron (feature 015 FR-010, FR-014). */
+function Tile({ href, icon, title }: { href: string; icon: IconData; title: string }) {
+  return (
+    <a className="tile" href={href}>
+      <span className="tile-icon">
+        <Icon data={icon} size={22} />
+      </span>
+      <span className="tile-title">{title}</span>
+      <Icon data={chevron} size={18} className="tile-chevron" />
+    </a>
+  );
+}
+
 /** G-01: the guide home. */
 export function HomePage(input: GuidePageInput) {
   const { guide, t } = input;
@@ -121,6 +135,7 @@ export function HomePage(input: GuidePageInput) {
       title={t("meta.title", { property: guide.propertyName })}
       guide={chrome(input, "")}
       clientTexts={clientTexts(t)}
+      credit={guide.credit}
     >
       <h1 className="title">{guide.propertyName}</h1>
       <p className="lead">{t("home.intro")}</p>
@@ -143,23 +158,29 @@ export function HomePage(input: GuidePageInput) {
       <ul className="tiles">
         {guide.sections.map((section) => (
           <li key={section.id} className={section.kind === "arrival" ? "tile-wide" : undefined}>
-            <a className="tile" href={`/g/${guide.publicId}/${input.locale}/${section.id}`}>
-              {sectionTitle(section, t)}
-            </a>
+            <Tile
+              href={`/g/${guide.publicId}/${input.locale}/${section.id}`}
+              icon={sectionIcon(section.kind)}
+              title={sectionTitle(section, t)}
+            />
           </li>
         ))}
         {guide.extras.visible ? (
           <li className="tile-wide tile-extras">
-            <a className="tile" href={`/g/${guide.publicId}/${input.locale}/extras`}>
-              {t("extras.tile")}
-            </a>
+            <Tile
+              href={`/g/${guide.publicId}/${input.locale}/extras`}
+              icon={gift}
+              title={t("extras.tile")}
+            />
           </li>
         ) : null}
         {guide.explore.visible ? (
           <li className="tile-wide tile-explore">
-            <a className="tile" href={`/g/${guide.publicId}/${input.locale}/explore`}>
-              {t("explore.tile")}
-            </a>
+            <Tile
+              href={`/g/${guide.publicId}/${input.locale}/explore`}
+              icon={compass}
+              title={t("explore.tile")}
+            />
           </li>
         ) : null}
       </ul>
@@ -193,11 +214,17 @@ export function SectionPage(input: GuidePageInput & { sectionId: string }) {
       title={`${title} · ${guide.propertyName}`}
       guide={chrome(input, `/${section.id}`)}
       clientTexts={clientTexts(t)}
+      credit={guide.credit}
     >
       <a className="back" href={`/g/${guide.publicId}/${input.locale}`}>
         {t("nav.back")}
       </a>
-      <h1 className="title">{title}</h1>
+      <h1 className="title title-with-icon">
+        <span className="tile-icon">
+          <Icon data={sectionIcon(section.kind)} size={22} />
+        </span>
+        <span>{title}</span>
+      </h1>
       <div className="items">
         {section.items.map((item) => {
           const eager = firstMedia && (item.kind === "image" || item.kind === "video");
@@ -237,6 +264,7 @@ export function EmergencyPage(input: GuidePageInput) {
         <section className="card emergency-number">
           <h2 className="card-title">{t("emergency.number")}</h2>
           <a className="button-danger" href={`tel:${guide.emergencyNumber}`}>
+            <Icon data={phone} />
             {t("emergency.call", { number: guide.emergencyNumber })}
           </a>
         </section>

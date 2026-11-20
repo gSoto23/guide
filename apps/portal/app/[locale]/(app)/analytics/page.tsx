@@ -6,7 +6,7 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ loca
   const { locale } = await params;
   setRequestLocale(locale);
   return (
-    <main>
+    <main className="page-wide">
       <AnalyticsView locale={locale} />
     </main>
   );

@@ -155,8 +155,12 @@ these files by the build (section 9).
   corner radius about 2 px. Shapes echo the mark: rounded rectangles, arches, circles.
 - **Color:** `currentColor`, so icons follow the text color. Meaningful icons need 3:1 against
   their background; sol is never an icon color on light backgrounds.
-- **Delivery:** one inline SVG sprite of about 20 icons; no icon fonts and no icon libraries in
-  the guest guide (100 KB JavaScript budget).
+- **Delivery:** the set lives in `packages/ui/src/icons` (45 icons, one export each) and renders as
+  small server-side inline SVGs, so it adds no JavaScript; no icon fonts and no icon libraries
+  (feature 015). Client components import only the icons they show.
+- **Where:** every guest guide tile and section title, the portal navigation, inbox reason chips,
+  and key actions (add a property, paste a guest message, copy a link, ask, call emergency, sign in
+  with a passkey).
 - **Labels:** status icons always come with text ("Locked", "Paid", "Emergency"). Icon-only
   buttons have an `aria-label`.
 - The logo mark is not a UI icon.
@@ -171,6 +175,9 @@ these files by the build (section 9).
   AI-generated imagery.
 - No text inside illustrations (each language needs its own text).
 - Decorative illustrations have empty `alt` text; informative ones describe what they show.
+- **The set** (feature 015, `packages/ui/src/illustrations`): door (sign-in), welcome
+  (onboarding), no properties, inbox clear, no requests, no data, offline, unavailable, and wait.
+  Shapes carry classes (`il-terra`, `il-sol`, …) that each app colors for light and dark mode.
 
 **Photography** (marketing and examples):
 
@@ -217,6 +224,7 @@ python3 tokens.py            # contrast check of every color pair
 python3 build.py             # SVG files, including apps/portal/app/icon.svg
 node raster.mjs              # PNG icons, including apps/portal/app/apple-icon.png (uses sharp from node_modules)
 python3 ico.py               # favicon.ico for docs and the portal (uses Pillow)
+node og.mjs                  # link-preview images apps/portal/public/brand/og-{es,en}.png (uses sharp)
 ```
 
 The scripts need Python 3 with `fontTools` and `Pillow`, and Node.js after `pnpm install`. The
