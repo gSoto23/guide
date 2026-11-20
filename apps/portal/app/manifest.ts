@@ -12,8 +12,9 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/start",
     scope: "/",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#ffffff",
+    // Brand "cal" (docs/brand/README.md §3.1): the splash screen and status bar match the app.
+    background_color: "#FFFCF8",
+    theme_color: "#FFFCF8",
     icons: [
       { src: "/icon.svg", sizes: "any", type: "image/svg+xml" },
       { src: "/apple-icon.png", sizes: "180x180", type: "image/png" },

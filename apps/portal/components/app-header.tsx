@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useMeContext } from "@/lib/me-context";
+import { BrandLogo } from "./brand-logo";
 import { WorkspaceSwitcher } from "./workspace-switcher";
 
 /** Header of every signed-in screen: the current workspace and the main sections (FR-022). */
@@ -14,7 +15,12 @@ export function AppHeader({ locale }: { locale: string }) {
   if (!context || !me) return null;
   return (
     <header className="app-header">
-      <WorkspaceSwitcher me={me} onChanged={context.refresh} />
+      <div className="app-header-top">
+        <Link href={`/${locale}/start`} className="app-header-brand">
+          <BrandLogo alt={t("nav.home")} height={24} />
+        </Link>
+        <WorkspaceSwitcher me={me} onChanged={context.refresh} />
+      </div>
       <nav aria-label="Guidesk">
         <Link href={`/${locale}/inbox`}>{t("nav.inbox")}</Link>
         <Link href={`/${locale}/requests`}>{t("nav.requests")}</Link>

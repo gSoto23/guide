@@ -2,6 +2,7 @@ import { Heading, Text } from "@react-email/components";
 import { EmailLayout } from "../layout.js";
 import type { EmailLocale } from "../locale.js";
 import { renderEmail, type RenderedEmail } from "../render.js";
+import { BRAND } from "../brand.js";
 
 const copy: Record<
   EmailLocale,
@@ -33,7 +34,7 @@ export function SignInCodeEmail({ locale, code }: { locale: EmailLocale; code: s
       <Text>{t.body}</Text>
       <Text style={{ fontSize: "32px", fontWeight: 700, letterSpacing: "6px" }}>{code}</Text>
       <Text>{t.expiry}</Text>
-      <Text style={{ fontSize: "13px", color: "#4b5563" }}>{t.ignore}</Text>
+      <Text style={{ fontSize: "13px", color: BRAND.muted }}>{t.ignore}</Text>
     </EmailLayout>
   );
 }
