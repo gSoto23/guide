@@ -24,7 +24,7 @@
 | | [Wireframes](ux/wireframes.html) | Low-fidelity mobile wireframes of 12 key screens |
 | **Presentation** | [Project overview](presentation/project-overview.md) | Guidesk in plain language for investors, partners, and pilot hosts |
 | | [Budget](presentation/budget.md) | Development and operating costs per scenario, with sources |
-| | [Interactive presentation](presentation/interactive/index.html) | A 31-slide walkthrough to present the whole project: problem, product, guided demos, architecture, business and fees, status, and the road to the demo and the pilot (Spanish and English) |
+| | [Interactive presentation](presentation/interactive/index.html) | A 32-slide walkthrough to present the whole project: problem, product, the brand in the product, guided demos, architecture, business and fees, status, and the road to the demo and the pilot (Spanish and English) |
 | **Process** | [Constitution](../.specify/memory/constitution.md) | Non-negotiable engineering principles (Spec Kit) |
 | | [Open questions](open-questions.md) | Pending decisions, partner applications, assumptions |
 | | [Pilot readiness](pilot-readiness.md) | Everything the founder must do before the first pilot guest |

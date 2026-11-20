@@ -112,8 +112,7 @@ WCAG 2.2 AA rules.
 ## 5. Decisions for the founder
 
 1. **Photos for the demo and the public home:** your own photos of a real property (with the
-   owner's permission), or licensed stock. Recommendation: your own, of a real Costa Rican
-   property; it matches the brand guide's "real places and arrivals".
+   owner's permission), or licensed stock. **Decided 2026-11-19: the founder's own photos.**
 2. **Fraunces on the public pages:** the brand guide allows it for marketing headlines.
    Recommendation: yes, self-hosted, one weight, Latin subset, public pages only.
 3. **"Hecho con Guidesk" on Free guides:** the brand guide already says so. Recommendation: yes.
