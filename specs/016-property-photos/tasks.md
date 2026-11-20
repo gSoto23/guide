@@ -52,4 +52,5 @@
   Requests no longer imports the extras component (`formatPrice` moved to `lib/extras`); every
   route is within 150 KB (highest 149.9 KB). New `@guidesk/ui` subpath exports exist for later
   splitting.
-- The first-name welcome stays out (spec 004 FR-028) until the founder decides.
+- The first-name welcome stays out: on 2026-11-20 the founder decided to keep guest names off the
+  guide (spec 004 FR-028).
