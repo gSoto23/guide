@@ -381,14 +381,14 @@
         ['Pantalla de entrar con el logo y el lema, pantallas vacías ilustradas y «Hecho con Guidesk» en las guías del plan Free.', 'A sign-in screen with the logo and the tagline, illustrated empty screens, and "Made with Guidesk" on Free-plan guides.'],
         ['Vista previa de marca al compartir el enlace de la guía, sin datos del huésped.', 'A branded preview when the guide link is shared, with no guest data.']
       ], screens: 'Portal · G-01 · G-13', adr: 'Brand guide' },
-    '016': { t: ['Fotos de la propiedad (en curso)', 'Property photos (in progress)'],
+    '016': { t: ['Fotos de la propiedad', 'Property photos'],
       lead: ['Fotos que hacen la guía más visual, subidas por el anfitrión.', 'Photos that make the guide more visual, uploaded by the host.'],
       items: [
         ['Una foto de portada por propiedad: arriba en la guía, en la vista previa de WhatsApp, en las tarjetas del portal y en el póster QR.', 'One cover photo per property: at the top of the guide, in the WhatsApp preview, on the portal cards, and on the QR poster.'],
         ['Una foto opcional por extra, para que el traslado o la tabla de surf se vean antes de pedirlos.', 'An optional photo per extra, so the pickup or the surfboard shows before guests request it.'],
         ['Sugerencias para agregar fotos donde más ayudan: la puerta, el parqueo, el router.', 'Prompts to add photos where they help most: the door, the parking, the router.'],
-        ['Bienvenida con el nombre del huésped y avatares con iniciales en el portal.', 'A welcome with the guest\'s name and initials avatars in the portal.']
-      ], screens: 'G-01 · G-08 · H-04', adr: 'Brand guide §6', inProgress: true }
+        ['Avatares con iniciales en el portal. La bienvenida con el nombre del huésped espera una decisión de privacidad.', 'Initials avatars in the portal. A welcome with the guest\'s name waits for a privacy decision.']
+      ], screens: 'G-01 · G-08 · H-04', adr: 'Brand guide §6' }
   };
 
   $$('#featureFilter .chip').forEach(function (chip) {
