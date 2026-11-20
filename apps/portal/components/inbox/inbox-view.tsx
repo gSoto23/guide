@@ -10,7 +10,10 @@ import type {
   PropertyList,
   TrustSuggestion,
 } from "@guidesk/contracts";
+import { Icon, inboxClearScene, message, reasonIconData } from "@guidesk/ui";
+import { EmptyState } from "@/components/empty-state";
 import { AlertsCard } from "@/components/notifications/alerts-card";
+import { PageHeader } from "@/components/shell/page-header";
 import { useWorkspace } from "@/lib/use-workspace";
 
 const REFRESH_MS = 15_000;
@@ -122,12 +125,16 @@ export function InboxView({
 
   return (
     <section aria-labelledby={`${id}-title`} className="inbox">
-      <div className="inbox-head">
-        <h1 id={`${id}-title`}>{t("title")}</h1>
-        <Link className="button button-primary" href={`/${locale}/inbox/copilot`}>
-          {t("copilot")}
-        </Link>
-      </div>
+      <PageHeader
+        title={t("title")}
+        titleId={`${id}-title`}
+        action={
+          <Link className="button button-primary with-icon" href={`/${locale}/inbox/copilot`}>
+            <Icon data={message} />
+            {t("copilot")}
+          </Link>
+        }
+      />
       <AlertsCard compact />
       {!online && (
         <p className="alert alert-info" role="status">
@@ -198,7 +205,7 @@ export function InboxView({
           ))}
         </select>
       </div>
-      {empty && <p className="muted inbox-empty">{empty}</p>}
+      {empty ? <EmptyState illustration={inboxClearScene} title={empty} /> : null}
       <ol className="list-plain inbox-list" aria-label={t(`tabs.${tab}`)}>
         {items.map((item) => (
           <li
@@ -219,8 +226,9 @@ export function InboxView({
               <span className="inbox-meta">
                 {item.reason && (
                   <span
-                    className={`badge ${item.reason === "emergency" ? "badge-danger" : "badge-warning"}`}
+                    className={`badge badge-icon ${item.reason === "emergency" ? "badge-danger" : "badge-warning"}`}
                   >
+                    <Icon data={reasonIconData(item.reason)} size={16} />
                     {reasons(item.reason)}
                   </span>
                 )}

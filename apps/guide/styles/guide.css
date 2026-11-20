@@ -14,6 +14,14 @@
   --danger: #a0153e;
   --focus: #1e5bd6;
   --notice: #fdf1d8;
+  /* Feature 015: icon circles and illustration colors (brand guide §5, §6). */
+  --primary-tint: #f6e3db;
+  --il-bg: #fffcf8;
+  --il-arena: #efe4d8;
+  --il-terra: #b4452a;
+  --il-terra-soft: #f3d3c7;
+  --il-sol: #f5bc4c;
+  --il-line: #8c7b70;
   --radius: 14px;
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color-scheme: light dark;
@@ -32,6 +40,12 @@
     --danger: #ff9bb5;
     --focus: #8ab4f8;
     --notice: #3a2f1c;
+    --primary-tint: #3b2219;
+    --il-bg: #17120f;
+    --il-arena: #2e2621;
+    --il-terra: #f0906f;
+    --il-terra-soft: #5a3326;
+    --il-line: #8a7a6f;
   }
 }
 
@@ -102,12 +116,12 @@ a {
 }
 
 .top-name {
+  min-width: 0;
   font-weight: 650;
   color: var(--carbon);
   text-decoration: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* Feature 015 FR-011: long property names wrap instead of being cut. */
+  overflow-wrap: anywhere;
 }
 
 .top-actions {
@@ -220,37 +234,153 @@ a {
   font-weight: 650;
 }
 
+/* Feature 015: home tiles are icon rows; titles never hyphenate or truncate (FR-010, FR-014).
+   One column under 35rem, two from 35rem, so the longest titles fit whole at 320 px. */
 .tiles {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.625rem;
 }
 
 .tile {
   display: flex;
-  align-items: flex-end;
-  min-height: 5.5rem;
-  padding: 0.875rem;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.75rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--arena);
-  border-left: 5px solid var(--primary);
   color: var(--carbon);
   font-weight: 650;
   text-decoration: none;
   line-height: 1.25;
-  overflow-wrap: anywhere;
-  hyphens: auto;
+}
+
+.tile-title {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+  hyphens: manual;
+}
+
+.tile-icon {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: var(--primary-tint);
+  color: var(--primary-strong);
+}
+
+.tile-chevron {
+  flex-shrink: 0;
+  color: var(--muted);
+}
+
+.tile:hover {
+  border-color: var(--primary);
 }
 
 .tile-wide {
   grid-column: 1 / -1;
 }
 
-.tile-wide .tile {
-  min-height: 4.5rem;
+@media (min-width: 35rem) {
+  .tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  overflow-wrap: break-word;
+}
+
+.icon,
+.illustration,
+.brand-mark {
+  display: block;
+  flex-shrink: 0;
+}
+
+.illustration {
+  max-width: 100%;
+  height: auto;
+}
+
+.status-art {
+  margin: 1rem 0 0.5rem;
+}
+
+.credit,
+.status-mark {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0 0;
+  font-size: 0.9375rem;
+  color: var(--muted);
+}
+
+.credit a,
+.status-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+}
+
+.credit a {
+  color: var(--muted);
+}
+
+.il-bg {
+  fill: var(--il-bg);
+}
+.il-arena {
+  fill: var(--il-arena);
+}
+.il-terra {
+  fill: var(--il-terra);
+}
+.il-terra-soft {
+  fill: var(--il-terra-soft);
+}
+.il-sol {
+  fill: var(--il-sol);
+}
+.il-line {
+  fill: none;
+  stroke: var(--il-line);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.il-dash {
+  fill: none;
+  stroke: var(--il-terra);
+  stroke-width: 3;
+  stroke-dasharray: 6 8;
+  stroke-linecap: round;
+}
+.il-cut,
+.il-stroke {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.il-cut {
+  stroke: var(--il-bg);
+}
+.il-stroke {
+  stroke: var(--il-terra);
 }
 
 .items > * + * {
@@ -275,6 +405,7 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   min-height: 2.75rem;
   padding: 0 1.125rem;
   border-radius: 999px;
@@ -330,8 +461,15 @@ a {
 }
 
 .locked-label {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-weight: 650;
+  overflow-wrap: break-word;
+}
+
+.locked-label .icon {
+  color: var(--primary-strong);
 }
 
 .locked-label::before {
@@ -447,10 +585,6 @@ a {
 }
 
 @media (min-width: 40rem) {
-  .tiles {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
   .title {
     font-size: 2rem;
   }
@@ -480,6 +614,13 @@ a {
   cursor: pointer;
 }
 
+/* Feature 015: the chat icon next to the label; [hidden] still hides it until the script runs. */
+.ask:not([hidden]) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .ask:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 3px;
@@ -496,9 +637,6 @@ body:has(.ask:not([hidden])) .main {
 }
 
 /* Feature 009: Explore (screens G-07, G-14). Photos keep their reserved size; no layout shift. */
-.tile-explore .tile {
-  border-left-color: var(--carbon);
-}
 
 .category-title {
   font-size: 1rem;
@@ -569,9 +707,6 @@ div.experience-photo {
 }
 
 /* Feature 008: Extras (screens G-08, G-09). */
-.tile-extras .tile {
-  border-left-color: var(--primary-strong);
-}
 
 .extras,
 .requests,

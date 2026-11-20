@@ -12,7 +12,7 @@ export default async function PropertyAnalyticsPage({
   setRequestLocale(locale);
   const t = await getTranslations("analytics");
   return (
-    <main>
+    <main className="page-wide">
       <p>
         <Link href={`/${locale}/properties/${propertyId}`}>{t("backToProperty")}</Link>
       </p>

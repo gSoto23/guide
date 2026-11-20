@@ -94,6 +94,8 @@ export interface GuestGuide {
   explore: { visible: boolean };
   /** Feature 008: whether the property has visible extras. */
   extras: { visible: boolean };
+  /** Feature 015: show the "Made with Guidesk" credit (Free-plan workspaces only). */
+  credit: boolean;
 }
 
 export const stayExchangeSchema = z.object({ token: stayTokenSchema }).strict();

@@ -6,7 +6,7 @@ export default async function RequestsPage({ params }: { params: Promise<{ local
   const { locale } = await params;
   setRequestLocale(locale);
   return (
-    <main>
+    <main className="page-wide">
       <RequestsScreen locale={locale} />
     </main>
   );

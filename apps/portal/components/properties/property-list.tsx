@@ -9,6 +9,8 @@ import type {
   PropertyList,
   PropertySummary,
 } from "@guidesk/contracts";
+import { Icon, plus } from "@guidesk/ui";
+import { PageHeader } from "@/components/shell/page-header";
 import { useWorkspace } from "@/lib/use-workspace";
 import { StartOptionsPanel } from "./start-options";
 
@@ -101,23 +103,27 @@ export function PropertyListView({ locale }: { locale: string }) {
 
   return (
     <>
-      <h1>{t("list.title")}</h1>
-      <p className="muted">
-        {limits.limit === null
-          ? t("limits.usageUnlimited", { used: limits.used })
-          : t("limits.usage", { used: limits.used, limit: limits.limit })}
-      </p>
-      {workspace.canManage ? (
-        limits.limit === null || limits.used < limits.limit ? (
-          <Link className="button button-primary" href={`/${locale}/properties/new`}>
-            {t("list.add")}
-          </Link>
-        ) : (
-          <p className="alert alert-info" role="status">
-            {t("limits.reached", { limit: limits.limit })}{" "}
-            <Link href={`/${locale}/settings/plan`}>{plan("link")}</Link>
-          </p>
-        )
+      <PageHeader
+        title={t("list.title")}
+        help={
+          limits.limit === null
+            ? t("limits.usageUnlimited", { used: limits.used })
+            : t("limits.usage", { used: limits.used, limit: limits.limit })
+        }
+        action={
+          workspace.canManage && (limits.limit === null || limits.used < limits.limit) ? (
+            <Link className="button button-primary with-icon" href={`/${locale}/properties/new`}>
+              <Icon data={plus} />
+              {t("list.add")}
+            </Link>
+          ) : undefined
+        }
+      />
+      {workspace.canManage && limits.limit !== null && limits.used >= limits.limit ? (
+        <p className="alert alert-info" role="status">
+          {t("limits.reached", { limit: limits.limit })}{" "}
+          <Link href={`/${locale}/settings/plan`}>{plan("link")}</Link>
+        </p>
       ) : null}
       {workspace.canManage && toConfirm.length > 0 ? (
         <div className="card">
@@ -146,7 +152,7 @@ export function PropertyListView({ locale }: { locale: string }) {
       {items.length === 0 ? (
         <p className="muted">{t("list.noMatches", { query: search })}</p>
       ) : null}
-      <ul className="property-list">
+      <ul className="property-list card-grid">
         {items.map((item) => (
           <li key={item.id}>
             <Link className="property-row" href={`/${locale}/properties/${item.id}`}>

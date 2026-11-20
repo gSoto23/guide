@@ -133,6 +133,7 @@ export function fixtureGuide(publicId: string, language: "es" | "en"): GuestGuid
     wifi: { fieldId: null, password: null },
     explore: { visible: true },
     extras: { visible: true },
+    credit: true,
   };
 }
 

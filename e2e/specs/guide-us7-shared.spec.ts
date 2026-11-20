@@ -66,6 +66,8 @@ test("quickstart 8: shared content, override, and exclude", async ({ page }) => 
   const south = await publishedProperty(page, "Casa Sur", "Golfito");
 
   // A Checkout block, published to both guides (FR-058, FR-060).
+  // Feature 015: on phones, Shared content lives under More in the bottom bar.
+  await page.getByRole("button", { name: "Más" }).click();
   await page.getByRole("link", { name: "Contenido compartido" }).click();
   await expect(page.getByRole("heading", { name: "Contenido compartido" })).toBeVisible();
   await page.getByRole("button", { name: "Crear bloque" }).click();

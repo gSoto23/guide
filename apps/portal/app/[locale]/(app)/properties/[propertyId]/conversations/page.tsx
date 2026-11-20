@@ -10,7 +10,7 @@ export default async function ConversationsPage({
   const { locale, propertyId } = await params;
   setRequestLocale(locale);
   return (
-    <main>
+    <main className="page-wide">
       <ConversationList locale={locale} propertyId={propertyId} />
     </main>
   );

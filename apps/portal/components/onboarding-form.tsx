@@ -7,6 +7,7 @@ import type { OnboardingResponse } from "@guidesk/contracts";
 import { PMS_VALUES, PROPERTIES_BUCKET_VALUES } from "@guidesk/contracts/values";
 import { ApiError, apiFetch } from "@/lib/api";
 import { useMe } from "@/lib/use-me";
+import { Illustration, welcomeScene } from "@guidesk/ui";
 
 /** Countries shown first: the launch markets (LATAM + US). Any other country can be skipped. */
 const COUNTRIES = ["CR", "MX", "CO", "PA", "GT", "DO", "PE", "AR", "CL", "BR", "US"] as const;
@@ -59,6 +60,7 @@ export function OnboardingForm({ locale }: { locale: string }) {
 
   return (
     <form onSubmit={submit}>
+      <Illustration data={welcomeScene} width={180} className="page-illustration" />
       <h1>{t("title")}</h1>
       <p className="muted">{t("subtitle")}</p>
 

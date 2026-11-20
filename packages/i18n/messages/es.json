@@ -102,7 +102,8 @@
     "resend": "Reenviar código",
     "resendIn": "Reenviar código en {seconds} s",
     "codeResent": "Te enviamos un código nuevo.",
-    "consent": "Al continuar, aceptas los <terms>Términos</terms> y la <privacy>Política de privacidad</privacy>."
+    "consent": "Al continuar, aceptas los <terms>Términos</terms> y la <privacy>Política de privacidad</privacy>.",
+    "tagline": "Tu casa, siempre lista para responder."
   },
   "onboarding": {
     "loading": "Cargando…",
@@ -821,7 +822,8 @@
       "shared": "Contenido compartido",
       "inbox": "Bandeja",
       "requests": "Solicitudes",
-      "analytics": "Estadísticas"
+      "analytics": "Estadísticas",
+      "more": "Más"
     },
     "loading": "Cargando…",
     "none": "Sin workspace: crea uno"

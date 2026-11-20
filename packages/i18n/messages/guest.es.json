@@ -1,7 +1,9 @@
 {
   "meta": {
     "title": "Guía de {property}",
-    "description": "La guía de la casa para huéspedes."
+    "description": "La guía de la casa para huéspedes.",
+    "preview": "Guía digital de tu estadía",
+    "stayTitle": "Tu guía de estadía"
   },
   "nav": {
     "home": "Inicio",
@@ -279,5 +281,6 @@
   },
   "privacy": {
     "link": "Privacidad"
-  }
+  },
+  "credit": "Hecho con Guidesk"
 }

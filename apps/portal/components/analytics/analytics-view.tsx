@@ -5,6 +5,8 @@ import { useEffect, useId, useMemo, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import type { AnalyticsSummary, PeriodCount } from "@guidesk/contracts";
 import { formatters, PERIODS, rate, sum, type PeriodValue } from "@/lib/analytics";
+import { Illustration, noDataScene } from "@guidesk/ui";
+import { PageHeader } from "@/components/shell/page-header";
 import { useWorkspace } from "@/lib/use-workspace";
 import { BarList } from "./bar-list";
 import { Change } from "./change";
@@ -94,7 +96,12 @@ export function AnalyticsView({ locale, propertyId }: { locale: string; property
         {data.scope.kind === "property" && data.scope.removed ? (
           <p className="alert alert-warning">{t("removedNote")}</p>
         ) : null}
-        {empty ? <p className="alert alert-info">{t("empty")}</p> : null}
+        {empty ? (
+          <div className="empty-state">
+            <Illustration data={noDataScene} width={200} />
+            <p>{t("empty")}</p>
+          </div>
+        ) : null}
         {data.comparable ? null : <p className="alert alert-info">{t("change.none", { days })}</p>}
 
         <h2>{t("sections.guide")}</h2>
@@ -209,8 +216,7 @@ export function AnalyticsView({ locale, propertyId }: { locale: string; property
 
   return (
     <section aria-labelledby={`${id}-title`} className="analytics">
-      <h1 id={`${id}-title`}>{title}</h1>
-      <p className="muted">{t("intro")}</p>
+      <PageHeader title={title} titleId={`${id}-title`} help={t("intro")} />
       {propertyId ? (
         <p>
           <Link href={`/${locale}/analytics`}>{t("allProperties")}</Link>

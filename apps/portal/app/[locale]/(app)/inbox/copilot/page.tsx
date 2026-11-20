@@ -6,7 +6,7 @@ export default async function CopilotPage({ params }: { params: Promise<{ locale
   const { locale } = await params;
   setRequestLocale(locale);
   return (
-    <main>
+    <main className="page-wide">
       <CopilotView locale={locale} />
     </main>
   );

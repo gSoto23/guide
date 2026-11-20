@@ -1,7 +1,9 @@
 {
   "meta": {
     "title": "{property} guide",
-    "description": "The house guide for guests."
+    "description": "The house guide for guests.",
+    "preview": "Digital guide for your stay",
+    "stayTitle": "Your stay guide"
   },
   "nav": {
     "home": "Home",
@@ -279,5 +281,6 @@
   },
   "privacy": {
     "link": "Privacy"
-  }
+  },
+  "credit": "Made with Guidesk"
 }

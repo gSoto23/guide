@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { StartOptions } from "@guidesk/contracts";
+import { Illustration, noPropertiesScene } from "@guidesk/ui";
 import { useWorkspace } from "@/lib/use-workspace";
 
 /** Message keys of each starting option (properties.options.*). */
@@ -65,6 +66,7 @@ export function StartOptionsPanel({
 
   return (
     <>
+      <Illustration data={noPropertiesScene} width={180} className="page-illustration" />
       <h1>{title ?? t("start.title")}</h1>
       {subtitle ? <p className="muted">{subtitle}</p> : null}
       <ul className="property-list">
