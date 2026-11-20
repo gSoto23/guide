@@ -71,4 +71,12 @@ describe("demo history", () => {
     const statuses = new Set(stays.flatMap((stay) => stay.requests.map((r) => r.status)));
     expect(statuses).toEqual(new Set(["confirmed", "declined"]));
   });
+
+  it("always has a confirmed request in the last 30 days, whatever the seed", () => {
+    for (let index = 0; index < 200; index += 1) {
+      const stays = plan(`seed-${index}`).pastStays;
+      const recent = stays.filter((stay) => stay.checkInDaysAgo < 30);
+      expect(recent.some((stay) => stay.requests.some((r) => r.status === "confirmed"))).toBe(true);
+    }
+  });
 });

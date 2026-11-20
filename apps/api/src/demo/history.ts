@@ -135,7 +135,18 @@ export function planHistory(input: {
     name += 1;
     checkIn -= nights + 1 + Math.floor(random() * 3);
   }
+  // Analytics shows confirmed requests in the last 30 days whatever the random draws: the most
+  // recent past stay opened the guide and had a confirmed request.
+  const latest = pastStays.at(-1);
+  if (latest && !pastStays.some((stay) => stay.checkInDaysAgo < 30 && hasConfirmed(stay))) {
+    latest.openedGuide = true;
+    latest.requests = [{ extra: 0, status: "confirmed" }];
+  }
   return { days, pastStays };
+}
+
+function hasConfirmed(stay: PlannedStay): boolean {
+  return stay.requests.some((request) => request.status === "confirmed");
 }
 
 /** Assistant replies counted toward the plan for a day's questions (answers and drafts). */
