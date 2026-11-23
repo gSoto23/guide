@@ -15,3 +15,11 @@ specs
 .uploads
 **/.tz-sources
 evals/extraction/report
+# Not needed in the API and worker images; workspace manifests stay for `pnpm install`.
+perf
+e2e/**
+!e2e/package.json
+evals/*/**
+!evals/*/package.json
+**/test-results
+**/playwright-report

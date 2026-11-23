@@ -14,6 +14,13 @@ import { media, uploads } from "./storage";
 
 const cluster = new sst.aws.Cluster("Cluster", { vpc });
 
+/**
+ * No registry build cache: SST's default exports every intermediate layer to ECR (about 1 GB per
+ * image, three times the image itself), which made each deploy upload over 2 GB. The Dockerfiles
+ * keep dependencies in their own layer instead, so local rebuilds stay fast.
+ */
+const imageCache = false;
+
 // Only the email identity is linked (for SES permissions). Secrets arrive through `ssm`
 // (Secrets Manager, valueFrom), never as plain environment variables (T103).
 const linked = email ? [email] : [];
@@ -89,7 +96,7 @@ const apiListener = stageConfig.apiDomain
 
 export const api = new sst.aws.Service("Api", {
   cluster,
-  image: { context: ".", dockerfile: "apps/api/Dockerfile" },
+  image: { context: ".", dockerfile: "apps/api/Dockerfile", cache: imageCache },
   architecture: "arm64",
   cpu: "0.25 vCPU",
   memory: "0.5 GB",
@@ -140,7 +147,7 @@ export const api = new sst.aws.Service("Api", {
 
 export const worker = new sst.aws.Service("Worker", {
   cluster,
-  image: { context: ".", dockerfile: "apps/worker/Dockerfile" },
+  image: { context: ".", dockerfile: "apps/worker/Dockerfile", cache: imageCache },
   architecture: "arm64",
   cpu: "0.25 vCPU",
   memory: "0.5 GB",
