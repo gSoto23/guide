@@ -878,3 +878,15 @@ div.experience-photo {
     display: none;
   }
 }
+
+/* Feature 017: the language switch is a compact pill with a globe and the language code. */
+.top-lang {
+  gap: 0.375rem;
+  background: var(--arena);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.top-lang:hover {
+  border-color: var(--carbon);
+}

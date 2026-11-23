@@ -163,6 +163,7 @@ shape:
 | M2 page headers | Fixed: chevron back links and 28 px titles from 1024 px. |
 | M8 public home | Fixed: feature icons, three-plus-two grid. |
 | M9 guest guide | Fixed: a card on the arena backdrop from 768 px, three tile columns from 1024 px. |
+| Founder review (same day): language toggle and sign-in button | Redesigned: a language pill (globe, both codes, the current one marked; the other code only on phones), "Entrar" as a pill with an arrow, "Empieza gratis" in the header from 600 px, and a sticky translucent header; the guest guide's language switch is the same pill. |
 | M4 analytics | Partly: the period tabs use the segmented style; the metric grid already used the width. |
 | L1–L6 | Open (low impact); L4 (inbox split view) is proposed for a later spec. |
 

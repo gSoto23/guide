@@ -30,6 +30,11 @@ the founder can change any of them.
 - Q: Does the property overview move the cover photo? → A: Yes. The property's name and actions lead;
   from 1024 px the photo, its edit controls, and the summary cards move to a side column. On phones the
   order stays: photo, name, actions, facts, cards.
+- Founder review during implementation: the public header's language link and sign-in button looked
+  dated. → A: a language pill (globe icon, both language codes with the current one marked, only the
+  other code on phones), a pill-shaped sign-in button with an arrow, the "Start free" call to action in
+  the header from 600 px, and a sticky translucent header; the guest guide's language switch uses the
+  same pill. Each code keeps the language's full name for screen readers.
 - Q: Are the inbox split view and a settings sub-navigation part of this feature? → A: No. Both need
   new client behavior or routes; they are recorded in the audit as later work.
 

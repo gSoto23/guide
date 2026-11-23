@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { BrandMark, chat, Icon } from "@guidesk/ui";
+import { BrandMark, chat, globe, Icon } from "@guidesk/ui";
 import type { Assets } from "../assets.js";
 import type { GuestLocale, Translate } from "../i18n.js";
 
@@ -119,13 +119,16 @@ export function Layout({
             <nav className="top-actions" aria-label={t("nav.language")}>
               {guide.switchHref && guide.switchLocale ? (
                 <a
-                  className="top-link"
+                  className="top-link top-lang"
                   href={guide.switchHref}
                   hrefLang={guide.switchLocale}
                   lang={guide.switchLocale}
                   data-switch-locale={guide.switchLocale}
                 >
-                  {t("nav.switchTo")}
+                  {/* Feature 017: a language pill with the code; the full name stays for readers. */}
+                  <Icon data={globe} size={16} />
+                  {guide.switchLocale.toUpperCase()}
+                  <span className="visually-hidden"> · {t("nav.switchTo")}</span>
                 </a>
               ) : null}
               <a className="top-emergency" href={guide.emergencyHref}>

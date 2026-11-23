@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { chevron, globe, Icon } from "@guidesk/ui";
 import { BrandLogo } from "@/components/brand-logo";
 import type { PublicCatalog } from "@/lib/public/catalog";
 import { otherLocale, type PublicPage } from "@/lib/public/routes";
@@ -36,12 +37,25 @@ export function PublicShell({
             <BrandLogo alt={catalog.nav.home} height={30} />
           </Link>
           <nav className="public-nav" aria-label="Guidesk">
-            {/* The visible name is the accessible name (WCAG 2.5.3); lang lets readers say it right. */}
-            <Link href={`/${other}${page}`} hrefLang={other} lang={other}>
-              {catalog.nav.language}
-            </Link>
-            <Link href={`/${locale}/sign-in`} className="button button-secondary">
+            {/* Feature 017: a compact language pill (both codes, the current one marked) and pill
+                buttons. Each code keeps its full name for screen readers (WCAG 2.5.3, 3.1.2). */}
+            <div className="lang-switch" role="group" aria-label={catalog.nav.languageGroup}>
+              <Icon data={globe} size={16} className="lang-switch-icon" />
+              <span className="lang-option lang-current" aria-current="true" lang={locale}>
+                {locale.toUpperCase()}
+                <span className="visually-hidden"> · {catalog.nav.languageCurrent}</span>
+              </span>
+              <Link href={`/${other}${page}`} hrefLang={other} lang={other} className="lang-option">
+                {other.toUpperCase()}
+                <span className="visually-hidden"> · {catalog.nav.language}</span>
+              </Link>
+            </div>
+            <Link href={`/${locale}/sign-in`} className="button public-signin">
               {catalog.nav.signIn}
+              <Icon data={chevron} size={16} />
+            </Link>
+            <Link href={`/${locale}/sign-in`} className="button button-primary public-start">
+              {catalog.nav.start}
             </Link>
           </nav>
         </div>

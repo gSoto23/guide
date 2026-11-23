@@ -17,6 +17,9 @@
     "home": "Guidesk, home",
     "signIn": "Sign in",
     "language": "Español",
+    "languageCurrent": "English",
+    "languageGroup": "Language",
+    "start": "Start free",
     "skip": "Skip to content"
   },
   "footer": {
