@@ -46,9 +46,9 @@ fi
 cluster=$(echo "$service_arn" | cut -d/ -f2)
 service=$(echo "$service_arn" | cut -d/ -f3)
 
-read -r task_definition subnets security_groups < <(aws ecs describe-services \
+read -r task_definition subnets security_groups public_ip < <(aws ecs describe-services \
   --cluster "$cluster" --services "$service" \
-  --query "services[0].[taskDefinition, join(',', networkConfiguration.awsvpcConfiguration.subnets), join(',', networkConfiguration.awsvpcConfiguration.securityGroups)]" \
+  --query "services[0].[taskDefinition, join(',', networkConfiguration.awsvpcConfiguration.subnets), join(',', networkConfiguration.awsvpcConfiguration.securityGroups), networkConfiguration.awsvpcConfiguration.assignPublicIp]" \
   --output text)
 read -r container log_group log_prefix < <(aws ecs describe-task-definition \
   --task-definition "$task_definition" \
@@ -58,7 +58,7 @@ read -r container log_group log_prefix < <(aws ecs describe-task-definition \
 echo "Running '$action' on $stage ($cluster/$service)..."
 task_arn=$(aws ecs run-task --cluster "$cluster" --launch-type FARGATE \
   --task-definition "$task_definition" \
-  --network-configuration "awsvpcConfiguration={subnets=[$subnets],securityGroups=[$security_groups],assignPublicIp=DISABLED}" \
+  --network-configuration "awsvpcConfiguration={subnets=[$subnets],securityGroups=[$security_groups],assignPublicIp=${public_ip:-DISABLED}}" \
   --overrides "{\"containerOverrides\":[{\"name\":\"$container\",\"command\":$command}]}" \
   --query "tasks[0].taskArn" --output text)
 aws ecs wait tasks-stopped --cluster "$cluster" --tasks "$task_arn"
