@@ -135,12 +135,17 @@ IDs, or personal addresses are recorded in this repository.
 
 ### Domains
 
-One domain will serve both stages: production on the apex or `app.`, `api.`, and `guia.`, and
-staging under `staging.<domain>`, delegated to a Route 53 hosted zone in the staging account. A bare
-IP address cannot replace a domain: CloudFront and the load balancer have no fixed IP addresses, ACM
-certificates need names, and passkeys and Google sign-in need a domain. Until the domain exists
-(OQ-11), staging runs on CloudFront default URLs, which the infrastructure allows outside production,
-and sends email from one verified address in the SES sandbox.
+The brand domain is `guidesk.io` (OQ-11, 2026-11-23), registered at an external registrar
+(Dynadot) because the management account cannot register domains in Route 53. One domain serves both
+stages: production on `guidesk.io`, `api.guidesk.io`, and `guia.guidesk.io`; staging under
+`staging.guidesk.io` (proposed hostnames). DNS is in Route 53 with one hosted zone per stage
+account: the zone `staging.guidesk.io` lives in the staging account, delegated by an `NS` record in
+the apex zone. The apex zone sits in the management account only until the production account
+exists, then moves there, because SST must manage the apex records in the account it deploys to. A
+bare IP address cannot replace a domain: CloudFront and the load balancer have no fixed IP
+addresses, ACM certificates need names, and passkeys and Google sign-in need a domain. Until the
+staging hostnames are set, staging runs on CloudFront default URLs, which the infrastructure allows
+outside production, and sends email from one verified address in the SES sandbox.
 
 ### Consequences
 

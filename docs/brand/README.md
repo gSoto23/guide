@@ -5,7 +5,7 @@
 
 This guide covers the logo, color, type, icons, imagery, and usage rules of Guidesk. The visual
 identity was decided on 2026-11-17 (direction "Bienvenida", mark variant "Luz"). The name is
-still subject to the trademark search and domain choice in OQ-11. UI tokens (semantic colors,
+still subject to the trademark search in OQ-11; the domain is `guidesk.io` (decided 2026-11-23). UI tokens (semantic colors,
 type scale, spacing) are defined in the [design system](../ux/design-system.md); this guide
 explains the brand behind them.
 
@@ -238,4 +238,4 @@ them (`POPPINS=/path/to/Poppins-SemiBold.ttf python3 build.py`).
   license allows using the font's shapes in a logo. Fraunces (optional, marketing) is also under
   the SIL Open Font License 1.1.
 - No third-party logos, icons, or images are used.
-- Trademark registration and the final domain are still open (OQ-11).
+- The domain is `guidesk.io` (2026-11-23). Trademark registration is still open (OQ-11).

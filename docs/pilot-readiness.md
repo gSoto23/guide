@@ -49,9 +49,9 @@ access request, are drafted in [partner outreach](partner-outreach.md).
 - [ ] **Affiliate programs** (OQ-34, spec 009 R13): join Viator (basic-access API key) and Civitatis
   (affiliate number), ask Civitatis for its feed or API, and confirm each partner's content terms.
   Drafts: [Viator](partner-outreach.md#4-viator), [Civitatis](partner-outreach.md#5-civitatis).
-- [ ] **Brand and domains** (OQ-11): trademark search and the domains. The founder is negotiating to
-  buy guidesk.com (2026-11-23); section 2 lists what depends on it. The visual identity (direction
-  "A · Bienvenida") is already in main (PR #3, [brand guide](brand/README.md)).
+- [ ] **Trademark search** (OQ-11), before printing QR posters in volume. The domain is decided
+  (guidesk.io, 2026-11-23; section 2) and the visual identity (direction "A · Bienvenida") is
+  already in main (PR #3, [brand guide](brand/README.md)).
 - [ ] **Design partners and dates** (OQ-03, OQ-02): the 10 to 20 hosts and 3 to 5 managers, their PMS,
   the pilot start date, and the monthly budget.
 
@@ -82,9 +82,16 @@ Done:
   `guidesk-github-deploy`, which only `repo:gSoto23/guide:environment:staging` may assume, with
   1-hour sessions and `AdministratorAccess` scoped to the staging account ([runbook
   §6](operations/aws.md#6-github-deploys-through-oidc)). Not wired to GitHub yet (below).
+- [x] **Brand domain** `guidesk.io` (2026-11-23, OQ-11), bought at the registrar Dynadot with
+  privacy protection and auto-renew on: if it lapses, every QR poster and stay link breaks. The
+  management account cannot register domains in Route 53. DNS is in Route 53: the apex zone
+  `guidesk.io` (temporarily in the management account) and the zone `staging.guidesk.io` in the
+  staging account, delegated from the apex ([runbook §7](operations/aws.md#7-domain-and-dns)).
 
 In progress:
 
+- [ ] **Name servers** at the registrar switched to the apex zone `guidesk.io` (2026-11-23). Check
+  that `staging.guidesk.io` resolves through the delegation before deploying with the domain.
 - [ ] **CloudFront verification of the staging account:** AWS Support must verify a new account
   before it can create CloudFront distributions. A support case is open from the staging account.
   Expect the same check on the production account.
@@ -117,18 +124,26 @@ Pending:
   `AWS_DEPLOY_ROLE_ARN` with it.
 - [ ] **AI-services opt-out policy** in AWS Organizations covering Transcribe (spec 003 R22). The
   organization now exists, so the policy can be attached at its root.
-- [ ] **Domain** (OQ-11): the founder is negotiating to buy guidesk.com. One domain serves both
-  stages: production on the apex or `app.`, `api.`, and `guia.`; staging under `staging.<domain>`,
-  delegated to a hosted zone in the staging account. A bare IP address cannot replace it (CloudFront
-  and the load balancer have no fixed IP addresses, ACM needs names, passkeys and Google sign-in need
-  a domain). Then set `GUIDESK_PORTAL_DOMAIN`, `GUIDESK_API_DOMAIN`, and `GUIDESK_GUIDE_DOMAIN`
-  (required in production) and the email sender `GUIDESK_EMAIL_SENDER` as variables of each GitHub
-  environment (Settings → Environments → staging or production → Variables), like every `GUIDESK_*`
-  setting; the deploy passes them to SST. With the DNS in Route 53, SST creates the certificates and
-  records. Until then staging runs on CloudFront default URLs.
+- [ ] **Hostnames per stage** (proposed; the founder can still change them):
+
+  | Setting | Production | Staging |
+  |---|---|---|
+  | `GUIDESK_PORTAL_DOMAIN` (portal and public pages) | `guidesk.io` | `staging.guidesk.io` |
+  | `GUIDESK_API_DOMAIN` | `api.guidesk.io` | `api.staging.guidesk.io` |
+  | `GUIDESK_GUIDE_DOMAIN` (guest guide) | `guia.guidesk.io` | `guia.staging.guidesk.io` |
+  | `GUIDESK_EMAIL_SENDER` (domain sender) | `guidesk.io` | `staging.guidesk.io` |
+
+  Set them, like every `GUIDESK_*` setting, as variables of each GitHub environment (Settings →
+  Environments → staging or production → Variables), and pass them to manual deploys; the domains
+  are required in production. With the stage's zone in its own account, SST creates the
+  certificates and records. Until they are set, staging runs on CloudFront default URLs.
+- [ ] **Move the apex zone** `guidesk.io` to the production account once it exists, before the first
+  production deploy: SST must manage the apex records there and cannot write to a zone in another
+  account ([runbook §7](operations/aws.md#7-domain-and-dns)).
 - [ ] **Email:** staging sends from one verified address in the SES sandbox (verified recipients
-  only, no DMARC record for an address sender). Once the domain exists, verify it in Amazon SES and
-  request production access (sending to any address) well before the pilot
+  only, no DMARC record for an address sender) until its domain sender `staging.guidesk.io` is set
+  up. Verify the domain senders in Amazon SES (SST writes their DKIM and DMARC records in the
+  stage's zone) and request production access (sending to any address) well before the pilot
   ([ADR-0009](architecture/adr/0009-mvp-hosting-and-transactional-email.md);
   [request text](partner-outreach.md#6-amazon-ses-production-access)).
 - [ ] **Google OAuth client** for sign-in: the founder creates it once the deployed portal URL is

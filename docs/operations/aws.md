@@ -15,7 +15,7 @@ All accounts belong to one AWS Organization. Everything runs in `us-east-1`.
 
 | Account | Purpose | Status |
 |---|---|---|
-| Management (the founder's original AWS account) | Billing, a USD 250 monthly budget alert, AWS Organizations, and IAM Identity Center. **No workloads.** | Active since 2026-11-23 |
+| Management (the founder's original AWS account) | Billing, a USD 250 monthly budget alert, AWS Organizations, and IAM Identity Center. **No workloads.** Temporarily holds the `guidesk.io` DNS zone ([section 7](#7-domain-and-dns)) | Active since 2026-11-23 |
 | `guidesk-staging` | The SST `staging` stage (and any dev or preview stage) | Active since 2026-11-23, tagged `project=guidesk`, `stage=staging` |
 | `guidesk-production` | The SST `production` stage | Not created: waits for the account quota increase ([section 3](#3-create-the-production-account)) |
 
@@ -112,7 +112,8 @@ Once AWS approves it:
    as the account exists.
 6. Prepare the stage as in [pilot readiness §2](../pilot-readiness.md#2-aws-and-the-staging-stage):
    secrets ([section 4](#4-stage-secrets)), the GitHub OIDC deploy role
-   ([section 6](#6-github-deploys-through-oidc)), the domain and its DNS, and the SES domain identity
+   ([section 6](#6-github-deploys-through-oidc)), the apex DNS zone moved into this account
+   ([section 7](#7-domain-and-dns)), and the SES domain identity
    with production access. Production refuses to deploy without its three domains and
    `GUIDESK_CONTACT_EMAIL` (`infra/config.ts`).
 
@@ -181,8 +182,9 @@ AWS_PROFILE=guidesk-staging GUIDESK_EMAIL_SENDER=<verified-sender-address> pnpm 
 
 - Pass the other `GUIDESK_*` settings the deploy workflow passes (`.github/workflows/deploy.yml`)
   when the stage needs them; unset ones take their defaults.
-- Without a domain, staging leaves `GUIDESK_PORTAL_DOMAIN`, `GUIDESK_API_DOMAIN`, and
-  `GUIDESK_GUIDE_DOMAIN` unset and runs on CloudFront default URLs (allowed outside production).
+- Until its hostnames are set ([section 7](#7-domain-and-dns)), staging leaves
+  `GUIDESK_PORTAL_DOMAIN`, `GUIDESK_API_DOMAIN`, and `GUIDESK_GUIDE_DOMAIN` unset and runs on
+  CloudFront default URLs (allowed outside production).
 - Staging's email sender is one address. SES emails it a verification link after the deploy that
   creates the identity, and the SES sandbox only delivers to verified recipients. An address sender
   gets no DMARC or DKIM records; those exist only for a domain sender (`infra/email.ts`).
@@ -248,7 +250,71 @@ staging role.
 Public Actions logs show the role ARN, so the account number appears there. AWS does not treat
 account IDs as secret; this repository still keeps them out of its documents.
 
-## 7. Cost guardrails
+## 7. Domain and DNS
+
+**The domain is `guidesk.io`** (founder decision, 2026-11-23, OQ-11). The owner of guidesk.com will
+not sell. It is registered at **Dynadot**, an external registrar, because the management account
+cannot register domains in Route 53 (registrations fail with "contact AWS Support"). Privacy
+protection and auto-renew are on. **If the registration lapses, every QR poster and stay link
+breaks**, so keep the registrar's payment method current, and keep its account behind two-factor
+sign-in and its transfer lock on.
+
+A bare IP address cannot replace a domain: CloudFront and the load balancer have no fixed IP
+addresses, ACM certificates need names, and passkeys and Google sign-in need a domain.
+
+### Zone layout
+
+All DNS is in Route 53, one hosted zone per stage account (USD 0.50 a month each):
+
+| Zone | Account | Holds |
+|---|---|---|
+| `guidesk.io` (apex) | Management, **temporarily**; production once it exists | Production's records, and the NS record that delegates `staging.guidesk.io` |
+| `staging.guidesk.io` | Staging | Everything under `staging.guidesk.io`, written by SST |
+
+Proposed hostnames (the founder can still change them):
+
+| | Production | Staging |
+|---|---|---|
+| Portal and public pages (`GUIDESK_PORTAL_DOMAIN`) | `guidesk.io` | `staging.guidesk.io` |
+| API (`GUIDESK_API_DOMAIN`) | `api.guidesk.io` | `api.staging.guidesk.io` |
+| Guest guide (`GUIDESK_GUIDE_DOMAIN`) | `guia.guidesk.io` | `guia.staging.guidesk.io` |
+| Email sender domain (`GUIDESK_EMAIL_SENDER`) | `guidesk.io` | `staging.guidesk.io` |
+
+Staging keeps its single verified-address sender until its domain sender is set up.
+
+### How delegation works
+
+1. The registrar lists the apex zone's four name servers for `guidesk.io`. Every lookup under
+   `guidesk.io` starts at that zone. (The name servers were being switched at the registrar on
+   2026-11-23.)
+2. The apex zone holds an `NS` record for `staging.guidesk.io` whose values are the staging zone's
+   name servers. Lookups for `staging.guidesk.io` and anything below it are handed to the zone in
+   the staging account.
+3. SST, deploying with the staging profile or role, finds the `staging.guidesk.io` zone in its own
+   account and writes the certificate validation records, the CloudFront aliases, and the SES
+   records there. It never needs access to the management or production account.
+
+Check a delegation with `dig +short NS staging.guidesk.io`, which should list the staging zone's
+name servers.
+
+### Move the apex zone to production
+
+SST in production must manage the apex records itself (the portal on `guidesk.io`, `api.`,
+`guia.`, the SES records), and it cannot write to a zone in another account. So once the
+production account exists, and before its first deploy:
+
+1. Export the old zone's records:
+   `AWS_PROFILE=guidesk-admin aws route53 list-resource-record-sets --hosted-zone-id <apex-zone-id>`.
+2. Create the hosted zone `guidesk.io` in the production account
+   (`AWS_PROFILE=guidesk-production aws route53 create-hosted-zone --name guidesk.io --caller-reference <unique-string>`).
+3. Recreate every record except the zone's own `SOA` and `NS`. There are few: at least the `NS`
+   record delegating `staging.guidesk.io`, with the same values, so staging keeps working.
+4. At the registrar, replace the name servers with the new zone's four name servers.
+5. Wait until lookups return the new name servers (allow up to 48 hours), keeping both zones
+   identical meanwhile, then delete the old zone from the management account.
+6. Deploy production with its hostnames; SST creates its certificates and records in the new zone.
+
+## 8. Cost guardrails
 
 - The USD 250 monthly budget alert lives in the management account and covers the whole
   organization.
