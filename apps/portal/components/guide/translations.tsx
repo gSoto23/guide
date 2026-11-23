@@ -95,7 +95,9 @@ export function Translations({ locale, propertyId }: { locale: string; propertyI
     return (
       <section aria-labelledby="translations-title">
         <p>
-          <Link href={`/${locale}${base}`}>{t("editor.backToGuide")}</Link>
+          <Link className="back-link" href={`/${locale}${base}`}>
+            {t("editor.backToGuide")}
+          </Link>
         </p>
         <h1 id="translations-title">{t("translations.title")}</h1>
         <p className="alert alert-info">
@@ -161,7 +163,9 @@ export function Translations({ locale, propertyId }: { locale: string; propertyI
   return (
     <section aria-labelledby="translations-title">
       <p>
-        <Link href={`/${locale}${base}`}>{t("editor.backToGuide")}</Link>
+        <Link className="back-link" href={`/${locale}${base}`}>
+          {t("editor.backToGuide")}
+        </Link>
       </p>
       <h1 id="translations-title">{t("translations.title")}</h1>
       <p className="muted">{t("translations.intro")}</p>

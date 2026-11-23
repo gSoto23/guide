@@ -102,7 +102,9 @@ export function ImportRunView({ locale, importRunId }: { locale: string; importR
   return (
     <>
       <p>
-        <Link href={`/${locale}/properties`}>{t("back")}</Link>
+        <Link className="back-link" href={`/${locale}/properties`}>
+          {t("back")}
+        </Link>
       </p>
       <h1>{t("title", { source })}</h1>
       {running ? (

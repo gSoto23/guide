@@ -23,7 +23,9 @@ export function AppHeader({ locale, icons }: { locale: string; icons: ShellIcons
   const context = useMeContext();
   const me = context?.me;
   // Someone removed from their last workspace still sees the switcher, to create one (spec edge case).
-  if (!context || !me) return null;
+  // Before the account loads, the logo and navigation show at once with a placeholder where the
+  // switcher and the account go, so a reload never shows a blank page (feature 017 FR-020).
+  if (!context) return null;
   const href = (path: string) => `/${locale}${path}`;
   const work = DESTINATIONS.filter((destination) => destination.group === "work");
   const workspace = DESTINATIONS.filter((destination) => destination.group === "workspace");
@@ -36,7 +38,11 @@ export function AppHeader({ locale, icons }: { locale: string; icons: ShellIcons
           <Link href={href("/start")} className="app-header-brand">
             <BrandLogo alt={t("nav.home")} height={26} />
           </Link>
-          <WorkspaceSwitcher me={me} onChanged={context.refresh} />
+          {me ? (
+            <WorkspaceSwitcher me={me} onChanged={context.refresh} />
+          ) : (
+            <div className="shell-placeholder" aria-hidden="true" />
+          )}
         </div>
         <nav aria-label="Guidesk" className="side-nav">
           <ul>
@@ -59,15 +65,17 @@ export function AppHeader({ locale, icons }: { locale: string; icons: ShellIcons
               </li>
             ))}
           </ul>
-          <Link href={href("/settings/account")} className="side-account">
-            <Avatar name={me.user.name} email={me.user.email} />
-            <span>
-              <span className="side-account-name">
-                {me.user.name || <EmailText email={me.user.email} />}
+          {me ? (
+            <Link href={href("/settings/account")} className="side-account">
+              <Avatar name={me.user.name} email={me.user.email} />
+              <span>
+                <span className="side-account-name">
+                  {me.user.name || <EmailText email={me.user.email} />}
+                </span>
+                <span className="side-account-hint">{t("nav.account")}</span>
               </span>
-              <span className="side-account-hint">{t("nav.account")}</span>
-            </span>
-          </Link>
+            </Link>
+          ) : null}
         </nav>
       </header>
       <nav aria-label="Guidesk" className="bottom-bar">

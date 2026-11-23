@@ -164,7 +164,9 @@ export function ConversationView({
   return (
     <section aria-labelledby="conversation-title" className="conversation">
       <p>
-        <Link href={`/${locale}/properties/${propertyId}/conversations`}>{t("backToList")}</Link>
+        <Link className="back-link" href={`/${locale}/properties/${propertyId}/conversations`}>
+          {t("backToList")}
+        </Link>
       </p>
       <h1 id="conversation-title">{t("conversation")}</h1>
       <p className="property-meta">

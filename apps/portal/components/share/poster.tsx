@@ -35,7 +35,9 @@ export function Poster({ locale, propertyId }: { locale: string; propertyId: str
     <section className="poster-page">
       <div className="poster-controls no-print">
         <p>
-          <Link href={`/${locale}${base}`}>{t("back")}</Link>
+          <Link className="back-link" href={`/${locale}${base}`}>
+            {t("back")}
+          </Link>
         </p>
         <label htmlFor="poster-wifi">{t("poster.wifiLabel")}</label>
         <input

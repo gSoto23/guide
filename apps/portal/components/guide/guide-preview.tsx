@@ -147,7 +147,9 @@ export function GuidePreviewView({
   return (
     <section aria-labelledby="preview-title">
       <p>
-        <Link href={base}>{t("editor.backToGuide")}</Link>
+        <Link className="back-link" href={base}>
+          {t("editor.backToGuide")}
+        </Link>
       </p>
       <h1 id="preview-title">{t("preview.title")}</h1>
       <p className="muted">{t("preview.intro")}</p>

@@ -111,8 +111,14 @@ export function AlertsCard({ compact = false }: { compact?: boolean }) {
   if (compact) {
     if (state !== "off" && state !== "ios-home-screen" && state !== "blocked") return null;
     return (
-      <p className="alert alert-info" role="status">
-        {state === "ios-home-screen" ? t("ios") : state === "blocked" ? t("blocked") : t("banner")}{" "}
+      <p className="alert alert-info alert-row" role="status">
+        <span>
+          {state === "ios-home-screen"
+            ? t("ios")
+            : state === "blocked"
+              ? t("blocked")
+              : t("banner")}
+        </span>{" "}
         {state === "off" && (
           <button
             type="button"

@@ -76,7 +76,9 @@ export function RemovedProperties({ locale }: { locale: string }) {
   return (
     <>
       <p>
-        <Link href={`/${locale}/properties`}>{removedText("back")}</Link>
+        <Link className="back-link" href={`/${locale}/properties`}>
+          {removedText("back")}
+        </Link>
       </p>
       <h1>{removedText("title")}</h1>
       <p className="muted">{removedText("intro")}</p>

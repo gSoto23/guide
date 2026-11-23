@@ -118,7 +118,9 @@ export function BlockEditor({ locale, blockId }: { locale: string; blockId: stri
   return (
     <section aria-labelledby="block-title">
       <p>
-        <Link href={`/${locale}/shared-content`}>{t("back")}</Link>
+        <Link className="back-link" href={`/${locale}/shared-content`}>
+          {t("back")}
+        </Link>
       </p>
       <h1 id="block-title">{block.name}</h1>
       <p className="muted">

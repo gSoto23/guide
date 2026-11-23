@@ -14,7 +14,9 @@ export default async function PropertyExtrasPage({
   return (
     <main>
       <p>
-        <Link href={`/${locale}/properties/${propertyId}`}>{t("backToProperty")}</Link>
+        <Link className="back-link" href={`/${locale}/properties/${propertyId}`}>
+          {t("backToProperty")}
+        </Link>
       </p>
       <PropertyExtras locale={locale} propertyId={propertyId} />
     </main>

@@ -224,7 +224,9 @@ export function SectionEditor({
     <section aria-labelledby="section-title">
       {dialog}
       <p>
-        <Link href={`/${locale}${base}`}>{t("editor.backToGuide")}</Link>
+        <Link className="back-link" href={`/${locale}${base}`}>
+          {t("editor.backToGuide")}
+        </Link>
       </p>
       <h1 id="section-title">{title}</h1>
       <p className="muted">
