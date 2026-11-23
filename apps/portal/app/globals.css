@@ -3157,14 +3157,12 @@ div.segmented > .button[aria-pressed="true"]:hover {
   padding-left: 12px;
 }
 
-/* Text buttons look the same whether they are links or buttons. */
+/* Text buttons look the same whether they are links or buttons: underlined, so a text action in a
+   sentence is not marked by color alone (WCAG 1.4.1). */
 .button-link {
   font-weight: 600;
-  text-decoration: none;
-}
-
-.button-link:hover {
   text-decoration: underline;
+  text-underline-offset: 0.15em;
 }
 
 @media (min-width: 1024px) {
