@@ -7,7 +7,7 @@ import { stageConfig } from "./config";
 
 export const router = new sst.aws.Router("Router", {
   ...(stageConfig.portalDomain ? { domain: stageConfig.portalDomain } : {}),
-  waf: true,
+  waf: stageConfig.waf,
 });
 
 /** The portal's public origin: the custom domain, or the CloudFront URL outside production. */
@@ -21,7 +21,7 @@ export const portalUrl = stageConfig.portalDomain
  */
 export const guideRouter = new sst.aws.Router("GuideRouter", {
   ...(stageConfig.guideDomain ? { domain: stageConfig.guideDomain } : {}),
-  waf: true,
+  waf: stageConfig.waf,
 });
 
 /** The guide's public origin: the custom domain, or the CloudFront URL outside production. */

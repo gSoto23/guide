@@ -41,7 +41,7 @@ Region: **`us-east-1` (N. Virginia)** for everything, with CloudFront at the edg
 
 | Layer | Choice | Notes |
 |---|---|---|
-| Edge and routing | **CloudFront** with **AWS WAF** | One distribution per app domain. `/api/*` routes to the API load balancer, so the browser sees a single origin and cookies stay host-only (SEC-11). WAF adds edge rate limits and bot rules (SEC-07). CloudFront viewer headers provide the approximate location (research R7) |
+| Edge and routing | **CloudFront** with **AWS WAF** (production; staging skips WAF during the pilot to save about USD 18 a month, update 2026-11-23) | One distribution per app domain. `/api/*` routes to the API load balancer, so the browser sees a single origin and cookies stay host-only (SEC-11). WAF adds edge rate limits and bot rules (SEC-07). CloudFront viewer headers provide the approximate location (research R7) |
 | Portal and guest guide (Next.js) | **OpenNext on Lambda and S3, deployed with SST's `Nextjs` component** | Static and ISR pages are served from S3 and CloudFront; server rendering runs on Lambda. The Next.js apps never connect to the database: they call the API |
 | API and worker | **ECS Fargate** (two services) behind an **Application Load Balancer** | Long-running NestJS API and a pg-boss worker. Start with 1–2 small tasks per service |
 | PostgreSQL | **Amazon RDS for PostgreSQL 16** | Single-AZ for the pilot, Multi-AZ before the public launch. Automated backups with point-in-time recovery (SEC-17). Storage encrypted with KMS. Connections only from the private subnets of the Fargate services |
@@ -54,7 +54,7 @@ Region: **`us-east-1` (N. Virginia)** for everything, with CloudFront at the edg
 | Speech to text (feature 003) | **Amazon Transcribe** batch jobs | Interview voice notes, read from the uploads bucket; the transcript is written under `transcripts/` and deleted with the job right after reading (spec 003 research R8). Behind the `guide.interviewVoice` flag until the R22 gate, with the AWS AI-services opt-out policy |
 | Observability | **CloudWatch** logs and metrics, OpenTelemetry, and **Sentry** for errors | Personal-data scrubbing per SEC-06 |
 | Infrastructure as code | **SST** (TypeScript; 4.17 at setup) | Components for Next.js, ECS Cluster and Service, Postgres (RDS), Email (SES), VPC, Router, and Secrets. One stage per environment (`dev`, `staging`, `production`); preview stages for the portal. AWS CDK is the fallback if SST stops fitting |
-| Networking | One VPC with public and private subnets | Prefer VPC endpoints (S3, Secrets Manager, CloudWatch) to reduce NAT gateway traffic and cost; keep one NAT gateway for outbound calls (Claude API, Tilopay, PMS APIs) |
+| Networking | One VPC with public and private subnets | Prefer VPC endpoints (S3, Secrets Manager, CloudWatch) to reduce NAT traffic and cost. Outbound calls (Claude API, Tilopay, PMS APIs) go through NAT: during the pilot, one fck-nat `t4g.nano` instance per AZ (about USD 3 a month each); managed NAT gateways (about USD 33 each) before the public launch. Update 2026-11-23 |
 
 Accounts: separate AWS accounts for `production` and for `dev`/`staging` under AWS Organizations,
 with IAM Identity Center for human access and MFA required (SEC-15). CI deploys through GitHub

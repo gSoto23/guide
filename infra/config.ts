@@ -10,6 +10,14 @@ export const stageConfig = {
   databaseInstance: isProduction ? "t4g.small" : "t4g.micro",
   /** Fargate tasks: small Graviton tasks; scale out under load. */
   apiScaling: { min: 1, max: isProduction ? 4 : 1 },
+  /**
+   * Outbound internet for the private subnets (Claude API, Tilopay, PMS APIs). The pilot uses one
+   * fck-nat `t4g.nano` instance per AZ (about USD 3 a month each) instead of managed NAT gateways
+   * (about USD 33 each); switch to "managed" before the public launch (ADR-0009, 2026-11-23).
+   */
+  nat: "ec2" as "ec2" | "managed",
+  /** AWS WAF on the CloudFront routers: production only during the pilot (about USD 18 a month). */
+  waf: isProduction,
   /** Custom domains (optional outside production). */
   portalDomain: process.env.GUIDESK_PORTAL_DOMAIN,
   apiDomain: process.env.GUIDESK_API_DOMAIN,

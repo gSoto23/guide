@@ -66,3 +66,8 @@ jobs:
           GUIDESK_EXTRACTION_SCREENSHOTS: ${{ vars.GUIDESK_EXTRACTION_SCREENSHOTS }}
           GUIDESK_GUIDE_INTERVIEW_VOICE: ${{ vars.GUIDESK_GUIDE_INTERVIEW_VOICE }}
           GUIDESK_GUIDE_SCANNED_PDF: ${{ vars.GUIDESK_GUIDE_SCANNED_PDF }}
+      # Apply pending migrations as a one-off task of the API (same image, role, and network);
+      # the stage's API task definition now exists, so this also works on the first deploy.
+      - run: scripts/aws-task.sh "$STAGE" migrate
+        env:
+          STAGE: ${{ github.event.inputs.stage || 'staging' }}
