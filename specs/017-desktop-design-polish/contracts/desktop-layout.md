@@ -10,7 +10,7 @@ role and text first and use these only for layout assertions.
 | Compact | < 600 px | The accepted phone design. Only the fixes of FR-003, FR-007, FR-009, FR-010, FR-013, FR-014, FR-020, FR-021 apply. |
 | Medium | 600–1023 px | Buttons size to their label; short fields share rows; toolbars wrap in a row. |
 | Expanded | ≥ 1024 px | Sidebar (spec 015); two-column detail pages; grids for requests, options, settings; cards get an edge. |
-| Guide wide | ≥ 768 px (guest guide only) | Backdrop card and three tile columns. |
+| Guide wide | ≥ 768 px (guest guide only) | Backdrop card; three tile columns from 1024 px. |
 
 ## Shared components
 

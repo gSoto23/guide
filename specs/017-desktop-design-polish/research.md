@@ -94,8 +94,8 @@ Decisions behind [plan.md](plan.md). Each lists the decision, the rationale, and
 ## R9. Guest guide on a laptop
 
 - **Decision**: From 768 px the guide's `body` uses the arena color and the content column becomes a
-  card (cal background, 1 px border, 24 px radius, 32 px padding, centered, max 44rem); the home tiles
-  use three columns, the wide tiles span all three.
+  card (cal background, 1 px border, 24 px radius, 32 px padding, centered, max 42rem); from 1024 px the
+  home tiles use three columns with the icon above the title, and the wide tiles span all three.
 - **Rationale**: A laptop guest sees a designed page instead of a narrow strip on a blank page (audit
   M9), with no change under 768 px.
 - **Alternatives**: A two-pane guide (sections list and content) — a bigger change for few desktop

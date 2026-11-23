@@ -194,7 +194,7 @@ grid; the guide column on an arena backdrop with three tile columns; at 375 px n
 1. **Given** the public home at 1024 px or wider, **When** the features section renders, **Then** each
    feature shows its icon and no row holds a single orphan card.
 2. **Given** a guide page at 768 px or wider, **When** it renders, **Then** the content column sits on
-   an arena backdrop as a card and the home tiles use three columns.
+   an arena backdrop as a card; from 1024 px the home tiles use three columns.
 
 ---
 
@@ -272,8 +272,8 @@ grid; the guide column on an arena backdrop with three tile columns; at 375 px n
 **Public home and guest guide (User Story 6)**
 
 - **FR-022**: Public home features MUST each show an icon, in a grid with no orphan card from 1024 px.
-- **FR-023**: From 768 px the guest guide MUST show its content column as a card on an arena backdrop,
-  and the home tiles MUST use three columns.
+- **FR-023**: From 768 px the guest guide MUST show its content column as a card on an arena backdrop;
+  from 1024 px the home tiles MUST use three columns (wide tiles keep the full row).
 
 **Constraints**
 

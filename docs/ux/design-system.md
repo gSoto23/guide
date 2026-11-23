@@ -1,6 +1,6 @@
 # Design System Foundations
 
-> **Status:** v1.0, brand decided · **Owner:** Founder · **Last updated:** 2026-11-17 ·
+> **Status:** v1.0, brand decided · **Owner:** Founder · **Last updated:** 2026-11-23 ·
 > **Related:** [Brand guide](../brand/README.md) · [UX index](README.md) · [Principles and IA](principles-and-ia.md) · [Screens](screens.md) · [Wireframes](wireframes.html) · [Performance](../architecture/performance.md) · [ADR-0004 stack](../architecture/adr/0004-typescript-monorepo-stack.md)
 
 The visual identity was decided on 2026-11-17: direction "Bienvenida" (terracota, sol, arena,
@@ -156,7 +156,7 @@ loaded by the portal or the guest guide ([brand guide §4](../brand/README.md#4-
 | `--space-7` | 48 px | Page top and bottom on large screens |
 
 - **Breakpoints:** compact `< 600 px` (single column, bottom bar), medium `600–1023 px` (wider
-  cards, still a bottom bar), expanded `≥ 1024 px` (portal sidebar, inbox split view).
+  cards, still a bottom bar), expanded `≥ 1024 px` (portal sidebar, two-column layouts; §4.1).
 - **Portal shell (feature 015):** under 1024 px, a top bar (logo, workspace switcher) and a bottom
   bar with Inbox, Requests, Properties, and More (Analytics, Shared content, Team, Settings); four
   columns keep every Spanish label whole at 320 px. From 1024 px, a 15rem sidebar with every
@@ -175,6 +175,33 @@ loaded by the portal or the guest guide ([brand guide §4](../brand/README.md#4-
 - **Elevation:** flat. A 1 px border separates surfaces; only sheets and dialogs get
   `--shadow-sheet` (warm and light in light mode, deeper in dark mode).
 - **Safe areas:** fixed bars respect device safe areas (notches, home indicator).
+
+### 4.1 The desktop layer (feature 017)
+
+The phone design is the base; from 600 px and 1024 px the same components change shape so that a
+desktop reads as a desktop product, not a stretched phone ([UI/UX audit](ui-ux-audit-2026-11.md),
+[spec 017](../../specs/017-desktop-design-polish/spec.md)).
+
+| Width | What changes |
+|---|---|
+| Under 600 px | Nothing: buttons span the column, fields stack, one column. |
+| From 600 px | Buttons size to their label (the auth panel keeps full width); filters and tabs share one toolbar row; short fields share a row (city, state, postal code). |
+| From 1024 px | Cards get a 1 px border and 24 px padding; requests, option cards, extras, and guide sections use two columns; settings three; the property page and Share use a main column and a 22rem side column; page titles grow to 28 px. |
+| Guest guide from 768 px | The column becomes a card on the arena backdrop; from 1024 px the home tiles use three columns with the icon above the title. |
+
+**Page templates.** *List* (inbox, requests, properties, extras): page header, one toolbar row, then
+rows or a grid. *Detail* (property, Share): header with actions, main column, side column. *Form*
+(onboarding, new property, settings forms): 40rem column, actions at the end. *Hub* (settings, add
+property): a grid of option cards with an icon in a tinted circle, a title, a one-line description,
+and a chevron.
+
+**Components added or reshaped:** segmented control for tabs (arena track, the current item on cal
+with a terracota outline and text); filter toolbar (`.toolbar-field` keeps each label visible);
+status pills by meaning (waiting = warning, confirmed = success, closed = neutral); option cards with
+a chosen state (`:has(input:checked)`: terracota edge and tint) and the brand `accent-color`; quiet
+buttons for secondary actions next to one primary action; a quiet danger button for delete inside
+lists; a chevron back link above sub-page titles; a CSS-only loading placeholder for empty pages and
+a shell that renders before the account loads.
 
 ## 5. Core components
 
