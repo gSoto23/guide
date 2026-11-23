@@ -2776,3 +2776,144 @@ div.segmented > .button[aria-pressed="true"]:hover {
   min-height: var(--tap-min);
   font-weight: 600;
 }
+
+/* Requests: compact cards in a grid (FR-012). ------------------------------------------------ */
+
+.request-list {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.request-list > .request-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: 0;
+  min-width: 0;
+}
+
+.request-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+}
+
+.request-head h2 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.request-property {
+  margin: 0;
+}
+
+.request-facts {
+  display: grid;
+  gap: 2px var(--space-4);
+  margin: 0;
+}
+
+.request-row .actions {
+  margin: auto 0 0;
+  padding-top: var(--space-2);
+}
+
+.request-row h3 {
+  margin: var(--space-2) 0 0;
+  font-size: 1rem;
+}
+
+@media (min-width: 600px) {
+  .request-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .request-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+  }
+}
+
+.request-facts .request-wide {
+  grid-column: 1 / -1;
+}
+
+.request-facts .request-wide.muted {
+  margin-top: var(--space-1);
+  font-size: 0.875rem;
+}
+
+/* Inbox rows (FR-014). ----------------------------------------------------------------------- */
+
+.inbox-list {
+  gap: var(--space-2);
+}
+
+.inbox-item {
+  margin-top: 0;
+}
+
+.inbox-link {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-1) var(--space-3);
+}
+
+.inbox-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-tint);
+  color: var(--color-primary-strong);
+}
+
+.inbox-urgent .inbox-icon {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.inbox-body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.inbox-sub {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+.inbox-excerpt {
+  margin-top: var(--space-1);
+}
+
+.inbox-meta {
+  grid-column: 2;
+}
+
+.inbox-link:hover .inbox-title {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+@media (min-width: 1024px) {
+  .inbox-link {
+    grid-template-columns: auto minmax(0, 1fr) minmax(12rem, auto);
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .inbox-meta {
+    grid-column: 3;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: end;
+  }
+}
