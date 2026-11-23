@@ -3170,3 +3170,157 @@ div.segmented > .button[aria-pressed="true"]:hover {
     gap: var(--space-3);
   }
 }
+
+/* Settings index: grouped icon cards (FR-018). ----------------------------------------------- */
+
+.settings-group + .settings-group {
+  margin-top: var(--space-6);
+}
+
+.settings-group h2 {
+  margin: 0 0 var(--space-3);
+  font-size: 1rem;
+  color: var(--color-text-muted);
+}
+
+.settings-grid {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.settings-card {
+  min-height: 100%;
+}
+
+@media (min-width: 600px) {
+  .settings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .settings-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Share: two columns from 1024 px (FR-019). -------------------------------------------------- */
+
+.share-url code {
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 1024px) {
+  .share-layout {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+    align-items: start;
+    margin-top: var(--space-4);
+  }
+
+  .share-layout > .card {
+    margin-top: 0;
+  }
+
+  .share-layout > .card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Extras: a grid of cards, delete as a quiet danger action (spec 017 T020). ------------------ */
+
+.extra-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.extra-list > .extra-row {
+  margin-top: 0;
+  min-width: 0;
+}
+
+.extra-row h2 {
+  margin: 0 0 var(--space-1);
+  font-size: 1.125rem;
+}
+
+.extra-row .badge {
+  margin-left: var(--space-2);
+}
+
+.button-danger-quiet {
+  border-color: var(--color-danger);
+  background: transparent;
+  color: var(--color-danger);
+}
+
+.button-danger-quiet:hover {
+  background: var(--color-danger-bg);
+}
+
+@media (min-width: 1024px) {
+  .extra-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .extra-row .extra-thumb {
+    max-width: none;
+  }
+}
+
+/* Short form fields side by side (FR-011). --------------------------------------------------- */
+
+.field-row-3 {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0 var(--space-4);
+}
+
+.field-row > label {
+  min-width: 0;
+}
+
+@media (min-width: 600px) {
+  .field-row-3 {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.2fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+/* Public home: feature icons and a balanced grid (FR-022). ----------------------------------- */
+
+.feature-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-tint);
+  color: var(--color-primary-strong);
+}
+
+@media (min-width: 1024px) {
+  /* Five features: three on the first row, two wider ones on the second; no orphan card. */
+  .public-feature-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .public-feature-grid > * {
+    grid-column: span 2;
+  }
+
+  .public-feature-grid > :nth-child(4):nth-last-child(2),
+  .public-feature-grid > :nth-child(5):last-child {
+    grid-column: span 3;
+  }
+}
+
+/* List search: a compact field on wide screens (L3). ----------------------------------------- */
+
+@media (min-width: 600px) {
+  .list-search {
+    max-width: 24rem;
+  }
+}

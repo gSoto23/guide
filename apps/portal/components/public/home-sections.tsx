@@ -1,7 +1,26 @@
 import Link from "next/link";
-import { doorScene, Illustration } from "@guidesk/ui";
+import {
+  bookmark,
+  chart,
+  chat,
+  doorScene,
+  gift,
+  Icon,
+  type IconData,
+  Illustration,
+  message,
+} from "@guidesk/ui";
 import type { PublicCatalog } from "@/lib/public/catalog";
 import { planCards } from "@/lib/public/plans";
+
+/** One icon per feature (feature 017 FR-022); unknown ids show no icon. */
+const FEATURE_ICONS: Record<string, IconData> = {
+  guide: bookmark,
+  chat,
+  copilot: message,
+  extras: gift,
+  analytics: chart,
+};
 
 /** The home page's sections (feature 014 FR-001 to FR-003). Server components only. */
 export function HomeSections({ locale, catalog }: { locale: string; catalog: PublicCatalog }) {
@@ -59,9 +78,14 @@ export function HomeSections({ locale, catalog }: { locale: string; catalog: Pub
       <section className="public-section" aria-labelledby="features-title">
         <div className="public-container">
           <h2 id="features-title">{home.features.title}</h2>
-          <div className="public-grid">
+          <div className="public-grid public-feature-grid">
             {home.features.items.map((feature) => (
               <div key={feature.id} className="public-card">
+                {FEATURE_ICONS[feature.id] ? (
+                  <span className="feature-icon" aria-hidden="true">
+                    <Icon data={FEATURE_ICONS[feature.id]!} size={22} />
+                  </span>
+                ) : null}
                 <h3>{feature.title}</h3>
                 <p>{feature.text}</p>
               </div>

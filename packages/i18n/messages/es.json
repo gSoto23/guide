@@ -858,6 +858,24 @@
       "assistant": "Asistente del chat",
       "explore": "Explorar"
     },
+    "help": "Todo lo que configura tu workspace, tus propiedades y tu cuenta.",
+    "groups": {
+      "workspace": "Workspace",
+      "guests": "Experiencia del huésped",
+      "you": "Tu cuenta"
+    },
+    "descriptions": {
+      "workspace": "Su nombre, quién es dueño y salir del workspace.",
+      "plan": "Tu plan, el uso del mes y los límites.",
+      "payouts": "Cobros en línea a huéspedes y comisiones.",
+      "team": "Invita a tu equipo y define qué puede hacer cada uno.",
+      "assistant": "Qué responde solo el asistente, su tono y horario.",
+      "explore": "Las experiencias que tus huéspedes ven cerca.",
+      "integrations": "Tu PMS y otras conexiones.",
+      "account": "Tu email, tus datos y eliminar tu cuenta.",
+      "security": "Passkeys, app de autenticación y códigos de recuperación.",
+      "log": "Inicios de sesión, cambios y códigos revelados."
+    },
     "workspace": {
       "title": "Workspace",
       "nameLabel": "Nombre",

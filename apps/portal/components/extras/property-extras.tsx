@@ -325,7 +325,7 @@ export function PropertyExtras({ locale, propertyId }: { locale: string; propert
                     </button>
                     <button
                       type="button"
-                      className="button button-danger"
+                      className="button button-danger-quiet"
                       disabled={busy}
                       onClick={() => remove(extra)}
                     >

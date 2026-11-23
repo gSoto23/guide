@@ -144,7 +144,7 @@ export function PropertyListView({ locale }: { locale: string }) {
           {notice}
         </p>
       ) : null}
-      <form role="search" onSubmit={submit}>
+      <form role="search" className="list-search" onSubmit={submit}>
         <label>
           {t("list.searchLabel")}
           <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} />

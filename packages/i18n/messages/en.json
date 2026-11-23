@@ -858,6 +858,24 @@
       "assistant": "Chat assistant",
       "explore": "Explore"
     },
+    "help": "Everything that sets up your workspace, your properties, and your account.",
+    "groups": {
+      "workspace": "Workspace",
+      "guests": "Guest experience",
+      "you": "Your account"
+    },
+    "descriptions": {
+      "workspace": "Its name, who owns it, and leaving it.",
+      "plan": "Your plan, this month’s usage, and the limits.",
+      "payouts": "Online guest payments and fees.",
+      "team": "Invite your team and choose what each person can do.",
+      "assistant": "What the assistant answers on its own, its tone, and its hours.",
+      "explore": "The experiences your guests see nearby.",
+      "integrations": "Your PMS and other connections.",
+      "account": "Your email, your data, and deleting your account.",
+      "security": "Passkeys, authenticator app, and recovery codes.",
+      "log": "Sign-ins, changes, and revealed codes."
+    },
     "workspace": {
       "title": "Workspace",
       "nameLabel": "Name",
