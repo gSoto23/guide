@@ -3347,3 +3347,9 @@ div.segmented > .button[aria-pressed="true"]:hover {
     border-left: 4px solid currentColor;
   }
 }
+
+.issue-list .checklist-row .button-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+}
