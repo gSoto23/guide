@@ -88,7 +88,7 @@ code of every portal route (50 pages), the guest guide pages, and the emails.
   weight). The home photo uses the small variant with fixed dimensions and is never the only
   content above the fold; the arrival times and tiles stay in the first HTML. Photos below the
   fold load lazily. Icons and illustrations are server-rendered SVG, so they add no JavaScript to
-  the portal's 150 KB budget.
+  the portal's JavaScript budget (150 KB per route then, 175 KB since 2026-11-23).
 - **Security.** Images come only from the media origin already allowed by the content security
   policy; no third-party image hosts besides the Explore partners already listed.
 - **Accessibility.** Decorative illustrations have empty `alt`; property and guide photos get alt

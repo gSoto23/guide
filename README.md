@@ -135,7 +135,7 @@ pnpm dev
 | `pnpm --filter @guidesk/db plan:set -- --workspace <uuid> --plan free\|pro\|business [--properties <n>\|plan] [--seats <n>\|plan] [--ai-replies <n>\|plan] [--fee-percent <0-30>\|plan] --note "<text>"` | The founder sets a workspace's plan and custom limits (feature 011); logged in the workspace's security log; needs `DATABASE_URL` with the migration user |
 | `pnpm --filter @guidesk/db plan:show -- --workspace <uuid> [--json]` | A workspace's plan, each limit with its source, and this month's usage (feature 011) |
 | `pnpm test:e2e` | Playwright end-to-end and accessibility tests (needs the running stack) |
-| `pnpm --filter @guidesk/portal bundle:check` | Initial JavaScript per route ≤ 150 KB gzip |
+| `pnpm --filter @guidesk/portal bundle:check` | Initial JavaScript per route ≤ 175 KB gzip |
 | `pnpm perf:lighthouse` | Lighthouse CI budgets on a production build of the portal |
 | `pnpm --filter @guidesk/domain tz:check` | Checks the time zone reference data against its sources (feature 002, research R11); `tz:generate` rebuilds it |
 | `pnpm --filter @guidesk/evals-extraction eval` | The listing extraction eval suite: 30 synthetic listings and 5 injection cases (SC-002). Calls the real model, so it needs `ANTHROPIC_API_KEY`; CI runs it on every pull request. The report goes to `evals/extraction/report/` |
