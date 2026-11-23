@@ -71,10 +71,10 @@ a11y and brand-shell specs re-run; before and after screenshots at 375 and 1280 
 ## Phase 9: Polish and verification
 
 - [X] T027 Document the desktop layer (breakpoints, page templates, components) in docs/ux/design-system.md §4 and §5
-- [ ] T028 Run portal typecheck, lint, and unit tests; build and run the bundle budget check (no route over 150 KB)
-- [ ] T029 Run the affected e2e specs (mobile project) and the a11y spec, one at a time with rate-limit resets: desktop-layout, brand-shell, a11y, inbox-us1, extras-us2, properties-us1-blank, guide-us1-draft, photos
-- [ ] T030 Capture the "after" screenshots, compare with "before" at 375 px (no unintended change) and 1280 px, add the key pairs to docs/ux/screenshots/017/ for the pull request
-- [ ] T031 Mark the audit's fixed findings and open the pull request against main with the screenshots
+- [X] T028 Run portal typecheck, lint, and unit tests; build and run the bundle budget check (no route over 150 KB)
+- [X] T029 Run the affected e2e specs (mobile project) and the a11y spec, one at a time with rate-limit resets: desktop-layout, brand-shell, a11y, inbox-us1, extras-us2, properties-us1-blank, guide-us1-draft, photos
+- [X] T030 Capture the "after" screenshots, compare with "before" at 375 px (no unintended change) and 1280 px, add the key pairs to docs/ux/screenshots/017/ for the pull request
+- [X] T031 Mark the audit's fixed findings and open the pull request against main with the screenshots
 
 ## Dependencies
 
