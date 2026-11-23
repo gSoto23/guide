@@ -3,6 +3,10 @@
 - **Status:** Accepted. The founder chose **AWS** on 2026-11-14 and accepted the service-level
   design below the same day.
 - **Date:** 2026-11-14
+- **Amended:** 2026-11-23. The account structure and human access model are set and in use: one
+  account per stage, a management account with no workloads, and IAM Identity Center with no IAM
+  users or access keys ([amendment](#amendment-2026-11-23-accounts-and-access)). Agreed with the
+  founder.
 - **Deciders:** Founder (cloud choice); architect (service design, proposed in the plan for
   spec 001)
 - **Related:** [ADR-0004](0004-typescript-monorepo-stack.md) (its initial hosting row is
@@ -58,7 +62,8 @@ Region: **`us-east-1` (N. Virginia)** for everything, with CloudFront at the edg
 
 Accounts: separate AWS accounts for `production` and for `dev`/`staging` under AWS Organizations,
 with IAM Identity Center for human access and MFA required (SEC-15). CI deploys through GitHub
-OIDC roles; no long-lived AWS keys.
+OIDC roles; no long-lived AWS keys. The
+[2026-11-23 amendment](#amendment-2026-11-23-accounts-and-access) records how this was set up.
 
 ### Consequences
 
@@ -89,6 +94,66 @@ OIDC roles; no long-lived AWS keys.
 - The infrastructure is fully reproducible from the repository (`sst deploy --stage staging`).
 - Revisit when a second region is needed, if fixed costs are too high for the pilot, or if
   SES delivery misses the target (switch to the Postmark adapter).
+
+## Amendment 2026-11-23: accounts and access
+
+The founder and the architect set up the accounts on 2026-11-23. The operating steps are in the
+[AWS operations runbook](../../operations/aws.md). No account IDs, organization or Identity Center
+IDs, or personal addresses are recorded in this repository.
+
+### Account structure
+
+- **One AWS account per stage** in one AWS Organization: `guidesk-staging` (the `staging` stage, and
+  any dev or preview stage) and `guidesk-production` (the `production` stage). An SST stage never
+  shares an account with another stage's data.
+- **The management account runs no workloads.** The organization was created from the founder's
+  existing AWS account, which became the management account. It holds only billing (with a USD 250
+  monthly budget alert), AWS Organizations, and IAM Identity Center. Production must not live there
+  because:
+  - service control policies (SCPs) never apply to the management account;
+  - a workload compromised there reaches the whole organization;
+  - moving production out later means migrating the database, media, and DNS.
+- Member accounts are created from the organization (`aws organizations create-account`), with a
+  plus-address of the founder's mailbox as root email, and tagged `project=guidesk` and `stage=<stage>`.
+- **Status on 2026-11-23:** the organization and `guidesk-staging` exist. `guidesk-production` does
+  not yet: a new organization may hold only 2 accounts, and the quota increase (requested as 11,
+  since AWS refuses requests for 10 or fewer) is a pending support case.
+
+### Access model
+
+- **Humans sign in through IAM Identity Center only** (`us-east-1`): one user for the founder with MFA
+  required, and the `AdministratorAccess` permission set with 8-hour sessions, assigned per account.
+  The CLI uses one SSO session and one profile per account (`guidesk-admin`, `guidesk-staging`, and
+  later `guidesk-production`). This meets SEC-15's MFA requirement. SEC-15 also asks for least
+  privilege; narrower permission sets are not defined yet.
+- **No IAM users and no long-lived access keys**, for people or for CI. CI deploys through a GitHub
+  OIDC role in each stage account, which only that stage's GitHub environment may assume, with
+  1-hour sessions. The staging role exists since 2026-11-23 but is not wired to GitHub yet; until it
+  is, the founder deploys by hand with short-lived Identity Center credentials, from a clean
+  worktree.
+- Stage secrets are set through stdin with `sst secret set`, never as command arguments.
+
+### Domains
+
+The brand domain is `guidesk.io` (OQ-11, 2026-11-23), registered at an external registrar
+(Dynadot) because the management account cannot register domains in Route 53. One domain serves both
+stages: production on `guidesk.io`, `api.guidesk.io`, and `guia.guidesk.io`; staging under
+`staging.guidesk.io` (proposed hostnames). DNS is in Route 53 with one hosted zone per stage
+account: the zone `staging.guidesk.io` lives in the staging account, delegated by an `NS` record in
+the apex zone. The apex zone sits in the management account only until the production account
+exists, then moves there, because SST must manage the apex records in the account it deploys to. A
+bare IP address cannot replace a domain: CloudFront and the load balancer have no fixed IP
+addresses, ACM certificates need names, and passkeys and Google sign-in need a domain. Until the
+staging hostnames are set, staging runs on CloudFront default URLs, which the infrastructure allows
+outside production, and sends email from one verified address in the SES sandbox.
+
+### Consequences
+
+- **Good:** a staging mistake or compromise cannot touch production data; SCPs and the AI-services
+  opt-out policy can cover every workload account; there are no access keys to leak or rotate.
+- **Bad:** one more account to bootstrap per stage (secrets, DNS, SES identity, deploy role), and
+  each new account waits on AWS Support: the production account for the account quota, and every
+  new account for the verification CloudFront requires.
 
 Sources: [SST components](https://sst.dev/docs/components/) ·
 [SST Next.js on AWS](https://sst.dev/docs/start/aws/nextjs) ·

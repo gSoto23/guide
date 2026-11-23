@@ -1,5 +1,6 @@
 /**
- * Secrets stored by SST in AWS (set with `pnpm sst secret set <Name> <value> --stage <stage>`).
+ * Secrets stored by SST in AWS. Set each value through stdin, never as an argument:
+ * `pnpm sst secret set <Name> --stage <stage> < file` (docs/operations/aws.md §4).
  * Values never live in the repository (constitution, Principle VI).
  */
 export const betterAuthSecret = new sst.Secret("BetterAuthSecret");
