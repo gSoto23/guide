@@ -27,9 +27,19 @@ const databaseEnvironment = {
   DATABASE_SSLMODE: "no-verify",
 };
 
+/**
+ * The From address: the sender itself when it is an address, or `no-reply@` on a sender domain
+ * (a domain identity can send from any address on it), with the brand as display name.
+ */
+const emailFrom = stageConfig.emailSender
+  ? stageConfig.emailSender.includes("@")
+    ? stageConfig.emailSender
+    : `Guidesk <no-reply@${stageConfig.emailSender}>`
+  : undefined;
+
 const emailEnvironment = {
   EMAIL_TRANSPORT: email ? "ses" : "smtp",
-  ...(stageConfig.emailSender ? { EMAIL_FROM: stageConfig.emailSender } : {}),
+  ...(emailFrom ? { EMAIL_FROM: emailFrom } : {}),
 };
 
 /**
