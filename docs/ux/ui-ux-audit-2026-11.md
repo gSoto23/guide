@@ -105,6 +105,7 @@ findings, "M" phone-only, "All" both.
 | L3 | Properties list | D | The search field is full width. | Part of the toolbar (H4), at most 24rem. |
 | L4 | Conversation | D | The transcript and the draft card use the 52rem column; on wide screens the copilot draft could sit beside the transcript. | Later: a split view (list and conversation) for the inbox at 1280 px and wider. |
 | L5 | Next.js development indicator | All (dev only) | The "N" badge and the issues overlay cover the bottom-left corner in local screenshots. | Nothing to fix in production; screenshots hide it. |
+| L6 | G stay-link exchange (`/s/{token}`) | All | A link that does not exist ends on "We couldn't open your guide. Check your connection and try again", which blames the connection. | Tell expired or unknown links apart from network errors ("This stay link no longer works; ask your host for a new one"). |
 
 ## 4. Automated checks
 
@@ -115,7 +116,18 @@ bar's 12 px labels, which spec 015 accepted to keep four Spanish labels whole at
 
 ### 4.1 Results
 
-*Filled in from the capture report (section 6).*
+| Check | Before (branch base) | After (spec 017) |
+|---|---|---|
+| axe WCAG 2.2 A/AA, light, 375 and 1280 px | 0 violations | 0 violations |
+| axe color contrast, dark, 375 and 1280 px | 2 nodes on Share (the link and message blocks used an undefined variable with a light fallback: light text on a light box) | Fixed (brand tokens) |
+| Sideways page scroll (all captures) | none | none |
+| Text cut by an ellipsis | none (5 hits were empty inputs, a false positive) | none |
+| Targets under 44 × 44 px (375 px, light, same screens) | 59 | 56; the editor toolbar buttons are 44 px tall on touch screens, the checklist actions 44 px; the rest are inline links in sentences, the guest breadcrumb (26 px, above WCAG's 24 px minimum), and checkbox inputs whose label is the target |
+| Text under 13 px | bottom bar labels (12 px) and the role chip (12.8 px), accepted in spec 015 to keep four Spanish labels whole at 320 px | unchanged |
+
+The before captures of the phone and dark variants come from the branch base served on a second
+port, so they match the code before spec 017. Two screens time out in the capture script (the stay
+link exchange page waits on a token that does not exist); they were checked by hand.
 
 ## 5. Desktop design direction
 
@@ -152,7 +164,7 @@ shape:
 | M8 public home | Fixed: feature icons, three-plus-two grid. |
 | M9 guest guide | Fixed: a card on the arena backdrop from 768 px, three tile columns from 1024 px. |
 | M4 analytics | Partly: the period tabs use the segmented style; the metric grid already used the width. |
-| L1–L5 | Open (low impact); L4 (inbox split view) is proposed for a later spec. |
+| L1–L6 | Open (low impact); L4 (inbox split view) is proposed for a later spec. |
 
 ## 7. What this audit does not cover
 
