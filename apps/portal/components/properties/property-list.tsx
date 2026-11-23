@@ -12,6 +12,7 @@ import type {
 import { house, Icon, plus } from "@guidesk/ui";
 import { PageHeader } from "@/components/shell/page-header";
 import { useWorkspace } from "@/lib/use-workspace";
+import { START_OPTION_ICONS } from "./start-option-icons";
 import { StartOptionsPanel } from "./start-options";
 
 /**
@@ -67,7 +68,7 @@ export function PropertyListView({ locale }: { locale: string }) {
   if (items.length === 0 && !search) {
     return (
       <>
-        <StartOptionsPanel locale={locale} title={t("firstTitle")} />
+        <StartOptionsPanel locale={locale} title={t("firstTitle")} icons={START_OPTION_ICONS} />
         {workspace.canManage ? (
           <p>
             <Link href={`/${locale}/properties?view=removed`}>{t("removed.show")}</Link>

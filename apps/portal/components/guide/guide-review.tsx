@@ -8,7 +8,7 @@ import type { GuideView, SectionWriteResult } from "@guidesk/contracts";
 import { problemOf } from "@/lib/properties-api";
 import { guideStatusKey, sectionTitle } from "@/lib/guide/labels";
 import { useWorkspace } from "@/lib/use-workspace";
-import { Icon, sectionIconData } from "@guidesk/ui";
+import { Icon, lock, sectionIconData } from "@guidesk/ui";
 
 /** Loaded when the host opens it, so the guide page keeps its initial JavaScript small. */
 const PublishDialog = dynamic(() => import("./publish-dialog"), { ssr: false });
@@ -135,7 +135,9 @@ export function GuideReview({
   return (
     <section aria-labelledby="guide-title">
       <p>
-        <Link href={`/${locale}/properties/${propertyId}`}>{t("review.backToProperty")}</Link>
+        <Link className="back-link" href={`/${locale}/properties/${propertyId}`}>
+          {t("review.backToProperty")}
+        </Link>
       </p>
       <h1 id="guide-title">{t("review.title", { name: view.propertyName })}</h1>
       <p>
@@ -155,7 +157,8 @@ export function GuideReview({
           {error}
         </p>
       )}
-      <div className="actions">
+      {/* Feature 017 FR-017: Publish is the one primary action; the rest are quiet secondary ones. */}
+      <div className="actions guide-actions">
         {view.canEdit && (
           <button
             type="button"
@@ -171,28 +174,24 @@ export function GuideReview({
         <Link className="button button-secondary" href={`${base}/preview`}>
           {t("publish.preview")}
         </Link>
-        <Link className="button button-secondary" href={`${base}/versions`}>
+        <Link className="button button-quiet" href={`${base}/versions`}>
           {t("publish.versions")}
         </Link>
         {view.status === "published" && (
-          <Link className="button button-secondary" href={`${base.replace(/\/guide$/, "")}/share`}>
+          <Link className="button button-quiet" href={`${base.replace(/\/guide$/, "")}/share`}>
             {share("link")}
           </Link>
         )}
-        <Link className="button button-secondary" href={`${base}/uploads`}>
+        <Link className="button button-quiet" href={`${base}/uploads`}>
           {t("uploads.link")}
         </Link>
         {view.languages.length > 1 && (
-          <Link className="button button-secondary" href={`${base}/translations`}>
+          <Link className="button button-quiet" href={`${base}/translations`}>
             {t("translations.link")}
           </Link>
         )}
         {view.canEdit && view.status === "published" && (
-          <button
-            type="button"
-            className="button button-secondary"
-            onClick={() => void unpublish()}
-          >
+          <button type="button" className="button button-quiet" onClick={() => void unpublish()}>
             {t("publish.unpublish")}
           </button>
         )}
@@ -208,8 +207,9 @@ export function GuideReview({
       )}
       {!view.canEdit && <p className="alert alert-info">{t("review.readOnly")}</p>}
       <p>
-        <Link href={`${base}/locked-fields`}>
-          🔒 {t("locked.link")} ({view.lockedFields.length})
+        <Link className="with-icon" href={`${base}/locked-fields`}>
+          <Icon data={lock} size={18} />
+          {t("locked.link")} ({view.lockedFields.length})
         </Link>
       </p>
       {view.draftState === "drafting" && <p className="working">{t("drafting")}</p>}
@@ -239,8 +239,8 @@ export function GuideReview({
                 (candidate) => candidate.kind === topic.sectionKind,
               );
               return (
-                <li key={topic.topicId}>
-                  <span>{t(`topics.${topic.topicId}.name`)}</span>
+                <li key={topic.topicId} className="checklist-row">
+                  <span className="topic-name">{t(`topics.${topic.topicId}.name`)}</span>
                   {view.canEdit && (
                     <span className="actions">
                       <a
@@ -270,7 +270,7 @@ export function GuideReview({
         )}
       </div>
 
-      <ol className="property-list" aria-label={t("title")}>
+      <ol className="property-list section-grid" aria-label={t("title")}>
         {view.sections.map((section) => {
           const count = section.items.filter((item) => item.kind !== "fact").length;
           return (

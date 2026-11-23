@@ -2917,3 +2917,256 @@ div.segmented > .button[aria-pressed="true"]:hover {
     text-align: end;
   }
 }
+
+/* Option cards: add-property choices and similar hubs (FR-015). ------------------------------ */
+
+.option-grid {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+}
+
+.option-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-4) calc(var(--space-4) + 24px) var(--space-4) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg);
+  color: var(--color-text);
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.option-card::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: var(--space-4);
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+  background: var(--color-text-muted);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6 6 6-6 6'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6 6 6-6 6'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+
+.option-card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: 0 2px 8px rgb(43 33 28 / 0.08);
+}
+
+.option-card:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.option-card-recommended {
+  border-color: var(--color-primary);
+  box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+.option-icon {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-tint);
+  color: var(--color-primary-strong);
+}
+
+.option-text {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.option-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+}
+
+.option-body {
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 1024px) {
+  .option-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .option-card {
+    padding: var(--space-5) calc(var(--space-5) + 24px) var(--space-5) var(--space-5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option-card {
+    transition: none;
+  }
+}
+
+/* Property overview in two columns from 1024 px (FR-016). ------------------------------------ */
+
+.property-header h1 {
+  margin-bottom: var(--space-2);
+}
+
+.property-header .property-meta {
+  margin: 0 0 var(--space-3);
+}
+
+.property-header .action-row {
+  margin: 0 0 var(--space-4);
+}
+
+.property-aside > * {
+  margin-top: var(--space-4);
+}
+
+@media (min-width: 1024px) {
+  .property-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "header cover"
+      "body cover"
+      "body aside";
+    gap: 0 var(--space-6);
+    align-items: start;
+  }
+
+  .property-header {
+    grid-area: header;
+  }
+
+  .property-cover-area {
+    grid-area: cover;
+  }
+
+  .property-body {
+    grid-area: body;
+    min-width: 0;
+  }
+
+  .property-body > :first-child {
+    margin-top: 0;
+  }
+
+  .property-aside {
+    grid-area: aside;
+    min-width: 0;
+  }
+
+  .property-aside > :first-child {
+    margin-top: 0;
+  }
+
+  .property-cover-area .cover-card {
+    margin-bottom: var(--space-4);
+  }
+
+  .property-cover-area .cover-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .property-cover-area .cover-alt {
+    flex: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card > h2:first-child,
+  .card > header:first-child h2 {
+    margin-top: 0;
+  }
+
+  .property-aside .card h2 {
+    font-size: 1.125rem;
+  }
+
+  .property-aside .card {
+    padding: var(--space-4) var(--space-5);
+  }
+}
+
+/* Guide page: one primary action, quiet secondary ones, checklist rows (FR-017). -------------- */
+
+.button-quiet {
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-text);
+}
+
+.button-quiet:hover {
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+.guide-actions {
+  margin: var(--space-4) 0;
+}
+
+.issue-list .checklist-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 var(--space-4);
+  padding: var(--space-1) 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.issue-list .checklist-row:first-child {
+  border-top: 0;
+}
+
+.issue-list .checklist-row .actions {
+  margin: 0;
+  gap: 0 var(--space-2);
+}
+
+.topic-name {
+  font-weight: 600;
+}
+
+.issue-list:has(.checklist-row) {
+  gap: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.button-quiet {
+  padding-right: 12px;
+  padding-left: 12px;
+}
+
+/* Text buttons look the same whether they are links or buttons. */
+.button-link {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.button-link:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 1024px) {
+  .section-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+}
