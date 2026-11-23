@@ -142,6 +142,12 @@ export function planHistory(input: {
     latest.openedGuide = true;
     latest.requests = [{ extra: 0, status: "confirmed" }];
   }
+  // Requests shows every state whatever the draws: the oldest stay also had a declined request.
+  const oldest = pastStays[0];
+  if (oldest && !pastStays.some((stay) => stay.requests.some((r) => r.status === "declined"))) {
+    oldest.openedGuide = true;
+    oldest.requests = [...oldest.requests, { extra: 0, status: "declined" }];
+  }
   return { days, pastStays };
 }
 

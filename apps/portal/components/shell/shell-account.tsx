@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useMeContext } from "@/lib/me-context";
 import { Avatar } from "../avatar";
-import { EmailText } from "../email-text";
 import { WorkspaceSwitcher } from "../workspace-switcher";
 
 /**
@@ -25,8 +24,14 @@ export function ShellAccountLink({ href, hint }: { href: string; hint: string })
     <Link href={href} className="side-account">
       <Avatar name={me.user.name} email={me.user.email} />
       <span>
+        {/* An email wraps after the "@", never mid-word (spec 015); inline to spare bundle bytes. */}
         <span className="side-account-name">
-          {me.user.name || <EmailText email={me.user.email} />}
+          {me.user.name || (
+            <>
+              {me.user.email.split("@")[0]}@<wbr />
+              {me.user.email.split("@")[1]}
+            </>
+          )}
         </span>
         <span className="side-account-hint">{hint}</span>
       </span>

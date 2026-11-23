@@ -3,8 +3,12 @@
 FROM node:24-alpine AS build
 WORKDIR /repo
 RUN npm install -g pnpm@12.18.0
+# Dependencies first: this layer is reused until the lockfile or workspace settings change, so a
+# code change does not download every package again.
+COPY pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm fetch
 COPY . .
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --offline
 RUN pnpm --filter @guidesk/worker... build
 RUN pnpm deploy --filter @guidesk/worker --prod /out
 

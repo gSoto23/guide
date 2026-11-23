@@ -1,12 +1,18 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import type { PropertyCover } from "@guidesk/contracts";
 import { house, Icon } from "@guidesk/ui";
-import { MediaUploadButton } from "@/components/guide/media-upload";
 import { problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
+
+/** Loads right after the page (Performance Budget, 150 KB per route); same-size placeholder. */
+const MediaUploadButton = dynamic(
+  () => import("@/components/guide/media-upload").then((m) => m.MediaUploadButton),
+  { ssr: false, loading: () => <span className="button button-secondary" aria-hidden="true" /> },
+);
 
 /**
  * The property's cover photo (feature 016 US1): shown at the top of the property page; managers
