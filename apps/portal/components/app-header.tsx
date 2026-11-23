@@ -9,6 +9,7 @@ import { DESTINATIONS, type DestinationId } from "./shell/destinations";
 import { MoreButton, NavLink } from "./shell/nav-link";
 import { WorkspaceSwitcher } from "./workspace-switcher";
 import { Avatar } from "./avatar";
+import { EmailText } from "./email-text";
 
 export type ShellIcons = Record<DestinationId | "more", ReactNode>;
 
@@ -61,7 +62,9 @@ export function AppHeader({ locale, icons }: { locale: string; icons: ShellIcons
           <Link href={href("/settings/account")} className="side-account">
             <Avatar name={me.user.name} email={me.user.email} />
             <span>
-              <span className="side-account-name">{me.user.name || me.user.email}</span>
+              <span className="side-account-name">
+                {me.user.name || <EmailText email={me.user.email} />}
+              </span>
               <span className="side-account-hint">{t("nav.account")}</span>
             </span>
           </Link>
