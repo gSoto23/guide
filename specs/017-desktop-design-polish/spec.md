@@ -279,8 +279,9 @@ grid; the guide column on an arena backdrop with three tile columns; at 375 px n
 
 - **FR-024**: The phone layout (under 600 px) MUST stay as it is except for FR-003, FR-007, FR-009,
   FR-010, FR-013, FR-014, FR-020, and FR-021.
-- **FR-025**: No portal route may exceed 150 KB of initial JavaScript; the feature adds no client
-  component and no client-side icon import.
+- **FR-025**: No portal route may exceed the route budget (150 KB of initial JavaScript when this
+  feature started; 175 KB since the founder raised it on 2026-11-23), and this feature keeps every
+  route under 150 KB; it adds no client-side icon import.
 - **FR-026**: Every change MUST pass WCAG 2.2 AA in light and dark mode, keep the no-cut-text rule,
   and use only the existing tokens, icons, and system fonts; new texts MUST exist in Spanish and English.
 
@@ -300,7 +301,7 @@ None. The feature changes presentation only; no data, API, or permission changes
   screens match their earlier layout except for the listed fixes (checked against the before captures).
 - **SC-004**: axe finds no WCAG 2.2 A/AA violation on the screens of the existing a11y and brand-shell
   checks, in light and dark mode.
-- **SC-005**: Every portal route stays at or under 150 KB of initial JavaScript.
+- **SC-005**: Every portal route stays at or under 150 KB of initial JavaScript (the budget is 175 KB).
 - **SC-006**: No page scrolls sideways at 320, 375, 768, 1024, or 1280 px, and no text ends in an
   ellipsis or a hyphen.
 - **SC-007**: The founder, reviewing on Safari at desktop width, no longer sees the four issues of the

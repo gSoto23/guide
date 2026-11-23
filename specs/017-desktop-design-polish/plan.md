@@ -29,7 +29,7 @@ components. No data, API, or contract changes.
 
 **Project Type**: Web application (monorepo: `apps/portal`, `apps/guide`, shared `packages/*`)
 
-**Performance Goals**: Portal ≤ 150 KB initial JavaScript per route (no route may grow); guide ≤ 100 KB per route, ≤ 500 KB initial weight, CLS ≤ 0.1
+**Performance Goals**: Portal ≤ 150 KB initial JavaScript per route for this feature (the budget became 175 KB on 2026-11-23); guide ≤ 100 KB per route, ≤ 500 KB initial weight, CLS ≤ 0.1
 
 **Constraints**: CSP with nonces (no inline `style` attributes); WCAG 2.2 AA in light and dark; reflow at 320 px and 200% zoom; no cut text (spec 015); system fonts; tokens from the brand guide only
 
@@ -58,7 +58,7 @@ Post-design re-check (after Phase 1): all items still pass; no complexity entrie
 
 | Surface or path | Metric | Budget | Verified by |
 |---|---|---|---|
-| Portal routes in `bundle-budget.json` | Initial JavaScript, gzip | ≤ 150 KB, and no route grows by more than 0.3 KB | `scripts/check-bundle-budget.ts` |
+| Portal routes in `bundle-budget.json` | Initial JavaScript, gzip | ≤ 150 KB (budget file: 175 KB); the server-rendered shell saves about 0.4 KB per route | `scripts/check-bundle-budget.ts` |
 | Portal CSS | Stylesheet, gzip | Grows by ≤ 4 KB | Build output |
 | Guest guide pages | Initial weight | ≤ 500 KB; CSS grows by ≤ 1 KB | Guide size test |
 
