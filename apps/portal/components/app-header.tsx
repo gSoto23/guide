@@ -1,31 +1,22 @@
-"use client";
-
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
-import { useMeContext } from "@/lib/me-context";
 import { BrandLogo } from "./brand-logo";
 import { DESTINATIONS, type DestinationId } from "./shell/destinations";
 import { MoreButton, NavLink } from "./shell/nav-link";
-import { WorkspaceSwitcher } from "./workspace-switcher";
-import { Avatar } from "./avatar";
-import { EmailText } from "./email-text";
+import { ShellAccountLink, ShellSwitcher } from "./shell/shell-account";
 
 export type ShellIcons = Record<DestinationId | "more", ReactNode>;
 
 /**
  * The signed-in shell's navigation (FR-022; feature 015 contract portal-shell): a top bar and a
- * bottom bar on phones and tablets, a sidebar from 1024 px. The icons are rendered by the server
- * layout and passed in, so they add nothing to the page's JavaScript (research R3).
+ * bottom bar on phones and tablets, a sidebar from 1024 px. It renders on the server, so the logo
+ * and every destination show before the account loads (feature 017 FR-020) and the lists add no
+ * JavaScript; only the current-page marks, the More button, the workspace switcher, and the account
+ * link are client islands.
  */
-export function AppHeader({ locale, icons }: { locale: string; icons: ShellIcons }) {
-  const t = useTranslations("workspace");
-  const context = useMeContext();
-  const me = context?.me;
-  // Someone removed from their last workspace still sees the switcher, to create one (spec edge case).
-  // Before the account loads, the logo and navigation show at once with a placeholder where the
-  // switcher and the account go, so a reload never shows a blank page (feature 017 FR-020).
-  if (!context) return null;
+export async function AppHeader({ locale, icons }: { locale: string; icons: ShellIcons }) {
+  const t = await getTranslations({ locale, namespace: "workspace" });
   const href = (path: string) => `/${locale}${path}`;
   const work = DESTINATIONS.filter((destination) => destination.group === "work");
   const workspace = DESTINATIONS.filter((destination) => destination.group === "workspace");
@@ -38,11 +29,7 @@ export function AppHeader({ locale, icons }: { locale: string; icons: ShellIcons
           <Link href={href("/start")} className="app-header-brand">
             <BrandLogo alt={t("nav.home")} height={26} />
           </Link>
-          {me ? (
-            <WorkspaceSwitcher me={me} onChanged={context.refresh} />
-          ) : (
-            <div className="shell-placeholder" aria-hidden="true" />
-          )}
+          <ShellSwitcher />
         </div>
         <nav aria-label="Guidesk" className="side-nav">
           <ul>
@@ -65,17 +52,7 @@ export function AppHeader({ locale, icons }: { locale: string; icons: ShellIcons
               </li>
             ))}
           </ul>
-          {me ? (
-            <Link href={href("/settings/account")} className="side-account">
-              <Avatar name={me.user.name} email={me.user.email} />
-              <span>
-                <span className="side-account-name">
-                  {me.user.name || <EmailText email={me.user.email} />}
-                </span>
-                <span className="side-account-hint">{t("nav.account")}</span>
-              </span>
-            </Link>
-          ) : null}
+          <ShellAccountLink href={href("/settings/account")} hint={t("nav.account")} />
         </nav>
       </header>
       <nav aria-label="Guidesk" className="bottom-bar">

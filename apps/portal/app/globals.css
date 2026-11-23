@@ -2511,8 +2511,8 @@ div:not(.choices):not(.choice-list) > .choice + .choice {
   min-height: 40px;
   margin: 0;
   padding: 4px 12px;
-  border-color: transparent;
-  background: transparent;
+  border-color: var(--color-border);
+  background: var(--color-bg);
   font-size: 0.875rem;
 }
 
