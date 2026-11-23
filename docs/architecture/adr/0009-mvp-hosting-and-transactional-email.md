@@ -126,9 +126,11 @@ IDs, or personal addresses are recorded in this repository.
   The CLI uses one SSO session and one profile per account (`guidesk-admin`, `guidesk-staging`, and
   later `guidesk-production`). This meets SEC-15's MFA requirement. SEC-15 also asks for least
   privilege; narrower permission sets are not defined yet.
-- **No IAM users and no long-lived access keys**, for people or for CI. CI will deploy through a
-  GitHub OIDC role in each stage account (not created yet); until then the founder deploys by hand
-  with short-lived Identity Center credentials, from a clean worktree.
+- **No IAM users and no long-lived access keys**, for people or for CI. CI deploys through a GitHub
+  OIDC role in each stage account, which only that stage's GitHub environment may assume, with
+  1-hour sessions. The staging role exists since 2026-11-23 but is not wired to GitHub yet; until it
+  is, the founder deploys by hand with short-lived Identity Center credentials, from a clean
+  worktree.
 - Stage secrets are set through stdin with `sst secret set`, never as command arguments.
 
 ### Domains
@@ -144,8 +146,9 @@ and sends email from one verified address in the SES sandbox.
 
 - **Good:** a staging mistake or compromise cannot touch production data; SCPs and the AI-services
   opt-out policy can cover every workload account; there are no access keys to leak or rotate.
-- **Bad:** one more account to bootstrap per stage (secrets, DNS, SES identity, deploy role), and the
-  production account waits on an AWS support case.
+- **Bad:** one more account to bootstrap per stage (secrets, DNS, SES identity, deploy role), and
+  each new account waits on AWS Support: the production account for the account quota, and every
+  new account for the verification CloudFront requires.
 
 Sources: [SST components](https://sst.dev/docs/components/) ·
 [SST Next.js on AWS](https://sst.dev/docs/start/aws/nextjs) ·

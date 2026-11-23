@@ -107,10 +107,14 @@ Once AWS approves it:
    Assign users or groups).
 4. Add the `guidesk-production` profile to `~/.aws/config` ([section 2](#2-sign-in)) and check it
    with `AWS_PROFILE=guidesk-production aws sts get-caller-identity`.
-5. Prepare the stage as in [pilot readiness §2](../pilot-readiness.md#2-aws-and-the-staging-stage):
-   secrets ([section 4](#4-stage-secrets)), the GitHub OIDC deploy role, the domain and its DNS, and
-   the SES domain identity with production access. Production refuses to deploy without its three
-   domains and `GUIDESK_CONTACT_EMAIL` (`infra/config.ts`).
+5. Expect AWS Support to verify the new account before it can create CloudFront distributions, as
+   it did for staging ([section 5](#5-deploy-by-hand-from-a-clean-worktree)); open that case as soon
+   as the account exists.
+6. Prepare the stage as in [pilot readiness §2](../pilot-readiness.md#2-aws-and-the-staging-stage):
+   secrets ([section 4](#4-stage-secrets)), the GitHub OIDC deploy role
+   ([section 6](#6-github-deploys-through-oidc)), the domain and its DNS, and the SES domain identity
+   with production access. Production refuses to deploy without its three domains and
+   `GUIDESK_CONTACT_EMAIL` (`infra/config.ts`).
 
 ## 4. Stage secrets
 
@@ -157,8 +161,9 @@ redeploy.
 
 ## 5. Deploy by hand from a clean worktree
 
-Until the GitHub OIDC deploy role exists, the founder deploys from their machine. Always deploy from
-a clean `git worktree`, never from the working checkout.
+Until GitHub deploys through the OIDC role ([section 6](#6-github-deploys-through-oidc)), the founder
+deploys from their machine. Always deploy from a clean `git worktree`, never from the working
+checkout.
 
 **Why:** `apps/portal/next.config.ts` loads the repository root `.env` at build time. A development
 checkout's `.env` holds local settings (for example `API_PROXY_URL=http://localhost:4000`), which
@@ -189,11 +194,61 @@ AWS_PROFILE=guidesk-staging GUIDESK_EMAIL_SENDER=<verified-sender-address> pnpm 
   ```
 
 - Remove the worktree when done: `git worktree remove ../guidesk-deploy`.
+- The API and worker images are arm64 (Graviton). CI deploys on an `ubuntu-24.04-arm` runner, so it
+  builds them natively; a manual deploy builds them natively on an arm64 machine and needs emulation
+  on an x86 one.
 
-The first staging deploy started on 2026-11-23 and is in progress; its URLs and results go in
-[pilot readiness §2](../pilot-readiness.md#2-aws-and-the-staging-stage).
+### CloudFront needs a verified account
 
-## 6. Cost guardrails
+AWS Support must verify a new account before it can create CloudFront distributions. The first
+staging deploy (2026-11-23) created everything except CloudFront, and a support case is open from
+the staging account. While it waits, the partial stack costs about USD 1 a day. Once AWS verifies
+the account:
+
+1. Rerun the same deploy from a clean worktree; SST resumes where it stopped.
+2. Run the migrations: `AWS_PROFILE=guidesk-staging scripts/aws-task.sh staging migrate`.
+3. Record the CloudFront URLs and the outcome in
+   [pilot readiness §2](../pilot-readiness.md#2-aws-and-the-staging-stage).
+
+Expect the same check on the production account.
+
+## 6. GitHub deploys through OIDC
+
+The deploy workflow (`.github/workflows/deploy.yml`) assumes an AWS role through GitHub's OIDC
+tokens, so GitHub holds no AWS keys.
+
+**Staging (created 2026-11-23):**
+
+- An IAM OIDC identity provider for `token.actions.githubusercontent.com`, audience
+  `sts.amazonaws.com`.
+- The role `guidesk-github-deploy`
+  (`arn:aws:iam::<staging-account-id>:role/guidesk-github-deploy`):
+  - trust: only `repo:gSoto23/guide:environment:staging`, that is, jobs of this repository that run
+    in the GitHub environment `staging`;
+  - sessions of 1 hour;
+  - permissions: `AdministratorAccess`, scoped to the staging account, because SST creates every kind
+    of resource the stage uses.
+
+**Not wired up yet.** Do these GitHub steps only after CloudFront is verified and a manual deploy
+has finished:
+
+1. Create the GitHub environment `staging` (Settings → Environments), with deployment branches
+   limited to `main`.
+2. Set its environment variable `GUIDESK_EMAIL_SENDER` to the verified sender address. Without it,
+   a CI deploy would delete the SES identity (`infra/email.ts` only creates it when the variable is
+   set).
+3. Set the repository variable `AWS_DEPLOY_ROLE_ARN` to the role ARN (Settings → Secrets and
+   variables → Actions → Variables). The deploy job skips while it is empty.
+
+**Production (later):** create the same provider and a role in the production account that only
+`repo:gSoto23/guide:environment:production` may assume. The `production` environment then
+overrides `AWS_DEPLOY_ROLE_ARN` with that role's ARN, while the repository variable keeps the
+staging role.
+
+Public Actions logs show the role ARN, so the account number appears there. AWS does not treat
+account IDs as secret; this repository still keeps them out of its documents.
+
+## 7. Cost guardrails
 
 - The USD 250 monthly budget alert lives in the management account and covers the whole
   organization.

@@ -77,13 +77,23 @@ Done:
   `VapidPublicKey`, and `VapidPrivateKey` hold generated values. `GoogleClientId`,
   `GoogleClientSecret`, and `AnthropicApiKey` hold the placeholder `unset` until the items below;
   `ViatorApiKey` keeps its default `unset`.
+- [x] **GitHub OIDC deploy role in staging** (2026-11-23): an IAM OIDC provider for
+  `token.actions.githubusercontent.com` (audience `sts.amazonaws.com`) and the role
+  `guidesk-github-deploy`, which only `repo:gSoto23/guide:environment:staging` may assume, with
+  1-hour sessions and `AdministratorAccess` scoped to the staging account ([runbook
+  §6](operations/aws.md#6-github-deploys-through-oidc)). Not wired to GitHub yet (below).
 
 In progress:
 
-- [ ] **First staging deploy**, started 2026-11-23 by hand from a clean worktree ([runbook
-  §5](operations/aws.md#5-deploy-by-hand-from-a-clean-worktree)), on CloudFront default URLs and with
-  one verified address as the email sender. Record the URLs and the outcome here when it finishes.
-  Then run the migrations (`scripts/aws-task.sh staging migrate`).
+- [ ] **CloudFront verification of the staging account:** AWS Support must verify a new account
+  before it can create CloudFront distributions. A support case is open from the staging account.
+  Expect the same check on the production account.
+- [ ] **First staging deploy**, run on 2026-11-23 by hand from a clean worktree ([runbook
+  §5](operations/aws.md#5-deploy-by-hand-from-a-clean-worktree)), with one verified address as the
+  email sender. It created everything except CloudFront, which waits for the verification above;
+  until then the partial stack costs about USD 1 a day. Once AWS verifies the account, rerun the same
+  deploy (it resumes), run the migrations (`scripts/aws-task.sh staging migrate`), and record the
+  CloudFront URLs and the outcome here.
 
 Pending:
 
@@ -93,10 +103,18 @@ Pending:
   and add the `guidesk-production` profile ([runbook §3](operations/aws.md#3-create-the-production-account)).
   Then set production's secrets the same way as staging's, including its own VAPID pair (deploys
   fail without one, spec 006 R12), and repeat the other stage items below for production.
-- [ ] **GitHub OIDC deploy role** in each stage account, and the variable `AWS_DEPLOY_ROLE_ARN` (the
-  deploy workflow skips until it exists). With one account per stage, each GitHub environment needs
-  its own role ARN; check that the workflow's skip condition still sees the value when it is set per
-  environment. Until then, deploys run by hand.
+- [ ] **Wire GitHub deploys to the staging role**, only after CloudFront is verified and the manual
+  deploy has finished ([runbook §6](operations/aws.md#6-github-deploys-through-oidc)):
+  - create the GitHub environment `staging`, with deployment branches limited to `main`;
+  - set its environment variable `GUIDESK_EMAIL_SENDER` to the verified address (without it, a CI
+    deploy would delete the SES identity);
+  - set the repository variable `AWS_DEPLOY_ROLE_ARN` to
+    `arn:aws:iam::<staging-account-id>:role/guidesk-github-deploy` (the deploy workflow skips until
+    it is set).
+
+  Until then, deploys run by hand. For production, create the same provider and a role trusted only
+  for `repo:gSoto23/guide:environment:production`, and let the `production` environment override
+  `AWS_DEPLOY_ROLE_ARN` with it.
 - [ ] **AI-services opt-out policy** in AWS Organizations covering Transcribe (spec 003 R22). The
   organization now exists, so the policy can be attached at its root.
 - [ ] **Domain** (OQ-11): the founder is negotiating to buy guidesk.com. One domain serves both
