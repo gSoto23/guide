@@ -828,3 +828,53 @@ div.experience-photo {
 .extra-image {
   margin-bottom: 0.75rem;
 }
+
+/* Feature 017 FR-023: on a laptop the guide is a card on the arena backdrop, and from 64rem the
+   home tiles use three columns (icon above the title; arrival, extras, and Explore stay wide).
+   Phones (under 48rem) are unchanged. */
+@media (min-width: 48rem) {
+  body {
+    background: var(--arena);
+  }
+
+  .top {
+    padding-right: max(1.5rem, calc((100vw - 44rem) / 2));
+    padding-left: max(1.5rem, calc((100vw - 44rem) / 2));
+  }
+
+  .main {
+    margin: 2rem auto 3rem;
+    padding: 2rem 2.5rem 2.5rem;
+    border: 1px solid var(--line);
+    border-radius: 1.5rem;
+    background: var(--cal);
+    box-shadow: 0 1px 3px rgb(43 33 28 / 0.06);
+  }
+
+  .banner {
+    margin-top: 1rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .tiles {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tiles > li:not(.tile-wide) .tile {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0.625rem;
+    min-height: 7.5rem;
+    padding: 1rem;
+  }
+
+  .tiles > li:not(.tile-wide) .tile-title {
+    flex: none;
+  }
+
+  .tiles > li:not(.tile-wide) .tile-chevron {
+    display: none;
+  }
+}
