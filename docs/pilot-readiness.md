@@ -118,8 +118,11 @@ Run each spec's quickstart on staging with real phones on mobile data (each `spe
 - [ ] Explore with live partner data (009).
 - [ ] Extras and requests with a real stay link (008); checkout once Tilopay exists (013).
 - [ ] Analytics and the pilot report against staging data (010).
+- [ ] Migrations run after every deploy as a one-off task of the API (`scripts/aws-task.sh <stage>
+  migrate`, also a step of the deploy workflow).
 - [ ] The public home, privacy policy, and terms on the stage's domain, and the demo workspace
-  (`demo:seed` as a one-off task with the API's role, spec 014 quickstart scenario 5).
+  (`AWS_PROFILE=guidesk-staging scripts/aws-task.sh staging demo-seed <email>`, spec 014 quickstart
+  scenario 5).
 - [ ] Plan limits, the usage emails, and Plan and limits (011).
 
 ## 5. Pilot operations

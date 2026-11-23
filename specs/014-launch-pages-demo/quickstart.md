@@ -84,6 +84,9 @@ How to check that spec 014 works. Contracts:
 
 ## Scenario 5: Demo workspace on staging
 
+Shortcut (2026-11-23): `AWS_PROFILE=guidesk-staging scripts/aws-task.sh staging demo-seed <email>`
+finds the API service by its SST tags and runs the steps below, printing the task's logs.
+
 1. Find the cluster, the API task definition, and the network settings:
    - The SST outputs and the ECS console list the cluster and the API service.
    - `aws ecs describe-services --cluster <cluster> --services <api service>` gives the task definition,
