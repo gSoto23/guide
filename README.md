@@ -33,7 +33,7 @@ Start with the [documentation index](docs/README.md).
 | Architecture | [Overview](docs/architecture/overview.md) · [ADRs](docs/architecture/adr/README.md) · [Security](docs/architecture/security.md) · [Performance](docs/architecture/performance.md) |
 | Design | [UX index](docs/ux/README.md) · [Principles and IA](docs/ux/principles-and-ia.md) · [User flows](docs/ux/user-flows.md) · [Screens](docs/ux/screens.md) · [Design system](docs/ux/design-system.md) · [Wireframes](docs/ux/wireframes.html) |
 | Presentation | [Project overview](docs/presentation/project-overview.md) · [Budget](docs/presentation/budget.md) |
-| Process | [Constitution](.specify/memory/constitution.md) · [Open questions](docs/open-questions.md) · [Glossary](docs/glossary.md) |
+| Process | [Constitution](.specify/memory/constitution.md) · [Open questions](docs/open-questions.md) · [Pilot readiness](docs/pilot-readiness.md) · [AWS operations](docs/operations/aws.md) · [Glossary](docs/glossary.md) |
 
 ## Key decisions
 
