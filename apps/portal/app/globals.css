@@ -812,7 +812,7 @@ input[type="radio"] {
   display: inline-block;
   padding: 0 0.4rem;
   border-radius: 0.3rem;
-  background: var(--color-muted-bg, #f1ece4);
+  background: var(--color-disclosure-bg);
   font-weight: 600;
   white-space: normal;
   overflow-wrap: break-word;
@@ -843,7 +843,9 @@ input[type="radio"] {
   overflow-wrap: anywhere;
   white-space: pre-wrap;
   font-size: 0.9375rem;
-  background: var(--surface-muted, #f7f1ea);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
   border-radius: 10px;
   padding: 0.75rem;
 }
@@ -860,11 +862,12 @@ input[type="radio"] {
 }
 
 .alert-success {
-  border-left: 4px solid #1e7a46;
+  background: var(--color-success-bg);
+  color: var(--color-success);
 }
 
 .stay-row {
-  border-top: 1px solid var(--border, #e4d9cd);
+  border-top: 1px solid var(--color-border);
   padding: 0.75rem 0;
 }
 
@@ -952,7 +955,7 @@ input[type="radio"] {
 }
 
 .transcript-guest {
-  border-left: 4px solid var(--line, #e4d9cd);
+  border-left: 4px solid var(--color-border);
 }
 
 .transcript-host {
@@ -1123,7 +1126,7 @@ input[type="radio"] {
   align-items: center;
   gap: 0.25rem 1rem;
   padding: 0.5rem 0;
-  border-bottom: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+  border-bottom: 1px solid var(--color-border);
 }
 
 .explore-row-actions {
@@ -3322,5 +3325,12 @@ div.segmented > .button[aria-pressed="true"]:hover {
 @media (min-width: 600px) {
   .list-search {
     max-width: 24rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* A group of four reads as two by two, never three and an orphan. */
+  .settings-grid:has(> li:nth-child(4):last-child) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

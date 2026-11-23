@@ -136,7 +136,25 @@ shape:
 - **Budget.** All of this is CSS and server-rendered markup: no new client JavaScript on the
   portal's 150 KB routes.
 
-## 6. What this audit does not cover
+## 6. Status after spec 017
+
+| Finding | Status |
+|---|---|
+| H1 buttons, H4 toolbars, M1 cards, M10 tabs | Fixed: the desktop layer in `globals.css` (spec 017 FR-001 to FR-007). |
+| H2 editor toolbar, H3 workspace menu, M7 alerts banner | Fixed at every width. |
+| H5 requests, H6 inbox, M6 dates | Fixed: card grid with a facts grid and status pills by meaning; inbox rows with reason icons; dates in words. |
+| H7 add property, M3 settings | Fixed: icon option cards; settings in three groups of icon cards with descriptions. |
+| H8 property overview, M5 Share | Fixed: header first and a side column from 1024 px; Share in two columns. |
+| H9 guide builder | Fixed: one primary action, quiet secondary actions, checklist rows, sections in two columns. |
+| H10 loading | Fixed: the shell renders on the server before the account loads; empty pages show a placeholder. |
+| H11 forms | Fixed: brand accent, option card gaps and chosen state, address fields in one row. |
+| M2 page headers | Fixed: chevron back links and 28 px titles from 1024 px. |
+| M8 public home | Fixed: feature icons, three-plus-two grid. |
+| M9 guest guide | Fixed: a card on the arena backdrop from 768 px, three tile columns from 1024 px. |
+| M4 analytics | Partly: the period tabs use the segmented style; the metric grid already used the width. |
+| L1–L5 | Open (low impact); L4 (inbox split view) is proposed for a later spec. |
+
+## 7. What this audit does not cover
 
 - A split view for the inbox (list and conversation side by side) and a sub-navigation inside
   settings: both need client state or new routes; proposed for a later spec.
