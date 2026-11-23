@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { doorScene, Illustration } from "@guidesk/ui";
 import type { PublicCatalog } from "@/lib/public/catalog";
 import { planCards } from "@/lib/public/plans";
 
@@ -9,18 +10,21 @@ export function HomeSections({ locale, catalog }: { locale: string; catalog: Pub
   return (
     <>
       <section className="public-hero" aria-labelledby="hero-title">
-        <div className="public-container">
-          <p className="public-eyebrow">{home.hero.eyebrow}</p>
-          <h1 id="hero-title">{home.hero.title}</h1>
-          <p className="public-lead">{home.hero.lead}</p>
-          <div className="public-actions">
-            <Link href={`/${locale}/sign-in`} className="button button-primary">
-              {home.hero.cta}
-            </Link>
-            <Link href={`/${locale}/sign-in`} className="public-text-link">
-              {home.hero.secondary}
-            </Link>
+        <div className="public-container public-hero-layout">
+          <div>
+            <p className="public-eyebrow">{home.hero.eyebrow}</p>
+            <h1 id="hero-title">{home.hero.title}</h1>
+            <p className="public-lead">{home.hero.lead}</p>
+            <div className="public-actions">
+              <Link href={`/${locale}/sign-in`} className="button button-primary">
+                {home.hero.cta}
+              </Link>
+              <Link href={`/${locale}/sign-in`} className="public-text-link">
+                {home.hero.secondary}
+              </Link>
+            </div>
           </div>
+          <Illustration data={doorScene} width={440} className="public-hero-art" />
         </div>
       </section>
 

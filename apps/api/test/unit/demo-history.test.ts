@@ -79,4 +79,11 @@ describe("demo history", () => {
       expect(recent.some((stay) => stay.requests.some((r) => r.status === "confirmed"))).toBe(true);
     }
   });
+
+  it("always has a declined request, whatever the seed", () => {
+    for (let index = 0; index < 200; index += 1) {
+      const stays = plan(`seed-${index}`).pastStays;
+      expect(stays.some((stay) => stay.requests.some((r) => r.status === "declined"))).toBe(true);
+    }
+  });
 });

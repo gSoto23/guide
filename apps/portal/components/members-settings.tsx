@@ -10,6 +10,7 @@ import { useMe } from "@/lib/use-me";
 import { useStepUp } from "@/lib/use-step-up";
 import { StepUpDialog } from "./step-up-dialog";
 import { Avatar } from "@/components/avatar";
+import { EmailText } from "@/components/email-text";
 
 const KNOWN_ERRORS = new Set([
   "forbidden",
@@ -235,7 +236,7 @@ export function MembersSettings({ locale }: { locale: string }) {
                 <li key={member.membershipId} className="member-row">
                   <Avatar name={member.name} email={member.email} />
                   {member.name ? `${member.name} · ` : ""}
-                  {member.email}
+                  <EmailText email={member.email} />
                   {member.userId === me.user.id ? ` (${t("you")})` : ""} ·{" "}
                   {t(`roles.${member.role}`)}
                   {member.role !== "owner" && member.userId !== me.user.id ? (
@@ -270,7 +271,7 @@ export function MembersSettings({ locale }: { locale: string }) {
             <ul>
               {invitations.map((invitation) => (
                 <li key={invitation.id}>
-                  {invitation.email} · {t(`roles.${invitation.role}`)} ·{" "}
+                  <EmailText email={invitation.email} /> · {t(`roles.${invitation.role}`)} ·{" "}
                   {t(`status.${invitation.status}`)}
                   {invitation.status === "pending" ? (
                     <>

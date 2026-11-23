@@ -145,6 +145,36 @@ textarea {
   border-radius: var(--radius);
 }
 
+/*
+ * Dropdowns: the same height, border, and radius as text fields on every browser (Safari draws its
+ * own small control otherwise), with a brand chevron; the list itself stays the native one.
+ */
+select:not([multiple]) {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2366574d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 18px 18px;
+  cursor: pointer;
+}
+
+select:not([multiple]):hover {
+  border-color: var(--color-text-muted);
+}
+
+select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (prefers-color-scheme: dark) {
+  select:not([multiple]) {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23bfb1a6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  }
+}
+
 button,
 .button {
   display: inline-flex;
@@ -1318,6 +1348,30 @@ main.public-main {
   background: var(--color-surface);
 }
 
+.public-hero-layout {
+  display: grid;
+  gap: var(--space-6);
+  align-items: center;
+}
+
+/* The brand scene beside the hero text; decorative, sized by its attributes (no layout shift). */
+.public-hero-art {
+  justify-self: center;
+  width: min(100%, 280px);
+  height: auto;
+}
+
+@media (min-width: 900px) {
+  .public-hero-layout {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+
+  .public-hero-art {
+    justify-self: end;
+    width: min(100%, 440px);
+  }
+}
+
 .public-hero h1 {
   font-size: clamp(2rem, 6vw, 3.25rem);
   line-height: 1.1;
@@ -2272,7 +2326,8 @@ button {
 
 .side-account-name {
   font-weight: 600;
-  overflow-wrap: anywhere;
+  /* Long names and emails wrap at spaces or after the "@" (EmailText), not mid-word (spec 015). */
+  overflow-wrap: break-word;
 }
 
 .side-account-hint {

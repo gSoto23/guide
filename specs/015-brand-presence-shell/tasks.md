@@ -96,3 +96,15 @@ brand screens, empty states, the credit, and previews; polish and full checks la
 - E2E (mobile project, Pixel 7): `brand-shell` (new), smoke, public pages, sign-up, guest US1,
   inbox US1, extras US3, analytics US3 pass; two specs that clicked Analytics and Shared content now
   open More first.
+
+## Follow-up after the first staging run (2026-11-23)
+
+Founder review on staging (Safari, desktop):
+
+- Emails no longer break mid-word: `EmailText` lets an address wrap only after the "@" (sidebar
+  account entry and the team list); the account name uses `overflow-wrap: break-word`.
+- Dropdowns look like the other fields on every browser: `appearance: none`, the 48 px field height,
+  the field border and radius, and a brand chevron (light and dark). Safari drew its own small
+  control before. The option list stays native.
+- The home hero shows the brand door scene beside the text (below the buttons on phones), until the
+  founder's own photos replace it (brand audit, phase D).

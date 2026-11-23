@@ -20,7 +20,6 @@ import { useOnline } from "@/lib/use-online";
 import { useStepUp } from "@/lib/use-step-up";
 import { useWorkspace } from "@/lib/use-workspace";
 import { ItemCard, type ItemActions } from "./item-card";
-import { MediaUploadButton } from "./media-upload";
 
 /** Sections where a photo answers guests' questions better than text (feature 016 FR-011). */
 const PHOTO_PROMPT_KINDS = ["arrival", "parking", "wifi", "appliances", "checkout"] as const;
@@ -30,6 +29,15 @@ const RecommendationForm = dynamic(
   () => import("./recommendation-form").then((m) => m.RecommendationForm),
   { ssr: false },
 );
+
+/**
+ * The photo and video buttons load right after the editor (Performance Budget, 150 KB per route);
+ * a same-size placeholder keeps the layout still meanwhile.
+ */
+const MediaUploadButton = dynamic(() => import("./media-upload").then((m) => m.MediaUploadButton), {
+  ssr: false,
+  loading: () => <span className="button button-secondary" aria-hidden="true" />,
+});
 
 /** Loaded only in sections the workspace shares content into (US7). */
 const SharedBlocksPanel = dynamic(() => import("./shared-blocks-panel"), { ssr: false });
