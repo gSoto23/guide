@@ -9,7 +9,6 @@ import { DESTINATIONS, type DestinationId } from "./shell/destinations";
 import { MoreButton, NavLink } from "./shell/nav-link";
 import { WorkspaceSwitcher } from "./workspace-switcher";
 import { Avatar } from "./avatar";
-import { EmailText } from "./email-text";
 
 export type ShellIcons = Record<DestinationId | "more", ReactNode>;
 
@@ -62,8 +61,14 @@ export function AppHeader({ locale, icons }: { locale: string; icons: ShellIcons
           <Link href={href("/settings/account")} className="side-account">
             <Avatar name={me.user.name} email={me.user.email} />
             <span>
+              {/* An email wraps after the "@", never mid-word (spec 015); inline to spare bundle bytes. */}
               <span className="side-account-name">
-                {me.user.name || <EmailText email={me.user.email} />}
+                {me.user.name || (
+                  <>
+                    {me.user.email.split("@")[0]}@<wbr />
+                    {me.user.email.split("@")[1]}
+                  </>
+                )}
               </span>
               <span className="side-account-hint">{t("nav.account")}</span>
             </span>
