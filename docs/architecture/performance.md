@@ -20,6 +20,7 @@ verified.
 | Guest guide | Initial JavaScript | ≤ 100 KB gzip per route (spec 004 sets 15 KB for the guide script); the chat loads on demand |
 | Guest guide | Initial page weight | ≤ 500 KB, excluding lazy-loaded media |
 | Host portal | LCP and INP | ≤ 2.5 s and ≤ 200 ms at p75 on mobile |
+| Host portal | Initial JavaScript | ≤ 175 KB gzip per route (`bundle:check`); raised from 150 KB on 2026-11-23 because React and Next.js alone take about 133 KB |
 | API (excluding LLM calls) | Latency | p95 ≤ 300 ms, p99 ≤ 1 s |
 | Agent | First token / full reply | ≤ 3 s / ≤ 10 s at p90 (NFR-01) |
 | Agent | Holding reply on escalation or draft | ≤ 2 s at p90 |
