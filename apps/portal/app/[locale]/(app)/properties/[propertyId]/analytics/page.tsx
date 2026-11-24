@@ -14,7 +14,9 @@ export default async function PropertyAnalyticsPage({
   return (
     <main className="page-wide">
       <p>
-        <Link href={`/${locale}/properties/${propertyId}`}>{t("backToProperty")}</Link>
+        <Link className="back-link" href={`/${locale}/properties/${propertyId}`}>
+          {t("backToProperty")}
+        </Link>
       </p>
       <AnalyticsView locale={locale} propertyId={propertyId} />
     </main>

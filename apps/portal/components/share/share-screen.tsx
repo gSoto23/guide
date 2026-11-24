@@ -77,7 +77,9 @@ export function ShareScreen({ locale, propertyId }: { locale: string; propertyId
   return (
     <section aria-labelledby="share-title" className="share">
       <p>
-        <Link href={`/${locale}/properties/${propertyId}`}>{t("back")}</Link>
+        <Link className="back-link" href={`/${locale}/properties/${propertyId}`}>
+          {t("back")}
+        </Link>
       </p>
       <h1 id="share-title">{t("title", { property: overview.propertyName })}</h1>
       <p className="muted">{t("intro")}</p>
@@ -105,7 +107,8 @@ export function ShareScreen({ locale, propertyId }: { locale: string; propertyId
           </Link>
         </div>
       ) : (
-        <>
+        // Feature 017 FR-019: two columns from 1024 px; the stays list spans both.
+        <div className="share-layout">
           <div className="card">
             <h2>{t("propertyLink.title")}</h2>
             <p className="muted">{t("propertyLink.body")}</p>
@@ -221,7 +224,7 @@ export function ShareScreen({ locale, propertyId }: { locale: string; propertyId
               }
             </StaysCard>
           )}
-        </>
+        </div>
       )}
     </section>
   );

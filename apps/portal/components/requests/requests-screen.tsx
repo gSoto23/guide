@@ -13,6 +13,7 @@ import { problemOf } from "@/lib/properties-api";
 import { Illustration, noRequestsScene } from "@guidesk/ui";
 import { PageHeader } from "@/components/shell/page-header";
 import { useWorkspace } from "@/lib/use-workspace";
+import { formatDateTime, formatRange } from "@/lib/dates";
 import { formatPrice } from "@/lib/extras";
 import { RequestPayment } from "../payments/request-payment";
 
@@ -20,8 +21,9 @@ type StatusFilter = "all" | "waiting" | "confirmed" | "closed";
 type Answering = { request: MemberServiceRequest; action: "decline" | "cancel" } | null;
 
 const BADGE: Record<MemberServiceRequest["status"], string> = {
-  waiting: "badge badge-warning",
-  confirmed: "badge badge-ready",
+  // Feature 017 FR-012: status colors by meaning; the text always names the status.
+  waiting: "badge badge-warning-status",
+  confirmed: "badge badge-success",
   declined: "badge",
   cancelled: "badge",
   host_cancelled: "badge",
@@ -137,31 +139,35 @@ export function RequestsScreen({ locale }: { locale: string }) {
       <PageHeader title={t("title")} titleId={`${id}-title`} help={t("intro")} />
       <p>{t("waitingCount", { count: page.waiting })}</p>
       <div className="inbox-controls">
-        <label htmlFor={`${id}-property`}>{t("filterProperty")}</label>
-        <select
-          id={`${id}-property`}
-          value={propertyId}
-          onChange={(event) => setPropertyId(event.target.value)}
-        >
-          <option value="">{t("allProperties")}</option>
-          {properties.map((property) => (
-            <option key={property.id} value={property.id}>
-              {property.name}
-            </option>
-          ))}
-        </select>
-        <label htmlFor={`${id}-status`}>{t("filterStatus")}</label>
-        <select
-          id={`${id}-status`}
-          value={status}
-          onChange={(event) => setStatus(event.target.value as StatusFilter)}
-        >
-          {(["all", "waiting", "confirmed", "closed"] as const).map((value) => (
-            <option key={value} value={value}>
-              {t(`statusFilter.${value}`)}
-            </option>
-          ))}
-        </select>
+        <div className="toolbar-field">
+          <label htmlFor={`${id}-property`}>{t("filterProperty")}</label>
+          <select
+            id={`${id}-property`}
+            value={propertyId}
+            onChange={(event) => setPropertyId(event.target.value)}
+          >
+            <option value="">{t("allProperties")}</option>
+            {properties.map((property) => (
+              <option key={property.id} value={property.id}>
+                {property.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="toolbar-field">
+          <label htmlFor={`${id}-status`}>{t("filterStatus")}</label>
+          <select
+            id={`${id}-status`}
+            value={status}
+            onChange={(event) => setStatus(event.target.value as StatusFilter)}
+          >
+            {(["all", "waiting", "confirmed", "closed"] as const).map((value) => (
+              <option key={value} value={value}>
+                {t(`statusFilter.${value}`)}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
       <div role="status" aria-live="polite">
         {message && (
@@ -181,16 +187,16 @@ export function RequestsScreen({ locale }: { locale: string }) {
         <ul className="list-plain request-list">
           {page.items.map((request) => (
             <li key={request.id} className="card request-row">
-              <h2>
-                {request.name}{" "}
+              <div className="request-head">
+                <h2>{request.name}</h2>
                 <span className={BADGE[request.status]}>{t(`status.${request.status}`)}</span>
-              </h2>
-              <p className="muted">{request.propertyName}</p>
-              <ul className="list-plain">
+              </div>
+              <p className="muted request-property">{request.propertyName}</p>
+              <ul className="list-plain request-facts">
                 <li>
                   {request.requestedDate
                     ? t("when", {
-                        when: `${request.requestedDate}${request.requestedTime ? ` ${request.requestedTime}` : ""}`,
+                        when: formatDateTime(request.requestedDate, request.requestedTime, lang),
                       })
                     : t("noDate")}
                 </li>
@@ -202,16 +208,17 @@ export function RequestsScreen({ locale }: { locale: string }) {
                 </li>
                 <li>
                   {t("stay", {
-                    checkIn: request.stay.checkInDate,
-                    checkout: request.stay.checkoutDate,
+                    range: formatRange(request.stay.checkInDate, request.stay.checkoutDate, lang),
                   })}
                 </li>
                 {request.stay.guestName && <li>{t("guest", { name: request.stay.guestName })}</li>}
                 {request.status === "waiting" && (
-                  <li>{t("expires", { at: dateTime(request.expiresAt) })}</li>
+                  <li className="request-wide">
+                    {t("expires", { at: dateTime(request.expiresAt) })}
+                  </li>
                 )}
                 {request.answeredBy && request.answeredAt && (
-                  <li>
+                  <li className="request-wide muted">
                     {t("answeredBy", {
                       status: t(`status.${request.status}`),
                       name: request.answeredBy,
@@ -220,7 +227,7 @@ export function RequestsScreen({ locale }: { locale: string }) {
                   </li>
                 )}
                 {request.reasonCode && (
-                  <li>
+                  <li className="request-wide">
                     {t(`reasons.${request.reasonCode}`)}
                     {request.reasonText ? `: ${request.reasonText}` : ""}
                   </li>

@@ -113,7 +113,9 @@ export function IntegrationsSettings({ locale }: { locale: string }) {
   return (
     <>
       <p>
-        <Link href={`/${locale}/settings`}>{t("back")}</Link>
+        <Link className="back-link" href={`/${locale}/settings`}>
+          {t("back")}
+        </Link>
       </p>
       <h1>{t("title")}</h1>
       <p className="muted">{t("intro")}</p>

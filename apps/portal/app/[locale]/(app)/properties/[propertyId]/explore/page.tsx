@@ -14,7 +14,9 @@ export default async function PropertyExplorePage({
   return (
     <main>
       <p>
-        <Link href={`/${locale}/properties/${propertyId}`}>{t("backToProperty")}</Link>
+        <Link className="back-link" href={`/${locale}/properties/${propertyId}`}>
+          {t("backToProperty")}
+        </Link>
       </p>
       <PropertyExploreSettings locale={locale} propertyId={propertyId} />
     </main>

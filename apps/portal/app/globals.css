@@ -812,7 +812,7 @@ input[type="radio"] {
   display: inline-block;
   padding: 0 0.4rem;
   border-radius: 0.3rem;
-  background: var(--color-muted-bg, #f1ece4);
+  background: var(--color-disclosure-bg);
   font-weight: 600;
   white-space: normal;
   overflow-wrap: break-word;
@@ -843,7 +843,9 @@ input[type="radio"] {
   overflow-wrap: anywhere;
   white-space: pre-wrap;
   font-size: 0.9375rem;
-  background: var(--surface-muted, #f7f1ea);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
   border-radius: 10px;
   padding: 0.75rem;
 }
@@ -860,11 +862,12 @@ input[type="radio"] {
 }
 
 .alert-success {
-  border-left: 4px solid #1e7a46;
+  background: var(--color-success-bg);
+  color: var(--color-success);
 }
 
 .stay-row {
-  border-top: 1px solid var(--border, #e4d9cd);
+  border-top: 1px solid var(--color-border);
   padding: 0.75rem 0;
 }
 
@@ -952,7 +955,7 @@ input[type="radio"] {
 }
 
 .transcript-guest {
-  border-left: 4px solid var(--line, #e4d9cd);
+  border-left: 4px solid var(--color-border);
 }
 
 .transcript-host {
@@ -1123,7 +1126,7 @@ input[type="radio"] {
   align-items: center;
   gap: 0.25rem 1rem;
   padding: 0.5rem 0;
-  border-bottom: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+  border-bottom: 1px solid var(--color-border);
 }
 
 .explore-row-actions {
@@ -2351,4 +2354,1137 @@ button {
     center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z'/%3E%3Ccircle cx='12' cy='13' r='3.5'/%3E%3C/svg%3E")
     center / contain no-repeat;
+}
+
+/* ============================================================================================
+   Feature 017: the desktop layer and usability fixes (spec 017, contracts/desktop-layout.md).
+   The phone design (under 600 px) stays as it is; these rules change the shape of the same
+   components from 600 px and 1024 px, and fix details that were broken at every width.
+   ============================================================================================ */
+
+/* Buttons (FR-001 to FR-003): label width from 600 px; link and text buttons never stretch. ---- */
+
+@media (min-width: 600px) {
+  button,
+  .button {
+    width: auto;
+  }
+
+  /* The narrow sign-in, verify, and invitation panel keeps full-width buttons. */
+  .auth-panel button,
+  .auth-panel .button {
+    width: 100%;
+  }
+}
+
+.actions,
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.actions > .button,
+.actions > button,
+.action-row > .button,
+.action-row > button {
+  margin-top: 0;
+}
+
+.button-link {
+  width: auto;
+  padding-right: var(--space-1);
+  padding-left: var(--space-1);
+  justify-content: flex-start;
+}
+
+/* A text button inside a sentence or a banner: inline text, not a block button. */
+.link-button {
+  display: inline;
+  width: auto;
+  min-height: 0;
+  margin: 0;
+  font-weight: inherit;
+  text-align: inherit;
+}
+
+/* Brand form controls and option cards (FR-010). --------------------------------------------- */
+
+:root {
+  accent-color: var(--color-primary);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  min-height: 0;
+  margin: 0;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.choice {
+  cursor: pointer;
+  background: var(--color-bg);
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.choice:hover {
+  border-color: var(--color-text-muted);
+}
+
+.choice:has(input:checked) {
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+}
+
+.choice:has(input:focus-visible) {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Option cards that sit directly in a fieldset (no grid parent) get the 8 px gap. */
+fieldset:not(.choices):not(.choice-list) > .choice + .choice,
+div:not(.choices):not(.choice-list) > .choice + .choice {
+  margin-top: var(--space-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .choice {
+    transition: none;
+  }
+}
+
+/* Badges never stretch (FR-007); status pills by meaning (FR-012). ----------------------------- */
+
+.badge {
+  justify-self: start;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.property-row > .badge,
+.option-card .badge {
+  align-self: flex-start;
+}
+
+.badge-success,
+.badge-warning-status {
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.badge-success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.badge-warning-status {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+/* Workspace menu above the navigation, as a sheet (FR-008). --------------------------------- */
+
+.switcher-menu {
+  z-index: 40;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sheet);
+}
+
+/* Text editor toolbar: a compact row at every width (FR-009). ------------------------------- */
+
+.guide-editor-toolbar {
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  z-index: 1;
+}
+
+.guide-editor-toolbar .button {
+  flex: 0 0 auto;
+  width: auto;
+  min-height: 40px;
+  margin: 0;
+  padding: 4px 12px;
+  border-color: var(--color-border);
+  background: var(--color-bg);
+  font-size: 0.875rem;
+}
+
+.guide-editor-toolbar .button:hover {
+  border-color: var(--color-border-strong);
+  background: var(--color-bg);
+}
+
+.guide-editor-toolbar .active,
+.guide-editor-toolbar .button[aria-pressed="true"] {
+  outline: 0;
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+  color: var(--color-primary-strong);
+}
+
+.guide-editor-toolbar select {
+  flex: 1 1 12rem;
+  width: auto;
+  max-width: 18rem;
+  min-height: 40px;
+  font-size: 0.875rem;
+}
+
+@media (pointer: coarse) {
+  .guide-editor-toolbar .button,
+  .guide-editor-toolbar select {
+    min-height: var(--tap-min);
+  }
+}
+
+/* Segmented control for tabs (FR-005). ------------------------------------------------------- */
+
+.tabs,
+div.segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  max-width: 100%;
+  padding: var(--space-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.tab,
+div.segmented > .button {
+  flex: 0 1 auto;
+  width: auto;
+  min-height: var(--tap-min);
+  margin: 0;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.tab:hover,
+div.segmented > .button:hover {
+  background: transparent;
+  color: var(--color-text);
+}
+
+.tab-active,
+.tab[aria-selected="true"],
+div.segmented > .button[aria-pressed="true"] {
+  border-width: 0;
+  background: var(--color-bg);
+  color: var(--color-primary-strong);
+  box-shadow:
+    inset 0 0 0 1px var(--color-primary),
+    0 1px 2px rgb(43 33 28 / 0.12);
+}
+
+div.segmented > .button[aria-pressed="true"]:hover {
+  background: var(--color-bg);
+  color: var(--color-primary-strong);
+}
+
+/* Analytics' period choice keeps its radios; each option is a pill of the same family. */
+.analytics fieldset.segmented {
+  gap: var(--space-1);
+}
+
+.analytics .tab {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+/* Filter toolbar (FR-004). -------------------------------------------------------------------- */
+
+.inbox-controls {
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+}
+
+.toolbar-field {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+}
+
+.toolbar-field > label {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+@media (min-width: 600px) {
+  .inbox-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+
+  .inbox-controls > select,
+  .inbox-controls > .toolbar-field {
+    flex: 0 1 16rem;
+    width: auto;
+    min-width: 12rem;
+    max-width: 20rem;
+  }
+
+  .inbox-controls > .tabs ~ select {
+    margin-left: auto;
+  }
+}
+
+/* Page headers and sub-page back links (M2). ------------------------------------------------- */
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--tap-min);
+  margin-bottom: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back-link::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m15 6-6 6 6 6'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m15 6-6 6 6 6'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+
+.back-link:hover {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+/* Cards with an edge on wide screens (FR-006). ----------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .app-content h1 {
+    font-size: 1.75rem;
+  }
+
+  .card {
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .card.inbox-item {
+    padding: 0;
+  }
+}
+
+/* Loading: an empty page area shows a calm placeholder (FR-021). ------------------------------ */
+
+.app-content > main:empty {
+  min-height: 60vh;
+}
+
+.app-content > main:empty::before,
+.app-content > main:empty::after {
+  content: "";
+  display: block;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+.app-content > main:empty::before {
+  width: min(18rem, 60%);
+  height: 2rem;
+  margin-bottom: var(--space-5);
+}
+
+.app-content > main:empty::after {
+  height: 14rem;
+  background:
+    linear-gradient(var(--color-surface), var(--color-surface)) top / 100% 6rem no-repeat,
+    linear-gradient(var(--color-surface), var(--color-surface)) bottom / 100% 7rem no-repeat;
+  background-color: transparent;
+}
+
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-content > main:empty::before,
+  .app-content > main:empty::after {
+    animation: none;
+  }
+}
+
+/* The shell before the account loads (FR-020). ---------------------------------------------- */
+
+.shell-placeholder {
+  flex: 1;
+  min-height: 48px;
+  max-width: 22rem;
+  margin-left: auto;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+@media (min-width: 1024px) {
+  .shell-placeholder {
+    flex: none;
+    max-width: none;
+    margin: 0;
+    background: var(--color-bg);
+  }
+}
+
+@media print {
+  .app-content > main:empty::before,
+  .app-content > main:empty::after,
+  .shell-placeholder {
+    display: none;
+  }
+}
+
+/* Banners with an action keep the action on the message row (M7). --------------------------- */
+
+.alert-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-4);
+}
+
+.alert-row .link-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  font-weight: 600;
+}
+
+/* Requests: compact cards in a grid (FR-012). ------------------------------------------------ */
+
+.request-list {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.request-list > .request-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: 0;
+  min-width: 0;
+}
+
+.request-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+}
+
+.request-head h2 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.request-property {
+  margin: 0;
+}
+
+.request-facts {
+  display: grid;
+  gap: 2px var(--space-4);
+  margin: 0;
+}
+
+.request-row .actions {
+  margin: auto 0 0;
+  padding-top: var(--space-2);
+}
+
+.request-row h3 {
+  margin: var(--space-2) 0 0;
+  font-size: 1rem;
+}
+
+@media (min-width: 600px) {
+  .request-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .request-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+  }
+}
+
+.request-facts .request-wide {
+  grid-column: 1 / -1;
+}
+
+.request-facts .request-wide.muted {
+  margin-top: var(--space-1);
+  font-size: 0.875rem;
+}
+
+/* Inbox rows (FR-014). ----------------------------------------------------------------------- */
+
+.inbox-list {
+  gap: var(--space-2);
+}
+
+.inbox-item {
+  margin-top: 0;
+}
+
+.inbox-link {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-1) var(--space-3);
+}
+
+.inbox-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-tint);
+  color: var(--color-primary-strong);
+}
+
+.inbox-urgent .inbox-icon {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.inbox-body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.inbox-sub {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+.inbox-excerpt {
+  margin-top: var(--space-1);
+}
+
+.inbox-meta {
+  grid-column: 2;
+}
+
+.inbox-link:hover .inbox-title {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+@media (min-width: 1024px) {
+  .inbox-link {
+    grid-template-columns: auto minmax(0, 1fr) minmax(12rem, auto);
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .inbox-meta {
+    grid-column: 3;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: end;
+  }
+}
+
+/* Option cards: add-property choices and similar hubs (FR-015). ------------------------------ */
+
+.option-grid {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+}
+
+.option-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-4) calc(var(--space-4) + 24px) var(--space-4) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg);
+  color: var(--color-text);
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.option-card::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: var(--space-4);
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+  background: var(--color-text-muted);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6 6 6-6 6'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6 6 6-6 6'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+
+.option-card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: 0 2px 8px rgb(43 33 28 / 0.08);
+}
+
+.option-card:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.option-card-recommended {
+  border-color: var(--color-primary);
+  box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+.option-icon {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-tint);
+  color: var(--color-primary-strong);
+}
+
+.option-text {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.option-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+}
+
+.option-body {
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 1024px) {
+  .option-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .option-card {
+    padding: var(--space-5) calc(var(--space-5) + 24px) var(--space-5) var(--space-5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option-card {
+    transition: none;
+  }
+}
+
+/* Property overview in two columns from 1024 px (FR-016). ------------------------------------ */
+
+.property-header h1 {
+  margin-bottom: var(--space-2);
+}
+
+.property-header .property-meta {
+  margin: 0 0 var(--space-3);
+}
+
+.property-header .action-row {
+  margin: 0 0 var(--space-4);
+}
+
+.property-aside > * {
+  margin-top: var(--space-4);
+}
+
+@media (min-width: 1024px) {
+  .property-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "header cover"
+      "body cover"
+      "body aside";
+    gap: 0 var(--space-6);
+    align-items: start;
+  }
+
+  .property-header {
+    grid-area: header;
+  }
+
+  .property-cover-area {
+    grid-area: cover;
+  }
+
+  .property-body {
+    grid-area: body;
+    min-width: 0;
+  }
+
+  .property-body > :first-child {
+    margin-top: 0;
+  }
+
+  .property-aside {
+    grid-area: aside;
+    min-width: 0;
+  }
+
+  .property-aside > :first-child {
+    margin-top: 0;
+  }
+
+  .property-cover-area .cover-card {
+    margin-bottom: var(--space-4);
+  }
+
+  .property-cover-area .cover-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .property-cover-area .cover-alt {
+    flex: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card > h2:first-child,
+  .card > header:first-child h2 {
+    margin-top: 0;
+  }
+
+  .property-aside .card h2 {
+    font-size: 1.125rem;
+  }
+
+  .property-aside .card {
+    padding: var(--space-4) var(--space-5);
+  }
+}
+
+/* Guide page: one primary action, quiet secondary ones, checklist rows (FR-017). -------------- */
+
+.button-quiet {
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-text);
+}
+
+.button-quiet:hover {
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+.guide-actions {
+  margin: var(--space-4) 0;
+}
+
+.issue-list .checklist-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 var(--space-4);
+  padding: var(--space-1) 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.issue-list .checklist-row:first-child {
+  border-top: 0;
+}
+
+.issue-list .checklist-row .actions {
+  margin: 0;
+  gap: 0 var(--space-2);
+}
+
+.topic-name {
+  font-weight: 600;
+}
+
+.issue-list:has(.checklist-row) {
+  gap: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.button-quiet {
+  padding-right: 12px;
+  padding-left: 12px;
+}
+
+/* Text buttons look the same whether they are links or buttons: underlined, so a text action in a
+   sentence is not marked by color alone (WCAG 1.4.1). */
+.button-link {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+@media (min-width: 1024px) {
+  .section-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+}
+
+/* Settings index: grouped icon cards (FR-018). ----------------------------------------------- */
+
+.settings-group + .settings-group {
+  margin-top: var(--space-6);
+}
+
+.settings-group h2 {
+  margin: 0 0 var(--space-3);
+  font-size: 1rem;
+  color: var(--color-text-muted);
+}
+
+.settings-grid {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.settings-card {
+  min-height: 100%;
+}
+
+@media (min-width: 600px) {
+  .settings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .settings-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Share: two columns from 1024 px (FR-019). -------------------------------------------------- */
+
+.share-url code {
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 1024px) {
+  .share-layout {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+    align-items: start;
+    margin-top: var(--space-4);
+  }
+
+  .share-layout > .card {
+    margin-top: 0;
+  }
+
+  .share-layout > .card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Extras: a grid of cards, delete as a quiet danger action (spec 017 T020). ------------------ */
+
+.extra-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.extra-list > .extra-row {
+  margin-top: 0;
+  min-width: 0;
+}
+
+.extra-row h2 {
+  margin: 0 0 var(--space-1);
+  font-size: 1.125rem;
+}
+
+.extra-row .badge {
+  margin-left: var(--space-2);
+}
+
+.button-danger-quiet {
+  border-color: var(--color-danger);
+  background: transparent;
+  color: var(--color-danger);
+}
+
+.button-danger-quiet:hover {
+  background: var(--color-danger-bg);
+}
+
+@media (min-width: 1024px) {
+  .extra-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .extra-row .extra-thumb {
+    max-width: none;
+  }
+}
+
+/* Short form fields side by side (FR-011). --------------------------------------------------- */
+
+.field-row-3 {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0 var(--space-4);
+}
+
+.field-row > label {
+  min-width: 0;
+}
+
+@media (min-width: 600px) {
+  .field-row-3 {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.2fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+/* Public home: feature icons and a balanced grid (FR-022). ----------------------------------- */
+
+.feature-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-tint);
+  color: var(--color-primary-strong);
+}
+
+@media (min-width: 1024px) {
+  /* Five features: three on the first row, two wider ones on the second; no orphan card. */
+  .public-feature-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .public-feature-grid > * {
+    grid-column: span 2;
+  }
+
+  .public-feature-grid > :nth-child(4):nth-last-child(2),
+  .public-feature-grid > :nth-child(5):last-child {
+    grid-column: span 3;
+  }
+}
+
+/* List search: a compact field on wide screens (L3). ----------------------------------------- */
+
+@media (min-width: 600px) {
+  .list-search {
+    max-width: 24rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* A group of four reads as two by two, never three and an orphan. */
+  .settings-grid:has(> li:nth-child(4):last-child) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  /* Cards keep their side accents when they gain an edge (urgent inbox items, transcript turns). */
+  .card.inbox-urgent {
+    border-left: 4px solid var(--color-danger);
+  }
+
+  .card.transcript-guest {
+    border-left: 4px solid var(--color-border-strong);
+  }
+
+  .card.transcript-host {
+    border-left: 4px solid currentColor;
+  }
+}
+
+.issue-list .checklist-row .button-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+}
+
+/* Public header: language pill and pill buttons (feature 017, founder review 2026-11-23). --- */
+
+.public-nav {
+  gap: var(--space-2) var(--space-3);
+}
+
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+}
+
+.lang-switch-icon {
+  margin: 0 4px 0 6px;
+  color: var(--color-text-muted);
+}
+
+.lang-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.25rem;
+  padding: 0 10px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+
+a.lang-option:hover {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.lang-current {
+  background: var(--color-bg);
+  color: var(--color-primary-strong);
+  box-shadow:
+    inset 0 0 0 1px var(--color-primary),
+    0 1px 2px rgb(43 33 28 / 0.12);
+}
+
+.public-nav .public-signin,
+.public-nav .public-start {
+  min-height: var(--tap-min);
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+}
+
+.public-signin {
+  gap: 6px;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.public-signin .icon {
+  transition: transform 0.15s ease;
+}
+
+.public-signin:hover {
+  border-color: var(--color-text);
+}
+
+.public-signin:hover .icon {
+  transform: translateX(2px);
+}
+
+.public-start {
+  display: none;
+}
+
+.public-actions .button {
+  border-radius: var(--radius-full);
+  padding-right: 22px;
+  padding-left: 22px;
+}
+
+@media (min-width: 600px) {
+  .public-nav .public-start {
+    display: inline-flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .public-signin .icon {
+    transition: none;
+  }
+}
+
+/* Phones: the pill shows the globe and the other language only; the sign-in pill drops its arrow.
+   Everything fits on one row down to 320 px. */
+@media (max-width: 599px) {
+  .public-header-row,
+  .public-nav {
+    gap: var(--space-2);
+  }
+
+  .lang-current {
+    display: none;
+  }
+
+  .public-nav .public-signin {
+    padding: 8px 14px;
+  }
+
+  .public-signin .icon {
+    display: none;
+  }
+}
+
+@media (max-width: 399px) {
+  .public-brand img {
+    width: auto;
+    height: 24px;
+  }
+}
+
+/* The public header stays at hand while reading: sticky and translucent. */
+.public-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+  backdrop-filter: saturate(160%) blur(12px);
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import type { ConfirmPropertiesResult, PropertyDetail } from "@guidesk/contracts";
 import { problemNumber, problemOf } from "@/lib/properties-api";
@@ -36,7 +36,19 @@ const RemovePropertyDialog = dynamic(
  * A property's page (FR-005, T046): its facts in the property's time zone, editable by owners
  * and admins, read-only for agents, and the next step toward the guide (spec 003).
  */
-export function PropertyFacts({ locale, propertyId }: { locale: string; propertyId: string }) {
+export function PropertyFacts({
+  locale,
+  propertyId,
+  aside,
+}: {
+  locale: string;
+  propertyId: string;
+  /**
+   * The summary cards (analytics, assistant, Explore, extras). From 1024 px they sit in a side
+   * column under the cover photo (feature 017 FR-016); on phones they follow the facts.
+   */
+  aside?: ReactNode;
+}) {
   const t = useTranslations("properties");
   const guide = useTranslations("guide");
   const share = useTranslations("share");
@@ -149,212 +161,235 @@ export function PropertyFacts({ locale, propertyId }: { locale: string; property
   return (
     <>
       <p>
-        <Link href={`/${locale}/properties`}>{t("detail.back")}</Link>
+        <Link className="back-link" href={`/${locale}/properties`}>
+          {t("detail.back")}
+        </Link>
       </p>
-      {!removed ? (
-        <PropertyCoverCard
-          propertyId={propertyId}
-          cover={property.cover ?? null}
-          canManage={workspace.canManage}
-        />
-      ) : null}
-      <h1>{property.name}</h1>
-      {!removed ? (
-        <div className="actions action-row">
-          <Link
-            className="button button-primary"
-            href={`/${locale}/properties/${propertyId}/guide`}
-          >
-            <Icon data={bookmark} />
-            {guide("review.open")}
-          </Link>
-          <Link
-            className="button button-secondary"
-            href={`/${locale}/properties/${propertyId}/share`}
-          >
-            <Icon data={qr} />
-            {share("link")}
-          </Link>
-          <Link
-            className="button button-secondary"
-            href={`/${locale}/properties/${propertyId}/conversations`}
-          >
-            <Icon data={chat} />
-            {conversations("link")}
-          </Link>
-        </div>
-      ) : null}
-      <p className="property-meta">
-        <span
-          className={`badge ${property.setupStatus === "ready" ? "badge-ready" : "badge-warning"}`}
-        >
-          {t(`setupStatus.${property.setupStatus}`)}
-        </span>
-        <span className="badge">
-          {t(`source.${property.source}`, {
-            provider: property.sourceProvider ? t(`providers.${property.sourceProvider}`) : "",
-          })}
-        </span>
-      </p>
-      {removed ? (
-        <div className="card">
-          <p>
-            {t("removed.banner", {
-              date: property.purgeAfter
-                ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(
-                    new Date(property.purgeAfter),
-                  )
-                : "",
-            })}
+      {/* Feature 017 FR-016: one DOM order (cover, header, body, aside) that reads well on phones;
+          from 1024 px a grid puts the cover and the summary cards in a side column. */}
+      <div className="property-layout">
+        {!removed ? (
+          <div className="property-cover-area">
+            <PropertyCoverCard
+              propertyId={propertyId}
+              cover={property.cover ?? null}
+              canManage={workspace.canManage}
+            />
+          </div>
+        ) : null}
+        <div className="property-header">
+          <h1>{property.name}</h1>
+          <p className="property-meta">
+            <span
+              className={`badge ${property.setupStatus === "ready" ? "badge-ready" : "badge-warning"}`}
+            >
+              {t(`setupStatus.${property.setupStatus}`)}
+            </span>
+            <span className="badge">
+              {t(`source.${property.source}`, {
+                provider: property.sourceProvider ? t(`providers.${property.sourceProvider}`) : "",
+              })}
+            </span>
           </p>
-          {workspace.canManage ? (
-            <button type="button" className="button button-primary" onClick={() => void restore()}>
-              {t("removed.restore")}
-            </button>
+          {!removed ? (
+            <div className="actions action-row">
+              <Link
+                className="button button-primary"
+                href={`/${locale}/properties/${propertyId}/guide`}
+              >
+                <Icon data={bookmark} />
+                {guide("review.open")}
+              </Link>
+              <Link
+                className="button button-secondary"
+                href={`/${locale}/properties/${propertyId}/share`}
+              >
+                <Icon data={qr} />
+                {share("link")}
+              </Link>
+              <Link
+                className="button button-secondary"
+                href={`/${locale}/properties/${propertyId}/conversations`}
+              >
+                <Icon data={chat} />
+                {conversations("link")}
+              </Link>
+            </div>
           ) : null}
         </div>
-      ) : null}
-      {missing && !removed ? (
-        <p className="alert alert-info">{t("detail.missing", { facts: missing })}</p>
-      ) : null}
-      {property.pmsStatus === "not_found" ? (
-        <p className="alert alert-info">
-          {t("detail.notFoundInPms", {
-            provider: property.sourceProvider ? t(`providers.${property.sourceProvider}`) : "PMS",
-          })}
-        </p>
-      ) : null}
-      {property.setupStatus === "to_confirm" && workspace.canManage && !removed ? (
-        <div className="card">
-          <p>{t("detail.toConfirm")}</p>
-          <button type="button" className="button button-primary" onClick={() => void confirm()}>
-            {t("detail.confirm")}
-          </button>
-        </div>
-      ) : null}
-      {message ? (
-        <p
-          className={`alert ${message.kind === "error" ? "alert-error" : "alert-info"}`}
-          role="status"
-        >
-          {message.text}
-        </p>
-      ) : null}
-      <h2>{t("detail.facts")}</h2>
-      {editing ? (
-        <>
-          <CoreFactsForm
-            api={workspace.api}
-            locale={locale}
-            draftKey={`property:${propertyId}`}
-            propertyId={propertyId}
-            submitLabel={t("detail.save")}
-            fieldErrors={fieldErrors}
-            initial={{
-              name: property.name,
-              addressLine1: property.addressLine1 ?? "",
-              addressUnit: property.addressUnit ?? "",
-              city: property.city ?? "",
-              region: property.region ?? "",
-              postalCode: property.postalCode ?? "",
-              country: property.country ?? "",
-              timeZone: property.timeZone ?? "",
-              checkInTime: property.checkInTime ?? "",
-              checkoutTime: property.checkoutTime ?? "",
-              maxGuests: property.maxGuests ? String(property.maxGuests) : "",
-              guideLanguages: property.guideLanguages,
-            }}
-            onSubmit={save}
-          />
-          <button
-            type="button"
-            className="button button-secondary"
-            onClick={() => setEditing(false)}
-          >
-            {t("detail.cancel")}
-          </button>
-        </>
-      ) : (
-        <>
-          <dl className="facts-list">
-            <dt>{t("detail.address")}</dt>
-            <dd>{address || notSet}</dd>
-            <dt>{t("detail.times")}</dt>
-            <dd>
-              {t("detail.timesValue", {
-                checkIn: property.checkInTime ?? notSet,
-                checkout: property.checkoutTime ?? notSet,
-                zone,
+        <div className="property-body">
+          {removed ? (
+            <div className="card">
+              <p>
+                {t("removed.banner", {
+                  date: property.purgeAfter
+                    ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(
+                        new Date(property.purgeAfter),
+                      )
+                    : "",
+                })}
+              </p>
+              {workspace.canManage ? (
+                <button
+                  type="button"
+                  className="button button-primary"
+                  onClick={() => void restore()}
+                >
+                  {t("removed.restore")}
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+          {missing && !removed ? (
+            <p className="alert alert-info">{t("detail.missing", { facts: missing })}</p>
+          ) : null}
+          {property.pmsStatus === "not_found" ? (
+            <p className="alert alert-info">
+              {t("detail.notFoundInPms", {
+                provider: property.sourceProvider
+                  ? t(`providers.${property.sourceProvider}`)
+                  : "PMS",
               })}
-            </dd>
-            <dt>{t("detail.guests")}</dt>
-            <dd>{property.maxGuests ?? notSet}</dd>
-            <dt>{t("detail.languages")}</dt>
-            <dd>
-              {property.guideLanguages
-                .map((language) => t(`facts.languages.${language}`))
-                .join(", ")}
-            </dd>
-          </dl>
-          {workspace.canManage && !removed ? (
-            <div className="actions">
+            </p>
+          ) : null}
+          {property.setupStatus === "to_confirm" && workspace.canManage && !removed ? (
+            <div className="card">
+              <p>{t("detail.toConfirm")}</p>
+              <button
+                type="button"
+                className="button button-primary"
+                onClick={() => void confirm()}
+              >
+                {t("detail.confirm")}
+              </button>
+            </div>
+          ) : null}
+          {message ? (
+            <p
+              className={`alert ${message.kind === "error" ? "alert-error" : "alert-info"}`}
+              role="status"
+            >
+              {message.text}
+            </p>
+          ) : null}
+          <h2>{t("detail.facts")}</h2>
+          {editing ? (
+            <>
+              <CoreFactsForm
+                api={workspace.api}
+                locale={locale}
+                draftKey={`property:${propertyId}`}
+                propertyId={propertyId}
+                submitLabel={t("detail.save")}
+                fieldErrors={fieldErrors}
+                initial={{
+                  name: property.name,
+                  addressLine1: property.addressLine1 ?? "",
+                  addressUnit: property.addressUnit ?? "",
+                  city: property.city ?? "",
+                  region: property.region ?? "",
+                  postalCode: property.postalCode ?? "",
+                  country: property.country ?? "",
+                  timeZone: property.timeZone ?? "",
+                  checkInTime: property.checkInTime ?? "",
+                  checkoutTime: property.checkoutTime ?? "",
+                  maxGuests: property.maxGuests ? String(property.maxGuests) : "",
+                  guideLanguages: property.guideLanguages,
+                }}
+                onSubmit={save}
+              />
               <button
                 type="button"
                 className="button button-secondary"
-                onClick={() => setEditing(true)}
+                onClick={() => setEditing(false)}
               >
-                {t("detail.edit")}
+                {t("detail.cancel")}
               </button>
-              <Link
-                className="button button-secondary"
-                href={`/${locale}/properties/new/duplicate?from=${encodeURIComponent(propertyId)}`}
-              >
-                {t("detail.duplicate")}
-              </Link>
-            </div>
-          ) : !workspace.canManage ? (
-            <p className="muted">{t("detail.readOnly")}</p>
+            </>
+          ) : (
+            <>
+              <dl className="facts-list">
+                <dt>{t("detail.address")}</dt>
+                <dd>{address || notSet}</dd>
+                <dt>{t("detail.times")}</dt>
+                <dd>
+                  {t("detail.timesValue", {
+                    checkIn: property.checkInTime ?? notSet,
+                    checkout: property.checkoutTime ?? notSet,
+                    zone,
+                  })}
+                </dd>
+                <dt>{t("detail.guests")}</dt>
+                <dd>{property.maxGuests ?? notSet}</dd>
+                <dt>{t("detail.languages")}</dt>
+                <dd>
+                  {property.guideLanguages
+                    .map((language) => t(`facts.languages.${language}`))
+                    .join(", ")}
+                </dd>
+              </dl>
+              {workspace.canManage && !removed ? (
+                <div className="actions">
+                  <button
+                    type="button"
+                    className="button button-secondary"
+                    onClick={() => setEditing(true)}
+                  >
+                    {t("detail.edit")}
+                  </button>
+                  <Link
+                    className="button button-secondary"
+                    href={`/${locale}/properties/new/duplicate?from=${encodeURIComponent(propertyId)}`}
+                  >
+                    {t("detail.duplicate")}
+                  </Link>
+                </div>
+              ) : !workspace.canManage ? (
+                <p className="muted">{t("detail.readOnly")}</p>
+              ) : null}
+            </>
+          )}
+          <ListingContent propertyId={propertyId} sourceProvider={property.sourceProvider} />
+          {workspace.canManage && property.counts.restrictedValues ? (
+            <RestrictedValues propertyId={propertyId} />
           ) : null}
-        </>
-      )}
-      <ListingContent propertyId={propertyId} sourceProvider={property.sourceProvider} />
-      {workspace.canManage && property.counts.restrictedValues ? (
-        <RestrictedValues propertyId={propertyId} />
-      ) : null}
-      {workspace.canManage && !removed ? (
-        <CalendarFeeds
-          propertyId={propertyId}
-          onStaysChanged={() => setStaysVersion((version) => version + 1)}
-        />
-      ) : null}
-      <StaysList
-        propertyId={propertyId}
-        checkInTime={property.checkInTime}
-        checkoutTime={property.checkoutTime}
-        timeZone={property.timeZone}
-        version={staysVersion}
-      />
-      <div className="card">
-        <strong>{t("detail.nextStep")}</strong>
-        <p className="muted">{t("detail.nextStepSoon")}</p>
-      </div>
-      {workspace.canManage && !removed ? (
-        removing ? (
-          <RemovePropertyDialog
-            locale={locale}
-            api={workspace.api}
+          {workspace.canManage && !removed ? (
+            <CalendarFeeds
+              propertyId={propertyId}
+              onStaysChanged={() => setStaysVersion((version) => version + 1)}
+            />
+          ) : null}
+          <StaysList
             propertyId={propertyId}
-            name={property.name}
-            onCancel={() => setRemoving(false)}
+            checkInTime={property.checkInTime}
+            checkoutTime={property.checkoutTime}
+            timeZone={property.timeZone}
+            version={staysVersion}
           />
-        ) : (
-          <p>
-            <button type="button" className="button-link" onClick={() => setRemoving(true)}>
-              {t("remove.open")}
-            </button>
-          </p>
-        )
-      ) : null}
+          <div className="card">
+            <strong>{t("detail.nextStep")}</strong>
+            <p className="muted">{t("detail.nextStepSoon")}</p>
+          </div>
+          {workspace.canManage && !removed ? (
+            removing ? (
+              <RemovePropertyDialog
+                locale={locale}
+                api={workspace.api}
+                propertyId={propertyId}
+                name={property.name}
+                onCancel={() => setRemoving(false)}
+              />
+            ) : (
+              <p>
+                <button type="button" className="button-link" onClick={() => setRemoving(true)}>
+                  {t("remove.open")}
+                </button>
+              </p>
+            )
+          ) : null}
+        </div>
+        {aside ? <div className="property-aside">{aside}</div> : null}
+      </div>
     </>
   );
 }

@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { START_OPTION_ICONS } from "@/components/properties/start-option-icons";
 import { StartOptionsPanel } from "@/components/properties/start-options";
 
 /**
@@ -22,6 +23,7 @@ export default async function NewPropertyPage({
     <main>
       <StartOptionsPanel
         locale={locale}
+        icons={START_OPTION_ICONS}
         {...(first
           ? {
               title: t("firstTitle"),

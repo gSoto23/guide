@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import type { StartOptions } from "@guidesk/contracts";
 import { Illustration, noPropertiesScene } from "@guidesk/ui";
@@ -33,11 +33,17 @@ export function StartOptionsPanel({
   locale,
   title,
   subtitle,
+  icons,
 }: {
   locale: string;
   title?: string;
   /** The onboarding path's subtitle on the first-property step (spec 001). */
   subtitle?: string;
+  /**
+   * One icon per option, rendered by the caller (feature 017 FR-015). The server page renders them,
+   * so this client component does not pull the icon table into the route (research R8).
+   */
+  icons?: Partial<Record<keyof typeof OPTION_KEYS, ReactNode>>;
 }) {
   const t = useTranslations("properties");
   const workspace = useWorkspace();
@@ -69,19 +75,31 @@ export function StartOptionsPanel({
       <Illustration data={noPropertiesScene} width={180} className="page-illustration" />
       <h1>{title ?? t("start.title")}</h1>
       {subtitle ? <p className="muted">{subtitle}</p> : null}
-      <ul className="property-list">
+      <ul className="list-plain option-grid">
         {options.options.map(({ option, recommended }) => (
           <li key={option}>
-            <Link className="property-row" href={`/${locale}${OPTION_PATHS[option]}`}>
-              <strong>{t(`options.${OPTION_KEYS[option]}.title`)}</strong>
-              {recommended ? (
-                <span className="badge badge-ready">{t("start.recommended")}</span>
+            <Link
+              className={recommended ? "option-card option-card-recommended" : "option-card"}
+              href={`/${locale}${OPTION_PATHS[option]}`}
+            >
+              {icons?.[option] ? (
+                <span className="option-icon" aria-hidden="true">
+                  {icons[option]}
+                </span>
               ) : null}
-              <p className="muted">
-                {option === "listing" && !options.screenshotsEnabled
-                  ? t("options.paste.bodyTextOnly")
-                  : t(`options.${OPTION_KEYS[option]}.body`)}
-              </p>
+              <span className="option-text">
+                <span className="option-title">
+                  <strong>{t(`options.${OPTION_KEYS[option]}.title`)}</strong>
+                  {recommended ? (
+                    <span className="badge badge-ready">{t("start.recommended")}</span>
+                  ) : null}
+                </span>
+                <span className="option-body">
+                  {option === "listing" && !options.screenshotsEnabled
+                    ? t("options.paste.bodyTextOnly")
+                    : t(`options.${OPTION_KEYS[option]}.body`)}
+                </span>
+              </span>
             </Link>
           </li>
         ))}

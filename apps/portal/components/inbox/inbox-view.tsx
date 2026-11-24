@@ -14,6 +14,7 @@ import { Icon, inboxClearScene, message, reasonIconData } from "@guidesk/ui";
 import { EmptyState } from "@/components/empty-state";
 import { AlertsCard } from "@/components/notifications/alerts-card";
 import { PageHeader } from "@/components/shell/page-header";
+import { formatRange } from "@/lib/dates";
 import { useWorkspace } from "@/lib/use-workspace";
 import { Avatar } from "@/components/avatar";
 
@@ -217,12 +218,30 @@ export function InboxView({
               className="inbox-link"
               href={`/${locale}/properties/${item.propertyId}/conversations/${item.id}`}
             >
-              <span className="inbox-title">
-                {item.propertyName} ·{" "}
-                {item.stay
-                  ? t("stay", { checkIn: item.stay.checkInDate, checkout: item.stay.checkoutDate })
-                  : t("noStay")}{" "}
-                · {t(`channel.${item.channel}`)}
+              {/* Feature 017 FR-014: the reason (or a message) icon, then the text, then the meta. */}
+              <span className="inbox-icon" aria-hidden="true">
+                <Icon data={item.reason ? reasonIconData(item.reason) : message} size={20} />
+              </span>
+              <span className="inbox-body">
+                <span className="inbox-title">{item.propertyName}</span>
+                <span className="inbox-sub">
+                  {item.stay
+                    ? t("stay", {
+                        range: formatRange(item.stay.checkInDate, item.stay.checkoutDate, locale),
+                      })
+                    : t("noStay")}{" "}
+                  · {t(`channel.${item.channel}`)}
+                </span>
+                {item.lastMessage && (
+                  <span className="inbox-excerpt">
+                    {t(`author.${item.lastMessage.author}`)}: {item.lastMessage.excerpt}
+                  </span>
+                )}
+                {item.replying.length > 0 && (
+                  <span className="muted">
+                    {t("replying", { names: item.replying.join(", ") })}
+                  </span>
+                )}
               </span>
               <span className="inbox-meta">
                 {item.reason && (
@@ -243,16 +262,8 @@ export function InboxView({
                     </span>
                   </span>
                 )}
-                <span className="muted">{when(item.lastMessageAt)}</span>
+                <span className="muted inbox-time">{when(item.lastMessageAt)}</span>
               </span>
-              {item.lastMessage && (
-                <span className="inbox-excerpt">
-                  {t(`author.${item.lastMessage.author}`)}: {item.lastMessage.excerpt}
-                </span>
-              )}
-              {item.replying.length > 0 && (
-                <span className="muted">{t("replying", { names: item.replying.join(", ") })}</span>
-              )}
             </Link>
           </li>
         ))}

@@ -225,7 +225,9 @@ export function Uploads({ locale, propertyId }: { locale: string; propertyId: st
   return (
     <section aria-labelledby="uploads-title">
       <p>
-        <Link href={`/${locale}${base}`}>{t("editor.backToGuide")}</Link>
+        <Link className="back-link" href={`/${locale}${base}`}>
+          {t("editor.backToGuide")}
+        </Link>
       </p>
       <h1 id="uploads-title">{t("uploads.title")}</h1>
       <p className="muted">{t("uploads.intro")}</p>

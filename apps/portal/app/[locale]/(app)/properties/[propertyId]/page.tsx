@@ -5,7 +5,10 @@ import { ExploreCard } from "@/components/explore/explore-card";
 import { ExtrasCard } from "@/components/extras/extras-card";
 import { PropertyFacts } from "@/components/properties/property-facts";
 
-/** A property's page: facts, then listing content, calendars, and stays (T046). */
+/**
+ * A property's page: facts, then listing content, calendars, and stays (T046); from 1024 px the
+ * cover and the summary cards sit in a side column (feature 017 FR-016).
+ */
 export default async function PropertyPage({
   params,
 }: {
@@ -14,12 +17,19 @@ export default async function PropertyPage({
   const { locale, propertyId } = await params;
   setRequestLocale(locale);
   return (
-    <main>
-      <PropertyFacts locale={locale} propertyId={propertyId} />
-      <AnalyticsCard locale={locale} propertyId={propertyId} />
-      <AssistantCard locale={locale} propertyId={propertyId} />
-      <ExploreCard locale={locale} propertyId={propertyId} />
-      <ExtrasCard locale={locale} propertyId={propertyId} />
+    <main className="page-wide property-page">
+      <PropertyFacts
+        locale={locale}
+        propertyId={propertyId}
+        aside={
+          <>
+            <AnalyticsCard locale={locale} propertyId={propertyId} />
+            <AssistantCard locale={locale} propertyId={propertyId} />
+            <ExploreCard locale={locale} propertyId={propertyId} />
+            <ExtrasCard locale={locale} propertyId={propertyId} />
+          </>
+        }
+      />
     </main>
   );
 }

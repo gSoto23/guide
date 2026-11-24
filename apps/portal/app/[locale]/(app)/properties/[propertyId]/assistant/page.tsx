@@ -14,7 +14,9 @@ export default async function PropertyAssistantPage({
   return (
     <main>
       <p>
-        <Link href={`/${locale}/properties/${propertyId}`}>{t("backToProperty")}</Link>
+        <Link className="back-link" href={`/${locale}/properties/${propertyId}`}>
+          {t("backToProperty")}
+        </Link>
       </p>
       <AssistantSettingsForm locale={locale} propertyId={propertyId} />
     </main>

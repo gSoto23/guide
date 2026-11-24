@@ -10,7 +10,7 @@ export default async function SharePage({
   const { locale, propertyId } = await params;
   setRequestLocale(locale);
   return (
-    <main>
+    <main className="page-wide">
       <ShareScreen locale={locale} propertyId={propertyId} />
     </main>
   );

@@ -246,36 +246,39 @@ export function CoreFactsForm(props: CoreFactsFormProps) {
           onBlur={checkAddress}
         />
       </label>
-      <label>
-        {required(t("city"))}
-        <input
-          required
-          maxLength={120}
-          autoComplete="address-level2"
-          value={value.city}
-          onChange={(event) => set("city", event.target.value)}
-          onBlur={checkAddress}
-        />
-        {fieldError("city")}
-      </label>
-      <label>
-        {t("region")}
-        <input
-          maxLength={120}
-          autoComplete="address-level1"
-          value={value.region}
-          onChange={(event) => set("region", event.target.value)}
-        />
-      </label>
-      <label>
-        {t("postalCode")}
-        <input
-          maxLength={20}
-          autoComplete="postal-code"
-          value={value.postalCode}
-          onChange={(event) => set("postalCode", event.target.value)}
-        />
-      </label>
+      {/* Feature 017 FR-011: short address fields share a row from 600 px. */}
+      <div className="field-row field-row-3">
+        <label>
+          {required(t("city"))}
+          <input
+            required
+            maxLength={120}
+            autoComplete="address-level2"
+            value={value.city}
+            onChange={(event) => set("city", event.target.value)}
+            onBlur={checkAddress}
+          />
+          {fieldError("city")}
+        </label>
+        <label>
+          {t("region")}
+          <input
+            maxLength={120}
+            autoComplete="address-level1"
+            value={value.region}
+            onChange={(event) => set("region", event.target.value)}
+          />
+        </label>
+        <label>
+          {t("postalCode")}
+          <input
+            maxLength={20}
+            autoComplete="postal-code"
+            value={value.postalCode}
+            onChange={(event) => set("postalCode", event.target.value)}
+          />
+        </label>
+      </div>
       {duplicates.length > 0 && !dismissed ? (
         <div className="alert alert-info" role="status">
           <p>{t("duplicateAddress", { names: duplicates.map((m) => m.name).join(", ") })}</p>

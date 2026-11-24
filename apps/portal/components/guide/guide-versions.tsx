@@ -50,7 +50,9 @@ export function GuideVersions({ locale, propertyId }: { locale: string; property
   return (
     <section aria-labelledby="versions-title">
       <p>
-        <Link href={`/${locale}${base}`}>{t("editor.backToGuide")}</Link>
+        <Link className="back-link" href={`/${locale}${base}`}>
+          {t("editor.backToGuide")}
+        </Link>
       </p>
       <h1 id="versions-title">{t("versions.title")}</h1>
       <p className="muted">{t("versions.intro")}</p>

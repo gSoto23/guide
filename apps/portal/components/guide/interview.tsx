@@ -191,7 +191,9 @@ export function Interview({
   return (
     <section aria-labelledby="interview-title">
       <p>
-        <Link href={`/${locale}${base}`}>{t("editor.backToGuide")}</Link>
+        <Link className="back-link" href={`/${locale}${base}`}>
+          {t("editor.backToGuide")}
+        </Link>
       </p>
       <h1 id="interview-title">{t("interview.title")}</h1>
       <p className="muted">{t("interview.intro")}</p>

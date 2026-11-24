@@ -50,7 +50,9 @@ export function ConversationList({ locale, propertyId }: { locale: string; prope
   return (
     <section aria-labelledby="conversations-title">
       <p>
-        <Link href={`/${locale}/properties/${propertyId}`}>{t("back")}</Link>
+        <Link className="back-link" href={`/${locale}/properties/${propertyId}`}>
+          {t("back")}
+        </Link>
       </p>
       <h1 id="conversations-title">
         {propertyName ? t("title", { property: propertyName }) : t("titleShort")}
