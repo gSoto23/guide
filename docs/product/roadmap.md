@@ -1,6 +1,6 @@
 # Roadmap
 
-> **Status:** Draft v0.2 · **Owner:** Founder · **Last updated:** 2026-11-14 ·
+> **Status:** Draft v0.3 · **Owner:** Founder · **Last updated:** 2026-11-24 ·
 > **Related:** [PRD](prd.md) · [ADR-0003 integration strategy](../architecture/adr/0003-phased-channel-integration-strategy.md) · [Open questions](../open-questions.md)
 
 Timelines are relative to the start of Phase 1 (M0). The founder works full time with AI coding
@@ -69,6 +69,8 @@ safely without any platform API, and that guests pay for add-ons.
 | F10 Basic analytics | Questions, escalations, views, clicks |
 | F11 Plan limits | Limits enforced; the pilot is free and billing comes after it |
 | F13 Guest checkout and payouts | Month 4; hosted checkout, host payouts, refunds (needs OQ-01) |
+| F22 Stay calendar and guest details | Added 2026-11-24 (spec 018): read-only calendar, stay view with the extras each stay bought, guest names typed by the host |
+| F11 AI reply allowances and top-ups | Added 2026-11-24 (spec 019): Pro at least 500 and Business at least 1,000 replies a month, Free 500 during the pilot, 25 messages per 10 minutes, founder-granted top-ups |
 
 **Suggested build order (specs):**
 
@@ -84,6 +86,10 @@ safely without any platform API, and that guests pay for add-ons.
 10. 008 Service catalog
 11. 010 Analytics
 12. 013 Payments and checkout (month 4)
+13. 014 Launch pages and demo workspace, 015 brand shell, 016 property photos, 017 desktop design
+    (done 2026-11-19 to 2026-11-23)
+14. 019 AI reply allowances and top-ups (small; before the pilot starts)
+15. 018 Stay calendar and guest details
 
 If the schedule slips, follow the cut order in [PRD §4](prd.md#4-feature-catalog-and-prioritization).
 
@@ -107,7 +113,8 @@ PMSs, and paid plans start.
 | F12 PMS integrations (in-platform chat and continuous sync): Hospitable and Hostaway first, then Guesty and Smoobu | Partner approvals (applied in Phase 0) |
 | F21 Portfolio management: property groups, per-property permissions, owner read-only access | — |
 | F06 extended: unified inbox across the platform chat and the guide chat | F12 |
-| F11 Self-serve subscriptions (Free, Pro, Business) | Payment provider |
+| F11 Self-serve subscriptions (Free, Pro, Business), top-up purchase with an optional automatic top-up, and the plan review with pilot data (direction: AI replies only on Pro and Business) | Payment provider for hosts (OQ-13); top-up price (OQ-12) |
+| Partner tour bookings on the stay (Localbird first) | A partnership where the partner reports bookings per stay (OQ-38) |
 | F14 Reservations partners (car rental, transfers, restaurants) via affiliates | Partner programs |
 | F15 Back-office (minimal) | — |
 
@@ -138,6 +145,7 @@ PMSs, and paid plans start.
 | Confirm the terms for read-only imports with a customer's token (Beds24, Hostex, Hostaway) | Phase 0 | Founder | Decides the MVP importers (OQ-26) |
 | Legal entity and Tilopay merchant account | Phase 0 | Founder | **Critical path:** needed by week 10 of the MVP for payments (F13). Tilopay is the initial provider (ADR-0007); confirm split settlement and coverage (OQ-37) |
 | Join tour affiliate programs (Viator, Civitatis, GetYourGuide) | Phase 0 | Founder | Basic affiliate access is quick |
+| Talk to Localbird about a tour partnership with bookings reported per stay | Phase 1 | Founder | OQ-38; Localbird is also a partial competitor through its guestbook |
 | Recruit design partners | Phase 0 | Founder | Individual hosts and managers |
 | Legal review: Airbnb policies, privacy, terms of service, insurance distribution | Phase 1 | Counsel | Before scaling upsells, and before insurance |
 | Insurance partner negotiation | Phase 2 | Founder | — |

@@ -175,6 +175,23 @@ The decision is recorded in [ADR-0003](../architecture/adr/0003-phased-channel-i
 - **Onboarding differs by PMS.** Hostaway's API-key flow needs dedicated UX; Hospitable and Smoobu use OAuth.
 - **Budget for unknown fees.** PMS partner fees could be anywhere from zero to material.
 
+## Calendar export (iCal) contents (added 2026-11-24)
+
+Calendar feeds give stay dates but almost no guest data:
+
+- **Airbnb** (since a December 2019 change): reserved entries carry a "Reservation URL" with the
+  reservation code and "Phone Number (Last 4 Digits)" in the description; no guest name, email, or
+  full phone. Spec 018 keeps only the reservation code, so the host can find the matching Airbnb
+  thread and type the guest's name (OQ-39 checks this against a real feed).
+- **Booking.com and Vrbo:** entries mark dates as unavailable with no guest data (to be confirmed
+  with real feeds, OQ-39).
+- Guest names come from a PMS import, a stay added by hand, or the host typing the name on the stay
+  (spec 018).
+
+Sources: [Cloudbeds (myallocator) on the Airbnb iCal change](https://myallocator.cloudbeds.com/hc/en-us/articles/360038298514-Airbnb-iCal-Announcement-and-Next-Steps-December-2019),
+[Uplisting on the Airbnb iCal change](https://uplisting.io/blog/how-the-airbnb-icalendar-ical-changes-will-affect-you-and-how-to-avoid-disruption),
+[Airbnb community: no guest names on iCal](https://community.withairbnb.com/t5/Help/No-Guest-Names-on-ICal-seriously/m-p/1189415).
+
 ## Unverified / open items
 
 - **Airbnb's partner page** was cited only through a secondary source.

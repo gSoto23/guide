@@ -33,6 +33,18 @@ This page covers the partners Guidesk could use to monetize services sold by the
 | **Tiqets** | 3–7% (third-party source, contradictory) | Awin and Travelpayouts | Museums and attractions in Europe and US cities | Redirect |
 | **Booking.com affiliates** | 4% attractions, 6% cars, 4% taxis via CJ since June 2025 (third-party source, contradictory) ([guide](https://www.makeinfluence.com/en/academy/booking-coms-affiliate-program-how-travel-creators-earn-commission)) | CJ network | Global | Redirect; session cookie |
 
+**Localbird (added 2026-11-24, third-party sources only).** Localbird sells tours and experiences in
+Costa Rica. It offers hosts a guestbook with tours, says hosts earn affiliate commissions when guests
+book through it, and integrates with PMSs (Guesty with an API token, Hostaway's marketplace, Hostify;
+Hostfully "coming soon"). No public partner API or commission rate was found. For Guidesk it is a
+candidate local supplier for Explore and, through its guestbook, a partial competitor. A partnership
+is useful only if Localbird reports each booking with a Guidesk stay reference so the tour appears
+on the stay (spec 018 "Services" area) and the guest stays in the Guidesk guide (OQ-38).
+([StrHub](https://strhub.com/product/localbird/),
+[Guesty help](https://help.guesty.com/hc/en-gb/articles/27917183594781-Localbird),
+[Hostaway marketplace](https://www.hostaway.com/marketplace/localbird),
+[Trustpilot](https://ie.trustpilot.com/review/localbird.io))
+
 **Bottom line.** For booking inside the app, the realistic options are Viator Full+Booking or Merchant, or GetYourGuide's BOOKING tier. All of them require qualification. For the MVP, Viator and Civitatis affiliate links are the fastest route.
 
 ## Embedded insurance and damage protection
@@ -116,6 +128,7 @@ This page covers the partners Guidesk could use to monetize services sold by the
 - **Stripe's standard US card fee** was not verified in this session. Adyen's minimum billing comes from a third-party source.
 - **Insurance licensing and merchant-of-record status** both require legal advice before launch.
 - **Restaurant, transfer and car-rental partners** were not researched in depth.
+- **Localbird:** commission rates, a partner API, and per-booking reporting are unverified (OQ-38).
 
 ## Sources
 
@@ -125,6 +138,9 @@ This page covers the partners Guidesk could use to monetize services sold by the
 - [GetYourGuide partner API spec](https://github.com/getyourguide/partner-api-spec)
 - [Civitatis affiliates (Mexico)](https://www.civitatis.com/mx/afiliados/)
 - [Civitatis — other tourism businesses](https://www.civitatis.com/es/afiliados/otras-empresas-del-sector-turistico)
+- [StrHub — Localbird](https://strhub.com/product/localbird/)
+- [Guesty help — Localbird](https://help.guesty.com/hc/en-gb/articles/27917183594781-Localbird)
+- [Hostaway marketplace — Localbird](https://www.hostaway.com/marketplace/localbird)
 - [Make Influence — Booking.com affiliate program](https://www.makeinfluence.com/en/academy/booking-coms-affiliate-program-how-travel-creators-earn-commission)
 - [Cover Genius — embedded insurance](https://covergenius.com/embedded-insurance-for-seamless-protection/)
 - [Cover Genius — Volaris case](https://covergenius.com/?p=29989)

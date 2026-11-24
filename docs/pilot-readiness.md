@@ -41,8 +41,12 @@ access request, are drafted in [partner outreach](partner-outreach.md).
   - what happens to that fee when a host refunds: today each order keeps the fee fixed at payment and
     no rule returns it, so decide whether a refund returns the fee in proportion (spec 013; the Tilopay
     answer on how refunds reverse a split settlement shapes it);
-  - plan limits: Free 2 properties, 100 AI replies a month, 1 seat; Pro 300 AI replies per active
-    property and 3 seats; Business unlimited seats (OQ-10, `packages/domain/src/plans/`).
+  - plan limits: Free 2 properties, 1 seat; Pro 3 seats; Business unlimited seats (OQ-10,
+    `packages/domain/src/plans/`). **AI replies decided 2026-11-24 (spec 019, to build before the
+    pilot):** Free 500 a month during the pilot; Pro 300 per active property, at least 500; Business
+    300 per active property, at least 1,000; 25 guest messages per device every 10 minutes; top-ups
+    granted by the founder when a workspace runs out. Until spec 019 ships, main still enforces the
+    old numbers (Free 100, Pro and Business 300 per property).
 - [ ] **PMS read-only import permission** in writing from Beds24 and Hostex for a customer's own token
   (OQ-26, spec 002 R15). Blocks `GUIDESK_PMS_BEDS24` and `GUIDESK_PMS_HOSTEX`. Drafts:
   [Beds24](partner-outreach.md#2-beds24), [Hostex](partner-outreach.md#3-hostex).
@@ -52,6 +56,11 @@ access request, are drafted in [partner outreach](partner-outreach.md).
 - [ ] **Trademark search** (OQ-11), before printing QR posters in volume. The domain is decided
   (guidesk.io, 2026-11-23; section 2) and the visual identity (direction "A · Bienvenida") is
   already in main (PR #3, [brand guide](brand/README.md)).
+- [ ] **Airbnb calendar export check** (OQ-39, spec 018): look at one real Airbnb export (and a
+  Booking.com or Vrbo one if a partner has it) and confirm what a reserved entry carries; spec 018
+  keeps only the reservation code.
+- [ ] **Localbird conversation** (OQ-38): whether they would report tour bookings per stay and on
+  what revenue share.
 - [ ] **Design partners and dates** (OQ-03, OQ-02): the 10 to 20 hosts and 3 to 5 managers, their PMS,
   the pilot start date, and the monthly budget.
 
@@ -212,7 +221,10 @@ Run each spec's quickstart on staging with real phones on mobile data (each `spe
   (spec 010).
 - [ ] Close the GitGuardian incident for the synthetic Wi-Fi password in test fixtures (opened with spec
   004; the code uses neutral values such as `TEST-0000` since then).
-- [ ] Decide pricing from pilot evidence (roadmap exit criteria, OQ-10).
+- [ ] When a workspace runs out of AI replies, grant a top-up with the founder tool (spec 019) and note
+  why; the monthly report shows replies from allowances and top-ups and the cost per reply.
+- [ ] Decide pricing from pilot evidence (roadmap exit criteria, OQ-10), including the top-up price
+  (OQ-12) and whether Free keeps AI replies after the pilot.
 
 ## Feature flags and modes
 
