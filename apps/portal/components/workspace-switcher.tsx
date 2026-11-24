@@ -67,14 +67,19 @@ export function WorkspaceSwitcher({
         className="switcher-current"
         aria-expanded={open}
         aria-controls="workspace-list"
+        title={current?.workspaceName}
         onClick={() => setOpen((value) => !value)}
       >
-        {/* The accessible name starts with the action and includes the visible text (WCAG 2.5.3). */}
+        {/* The accessible name starts with the action and includes the visible text (WCAG 2.5.3).
+            The name stays on one line (founder decision 2026-11-23); the tooltip and the accessible
+            name keep it whole. */}
         <span className="visually-hidden">{t("switchLabel")}: </span>
-        <span className="switcher-name" data-testid="current-workspace">
-          {current?.workspaceName ?? t("none")}
+        <span className="switcher-text">
+          <span className="switcher-name truncate-name" data-testid="current-workspace">
+            {current?.workspaceName ?? t("none")}
+          </span>
+          {current ? <span className="switcher-role">{t(`roles.${current.role}`)}</span> : null}
         </span>
-        {current ? <span className="switcher-role">{t(`roles.${current.role}`)}</span> : null}
         <span aria-hidden="true">▾</span>
       </button>
       {open ? (
@@ -90,9 +95,10 @@ export function WorkspaceSwitcher({
                     membership.workspaceId === current?.workspaceId ? "true" : undefined
                   }
                   disabled={busy}
+                  title={membership.workspaceName}
                   onClick={() => void choose(membership.workspaceId)}
                 >
-                  <span>{membership.workspaceName}</span>
+                  <span className="truncate-name">{membership.workspaceName}</span>
                   <span className="switcher-role">
                     {t(`roles.${membership.role}`)}
                     {membership.status === "pending_deletion" ? ` · ${t("pendingDeletion")}` : ""}

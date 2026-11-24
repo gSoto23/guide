@@ -159,11 +159,14 @@ loaded by the portal or the guest guide ([brand guide §4](../brand/README.md#4-
   cards, still a bottom bar), expanded `≥ 1024 px` (portal sidebar, two-column layouts; §4.1).
 - **Portal shell (feature 015):** under 1024 px, a top bar (logo, workspace switcher) and a bottom
   bar with Inbox, Requests, Properties, and More (Analytics, Shared content, Team, Settings); four
-  columns keep every Spanish label whole at 320 px. From 1024 px, a 15rem sidebar with every
+  columns keep every Spanish label whole at 320 px. From 1024 px, a 16.5rem sidebar with every
   destination. Main pages start with the page header (title, help line, primary action); lists and
   dashboards use up to 75rem, other pages 52rem, forms 40rem.
 - **No cut text (feature 015):** labels never hyphenate or end in an ellipsis; they wrap between
-  words. User-entered names and links wrap anywhere only when one word cannot fit.
+  words. User-entered names and links wrap anywhere only when one word cannot fit. *Exception
+  (founder decision 2026-11-23):* names in compact chrome (the workspace switcher, its menu, and
+  the account link in the sidebar) stay on one line and end in an ellipsis (`.truncate-name`); the
+  full name stays in the tooltip and the accessible name, and Settings shows it whole.
 - **Content width:** guide content max 40rem, centered; portal content max 75rem.
 - **Reflow:** every screen works at 320 CSS px wide and at 200% zoom, with no horizontal
   scrolling (WCAG 1.4.10).
