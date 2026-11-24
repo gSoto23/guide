@@ -74,7 +74,6 @@ export function CalendarView({ locale }: { locale: string }) {
         }
       });
     return () => controller.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [api, month, filters]);
 
   function update(next: CalendarFilters) {

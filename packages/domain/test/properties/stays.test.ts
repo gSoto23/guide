@@ -307,7 +307,13 @@ describe("feed references (feature 018 FR-017)", () => {
       today: "2027-01-10",
       existing: [],
       entries: [
-        { uid: "a", start: "2027-01-20", end: "2027-01-22", kind: "reservation", reference: "HMAAAA1111" },
+        {
+          uid: "a",
+          start: "2027-01-20",
+          end: "2027-01-22",
+          kind: "reservation",
+          reference: "HMAAAA1111",
+        },
         { uid: "b", start: "2027-02-01", end: "2027-02-03", kind: "reservation" },
       ],
     });
@@ -326,7 +332,13 @@ describe("feed references (feature 018 FR-017)", () => {
         },
       ],
       entries: [
-        { uid: "a", start: "2027-01-20", end: "2027-01-22", kind: "reservation", reference: "HMAAAA1111" },
+        {
+          uid: "a",
+          start: "2027-01-20",
+          end: "2027-01-22",
+          kind: "reservation",
+          reference: "HMAAAA1111",
+        },
       ],
     });
     expect(updated.update).toEqual([
@@ -334,4 +346,3 @@ describe("feed references (feature 018 FR-017)", () => {
     ]);
   });
 });
-
