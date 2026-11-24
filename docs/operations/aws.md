@@ -195,6 +195,15 @@ AWS_PROFILE=guidesk-staging GUIDESK_EMAIL_SENDER=<verified-sender-address> pnpm 
   AWS_PROFILE=guidesk-staging scripts/aws-task.sh staging migrate
   ```
 
+- The founder's plan tool runs the same way (specs 011 and 019): `plan show`, `plan set`, `plan
+  topup`, `plan topups`, and `plan topup-correct`, with the options of
+  `packages/db/src/cli/plan.ts`. The script passes the arguments as JSON, so notes may hold spaces:
+
+  ```bash
+  AWS_PROFILE=guidesk-staging scripts/aws-task.sh staging plan show --workspace <uuid>
+  AWS_PROFILE=guidesk-staging scripts/aws-task.sh staging plan topup --workspace <uuid> --replies 250 --note "pilot"
+  ```
+
 - Remove the worktree when done: `git worktree remove ../guidesk-deploy`.
 - The API and worker images are arm64 (Graviton). CI deploys on an `ubuntu-24.04-arm` runner, so it
   builds them natively; a manual deploy builds them natively on an arm64 machine and needs emulation

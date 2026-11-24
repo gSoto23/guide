@@ -6,6 +6,13 @@ import type { SecurityEventPage, SecurityEventView } from "@guidesk/contracts";
 import { apiFetch } from "@/lib/api";
 import { useMeContext } from "@/lib/me-context";
 
+/** Events written by Guidesk's founder tool, shown as made by Guidesk. */
+const GUIDESK_EVENTS = new Set([
+  "workspace.plan_changed",
+  "workspace.ai_top_up_added",
+  "workspace.ai_top_up_corrected",
+]);
+
 type Tab = "workspace" | "mine";
 
 /** Security log viewer (FR-030, T099): the workspace's events and the user's own account events. */
@@ -84,8 +91,8 @@ export function SecurityLog({ locale }: { locale: string }) {
                   ? ` · ${
                       event.actor
                         ? event.actor.name || event.actor.email
-                        : // Plan changes come from Guidesk's founder tool (feature 011 FR-018).
-                          event.type === "workspace.plan_changed"
+                        : // Plan changes and top-ups come from Guidesk's founder tool (011 FR-018, 019).
+                          GUIDESK_EVENTS.has(event.type)
                           ? t("guidesk")
                           : t("unknownActor")
                     }`

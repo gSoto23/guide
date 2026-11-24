@@ -8,7 +8,14 @@ import {
   type Plan,
 } from "@guidesk/domain";
 import type { Database } from "../client.js";
-import { monthlyAiReplies, workspaceLimitInputs } from "../plan-limits.js";
+import {
+  monthlyAiReplies,
+  openTopUps,
+  topUpBalance,
+  workspaceLimitInputs,
+  type OpenTopUp,
+} from "../plan-limits.js";
+import { aiTopUp, TOP_UP_MAX_REPLIES } from "../schema/plans.js";
 import { securityEvent } from "../security-event.js";
 
 /**
@@ -148,6 +155,8 @@ export interface PlanReport {
   limits: EffectiveLimits;
   usage: { properties: number; members: number; pending: number; aiReplies: number };
   month: { start: string; resetsAt: string };
+  /** Feature 019: the open top-ups, oldest first, and their total. */
+  topUps: { balance: number; items: OpenTopUp[] };
 }
 
 export async function showPlan(
@@ -184,6 +193,10 @@ export async function showPlan(
       aiReplies: await monthlyAiReplies(db, workspaceId, now),
     },
     month: { start: start.toISOString(), resetsAt: resetsAt.toISOString() },
+    topUps: {
+      balance: await topUpBalance(db, workspaceId, now),
+      items: await openTopUps(db, workspaceId, now),
+    },
   };
 }
 
@@ -198,6 +211,194 @@ export function formatPlanReport(report: PlanReport): string {
     `Note: ${report.note ?? "—"}`,
     `Properties: ${usage.properties} of ${limitText(limits.properties.limit)} (${limits.properties.source})`,
     `Seats: ${usage.members + usage.pending} of ${limitText(limits.seats.limit)} (${limits.seats.source}; ${usage.members} members, ${usage.pending} pending)`,
-    `AI replies this month: ${usage.aiReplies} of ${limits.aiReplies.limit} (${limits.aiReplies.source}${limits.aiReplies.perProperty ? `, ${limits.aiReplies.perProperty} per active property` : ""}); renews ${report.month.resetsAt}`,
+    `AI replies this month: ${usage.aiReplies} of ${limits.aiReplies.limit} (${limits.aiReplies.source}${limits.aiReplies.perProperty ? `, ${limits.aiReplies.perProperty} per active property` : ""}${limits.aiReplies.minimum ? `, at least ${limits.aiReplies.minimum}` : ""}); renews ${report.month.resetsAt}`,
+    `Top-ups: ${report.topUps.balance} replies left${report.topUps.items
+      .map(
+        (item) => `\n  ${item.id}: ${item.remaining} of ${item.granted}, expires ${item.expiresAt}`,
+      )
+      .join("")}`,
   ].join("\n");
+}
+
+/** Top-ups above this many replies need `--yes` (feature 019 FR-010). */
+export const TOP_UP_CONFIRM_ABOVE = 5000;
+
+/** Parses `--replies` for a top-up: a whole number from 1 to 100,000. */
+export function parseTopUpReplies(value: string | undefined): number {
+  if (value === undefined || !/^\d+$/.test(value)) {
+    throw new PlanAdminError(`--replies must be a whole number from 1 to ${TOP_UP_MAX_REPLIES}.`);
+  }
+  const replies = Number(value);
+  if (replies < 1 || replies > TOP_UP_MAX_REPLIES) {
+    throw new PlanAdminError(`--replies must be a whole number from 1 to ${TOP_UP_MAX_REPLIES}.`);
+  }
+  return replies;
+}
+
+function cleanNote(value: string): string {
+  const note = value.trim();
+  if (note.length < 1 || note.length > 200) {
+    throw new PlanAdminError("--note is required (1 to 200 characters).");
+  }
+  return note;
+}
+
+export interface AddTopUpInput {
+  workspaceId: string;
+  replies: number;
+  note: string;
+  /** Required above 5,000 replies. */
+  confirmed?: boolean;
+}
+
+export interface TopUpRow {
+  id: string;
+  granted: number;
+  used: number;
+  remaining: number;
+  addedAt: string;
+  expiresAt: string;
+  expired: boolean;
+  note: string;
+  correctedAt: string | null;
+  correctionNote: string | null;
+}
+
+/**
+ * Adds an AI reply top-up (feature 019 FR-005): one transaction with the row and a security event
+ * `workspace.ai_top_up_added` (actor none, shown as Guidesk) holding the count and expiry date only;
+ * the note stays on the row.
+ */
+export async function addTopUp(db: Database, input: AddTopUpInput): Promise<TopUpRow> {
+  if (!UUID.test(input.workspaceId)) throw new PlanAdminError("--workspace must be a UUID.");
+  if (!Number.isInteger(input.replies) || input.replies < 1 || input.replies > TOP_UP_MAX_REPLIES) {
+    throw new PlanAdminError(`--replies must be a whole number from 1 to ${TOP_UP_MAX_REPLIES}.`);
+  }
+  if (input.replies > TOP_UP_CONFIRM_ABOVE && !input.confirmed) {
+    throw new PlanAdminError(
+      `A top-up above ${TOP_UP_CONFIRM_ABOVE} replies needs --yes to confirm (${input.replies} asked).`,
+    );
+  }
+  const note = cleanNote(input.note);
+  return db.transaction(async (tx) => {
+    const found = await tx.execute(
+      sql`SELECT 1 FROM workspace WHERE id = ${input.workspaceId} FOR UPDATE`,
+    );
+    if (found.rows.length === 0) throw new PlanAdminError("No workspace with that ID.");
+    const [row] = await tx
+      .insert(aiTopUp)
+      .values({ workspaceId: input.workspaceId, repliesGranted: input.replies, note })
+      .returning();
+    const metadata = {
+      replies: input.replies,
+      expiresOn: row!.expiresAt.toISOString().slice(0, 10),
+    };
+    assertSafeMetadata(metadata, "workspace.ai_top_up_added");
+    await tx.insert(securityEvent).values({
+      type: "workspace.ai_top_up_added",
+      outcome: "success",
+      actorUserId: null,
+      workspaceId: input.workspaceId,
+      targetType: "workspace",
+      targetId: input.workspaceId,
+      metadata,
+    });
+    return toTopUpRow(row!, new Date());
+  });
+}
+
+function toTopUpRow(row: typeof aiTopUp.$inferSelect, now: Date): TopUpRow {
+  return {
+    id: row.id,
+    granted: row.repliesGranted,
+    used: row.repliesUsed,
+    remaining: row.repliesGranted - row.repliesUsed,
+    addedAt: row.createdAt.toISOString(),
+    expiresAt: row.expiresAt.toISOString(),
+    expired: row.expiresAt.getTime() <= now.getTime(),
+    note: row.note,
+    correctedAt: row.correctedAt ? row.correctedAt.toISOString() : null,
+    correctionNote: row.correctionNote,
+  };
+}
+
+/** Every top-up of the workspace, newest first, with notes (the founder's history). */
+export async function listTopUps(
+  db: Database,
+  workspaceId: string,
+  now: Date = new Date(),
+): Promise<TopUpRow[]> {
+  if (!UUID.test(workspaceId)) throw new PlanAdminError("--workspace must be a UUID.");
+  const rows = await db
+    .select()
+    .from(aiTopUp)
+    .where(sql`${aiTopUp.workspaceId} = ${workspaceId}`)
+    .orderBy(sql`${aiTopUp.createdAt} DESC`, sql`${aiTopUp.id} DESC`);
+  return rows.map((row) => toTopUpRow(row, now));
+}
+
+export interface CorrectTopUpInput {
+  topUpId: string;
+  /** The replies left after the correction; lower than now. */
+  remaining: number;
+  note: string;
+}
+
+/**
+ * Lowers a top-up's unused replies (feature 019 FR-010), for example after a typo. Never raises it
+ * (add a new top-up instead). Records `workspace.ai_top_up_corrected` with the counts only.
+ */
+export async function correctTopUp(db: Database, input: CorrectTopUpInput): Promise<TopUpRow> {
+  if (!UUID.test(input.topUpId)) throw new PlanAdminError("--top-up must be a UUID.");
+  if (!Number.isInteger(input.remaining) || input.remaining < 0) {
+    throw new PlanAdminError("--remaining must be a whole number, 0 or more.");
+  }
+  const note = cleanNote(input.note);
+  return db.transaction(async (tx) => {
+    const locked = await tx
+      .select()
+      .from(aiTopUp)
+      .where(sql`${aiTopUp.id} = ${input.topUpId}`)
+      .for("update");
+    const row = locked[0];
+    if (!row) throw new PlanAdminError("No top-up with that ID.");
+    const current = row.repliesGranted - row.repliesUsed;
+    if (input.remaining >= current) {
+      throw new PlanAdminError(
+        `A correction only lowers the replies left (${current} now); add a new top-up to raise it.`,
+      );
+    }
+    const [updated] = await tx
+      .update(aiTopUp)
+      .set({
+        repliesGranted: row.repliesUsed + input.remaining,
+        correctedAt: sql`now()`,
+        correctionNote: note,
+      })
+      .where(sql`${aiTopUp.id} = ${input.topUpId}`)
+      .returning();
+    const metadata = { from: current, to: input.remaining };
+    assertSafeMetadata(metadata, "workspace.ai_top_up_corrected");
+    await tx.insert(securityEvent).values({
+      type: "workspace.ai_top_up_corrected",
+      outcome: "success",
+      actorUserId: null,
+      workspaceId: row.workspaceId,
+      targetType: "workspace",
+      targetId: row.workspaceId,
+      metadata,
+    });
+    return toTopUpRow(updated!, new Date());
+  });
+}
+
+/** A short table of top-ups for the terminal, notes included (the founder's own text). */
+export function formatTopUps(rows: TopUpRow[]): string {
+  if (rows.length === 0) return "No top-ups.";
+  return rows
+    .map(
+      (row) =>
+        `${row.id}: ${row.remaining} of ${row.granted} left; added ${row.addedAt}; ${row.expired ? "expired" : "expires"} ${row.expiresAt}; note: ${row.note}${row.correctedAt ? `; corrected ${row.correctedAt}: ${row.correctionNote}` : ""}`,
+    )
+    .join("\n");
 }

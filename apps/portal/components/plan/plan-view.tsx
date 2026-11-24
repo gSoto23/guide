@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { PlanSummary } from "@guidesk/contracts";
-import { formatMoment, share } from "@/lib/plan";
+import { askMoreHref, formatDay, formatMoment, share } from "@/lib/plan";
 import { useWorkspace } from "@/lib/use-workspace";
 
 interface Row {
@@ -15,8 +15,9 @@ interface Row {
 
 /**
  * Plan and limits (feature 011 US4, screen H-32): the plan, each limit with its usage as text and as
- * a bar that repeats the text (FR-016), what counts as an AI reply, the workspace ID, and how to ask
- * Guidesk for a change. Owners and admins only; the API refuses agents too.
+ * a bar that repeats the text (FR-016), the AI reply top-ups with their expiry and how to ask for
+ * more (feature 019 US4), what counts as an AI reply, the workspace ID, and how to ask Guidesk for a
+ * change. Owners and admins only; the API refuses agents too.
  */
 export function PlanView({ locale }: { locale: string }) {
   const t = useTranslations("plan");
@@ -61,7 +62,9 @@ export function PlanView({ locale }: { locale: string }) {
   }
   if (!summary) return <p className="muted">{t("loading")}</p>;
 
-  const { limits } = summary;
+  const { limits, topUps } = summary;
+  // Replies above the month's allowance came from top-ups (or were already in flight).
+  const fromTopUps = Math.max(0, limits.aiReplies.used - limits.aiReplies.limit);
   const over = (used: number, limit: number | null) => limit !== null && used > limit;
   const rows: Row[] = [
     {
@@ -75,13 +78,19 @@ export function PlanView({ locale }: { locale: string }) {
     },
     {
       key: "aiReplies",
-      used: limits.aiReplies.used,
+      used: Math.min(limits.aiReplies.used, limits.aiReplies.limit),
       limit: limits.aiReplies.limit,
       notes: [
         ...(limits.aiReplies.source === "custom" ? [t("custom")] : []),
         ...(limits.aiReplies.perProperty
-          ? [t("pooled", { perProperty: limits.aiReplies.perProperty })]
+          ? [
+              t("pooled", {
+                perProperty: limits.aiReplies.perProperty,
+                minimum: limits.aiReplies.minimum ?? limits.aiReplies.perProperty,
+              }),
+            ]
           : []),
+        ...(fromTopUps > 0 ? [t("fromTopUps", { count: fromTopUps })] : []),
         t("resets", { date: formatMoment(locale, limits.aiReplies.resetsAt) }),
       ],
     },
@@ -128,6 +137,52 @@ export function PlanView({ locale }: { locale: string }) {
             </li>
           ))}
         </ul>
+      </section>
+      <section className="card" aria-labelledby="plan-top-ups">
+        <h2 id="plan-top-ups">{t("topUpsTitle")}</h2>
+        <p className="muted">{t("topUpsIntro")}</p>
+        {topUps.balance > 0 ? (
+          <>
+            <p>{t("topUpsBalance", { balance: topUps.balance })}</p>
+            <ul className="bar-list">
+              {topUps.items.map((item) => (
+                <li key={item.id} className="bar-row">
+                  <span className="bar-value">
+                    {t("topUpItem", {
+                      remaining: item.remaining,
+                      granted: item.granted,
+                      date: formatDay(locale, item.expiresAt),
+                    })}
+                  </span>
+                  <span className="bar-track" aria-hidden="true">
+                    <span
+                      className="bar-fill"
+                      style={{ width: `${share(item.remaining, item.granted)}%` }}
+                    />
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <p>{t("topUpsNone")}</p>
+        )}
+        <p>{t("askMoreBody")}</p>
+        <p>
+          {summary.contactEmail ? (
+            <a
+              className="button button-secondary"
+              href={askMoreHref(
+                summary.contactEmail,
+                t("askMoreSubject", { workspaceId: summary.workspaceId }),
+              )}
+            >
+              {t("askMore")}
+            </a>
+          ) : (
+            t("noContact")
+          )}
+        </p>
       </section>
       <section className="card" aria-labelledby="plan-counts">
         <h2 id="plan-counts">{t("whatCountsTitle")}</h2>

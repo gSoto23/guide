@@ -92,6 +92,9 @@ export const SECURITY_EVENT_TYPES = [
   "service_request.answered",
   // Feature 011 (data model): changed by Guidesk's founder tool, so there is no actor.
   "workspace.plan_changed",
+  // Feature 019 (data model): AI reply top-ups, also from the founder tool.
+  "workspace.ai_top_up_added",
+  "workspace.ai_top_up_corrected",
   // Feature 013 (data model).
   "payment.refunded",
   "payment.disputed",
@@ -205,6 +208,9 @@ const METADATA_ALLOWLIST: Partial<Record<SecurityEventType, readonly string[]>> 
   "service_request.answered": ["propertyId", "requestId", "status"],
   // The plans and custom limits (a number or "plan"); the founder's note stays off the log.
   "workspace.plan_changed": ["from", "to", "properties", "seats", "aiReplies", "feeBps"],
+  // Counts and a date only; the founder's note stays on the top-up row (feature 019).
+  "workspace.ai_top_up_added": ["replies", "expiresOn"],
+  "workspace.ai_top_up_corrected": ["from", "to"],
   // Amounts and IDs only; never card data or the guest's details (feature 013 SEC-20).
   "payment.refunded": ["orderId", "amountMinor", "currency", "full"],
   "payment.disputed": ["orderId"],

@@ -110,7 +110,7 @@
       "propertiesOther": "{count} active properties",
       "propertiesUnlimited": "Unlimited properties",
       "repliesFixed": "{count} AI replies a month",
-      "repliesPooled": "{count} AI replies a month per active property, pooled",
+      "repliesPooled": "{count} AI replies a month per active property, pooled, at least {minimum}",
       "seatsOne": "{count} seat",
       "seatsOther": "{count} seats",
       "seatsUnlimited": "Unlimited seats",

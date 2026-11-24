@@ -211,20 +211,20 @@ describe("guest chat (feature 005 US1)", () => {
     expect(rows[0]?.stay_id).toBe(stayId);
   });
 
-  it("pauses a device after 20 messages in 10 minutes without storing more (FR-028)", async () => {
+  it("pauses a device after 25 messages in 10 minutes without storing more (FR-028, 019 FR-004)", async () => {
     const ip = "10.250.1.1";
     const first = await send(published.publicId, "Mensaje 1", { ip });
     const cookie = cookieFrom(first)!;
-    for (let i = 2; i <= 20; i += 1) {
+    for (let i = 2; i <= 25; i += 1) {
       const response = await send(published.publicId, `Mensaje ${i}`, { cookie, ip });
       expect(response.statusCode).toBe(202);
     }
-    const paused = await send(published.publicId, "Mensaje 21", { cookie, ip });
+    const paused = await send(published.publicId, "Mensaje 26", { cookie, ip });
     expect(paused.statusCode).toBe(429);
     const body = paused.json() as { code: string; retryAfterSeconds: number };
     expect(body.code).toBe("chat_paused");
     expect(body.retryAfterSeconds).toBeGreaterThan(0);
-    const { rows } = await db.query(`SELECT 1 FROM chat_message WHERE body = 'Mensaje 21'`);
+    const { rows } = await db.query(`SELECT 1 FROM chat_message WHERE body = 'Mensaje 26'`);
     expect(rows).toHaveLength(0);
   });
 });

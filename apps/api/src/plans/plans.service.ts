@@ -1,7 +1,13 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { sql } from "drizzle-orm";
 import type { PlanSummary } from "@guidesk/contracts";
-import { limitsFor, monthlyAiReplies, workspaceLimitInputs } from "@guidesk/db";
+import {
+  limitsFor,
+  monthlyAiReplies,
+  openTopUps,
+  topUpBalance,
+  workspaceLimitInputs,
+} from "@guidesk/db";
 import { monthBounds } from "@guidesk/domain";
 import { ApiProblem } from "../common/problem.js";
 import { API_CONFIG, type ApiConfig } from "../config/config.js";
@@ -24,17 +30,18 @@ export class PlansService {
     const inputs = await workspaceLimitInputs(tx, workspaceId);
     if (!inputs) throw new ApiProblem(404, "not_found");
     const limits = limitsFor(inputs);
-    const [seats, changed, used] = await Promise.all([
-      tx.execute<{ members: number; pending: number }>(sql`
-        SELECT (SELECT count(*)::int FROM membership WHERE workspace_id = ${workspaceId}::uuid) AS members,
-               (SELECT count(*)::int FROM invitation
-                 WHERE workspace_id = ${workspaceId}::uuid AND status = 'pending'
-                   AND expires_at > ${now}) AS pending`),
-      tx.execute<{ plan_changed_at: Date | null }>(
-        sql`SELECT plan_changed_at FROM workspace WHERE id = ${workspaceId}::uuid`,
-      ),
-      monthlyAiReplies(tx, workspaceId, now),
-    ]);
+    // One request transaction runs one query at a time, so these are awaited in turn.
+    const seats = await tx.execute<{ members: number; pending: number }>(sql`
+      SELECT (SELECT count(*)::int FROM membership WHERE workspace_id = ${workspaceId}::uuid) AS members,
+             (SELECT count(*)::int FROM invitation
+               WHERE workspace_id = ${workspaceId}::uuid AND status = 'pending'
+                 AND expires_at > ${now}) AS pending`);
+    const changed = await tx.execute<{ plan_changed_at: Date | null }>(
+      sql`SELECT plan_changed_at FROM workspace WHERE id = ${workspaceId}::uuid`,
+    );
+    const used = await monthlyAiReplies(tx, workspaceId, now);
+    const topUps = await openTopUps(tx, workspaceId, now);
+    const balance = await topUpBalance(tx, workspaceId, now);
     const members = Number(seats.rows[0]?.members ?? 0);
     const pending = Number(seats.rows[0]?.pending ?? 0);
     const changedAt = changed.rows[0]?.plan_changed_at ?? null;
@@ -52,6 +59,16 @@ export class PlansService {
           monthStart: start.toISOString(),
           resetsAt: resetsAt.toISOString(),
         },
+      },
+      topUps: {
+        balance,
+        items: topUps.map(({ id, granted, remaining, addedAt, expiresAt }) => ({
+          id,
+          granted,
+          remaining,
+          addedAt,
+          expiresAt,
+        })),
       },
       contactEmail: this.config.PLAN_CONTACT_EMAIL ?? null,
     };

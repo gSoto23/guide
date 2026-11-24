@@ -110,7 +110,7 @@
       "propertiesOther": "{count} propiedades activas",
       "propertiesUnlimited": "Propiedades sin límite",
       "repliesFixed": "{count} respuestas de IA al mes",
-      "repliesPooled": "{count} respuestas de IA al mes por propiedad activa, compartidas",
+      "repliesPooled": "{count} respuestas de IA al mes por propiedad activa, compartidas, mínimo {minimum}",
       "seatsOne": "{count} puesto",
       "seatsOther": "{count} puestos",
       "seatsUnlimited": "Puestos sin límite",

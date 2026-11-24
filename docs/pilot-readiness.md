@@ -45,8 +45,7 @@ access request, are drafted in [partner outreach](partner-outreach.md).
     `packages/domain/src/plans/`). **AI replies decided 2026-11-24 (spec 019, to build before the
     pilot):** Free 500 a month during the pilot; Pro 300 per active property, at least 500; Business
     300 per active property, at least 1,000; 25 guest messages per device every 10 minutes; top-ups
-    granted by the founder when a workspace runs out. Until spec 019 ships, main still enforces the
-    old numbers (Free 100, Pro and Business 300 per property).
+    granted by the founder when a workspace runs out. Built in spec 019.
 - [ ] **PMS read-only import permission** in writing from Beds24 and Hostex for a customer's own token
   (OQ-26, spec 002 R15). Blocks `GUIDESK_PMS_BEDS24` and `GUIDESK_PMS_HOSTEX`. Drafts:
   [Beds24](partner-outreach.md#2-beds24), [Hostex](partner-outreach.md#3-hostex).
@@ -171,7 +170,8 @@ Pending:
 - [ ] **CloudFront and WAF logs** on the guide's distribution must not record `/s/{token}` paths
   (standard logs off or URI redaction, spec 004 R20).
 - [ ] **Database access for the founder's tools** in staging and production: `report:pilot` (spec
-  010) and `plan:set` / `plan:show` (spec 011) run where migrations run.
+  010) runs where migrations run; the plan tool (`plan:set`, `plan:show`, and spec 019's top-ups) runs
+  on AWS with `scripts/aws-task.sh <stage> plan …` ([AWS runbook](operations/aws.md)).
 
 ## 3. Checks with real services and people
 
@@ -222,7 +222,9 @@ Run each spec's quickstart on staging with real phones on mobile data (each `spe
 - [ ] Close the GitGuardian incident for the synthetic Wi-Fi password in test fixtures (opened with spec
   004; the code uses neutral values such as `TEST-0000` since then).
 - [ ] When a workspace runs out of AI replies, grant a top-up with the founder tool (spec 019) and note
-  why; the monthly report shows replies from allowances and top-ups and the cost per reply.
+  why: `pnpm --filter @guidesk/db plan:topup -- --workspace <uuid> --replies 250 --note "<why>"`
+  locally, or `scripts/aws-task.sh <stage> plan topup …` on AWS. The monthly report shows replies
+  from allowances and top-ups and the cost per reply.
 - [ ] Decide pricing from pilot evidence (roadmap exit criteria, OQ-10), including the top-up price
   (OQ-12) and whether Free keeps AI replies after the pilot.
 

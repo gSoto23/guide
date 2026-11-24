@@ -39,7 +39,10 @@ export function planCards(locale: string, catalog: PublicCatalog): PlanCard[] {
     const replies =
       limits.aiReplies.kind === "fixed"
         ? fill(text.repliesFixed, { count: count(locale, limits.aiReplies.perMonth) })
-        : fill(text.repliesPooled, { count: count(locale, limits.aiReplies.perProperty) });
+        : fill(text.repliesPooled, {
+            count: count(locale, limits.aiReplies.perProperty),
+            minimum: count(locale, limits.aiReplies.minimum),
+          });
     const seats =
       limits.seats === null
         ? text.seatsUnlimited

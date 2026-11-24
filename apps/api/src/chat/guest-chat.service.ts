@@ -26,8 +26,8 @@ import { GuestSessions } from "../guest/sessions.service.js";
 import { JobQueueService } from "../jobs/job-queue.service.js";
 import { toGuestMessage, type StoredChatMessage } from "./chat-messages.js";
 
-/** Messages per device per 10 minutes (FR-028, research R8). */
-export const CHAT_DEVICE_LIMIT = 20;
+/** Messages per device per 10 minutes (feature 005 FR-028, research R8; 25 since feature 019 FR-004). */
+export const CHAT_DEVICE_LIMIT = 25;
 export const CHAT_DEVICE_WINDOW_SECONDS = 600;
 /**
  * Messages per network address per 10 minutes: a backstop for devices that drop the chat cookie to
