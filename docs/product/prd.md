@@ -338,7 +338,8 @@ get requirements when their specs are written.
 - **FR-22.5** Tours booked through a partner (Localbird first, OQ-38) MAY appear on the stay in a later
   spec, once the partner reports bookings per stay.
 
-*Specified in spec 018 (2026-11-24, founder request).*
+*Specified and built in spec 018 (2026-11-24, founder request). FR-22.5 (partner tours) and copilot
+drafts that greet by name wait for later specs.*
 
 ## 6. Agent behavior requirements
 

@@ -397,7 +397,7 @@
         ['Resumen de la propiedad en dos columnas, solicitudes en cuadrícula y bandeja con íconos.', 'A two-column property overview, requests in a grid, and an inbox with icons.'],
         ['Nombres del workspace y de la cuenta en una sola línea, con una barra lateral más ancha.', 'Workspace and account names on one line, with a wider sidebar.']
       ], screens: 'H-01 a/to H-37', adr: 'UI/UX audit 2026-11' },
-    '018': { planned: true, t: ['Calendario de estadías', 'Stay calendar'],
+    '018': { t: ['Calendario de estadías', 'Stay calendar'],
       lead: ['Todas las reservas que Guidesk conoce en un calendario, y en cada una lo que compró el huésped.', 'Every booking Guidesk knows in one calendar, and on each one what the guest bought.'],
       items: [
         ['Vista de todas las propiedades y de una propiedad; agenda por día en el teléfono. Solo lectura: nunca cambia disponibilidad ni precios en las plataformas.', 'An all-properties view and a one-property view; a daily agenda on the phone. Read-only: it never changes availability or prices on the platforms.'],
