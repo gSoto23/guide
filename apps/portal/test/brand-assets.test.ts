@@ -22,6 +22,14 @@ describe("brand assets (FR-016, FR-025)", () => {
   it("serves the Google mark from the portal", () => {
     expect(readFileSync(path.join(brand, "google-g.svg"), "utf8")).toMatch(/^<svg /);
   });
+
+  it("draws the shell's inline logo with the paths of the official logo file", () => {
+    const official = readFileSync(path.join(brand, "guidesk-logo.svg"), "utf8");
+    const inline = readFileSync(path.join(__dirname, "../components/brand-logo.tsx"), "utf8");
+    const paths = [...official.matchAll(/ d="([^"]+)"/g)].map((match) => match[1]);
+    expect(paths).toHaveLength(4);
+    for (const d of paths) expect(inline).toContain(`d="${d}"`);
+  });
 });
 
 describe("public page previews (FR-024)", () => {

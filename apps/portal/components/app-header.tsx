@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
-import { BrandLogo } from "./brand-logo";
+import { InlineBrandLogo } from "./brand-logo";
 import { DESTINATIONS, type DestinationId } from "./shell/destinations";
 import { MoreButton, NavLink } from "./shell/nav-link";
 import { ShellAccountLink, ShellSwitcher } from "./shell/shell-account";
@@ -13,7 +13,8 @@ export type ShellIcons = Record<DestinationId | "more", ReactNode>;
  * bottom bar on phones and tablets, a sidebar from 1024 px. It renders on the server, so the logo
  * and every destination show before the account loads (feature 017 FR-020) and the lists add no
  * JavaScript; only the current-page marks, the More button, the workspace switcher, and the account
- * link are client islands.
+ * link are client islands. The logo is drawn inline, so it needs no request and is not an image
+ * candidate for the page's Largest Contentful Paint.
  */
 export async function AppHeader({ locale, icons }: { locale: string; icons: ShellIcons }) {
   const t = await getTranslations({ locale, namespace: "workspace" });
@@ -27,7 +28,7 @@ export async function AppHeader({ locale, icons }: { locale: string; icons: Shel
       <header className="app-header">
         <div className="app-header-top">
           <Link href={href("/start")} className="app-header-brand">
-            <BrandLogo alt={t("nav.home")} height={26} />
+            <InlineBrandLogo alt={t("nav.home")} height={26} />
           </Link>
           <ShellSwitcher />
         </div>
