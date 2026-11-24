@@ -22,6 +22,11 @@ import {
 } from "@/lib/calendar";
 import { useWorkspace } from "@/lib/use-workspace";
 
+/** "noviembre de 2026" → "Noviembre de 2026": only the first letter, as Spanish writes dates. */
+function upperFirst(text: string): string {
+  return text.charAt(0).toLocaleUpperCase() + text.slice(1);
+}
+
 /** Below this width the calendar is an agenda by day (FR-003). */
 const NARROW = "(max-width: 767px)";
 
@@ -85,8 +90,10 @@ export function CalendarView({ locale }: { locale: string }) {
     () => [...new Set((data?.stays ?? []).map((stay) => stay.channel))].sort(),
     [data],
   );
-  const title = new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }).format(
-    new Date(Date.UTC(month.year, month.month - 1, 15)),
+  const title = upperFirst(
+    new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }).format(
+      new Date(Date.UTC(month.year, month.month - 1, 15)),
+    ),
   );
 
   return (
@@ -385,12 +392,14 @@ function Agenda({
       {days.map((day) => (
         <li key={day.date}>
           <h3>
-            {new Intl.DateTimeFormat(locale, {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-              timeZone: "UTC",
-            }).format(new Date(`${day.date}T12:00:00Z`))}
+            {upperFirst(
+              new Intl.DateTimeFormat(locale, {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                timeZone: "UTC",
+              }).format(new Date(`${day.date}T12:00:00Z`)),
+            )}
           </h3>
           <ul>
             {groups.flatMap(([key, label]) =>

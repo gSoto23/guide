@@ -3554,7 +3554,6 @@ a.lang-option:hover {
   margin: 0;
   min-width: 10ch;
   font-size: 1.15rem;
-  text-transform: capitalize;
 }
 .calendar-filter {
   display: grid;
@@ -3733,7 +3732,6 @@ a.lang-option:hover {
 .calendar-agenda h3 {
   margin: 0 0 0.4rem;
   font-size: 1rem;
-  text-transform: capitalize;
 }
 .calendar-agenda ul {
   display: grid;
