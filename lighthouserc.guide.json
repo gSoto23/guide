@@ -25,21 +25,21 @@
           "error",
           {
             "maxNumericValue": 2500,
-            "aggregationMethod": "median-run"
+            "aggregationMethod": "median"
           }
         ],
         "cumulative-layout-shift": [
           "error",
           {
             "maxNumericValue": 0.1,
-            "aggregationMethod": "median-run"
+            "aggregationMethod": "median"
           }
         ],
         "total-blocking-time": [
           "error",
           {
             "maxNumericValue": 200,
-            "aggregationMethod": "median-run"
+            "aggregationMethod": "median"
           }
         ],
         "categories:accessibility": [

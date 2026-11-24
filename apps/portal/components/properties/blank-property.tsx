@@ -19,7 +19,10 @@ const KNOWN_ERRORS = new Set([
   "network",
 ]);
 
-/** A blank property (US1): the confirmation step, then the new property's page. */
+/**
+ * A blank property (US1): the confirmation step, then the new property's page. The page renders the
+ * heading on the server (first paint), so this renders only what needs the workspace.
+ */
 export function BlankProperty({ locale }: { locale: string }) {
   const t = useTranslations("properties");
   const errors = useTranslations("errors");
@@ -67,7 +70,6 @@ export function BlankProperty({ locale }: { locale: string }) {
 
   return (
     <>
-      <h1>{t("facts.title")}</h1>
       {message ? (
         <p className="alert alert-error" role="alert">
           {message} {atLimit ? <PlanLink locale={locale} /> : null}
