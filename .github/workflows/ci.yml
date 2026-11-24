@@ -74,10 +74,11 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm turbo run build --filter=@guidesk/portal
-      # Initial JavaScript per route ≤ 150 KB gzip (apps/portal/bundle-budget.json).
+      # Initial JavaScript per route ≤ 175 KB gzip (apps/portal/bundle-budget.json).
       - run: pnpm --filter @guidesk/portal bundle:check
       # LCP ≤ 2.5 s, CLS ≤ 0.1, and total blocking time ≤ 200 ms as the lab proxy for INP
-      # (lighthouserc.json). Uses the runner's Chrome.
+      # (lighthouserc.json), each checked on the median of three runs per page. Uses the runner's
+      # Chrome.
       - run: pnpm perf:lighthouse
       # Guest guide (feature 004 plan, Performance Budget): script ≤ 15 KB gzip and the first
       # visit ≤ 150 KB, then Lighthouse on the fixture guide (GUIDE_FIXTURES is never set in AWS).

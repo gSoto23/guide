@@ -1,6 +1,6 @@
 # Performance Architecture
 
-> **Status:** Draft v0.1 · **Owner:** Founder · **Last updated:** 2026-11-14 ·
+> **Status:** Draft v0.1 · **Owner:** Founder · **Last updated:** 2026-11-24 ·
 > **Related:** [PRD §7 NFRs](../product/prd.md#7-non-functional-requirements) · [Architecture overview](overview.md) · [Security](security.md) · [ADR-0004 stack](adr/0004-typescript-monorepo-stack.md) · [ADR-0005 agent](adr/0005-llm-provider-and-agent-design.md) · [ADR-0006 PWAs](adr/0006-web-first-pwa-no-native-apps.md)
 
 Guests open the guide on mid-range phones over mobile networks across the Americas, often while
@@ -122,8 +122,11 @@ measured on 4G.
 
 - **Real-user monitoring:** Core Web Vitals by country, device class, and connection type,
   collected with the `web-vitals` library.
-- **Lighthouse CI** runs on every preview deployment with the budgets in §1. A regression fails
-  the pull request.
+- **Lighthouse CI** runs on every pull request and every push to `main` with the budgets in §1
+  (`lighthouserc.json` for the portal, `lighthouserc.guide.json` for the guide). It loads each
+  page three times with Lighthouse's simulated mobile throttling and checks each budget against
+  the median of the three runs, so one noisy run on a shared CI machine does not decide the
+  result. A regression fails the pull request.
 - **A bundle-size check** runs in CI.
 - **SLO dashboards and alerts** (error-budget burn) cover:
   - guide availability;
@@ -149,3 +152,9 @@ in Phase 2. Adopting it requires an ADR.
 - Every plan with UI or a hot path declares its performance budget, based on §1, and its
   acceptance tests check it (constitution, Additional Constraints).
 - Lighthouse CI, the bundle-size check, and the load tests are the gates.
+- Keep the largest element above the fold as text that the server renders, so it is in the first
+  paint. Lighthouse's simulated LCP then counts only the HTML and the CSS. When the largest element
+  is an image, or is text that appears only after the account loads, the simulation also counts
+  every script that loaded before it: about 1.4 s more on the portal. For this reason the
+  signed-in shell draws the logo inline instead of as an `<img>`, and the blank property form
+  renders its heading on the server.
