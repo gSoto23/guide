@@ -71,6 +71,30 @@ describe("stay message (feature 004 FR-039, FR-040)", () => {
   });
 });
 
+describe("stay message greeting (feature 018 FR-021)", () => {
+  const base = {
+    propertyName: "Casa Colibrí",
+    stayLink: "https://guide.example.com/s/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    checkInDate: "2026-12-12",
+    checkoutDate: "2026-12-15",
+    checkInTime: "15:00",
+    checkoutTime: "11:00",
+    address: null,
+    arrival: null,
+    wifi: null,
+    confirmationCode: null,
+  };
+
+  it("greets the guest by the name the host saved, and generally otherwise", () => {
+    expect(stayMessage("es", { ...base, guestName: "Ana" })).toMatch(/^¡Hola, Ana! Todo listo/);
+    expect(stayMessage("en", { ...base, guestName: " Ana " })).toMatch(
+      /^Hi Ana! Everything is ready/,
+    );
+    expect(stayMessage("es", { ...base, guestName: null })).toMatch(/^¡Hola! Todo listo/);
+    expect(stayMessage("en", base)).toMatch(/^Hi! Everything is ready/);
+  });
+});
+
 describe("documentText (feature 004 FR-039)", () => {
   it("turns a document into lines, with locked fields resolved", () => {
     const doc = {

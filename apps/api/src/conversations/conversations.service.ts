@@ -85,6 +85,8 @@ export class ConversationsService {
         lastMessageAt: conversation.lastMessageAt,
         checkInDate: stay.checkInDate,
         checkoutDate: stay.checkoutDate,
+        stayId: stay.id,
+        guestName: stay.guestName,
         last: sql<{ author: "guest" | "assistant" | "host"; body: string } | null>`(
           SELECT json_build_object('author', m.author, 'body', left(m.body, 200))
             FROM chat_message m
@@ -105,7 +107,13 @@ export class ConversationsService {
       reason: row.reason as NeedsHostReasonValue | null,
       stay:
         row.checkInDate && row.checkoutDate
-          ? { checkInDate: row.checkInDate, checkoutDate: row.checkoutDate }
+          ? {
+              id: row.stayId!,
+              checkInDate: row.checkInDate,
+              checkoutDate: row.checkoutDate,
+              // Feature 018: the name the host knows, for the host's own screens only.
+              guestName: row.guestName ?? null,
+            }
           : null,
       lastMessageAt: row.lastMessageAt.toISOString(),
       lastMessage: row.last,
@@ -362,6 +370,8 @@ export class ConversationsService {
         lastMessageAt: conversation.lastMessageAt,
         checkInDate: stay.checkInDate,
         checkoutDate: stay.checkoutDate,
+        stayId: stay.id,
+        guestName: stay.guestName,
         doneAt: conversation.doneAt,
         takenOverAt: conversation.takenOverAt,
         takerName: sql<string | null>`coalesce(nullif(${taker.name}, ''), ${taker.email})`,
@@ -391,7 +401,13 @@ export class ConversationsService {
       reason: row.reason as NeedsHostReasonValue | null,
       stay:
         row.checkInDate && row.checkoutDate
-          ? { checkInDate: row.checkInDate, checkoutDate: row.checkoutDate }
+          ? {
+              id: row.stayId!,
+              checkInDate: row.checkInDate,
+              checkoutDate: row.checkoutDate,
+              // Feature 018: the name the host knows, for the host's own screens only.
+              guestName: row.guestName ?? null,
+            }
           : null,
       lastMessageAt: row.lastMessageAt.toISOString(),
       lastMessage: null,

@@ -573,6 +573,30 @@ describe("refreshing reservations (T087, FR-034, FR-035, FR-053)", () => {
     expect(row).toMatchObject({ guestName: null, guestCount: 4 });
   });
 
+  it("keeps the name and number of guests the host typed in Guidesk (feature 018 FR-016)", async () => {
+    const connectionId = await connection();
+    const prop = await imported(connectionId);
+    pms.reservations = [reservation("bk-1", "101:201")];
+    await refreshPmsConnection(refreshDeps(), { connectionId, workspaceId, full: true });
+    const [first] = await handle.db.select().from(stay).where(eq(stay.propertyId, prop.id));
+    expect(first?.guestDetailsSource).toBe("pms");
+    await handle.db
+      .update(stay)
+      .set({ guestName: "Ana Corregida", guestCount: 2, guestDetailsSource: "host" })
+      .where(eq(stay.propertyId, prop.id));
+    pms.reservations = [
+      reservation("bk-1", "101:201", { guestName: "Ana María Prueba", guestCount: 4 }),
+    ];
+    await refreshPmsConnection(refreshDeps(), { connectionId, workspaceId, full: true });
+    const [row] = await handle.db.select().from(stay).where(eq(stay.propertyId, prop.id));
+    expect(row).toMatchObject({
+      guestName: "Ana Corregida",
+      guestCount: 2,
+      guestDetailsSource: "host",
+      bookingReference: "bk-1",
+    });
+  });
+
   it("marks a matching feed stay as a duplicate of the PMS stay", async () => {
     const connectionId = await connection();
     const prop = await imported(connectionId);

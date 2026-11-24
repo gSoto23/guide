@@ -112,6 +112,7 @@ export class StayMessagesService {
       arrival,
       wifi,
       confirmationCode: link.confirmationCode,
+      guestName: stay.guestName,
     });
     if (used.size > 0) {
       await this.securityLog.record({
