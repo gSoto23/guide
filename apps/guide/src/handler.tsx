@@ -107,8 +107,8 @@ export function createHandler({ config, assets }: HandlerDeps) {
         short_name: "Guidesk",
         start_url: "/",
         display: "standalone",
-        background_color: "#FFFCF8",
-        theme_color: "#FFFCF8",
+        background_color: "#FFFFFF",
+        theme_color: "#FFFFFF",
         icons: [
           { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
           { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
