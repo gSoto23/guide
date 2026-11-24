@@ -6,6 +6,8 @@
 
 **Status**: Draft
 
+**Amended**: 2026-11-24 by [spec 018](../018-stay-calendar/spec.md): owners and admins may type the guest's name and number of guests on any stay, which refreshes never overwrite (FR-022, FR-053); an Airbnb feed entry keeps its reservation code as the booking reference, and still nothing else (FR-022).
+
 **Input**: User description: "002 Property onboarding (PRD F02, FR-02.1 to FR-02.6). Hosts and managers in a workspace add their rental properties to Guidesk so a guide can be built for each one: manual entry, pasted listing text or screenshots with AI extraction, CSV bulk creation, read-only PMS import with the customer's own token (Beds24 and Hostex; Hostaway subject to OQ-26), duplication, a blank start, and an OTA iCal feed for stay windows. Every path ends with the host confirming core facts and produces a draft that is never published automatically."
 
 **Sources**: [PRD F02](../../docs/product/prd.md#f02--property-onboarding) · [PRD F03 (FR-03.8 to FR-03.10)](../../docs/product/prd.md#f03--guide-builder) · [UX flow 2, guide creation](../../docs/ux/user-flows.md#2-guide-creation) · [Architecture flow 5.4](../../docs/architecture/overview.md#54-guide-drafts-from-a-pms-import-mvp-read-only) · [Security controls](../../docs/architecture/security.md#4-controls) · [Platform policies](../../docs/research/platform-policies.md#design-constraints) · [Spec 001](../001-workspace-accounts/spec.md)

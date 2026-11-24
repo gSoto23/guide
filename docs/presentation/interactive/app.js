@@ -388,7 +388,32 @@
         ['Una foto opcional por extra, para que el traslado o la tabla de surf se vean antes de pedirlos.', 'An optional photo per extra, so the pickup or the surfboard shows before guests request it.'],
         ['Sugerencias para agregar fotos donde más ayudan: la puerta, el parqueo, el router.', 'Prompts to add photos where they help most: the door, the parking, the router.'],
         ['Avatares con iniciales en el portal. El nombre del huésped no se muestra en la guía, por privacidad: un enlace reenviado no revela quién se hospeda.', 'Initials avatars in the portal. The guest\'s name is not shown in the guide, for privacy: a forwarded link does not reveal who is staying.']
-      ], screens: 'G-01 · G-08 · H-04', adr: 'Brand guide §6' }
+      ], screens: 'G-01 · G-08 · H-04', adr: 'Brand guide §6' },
+    '017': { t: ['Diseño para computadora', 'Desktop design'],
+      lead: ['El portal se ve como una aplicación de escritorio en la computadora, sin cambiar el diseño del teléfono.', 'On a computer the portal looks like a desktop app, without changing the phone design.'],
+      items: [
+        ['Una revisión de UI y UX de todo el sitio: 21 hallazgos de impacto alto y medio, todos atendidos.', 'A UI and UX review of the whole site: 21 high- and medium-impact findings, all addressed.'],
+        ['Desde 600 px y 1024 px cambia la forma de los mismos componentes: botones a la medida de su texto, filtros en una barra, pestañas segmentadas, tarjetas con borde.', 'From 600 px and 1024 px the same components change shape: buttons sized to their label, filters in one toolbar, segmented tabs, edged cards.'],
+        ['Resumen de la propiedad en dos columnas, solicitudes en cuadrícula y bandeja con íconos.', 'A two-column property overview, requests in a grid, and an inbox with icons.'],
+        ['Nombres del workspace y de la cuenta en una sola línea, con una barra lateral más ancha.', 'Workspace and account names on one line, with a wider sidebar.']
+      ], screens: 'H-01 a/to H-37', adr: 'UI/UX audit 2026-11' },
+    '018': { planned: true, t: ['Calendario de estadías', 'Stay calendar'],
+      lead: ['Todas las reservas que Guidesk conoce en un calendario, y en cada una lo que compró el huésped.', 'Every booking Guidesk knows in one calendar, and on each one what the guest bought.'],
+      items: [
+        ['Vista de todas las propiedades y de una propiedad; agenda por día en el teléfono. Solo lectura: nunca cambia disponibilidad ni precios en las plataformas.', 'An all-properties view and a one-property view; a daily agenda on the phone. Read-only: it never changes availability or prices on the platforms.'],
+        ['Cada estadía muestra fechas, huésped, enlace de estadía, conversaciones y cada extra con su estado y su pago, con el total.', 'Each stay shows dates, guest, stay link, conversations, and every extra with its state and payment, plus the total.'],
+        ['El anfitrión escribe el nombre del huésped en cualquier estadía; de Airbnb se guarda solo el código de la reserva para encontrar la conversación.', 'The host types the guest\'s name on any stay; from Airbnb only the reservation code is kept, to find the thread.'],
+        ['El nombre se usa del lado del anfitrión (bandeja, solicitudes, copiloto, mensaje de estadía); la guía sigue sin mostrarlo.', 'The name is used on the host side (inbox, requests, copilot, stay message); the guide still never shows it.'],
+        ['Un espacio de «Servicios» listo para los tours de un socio como Localbird, cuando reporte cada reserva por estadía.', 'A "Services" area ready for a partner\'s tours, such as Localbird, once it reports each booking per stay.']
+      ], screens: 'H-new · calendario/calendar', adr: 'PRD F22' },
+    '019': { planned: true, t: ['Respuestas de IA y recargas', 'AI replies and top-ups'],
+      lead: ['Límites más generosos y una forma de seguir respondiendo cuando se acaba el mes.', 'More generous limits and a way to keep answering when the month runs out.'],
+      items: [
+        ['Pro: 300 respuestas por propiedad, compartidas, mínimo 500. Business: igual, mínimo 1.000. Free: 500 durante el piloto.', 'Pro: 300 replies per property, pooled, at least 500. Business: the same, at least 1,000. Free: 500 during the pilot.'],
+        ['Hasta 25 mensajes por dispositivo cada 10 minutos; los presupuestos diarios siguen como protección.', 'Up to 25 messages per device every 10 minutes; the daily budgets stay as protection.'],
+        ['Recargas de respuestas (no de tokens), válidas 12 meses, usadas después de las del mes. Sin recarga, la IA se pausa hasta el día 1; el servicio nunca se suspende.', 'Reply top-ups (not tokens), valid 12 months, used after the month\'s replies. Without one, the AI pauses until the 1st; the service is never suspended.'],
+        ['En el piloto el fundador da las recargas sin costo; la compra en el portal llega con el cobro a anfitriones.', 'In the pilot the founder grants top-ups at no charge; buying them in the portal comes with host billing.']
+      ], screens: 'H-32', adr: 'Spec 011' }
   };
 
   $$('#featureFilter .chip').forEach(function (chip) {
@@ -407,9 +432,11 @@
       var key = card.getAttribute('data-feature');
       var f = FEATURES[key];
       if (!f) return;
-      var status = f.inProgress
-        ? '<span class="tag warn">' + L('en curso', 'in progress') + '</span>'
-        : '<span class="tag ok">main ✓</span>';
+      var status = f.planned
+        ? '<span class="tag">' + L('especificada', 'specified') + '</span>'
+        : f.inProgress
+          ? '<span class="tag warn">' + L('en curso', 'in progress') + '</span>'
+          : '<span class="tag ok">main ✓</span>';
       $('#sheetTags').innerHTML = '<span class="tag">spec ' + esc(key) + '</span>' + status + '<span class="tag">' + f.adr + '</span>';
       $('#sheetTitle').innerHTML = L(f.t[0], f.t[1]);
       $('#sheetLead').innerHTML = L(f.lead[0], f.lead[1]);

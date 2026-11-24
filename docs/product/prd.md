@@ -1,6 +1,6 @@
 # Product Requirements Document (PRD)
 
-> **Status:** Draft v0.2 · **Owner:** Founder · **Last updated:** 2026-11-14 ·
+> **Status:** Draft v0.3 · **Owner:** Founder · **Last updated:** 2026-11-24 ·
 > **Related:** [Vision](vision.md) · [Personas](personas.md) · [Business model](business-model.md) · [Roadmap](roadmap.md) · [Platform policies](../research/platform-policies.md) · [Architecture overview](../architecture/overview.md) · [Open questions](../open-questions.md)
 
 This PRD defines Guidesk at the product level: the feature catalog, priorities, cross-cutting
@@ -21,6 +21,8 @@ for that feature, and this PRD is updated to match.
 ## 2. Non-goals
 
 - Managing pricing, availability, calendars, or bookings on the OTAs (Guidesk is not a PMS).
+  Guidesk shows a read-only calendar of the stays it already knows (F22); it never changes them on
+  the platforms.
 - Talking to guests over WhatsApp, SMS, or email. This was a product decision on 2026-11-13.
   Hosts may receive notifications by email or push.
 - Any integration that relies on scraping, browser automation, or sharing credentials.
@@ -76,6 +78,7 @@ MoSCoW per phase. **The founder confirmed this prioritization on 2026-11-14 (OQ-
 | F19 | In-app tour booking (partner booking APIs) | Phase 3 | — | P3 | `019-tours-booking` |
 | F20 | Public API and webhooks (Business plan) | Phase 3 | — | P2 | `020-public-api` |
 | F21 | Portfolio management: property groups, per-property permissions, owner read-only access | Phase 2 | — | P2 | `021-portfolio-management` |
+| F22 | Stay calendar and guest details: a read-only calendar of stays, one view per stay with its conversations and the extras it bought, guest names typed by the host | MVP (pilot) | Should | P1, P2 | `018-stay-calendar` |
 
 Spec numbers are indicative. Spec Kit assigns the final number when `/speckit-specify` runs.
 
@@ -254,6 +257,15 @@ criteria.
 *Built in spec 011 (limits only): plans Free, Pro, and Business with properties, monthly AI replies,
 and seats; custom limits per workspace; the founder assigns plans with a command-line tool until
 billing exists.*
+- **FR-11.3** Monthly AI replies MUST have per-plan minimums: Pro at least 500 and Business at least
+  1,000 (300 per active property, pooled, above that). During the pilot, Free gets 500. A guest device
+  may send at most 25 messages every 10 minutes. (Founder decisions 2026-11-24, spec 019.)
+- **FR-11.4** When a workspace uses up its month, it MUST be able to keep the AI answering with a
+  top-up (a pack of AI replies, valid 12 months); without one, the AI pauses until the next month.
+  The service MUST NOT be suspended. During the pilot the founder grants top-ups at no charge;
+  buying them in the portal comes with host billing (OQ-12, OQ-13).
+- **FR-11.5** After the pilot, the direction is AI replies only on Pro and Business; the founder
+  revisits the plan numbers with pilot data (Phase 2).
 
 ### F13 — Guest checkout and payouts (MVP, month 4)
 
@@ -307,6 +319,23 @@ exist (OQ-01, OQ-37). Fee policy chosen for OQ-09: the host absorbs the card fee
 
 The other Phase 2 and 3 features (F14–F21) are outlined in the [roadmap](roadmap.md). They will
 get requirements when their specs are written.
+
+### F22 — Stay calendar and guest details
+
+- **FR-22.1** Hosts MUST see a read-only calendar of the stays Guidesk knows (calendar feeds, PMS
+  imports, and stays added by hand) for all properties and for one property, with an agenda on
+  phones. It MUST NOT change availability, prices, or bookings on any platform.
+- **FR-22.2** Each stay MUST open a view with its dates, guest details when known, stay link state,
+  conversations, and every add-on request with its state, amount, and payment state.
+- **FR-22.3** Owners and admins MUST be able to type the guest's name and number of guests on any
+  stay; refreshes MUST NOT overwrite them. For Airbnb feeds, Guidesk keeps the reservation code as the
+  booking reference so the host can find the matching thread (OQ-39).
+- **FR-22.4** The name MUST be used on the host side only (calendar, inbox, requests, copilot drafts,
+  stay message) and never on the guest guide, push notifications, or emails (decision 2026-11-20).
+- **FR-22.5** Tours booked through a partner (Localbird first, OQ-38) MAY appear on the stay in a later
+  spec, once the partner reports bookings per stay.
+
+*Specified in spec 018 (2026-11-24, founder request).*
 
 ## 6. Agent behavior requirements
 
