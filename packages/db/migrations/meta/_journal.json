@@ -281,6 +281,13 @@
       "when": 1795538393717,
       "tag": "0039_ai_top_ups",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1795541708823,
+      "tag": "0040_stay_guest_details",
+      "breakpoints": true
     }
   ]
 }

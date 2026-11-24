@@ -69,7 +69,7 @@ safely without any platform API, and that guests pay for add-ons.
 | F10 Basic analytics | Questions, escalations, views, clicks |
 | F11 Plan limits | Limits enforced; the pilot is free and billing comes after it |
 | F13 Guest checkout and payouts | Month 4; hosted checkout, host payouts, refunds (needs OQ-01) |
-| F22 Stay calendar and guest details | Added 2026-11-24 (spec 018): read-only calendar, stay view with the extras each stay bought, guest names typed by the host |
+| F22 Stay calendar and guest details | Added and built 2026-11-24 (spec 018): read-only calendar, stay view with the extras each stay bought, guest names typed by the host, the Airbnb reservation code from feeds |
 | F11 AI reply allowances and top-ups | Added and built 2026-11-24 (spec 019): Pro at least 500 and Business at least 1,000 replies a month, Free 500 during the pilot, 25 messages per 10 minutes, founder-granted top-ups |
 
 **Suggested build order (specs):**

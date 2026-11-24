@@ -47,6 +47,15 @@ export const feedEntrySchema = z.strictObject({
   start: calendarDateSchema,
   end: calendarDateSchema,
   kind: z.enum(["reservation", "block", "unlabeled"]),
+  /**
+   * Feature 018: the Airbnb reservation code from the entry's reservation link or description, or
+   * null. Optional so a reader deployed before the API still answers.
+   */
+  reference: z
+    .string()
+    .regex(/^HM[A-Z0-9]{8}$/)
+    .nullable()
+    .optional(),
 });
 export type FeedEntry = z.infer<typeof feedEntrySchema>;
 

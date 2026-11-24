@@ -103,6 +103,8 @@ export const conversation = pgTable(
     check("conversation_done_consistent", sql`(${t.status} = 'done') = (${t.doneAt} IS NOT NULL)`),
     index("conversation_property_status_idx").on(t.propertyId, t.status, t.lastMessageAt),
     index("conversation_workspace_idx").on(t.workspaceId),
+    // Feature 018: the stay view and calendar marks read a stay's conversations.
+    index("conversation_stay_idx").on(t.stayId),
     check("conversation_cookie_hash_format", sql`${t.cookieHash} ~ '^[0-9a-f]{64}$'`),
     check("conversation_status_valid", inList(t.status, CONVERSATION_STATUSES)),
     check(

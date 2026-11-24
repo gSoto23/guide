@@ -1,4 +1,4 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { pmsConnection, securityEvent, stay, type Database } from "@guidesk/db";
 import {
   assertSafeMetadata,
@@ -164,6 +164,8 @@ export async function applyReservations(
           channel: entry.channel,
           guestCount: entry.guestCount,
           guestName: entry.guestName ?? null,
+          guestDetailsSource:
+            entry.guestName || entry.guestCount !== null ? ("pms" as const) : null,
           bookingReference: entry.bookingReference,
           lastSeenAt: input.now,
         })),
@@ -175,10 +177,16 @@ export async function applyReservations(
         .set({
           checkInDate: change.checkInDate,
           checkoutDate: change.checkoutDate,
-          guestCount: change.guestCount,
+          // Feature 018 FR-016: details the host typed in Guidesk win over the PMS.
+          guestCount: sql`CASE WHEN ${stay.guestDetailsSource} = 'host' THEN ${stay.guestCount} ELSE ${change.guestCount} END`,
           bookingReference: change.bookingReference,
           channel: change.channel,
-          ...(change.guestName !== undefined ? { guestName: change.guestName } : {}),
+          ...(change.guestName !== undefined
+            ? {
+                guestName: sql`CASE WHEN ${stay.guestDetailsSource} = 'host' THEN ${stay.guestName} ELSE ${change.guestName} END`,
+              }
+            : {}),
+          guestDetailsSource: sql`CASE WHEN ${stay.guestDetailsSource} = 'host' THEN 'host' WHEN ${change.guestName ?? null}::text IS NOT NULL OR ${change.guestCount}::int IS NOT NULL THEN 'pms' ELSE ${stay.guestDetailsSource} END`,
           status: "active",
           cancelledAt: null,
           lastSeenAt: input.now,

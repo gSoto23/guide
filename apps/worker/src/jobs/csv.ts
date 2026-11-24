@@ -342,6 +342,7 @@ async function saveFeed(
             checkoutDate: entry.checkoutDate,
             channel: feedChannelName(channel, label),
             mayBeBlock: entry.mayBeBlock,
+            bookingReference: entry.bookingReference,
             lastSeenAt: now,
           })),
         );

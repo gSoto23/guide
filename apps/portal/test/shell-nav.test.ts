@@ -17,6 +17,8 @@ describe("currentDestination", () => {
     ["/es/properties/abc/guide/sections/1", "properties"],
     ["/es/properties/abc/analytics", "properties"],
     ["/es/analytics", "analytics"],
+    ["/es/calendar", "calendar"],
+    ["/es/calendar/stays/abc", "calendar"],
     ["/es/shared-content/block", "shared"],
     ["/es/settings/members", "team"],
     ["/es/settings", "settings"],
@@ -38,7 +40,7 @@ describe("currentDestination", () => {
       "requests",
       "properties",
     ]);
-    expect(MORE_DESTINATIONS).toEqual(["analytics", "shared", "team", "settings"]);
+    expect(MORE_DESTINATIONS).toEqual(["calendar", "analytics", "shared", "team", "settings"]);
   });
 
   it("groups the sidebar into daily work and the workspace", () => {
@@ -46,6 +48,7 @@ describe("currentDestination", () => {
       "inbox",
       "requests",
       "properties",
+      "calendar",
       "analytics",
     ]);
   });

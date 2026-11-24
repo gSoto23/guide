@@ -546,6 +546,12 @@ async function buildProperty(
         channel: CHANNELS[index % CHANNELS.length]!,
         guestCount: entry.guestCount,
         guestName: entry.guestName,
+        // Feature 018: typed by the host, and a fictional Airbnb code on Airbnb stays.
+        guestDetailsSource: "host" as const,
+        bookingReference:
+          CHANNELS[index % CHANNELS.length] === "Airbnb"
+            ? `HMDEMO${String(index + 1).padStart(4, "0")}`
+            : null,
         createdBy: ownerId,
         guideOpenedAt: entry.openedAt,
       })),

@@ -20,7 +20,8 @@ export interface InboxItem {
   propertyName: string;
   status: "open" | "needs_host" | "done";
   reason: NeedsHostReasonValue | null;
-  stay: { checkInDate: string; checkoutDate: string } | null;
+  /** Feature 018: `id` and `guestName` (host side only) join the stay's dates. */
+  stay: { id: string; checkInDate: string; checkoutDate: string; guestName: string | null } | null;
   channel: "guide_chat";
   lastMessageAt: string;
   lastMessage: { author: ChatAuthor; excerpt: string } | null;

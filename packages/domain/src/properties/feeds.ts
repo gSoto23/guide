@@ -41,6 +41,21 @@ export function classifyFeedEntry(entry: { summary?: string | null }): FeedEntry
   return "unlabeled";
 }
 
+const AIRBNB_CODE = /\bHM[A-Z0-9]{8}\b/;
+
+/**
+ * The Airbnb reservation code in a feed entry's reservation link or description, or null (feature
+ * 018 FR-017). Only the code is returned: the link, the phone digits, and any other text stay in
+ * the feed reader.
+ */
+export function airbnbReservationCode(...texts: (string | null | undefined)[]): string | null {
+  for (const text of texts) {
+    const match = typeof text === "string" ? AIRBNB_CODE.exec(text) : null;
+    if (match) return match[0];
+  }
+  return null;
+}
+
 /** The channel a link belongs to, from its host; the host can change it (FR-020). */
 export function detectChannel(url: string): FeedChannel {
   let host: string;

@@ -22,6 +22,7 @@ export * from "./assistant.js";
 export * from "./inbox.js";
 export * from "./explore.js";
 export * from "./extras.js";
+export * from "./calendar.js";
 export * from "./analytics.js";
 export * from "./plans.js";
 export * from "./payments.js";

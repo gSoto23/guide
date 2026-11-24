@@ -259,6 +259,7 @@ export class CalendarFeedsService {
           checkoutDate: entry.checkoutDate,
           channel: channelName(channel, label),
           mayBeBlock: entry.mayBeBlock,
+          bookingReference: entry.bookingReference,
           lastSeenAt: now,
         })),
       );

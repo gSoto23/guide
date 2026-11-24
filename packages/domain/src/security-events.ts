@@ -47,6 +47,8 @@ export const SECURITY_EVENT_TYPES = [
   "stay.changed_manually",
   "stay.cancelled_manually",
   "stay.guest_name_removed",
+  // Feature 018: the host typed or changed the guest's name or number of guests.
+  "stay.guest_details_changed",
   "property.removed",
   "property.restored",
   "property.purged",
@@ -151,6 +153,8 @@ const METADATA_ALLOWLIST: Partial<Record<SecurityEventType, readonly string[]>> 
   "stay.changed_manually": STAY_DATES,
   "stay.cancelled_manually": STAY_DATES,
   "stay.guest_name_removed": STAY_DATES,
+  // Which fields changed (true flags), never the name itself (feature 018).
+  "stay.guest_details_changed": ["stayId", "name", "count"],
   "property.removed": [],
   "property.restored": [],
   "property.purged": [],

@@ -1,12 +1,25 @@
-import { Body, Controller, Get, HttpCode, Param, Patch, Post, Query, Req } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+  Req,
+} from "@nestjs/common";
 import type { FastifyRequest } from "fastify";
 import {
   createStaySchema,
   listStaysQuerySchema,
+  stayGuestBodySchema,
   updateStaySchema,
   type CreateStayBody,
   type ListStaysQuery,
   type Stay,
+  type StayGuestBody,
   type StayList,
   type UpdateStayBody,
 } from "@guidesk/contracts";
@@ -65,6 +78,18 @@ export class StaysController {
     @Param("stayId") stayId: string,
   ): Promise<Stay> {
     return this.stays.cancel(callerOf(request), workspaceId, stayId);
+  }
+
+  /** Feature 018 FR-015: the guest's name and number of guests, on any stay. */
+  @Put("stays/:stayId/guest")
+  @WorkspaceAction({ capability: "properties.manage" })
+  setGuest(
+    @Req() request: FastifyRequest,
+    @Param("workspaceId") workspaceId: string,
+    @Param("stayId") stayId: string,
+    @Body(new ZodValidationPipe(stayGuestBodySchema)) body: StayGuestBody,
+  ): Promise<Stay> {
+    return this.stays.setGuestDetails(callerOf(request), workspaceId, stayId, body);
   }
 
   @Post("stays/:stayId/remove-guest-name")

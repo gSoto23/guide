@@ -838,7 +838,8 @@
       "requests": "Solicitudes",
       "analytics": "Estadísticas",
       "more": "Más",
-      "account": "Mi cuenta"
+      "account": "Mi cuenta",
+      "calendar": "Calendario"
     },
     "loading": "Cargando…",
     "none": "Sin workspace: crea uno"
@@ -2429,5 +2430,97 @@
       "amount_too_large": "El monto es mayor que lo que queda por reembolsar.",
       "not_refundable": "Este pago ya no se puede reembolsar desde Guidesk."
     }
+  },
+  "calendar": {
+    "title": "Calendario",
+    "intro": "Las estadías que Guidesk conoce, de tus calendarios, tu PMS y las que agregaste a mano. Para cambiar fechas o disponibilidad, usa tu plataforma.",
+    "loading": "Cargando estadías…",
+    "error": "No pudimos cargar el calendario. Inténtalo de nuevo.",
+    "allProperties": "Todas las propiedades",
+    "property": "Propiedad",
+    "channel": "Canal",
+    "allChannels": "Todos los canales",
+    "showCancelled": "Mostrar canceladas",
+    "today": "Hoy",
+    "previous": "Mes anterior",
+    "next": "Mes siguiente",
+    "empty": "No hay estadías en este mes.",
+    "noProperties": "Todavía no tienes propiedades.",
+    "guestOf": "Huésped de {channel}",
+    "guests": "{count, plural, one {# huésped} other {# huéspedes}}",
+    "mayBeBlock": "Puede ser un bloqueo",
+    "cancelled": "Cancelada",
+    "continues": "Continúa",
+    "markLink": "Abrió el enlace",
+    "markEscalation": "Escalamiento abierto",
+    "markWaiting": "{count, plural, one {# solicitud por responder} other {# solicitudes por responder}}",
+    "markExtras": "{count, plural, one {# extra confirmado} other {# extras confirmados}}",
+    "arrives": "Llega",
+    "leaves": "Sale",
+    "staying": "En curso",
+    "open": "Ver estadía",
+    "readOnly": "Solo lectura: Guidesk no cambia fechas ni disponibilidad en tus plataformas."
+  },
+  "stayView": {
+    "back": "Volver al calendario",
+    "loading": "Cargando estadía…",
+    "notFound": "No encontramos esa estadía.",
+    "dates": "Fechas",
+    "checkIn": "Llegada: {date}, {time}",
+    "checkout": "Salida: {date}, {time}",
+    "source": "Origen",
+    "sources": {
+      "ical": "Calendario {channel}",
+      "pms": "PMS · {channel}",
+      "manual": "Agregada a mano · {channel}"
+    },
+    "reference": "Código de reserva",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "guest": "Huésped",
+    "noGuest": "Sin nombre todavía",
+    "nameRemoved": "El nombre se borró a pedido del huésped.",
+    "detailsBy": "Escrito por {name} el {date}",
+    "edit": "Editar huésped",
+    "guestName": "Nombre del huésped",
+    "guestCount": "Número de huéspedes",
+    "nameHelp": "Lo ves tú y tu equipo. La guía del huésped nunca muestra nombres.",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "saved": "Huésped guardado.",
+    "link": "Enlace de estadía",
+    "linkStatus": {
+      "not_created": "Sin enlace todavía",
+      "active": "Activo",
+      "device_limit": "Llegó al máximo de dispositivos",
+      "revoked": "Revocado",
+      "ended": "Terminado"
+    },
+    "devices": "{count, plural, =0 {Sin abrir} one {Abierto en # dispositivo} other {Abierto en # dispositivos}}",
+    "valuesShown": "{count, plural, =0 {Códigos no vistos} one {Códigos vistos # vez} other {Códigos vistos # veces}}",
+    "share": "Copiar enlace o mensaje en Compartir",
+    "conversations": "Conversaciones",
+    "noConversations": "Sin conversaciones todavía.",
+    "openConversation": "Abrir conversación",
+    "services": "Servicios",
+    "noServices": "Sin solicitudes de extras. Comparte el enlace de estadía para que el huésped vea tus extras.",
+    "totals": "Total confirmado: {confirmed} · Pagado en Guidesk: {paid}",
+    "requestStatus": {
+      "waiting": "Por responder",
+      "confirmed": "Confirmada",
+      "declined": "Rechazada",
+      "cancelled": "Cancelada por el huésped",
+      "host_cancelled": "Cancelada por ti",
+      "expired": "Vencida"
+    },
+    "paymentState": "Pago: {state}",
+    "confirm": "Confirmar",
+    "decline": "Rechazar",
+    "openRequests": "Abrir en Solicitudes"
+  },
+  "conversationGuest": {
+    "save": "Guardar nombre del huésped",
+    "label": "Nombre que escribió el huésped",
+    "saved": "Nombre guardado en la estadía."
   }
 }

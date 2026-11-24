@@ -11,5 +11,7 @@ import { ServiceRequestsService } from "./service-requests.service.js";
   imports: [TenancyModule, PaymentsModule, PhotosModule],
   controllers: [PropertyExtrasController, ServiceRequestsController],
   providers: [ExtrasService, ServiceRequestsService],
+  // Feature 018: the stay view lists a stay's requests the same way.
+  exports: [ServiceRequestsService],
 })
 export class ExtrasModule {}

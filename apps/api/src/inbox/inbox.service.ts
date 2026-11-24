@@ -102,6 +102,8 @@ export class InboxService {
         takerName: sql<string | null>`coalesce(nullif(${taker.name}, ''), ${taker.email})`,
         checkInDate: stay.checkInDate,
         checkoutDate: stay.checkoutDate,
+        stayId: stay.id,
+        guestName: stay.guestName,
         last: sql<{ author: "guest" | "assistant" | "host"; excerpt: string } | null>`(
           SELECT json_build_object('author', m.author, 'excerpt', left(m.body, ${EXCERPT}))
             FROM chat_message m
@@ -136,7 +138,13 @@ export class InboxService {
       reason: row.reason as NeedsHostReasonValue | null,
       stay:
         row.checkInDate && row.checkoutDate
-          ? { checkInDate: row.checkInDate, checkoutDate: row.checkoutDate }
+          ? {
+              id: row.stayId!,
+              checkInDate: row.checkInDate,
+              checkoutDate: row.checkoutDate,
+              // Feature 018: the name the host knows, for the host's own screens only.
+              guestName: row.guestName ?? null,
+            }
           : null,
       channel: "guide_chat",
       lastMessageAt: row.lastMessageAt.toISOString(),

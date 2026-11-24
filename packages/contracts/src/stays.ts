@@ -22,8 +22,26 @@ export const staySchema = z.object({
   guestName: z.string().nullable(),
   guestNameRemoved: z.boolean(),
   bookingReference: z.string().nullable(),
+  /** Feature 018: where the name and number of guests came from; `host` when typed in Guidesk. */
+  guestDetailsSource: z.enum(["feed", "pms", "host"]).nullable(),
 });
 export type Stay = z.infer<typeof staySchema>;
+
+/**
+ * `PUT stays/{stayId}/guest` (feature 018 FR-015): the guest's name (1 to 120 characters after
+ * trimming, or null to clear it) and number of guests (0 to 500, or null); a field left out keeps
+ * its value. Owners and admins.
+ */
+export const stayGuestBodySchema = z
+  .object({
+    guestName: z.string().trim().min(1).max(120).nullable().optional(),
+    guestCount: z.number().int().min(0).max(500).nullable().optional(),
+  })
+  .strict()
+  .refine((body) => body.guestName !== undefined || body.guestCount !== undefined, {
+    message: "Send guestName, guestCount, or both.",
+  });
+export type StayGuestBody = z.infer<typeof stayGuestBodySchema>;
 
 export const stayListSchema = z.object({ items: z.array(staySchema) });
 export type StayList = z.infer<typeof stayListSchema>;

@@ -1,7 +1,9 @@
 /**
  * Plain-text messages the host pastes into the OTA thread (feature 004 FR-038 to FR-040, research
  * R14). They carry the essentials so the guide stays optional (PC-01, PC-02), never ask guests to
- * book or pay outside the platform (PC-06), and never contain guest data.
+ * book or pay outside the platform (PC-06), and carry no guest data except the guest's name in
+ * the stay message's greeting when the host saved one (feature 018 FR-021): the host sends it in
+ * the booking's own thread. The guest guide itself never shows the name (feature 004 FR-028).
  */
 export type MessageLanguage = "es" | "en";
 
@@ -47,6 +49,8 @@ export interface StayMessageInput {
   /** The published Wi-Fi section as plain text, locked fields already resolved or labeled. */
   wifi: string | null;
   confirmationCode: string | null;
+  /** Feature 018: the guest's name the host saved on the stay, for the greeting. */
+  guestName?: string | null;
 }
 
 function formatDate(date: string, language: MessageLanguage): string {
@@ -71,10 +75,11 @@ export function stayMessage(language: MessageLanguage, input: StayMessageInput):
   const es = language === "es";
   const checkIn = `${formatDate(input.checkInDate, language)}${input.checkInTime ? `, ${input.checkInTime}` : ""}`;
   const checkout = `${formatDate(input.checkoutDate, language)}${input.checkoutTime ? `, ${input.checkoutTime}` : ""}`;
+  const name = input.guestName?.trim();
   const parts: string[] = [
     es
-      ? `¡Hola! Todo listo para tu estadía en ${input.propertyName}.`
-      : `Hi! Everything is ready for your stay at ${input.propertyName}.`,
+      ? `¡Hola${name ? `, ${name}` : ""}! Todo listo para tu estadía en ${input.propertyName}.`
+      : `Hi${name ? ` ${name}` : ""}! Everything is ready for your stay at ${input.propertyName}.`,
     es ? `Llegada: ${checkIn}\nSalida: ${checkout}` : `Check-in: ${checkIn}\nCheckout: ${checkout}`,
   ];
   if (input.address) parts.push(es ? `Dirección: ${input.address}` : `Address: ${input.address}`);
