@@ -102,6 +102,7 @@ export class ServiceRequestsService {
           eq(serviceRequest.workspaceId, workspaceId),
           inArray(serviceRequest.status, statuses),
           ...(query.propertyId ? [eq(serviceRequest.propertyId, query.propertyId)] : []),
+          ...(query.stayId ? [eq(serviceRequest.stayId, query.stayId)] : []),
         ),
       )
       .orderBy(

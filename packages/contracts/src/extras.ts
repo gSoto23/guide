@@ -198,6 +198,8 @@ export const serviceRequestsQuerySchema = z
   .object({
     status: z.enum(["waiting", "confirmed", "closed", "all"]).optional(),
     propertyId: z.uuid().optional(),
+    /** Feature 018: one stay's requests (the stay view). */
+    stayId: z.uuid().optional(),
     before: z
       .string()
       .regex(/^\d{1,6}$/)
