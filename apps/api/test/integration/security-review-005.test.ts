@@ -4,6 +4,7 @@ import { systemQuery } from "./helpers.js";
 import { guest, publishedGuide, type PublishedGuide } from "./guest-helpers.js";
 import { seedTeam, type TeamWorkspace } from "./property-helpers.js";
 import { createTestApp } from "./test-app.js";
+import { CHAT_DEVICE_LIMIT } from "../../src/chat/guest-chat.service.js";
 
 /**
  * Security review for feature 005 on the API side (T044): AC-SEC-005 (device limit before any
@@ -90,7 +91,8 @@ describe("feature 005 security review (API)", () => {
   it("AC-SEC-005: a paused device is refused before anything is stored or queued", async () => {
     const { cookie } = await firstMessage("Uno");
     const ip = "10.251.2.3";
-    for (let i = 0; i < 19; i += 1) {
+    // The first message plus these fill the device's 25 messages per 10 minutes (feature 019).
+    for (let i = 0; i < CHAT_DEVICE_LIMIT - 1; i += 1) {
       await guest(ctx, "POST", "/api/v1/guest/chat/messages", {
         cookie,
         headers: { "x-forwarded-for": ip },
