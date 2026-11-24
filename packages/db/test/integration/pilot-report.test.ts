@@ -143,6 +143,20 @@ beforeAll(async () => {
   };
   await questions(anaDemo, ["held", "held", "held"], 70_000);
   await stays(anaDemo, 6, 6);
+
+  // Feature 019: daily AI replies by plan. ana (Free) 40 replies, 10 from a top-up; beto (Pro) 20;
+  // the demo workspaces' replies and other cohorts never count.
+  await handle.db.execute(sql`UPDATE workspace SET plan = 'pro' WHERE id = ${beto.workspaceId}`);
+  for (const [h, replies, topUp, micros] of [
+    [ana, 40, 10, 1_200_000],
+    [beto, 20, 0, 400_000],
+    [anaDemo, 99, 50, 9_000_000],
+    [outside, 77, 0, 7_000_000],
+  ] as const) {
+    await handle.db.execute(sql`
+      INSERT INTO chat_usage_daily (workspace_id, property_id, day, replies, top_up_replies, cost_usd_micros)
+      VALUES (${h.workspaceId}, ${h.propertyId}, '2025-03-10', ${replies}, ${topUp}, ${micros})`);
+  }
 });
 
 afterAll(async () => {
@@ -164,6 +178,31 @@ describe("pilot metrics (feature 010 US5)", () => {
     expect(m.aiCostPerStay.totalUsd).toBeCloseTo(0.018, 6);
     expect(m.aiCostPerStay.staysServed).toBe(5);
     expect(m.aiCostPerStay.perStayUsd).toBeCloseTo(0.0036, 6);
+  });
+
+  it("splits AI replies by plan into allowances and top-ups, with the cost per reply (019 FR-015)", async () => {
+    const m = await pilotMetrics(handle.db, { from: FROM, to: TO }, NOW);
+    expect(m.aiRepliesByPlan).toEqual([
+      {
+        plan: "free",
+        replies: 40,
+        fromAllowance: 30,
+        fromTopUps: 10,
+        costUsd: 1.2,
+        costPerReplyUsd: 0.03,
+      },
+      {
+        plan: "pro",
+        replies: 20,
+        fromAllowance: 20,
+        fromTopUps: 0,
+        costUsd: 0.4,
+        costPerReplyUsd: 0.02,
+      },
+    ]);
+    expect(formatPilotMetrics(m)).toContain(
+      "free: 40 replies (30 + 10); US$1.20; US$0.0300 per reply",
+    );
   });
 
   it("counts nobody as retained before day 60 has passed", async () => {

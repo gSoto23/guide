@@ -74,15 +74,19 @@ describe("plans on the home page (feature 014 FR-002)", () => {
     expect(cards.map((card) => card.id)).toEqual(["free", "pro", "business"]);
     expect(cards[0]).toMatchObject({
       price: "USD 0",
-      lines: ["2 propiedades activas", "100 respuestas de IA al mes", "1 puesto"],
+      lines: ["2 propiedades activas", "500 respuestas de IA al mes", "1 puesto"],
     });
     expect(cards[0]?.fee).toMatch(/10\s?%/);
     expect(cards[1]?.price).toBe("Precio por anunciar");
     expect(cards[1]?.lines).toEqual([
       "Propiedades sin límite",
-      "300 respuestas de IA al mes por propiedad activa, compartidas",
+      "300 respuestas de IA al mes por propiedad activa, compartidas, mínimo 500",
       "3 puestos",
     ]);
+    // Feature 019: Business pools the same 300 per property with a minimum of 1,000.
+    expect(cards[2]?.lines[1]).toBe(
+      "300 respuestas de IA al mes por propiedad activa, compartidas, mínimo 1000",
+    );
     expect(cards[1]?.fee).toMatch(/7\s?%/);
     expect(cards[2]?.lines[2]).toBe("Puestos sin límite");
     expect(cards[2]?.fee).toMatch(/5\s?%/);
@@ -90,7 +94,10 @@ describe("plans on the home page (feature 014 FR-002)", () => {
 
   it("read in English", () => {
     const cards = planCards("en", publicCatalog("en"));
-    expect(cards[0]?.lines).toEqual(["2 active properties", "100 AI replies a month", "1 seat"]);
+    expect(cards[0]?.lines).toEqual(["2 active properties", "500 AI replies a month", "1 seat"]);
+    expect(cards[2]?.lines[1]).toBe(
+      "300 AI replies a month per active property, pooled, at least 1,000",
+    );
     expect(cards[1]?.price).toBe("Price to be announced");
   });
 });

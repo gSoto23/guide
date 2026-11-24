@@ -25,7 +25,10 @@
     "test:integration": "vitest run -c vitest.integration.config.ts",
     "report:pilot": "node --env-file-if-exists=../../.env dist/cli/pilot-report.js",
     "plan:set": "node --env-file-if-exists=../../.env dist/cli/plan.js set",
-    "plan:show": "node --env-file-if-exists=../../.env dist/cli/plan.js show"
+    "plan:show": "node --env-file-if-exists=../../.env dist/cli/plan.js show",
+    "plan:topup": "node --env-file-if-exists=../../.env dist/cli/plan.js topup",
+    "plan:topups": "node --env-file-if-exists=../../.env dist/cli/plan.js topups",
+    "plan:topup-correct": "node --env-file-if-exists=../../.env dist/cli/plan.js topup-correct"
   },
   "devDependencies": {
     "@guidesk/config": "workspace:*",

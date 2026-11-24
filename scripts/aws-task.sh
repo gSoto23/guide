@@ -5,10 +5,14 @@
 #
 #   AWS_PROFILE=guidesk-staging scripts/aws-task.sh staging migrate
 #   AWS_PROFILE=guidesk-staging scripts/aws-task.sh staging demo-seed you@example.com
+#   AWS_PROFILE=guidesk-staging scripts/aws-task.sh staging plan show --workspace <uuid>
+#   AWS_PROFILE=guidesk-staging scripts/aws-task.sh staging plan topup --workspace <uuid> --replies 250 --note "pilot"
+#
+# `plan` runs the founder's plan tool (specs 011 and 019): set, show, topup, topups, topup-correct.
 set -euo pipefail
 
 usage() {
-  echo "usage: scripts/aws-task.sh <stage> migrate | demo-seed <email>" >&2
+  echo "usage: scripts/aws-task.sh <stage> migrate | demo-seed <email> | plan <set|show|topup|topups|topup-correct> [options]" >&2
   exit 2
 }
 
@@ -30,6 +34,16 @@ case "$action" in
       *) usage ;;
     esac
     command="[\"node\",\"dist/cli/demo-seed.js\",\"--email\",\"$email\"]"
+    ;;
+  plan)
+    sub="${3:-}"
+    case "$sub" in
+      set | show | topup | topups | topup-correct) ;;
+      *) usage ;;
+    esac
+    # The tool's own checks validate each option; python3 turns the arguments into a JSON array so
+    # notes with spaces or quotes reach it unchanged.
+    command=$(python3 -c 'import json, sys; print(json.dumps(["node", "node_modules/@guidesk/db/dist/cli/plan.js"] + sys.argv[1:]))' "${@:3}")
     ;;
   *) usage ;;
 esac

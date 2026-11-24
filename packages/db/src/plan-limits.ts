@@ -88,3 +88,84 @@ export async function monthlyAiReplies(
      WHERE workspace_id = ${workspaceId} AND day >= ${start}::date`);
   return Number(result.rows[0]?.replies ?? 0);
 }
+
+/** A workspace's top-ups that still count: unexpired, with replies left (feature 019). */
+export interface OpenTopUp {
+  id: string;
+  granted: number;
+  used: number;
+  remaining: number;
+  addedAt: string;
+  expiresAt: string;
+}
+
+/**
+ * AI replies left in the workspace's unexpired top-ups at `now` (feature 019 FR-006, FR-007).
+ * Members may read the rows of their workspace; jobs read with system privileges.
+ */
+export async function topUpBalance(
+  db: Database | Transaction,
+  workspaceId: string,
+  now: Date = new Date(),
+): Promise<number> {
+  const result = await db.execute<{ balance: number }>(sql`
+    SELECT coalesce(sum(replies_granted - replies_used), 0)::int AS balance
+      FROM ai_top_up
+     WHERE workspace_id = ${workspaceId} AND replies_used < replies_granted
+       AND expires_at > ${now}`);
+  return Number(result.rows[0]?.balance ?? 0);
+}
+
+/** The open top-ups, oldest first (the order replies are taken in), at most `limit`. */
+export async function openTopUps(
+  db: Database | Transaction,
+  workspaceId: string,
+  now: Date = new Date(),
+  limit = 20,
+): Promise<OpenTopUp[]> {
+  const result = await db.execute<{
+    id: string;
+    replies_granted: number;
+    replies_used: number;
+    created_at: Date;
+    expires_at: Date;
+  }>(sql`
+    SELECT id, replies_granted, replies_used, created_at, expires_at
+      FROM ai_top_up
+     WHERE workspace_id = ${workspaceId} AND replies_used < replies_granted
+       AND expires_at > ${now}
+     ORDER BY created_at, id
+     LIMIT ${limit}`);
+  return result.rows.map((row) => ({
+    id: row.id,
+    granted: Number(row.replies_granted),
+    used: Number(row.replies_used),
+    remaining: Number(row.replies_granted) - Number(row.replies_used),
+    addedAt: new Date(row.created_at).toISOString(),
+    expiresAt: new Date(row.expires_at).toISOString(),
+  }));
+}
+
+/**
+ * Takes one AI reply from the oldest open top-up (feature 019 FR-006, research R4). One conditional
+ * update: a row another transaction holds is skipped, and `replies_used` never passes
+ * `replies_granted`, so a balance never goes below zero. Returns the top-up's ID, or null when no
+ * reply was left. System privileges only (the worker).
+ */
+export async function takeTopUpReply(
+  db: Database | Transaction,
+  workspaceId: string,
+): Promise<string | null> {
+  const result = await db.execute<{ id: string }>(sql`
+    UPDATE ai_top_up SET replies_used = replies_used + 1
+     WHERE id = (
+       SELECT id FROM ai_top_up
+        WHERE workspace_id = ${workspaceId} AND replies_used < replies_granted
+          AND expires_at > now()
+        ORDER BY created_at, id
+        LIMIT 1
+        FOR UPDATE SKIP LOCKED)
+       AND replies_used < replies_granted
+    RETURNING id`);
+  return result.rows[0]?.id ?? null;
+}

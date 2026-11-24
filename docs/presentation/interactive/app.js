@@ -406,13 +406,14 @@
         ['El nombre se usa del lado del anfitrión (bandeja, solicitudes, copiloto, mensaje de estadía); la guía sigue sin mostrarlo.', 'The name is used on the host side (inbox, requests, copilot, stay message); the guide still never shows it.'],
         ['Un espacio de «Servicios» listo para los tours de un socio como Localbird, cuando reporte cada reserva por estadía.', 'A "Services" area ready for a partner\'s tours, such as Localbird, once it reports each booking per stay.']
       ], screens: 'H-new · calendario/calendar', adr: 'PRD F22' },
-    '019': { planned: true, t: ['Respuestas de IA y recargas', 'AI replies and top-ups'],
+    '019': { t: ['Respuestas de IA y recargas', 'AI replies and top-ups'],
       lead: ['Límites más generosos y una forma de seguir respondiendo cuando se acaba el mes.', 'More generous limits and a way to keep answering when the month runs out.'],
       items: [
         ['Pro: 300 respuestas por propiedad, compartidas, mínimo 500. Business: igual, mínimo 1.000. Free: 500 durante el piloto.', 'Pro: 300 replies per property, pooled, at least 500. Business: the same, at least 1,000. Free: 500 during the pilot.'],
         ['Hasta 25 mensajes por dispositivo cada 10 minutos; los presupuestos diarios siguen como protección.', 'Up to 25 messages per device every 10 minutes; the daily budgets stay as protection.'],
         ['Recargas de respuestas (no de tokens), válidas 12 meses, usadas después de las del mes. Sin recarga, la IA se pausa hasta el día 1; el servicio nunca se suspende.', 'Reply top-ups (not tokens), valid 12 months, used after the month\'s replies. Without one, the AI pauses until the 1st; the service is never suspended.'],
-        ['En el piloto el fundador da las recargas sin costo; la compra en el portal llega con el cobro a anfitriones.', 'In the pilot the founder grants top-ups at no charge; buying them in the portal comes with host billing.']
+        ['En el piloto el fundador da las recargas sin costo, con su herramienta (también en AWS); la compra en el portal llega con el cobro a anfitriones.', 'In the pilot the founder grants top-ups at no charge with the founder tool (also on AWS); buying them in the portal comes with host billing.'],
+        ['El reporte del piloto separa las respuestas del mes y de recargas, con el costo de IA por respuesta, para fijar el precio de las recargas.', 'The pilot report splits replies from the month and from top-ups, with the AI cost per reply, to set the top-up price.']
       ], screens: 'H-32', adr: 'Spec 011' }
   };
 

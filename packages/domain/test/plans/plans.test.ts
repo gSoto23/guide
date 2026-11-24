@@ -20,12 +20,18 @@ const on = (plan: WorkspacePlan["plan"], custom: Partial<WorkspacePlan> = {}): W
   ...custom,
 });
 
-describe("plan catalog (feature 011 FR-002)", () => {
-  it("matches the business-model hypothesis", () => {
+describe("plan catalog (feature 011 FR-002, feature 019 FR-001)", () => {
+  it("matches the founder's numbers", () => {
     expect(PLAN_LIMITS.free).toEqual({
       properties: 2,
       seats: 1,
-      aiReplies: { kind: "fixed", perMonth: 100 },
+      aiReplies: { kind: "fixed", perMonth: 500 },
+    });
+    expect(PLAN_LIMITS.pro.aiReplies).toEqual({ kind: "pooled", perProperty: 300, minimum: 500 });
+    expect(PLAN_LIMITS.business.aiReplies).toEqual({
+      kind: "pooled",
+      perProperty: 300,
+      minimum: 1000,
     });
     expect(PLAN_LIMITS.pro.properties).toBeNull();
     expect(PLAN_LIMITS.pro.seats).toBe(3);
@@ -40,17 +46,32 @@ describe("effective limits (FR-003, R2)", () => {
     const free = effectiveLimits(on("free"), 1);
     expect(free.properties).toEqual({ limit: 2, source: "plan" });
     expect(free.seats).toEqual({ limit: 1, source: "plan" });
-    expect(free.aiReplies).toEqual({ limit: 100, source: "plan", perProperty: null });
+    expect(free.aiReplies).toEqual({
+      limit: 500,
+      source: "plan",
+      perProperty: null,
+      minimum: null,
+    });
   });
 
-  it("pools 300 AI replies per active property on Pro and Business, at least 300", () => {
-    expect(effectiveLimits(on("pro"), 4).aiReplies).toEqual({
+  it("pools 300 AI replies per active property, at least 500 on Pro and 1,000 on Business", () => {
+    expect(effectiveLimits(on("pro"), 1).aiReplies).toEqual({
+      limit: 500,
+      source: "plan",
+      perProperty: 300,
+      minimum: 500,
+    });
+    expect(effectiveLimits(on("pro"), 0).aiReplies.limit).toBe(500);
+    expect(effectiveLimits(on("pro"), 2).aiReplies.limit).toBe(600);
+    expect(effectiveLimits(on("pro"), 5).aiReplies.limit).toBe(1500);
+    expect(effectiveLimits(on("business"), 0).aiReplies.limit).toBe(1000);
+    expect(effectiveLimits(on("business"), 2).aiReplies.limit).toBe(1000);
+    expect(effectiveLimits(on("business"), 4).aiReplies).toEqual({
       limit: 1200,
       source: "plan",
       perProperty: 300,
+      minimum: 1000,
     });
-    expect(effectiveLimits(on("business"), 0).aiReplies.limit).toBe(300);
-    expect(effectiveLimits(on("business"), 1).aiReplies.limit).toBe(300);
   });
 
   it("lets a custom limit replace one value only", () => {
@@ -61,6 +82,7 @@ describe("effective limits (FR-003, R2)", () => {
       limit: 50,
       source: "custom",
       perProperty: null,
+      minimum: null,
     });
     expect(effectivePropertyLimit(on("pro"))).toBeNull();
     expect(effectiveSeatLimit(on("pro", { seatLimit: 7 }))).toBe(7);

@@ -28,3 +28,24 @@ export function share(used: number, limit: number | null): number {
   if (limit === null || limit <= 0) return 0;
   return Math.min(100, Math.round((used / limit) * 100));
 }
+
+/**
+ * Where the month's AI replies stand (feature 019): below 80%; at 80% or more; used up but a
+ * top-up keeps the AI answering; or used up with no top-up, so the AI pauses until the 1st.
+ */
+export type AiState = "ok" | "warning" | "topUp" | "paused";
+
+export function aiState(ai: { used: number; limit: number }, topUpBalance: number): AiState {
+  if (ai.used >= ai.limit) return topUpBalance > 0 ? "topUp" : "paused";
+  return ai.used * 100 >= ai.limit * 80 ? "warning" : "ok";
+}
+
+/** A date without the time, for example "20 nov 2027". */
+export function formatDay(locale: string, moment: string): string {
+  return new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(moment));
+}
+
+/** A mail link to Guidesk with a subject naming the workspace (feature 019 FR-012). */
+export function askMoreHref(email: string, subject: string): string {
+  return `mailto:${email}?subject=${encodeURIComponent(subject)}`;
+}

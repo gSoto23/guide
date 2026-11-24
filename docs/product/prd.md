@@ -267,6 +267,9 @@ billing exists.*
 - **FR-11.5** After the pilot, the direction is AI replies only on Pro and Business; the founder
   revisits the plan numbers with pilot data (Phase 2).
 
+*FR-11.3 and FR-11.4 built in spec 019 (2026-11-24): the founder grants top-ups with the plan tool,
+locally or on AWS (`scripts/aws-task.sh <stage> plan topup`).*
+
 ### F13 — Guest checkout and payouts (MVP, month 4)
 
 - **FR-13.1** A guest MUST be able to pay for a confirmed add-on through the payment provider's

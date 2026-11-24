@@ -70,8 +70,9 @@ describe("GET plan (FR-014)", () => {
       limits: {
         properties: { limit: 2, used: 1, source: "plan" },
         seats: { limit: 10, used: 3, members: 3, pending: 0, source: "custom" },
-        aiReplies: { limit: 100, used: 85, source: "plan", perProperty: null },
+        aiReplies: { limit: 500, used: 85, source: "plan", perProperty: null, minimum: null },
       },
+      topUps: { balance: 0, items: [] },
     });
     const start = new Date(summary.limits.aiReplies.monthStart);
     const resets = new Date(summary.limits.aiReplies.resetsAt);
@@ -92,7 +93,12 @@ describe("GET plan (FR-014)", () => {
     expect(business.changedAt).not.toBeNull();
     expect(business.limits.properties).toEqual({ limit: null, used: 2, source: "plan" });
     expect(business.limits.seats).toMatchObject({ limit: null, used: 3 });
-    expect(business.limits.aiReplies).toMatchObject({ limit: 600, perProperty: 300 });
+    // Two properties × 300 is below Business's minimum of 1,000 (feature 019).
+    expect(business.limits.aiReplies).toMatchObject({
+      limit: 1000,
+      perProperty: 300,
+      minimum: 1000,
+    });
 
     await db.query(`UPDATE workspace SET ai_reply_monthly_limit = 50 WHERE id = $1`, [
       team.workspaceId,
@@ -101,6 +107,7 @@ describe("GET plan (FR-014)", () => {
       limit: 50,
       source: "custom",
       perProperty: null,
+      minimum: null,
     });
     await db.query(
       `UPDATE workspace SET plan = 'free', seat_limit = 10, ai_reply_monthly_limit = NULL WHERE id = $1`,
@@ -140,5 +147,32 @@ describe("GET plan (FR-014)", () => {
       [team.workspaceId],
     );
     expect(rows[0]).toEqual({ plan: "free", property_limit: null });
+  });
+
+  it("shows open top-ups oldest first, their balance, and no notes (feature 019 US4)", async () => {
+    const { rows: added } = await db.query<{ id: string }>(
+      `INSERT INTO ai_top_up (workspace_id, replies_granted, replies_used, note, created_at)
+       VALUES ($1, 250, 12, 'Nota privada del fundador', now() - interval '2 days'),
+              ($1, 100, 0, 'Otra nota', now() - interval '1 day'),
+              ($1, 50, 50, 'Agotada', now()),
+              ($1, 70, 0, 'Vencida', now() - interval '13 months')
+       RETURNING id`,
+      [team.workspaceId],
+    );
+    await db.query(`UPDATE ai_top_up SET expires_at = now() - interval '1 month' WHERE id = $1`, [
+      added[3]!.id,
+    ]);
+    const summary = await read();
+    expect(summary.topUps.balance).toBe(338);
+    expect(summary.topUps.items.map((item) => [item.id, item.granted, item.remaining])).toEqual([
+      [added[0]!.id, 250, 238],
+      [added[1]!.id, 100, 100],
+    ]);
+    expect(JSON.stringify(summary)).not.toContain("nota");
+    // Members of another workspace see nothing of these.
+    const other = await seedTeam(ctx, db, "plans-other");
+    const response = await wsApi(ctx, other.owner, "GET", other.workspaceId, "/plan");
+    expect((response.json() as PlanSummary).topUps).toEqual({ balance: 0, items: [] });
+    await db.query(`DELETE FROM ai_top_up WHERE workspace_id = $1`, [team.workspaceId]);
   });
 });

@@ -261,6 +261,8 @@ export const chatUsageDaily = pgTable(
     replies: integer("replies").notNull().default(0),
     costUsdMicros: bigint("cost_usd_micros", { mode: "number" }).notNull().default(0),
     limitNotifiedAt: timestamp("limit_notified_at", { withTimezone: true }),
+    /** Feature 019: replies of the day paid from a top-up (never more than `replies`). */
+    topUpReplies: integer("top_up_replies").notNull().default(0),
   },
   (t) => [
     primaryKey({ columns: [t.propertyId, t.day] }),

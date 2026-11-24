@@ -31,10 +31,28 @@ export interface PlanSummary {
       source: PlanLimitSource;
       /** 300 on Pro and Business when the limit comes from the plan, else null. */
       perProperty: number | null;
+      /** Feature 019: 500 on Pro and 1,000 on Business when the limit comes from the plan, else null. */
+      minimum: number | null;
       monthStart: string;
       resetsAt: string;
     };
   };
+  /**
+   * Feature 019: AI reply top-ups used after the month's allowance. `items` are the unexpired ones
+   * with replies left, oldest first (at most 20); `balance` is their sum. Notes are never returned.
+   */
+  topUps: {
+    balance: number;
+    items: PlanTopUp[];
+  };
   /** Where to ask for a change; null when Guidesk configured none. */
   contactEmail: string | null;
+}
+
+export interface PlanTopUp {
+  id: string;
+  granted: number;
+  remaining: number;
+  addedAt: string;
+  expiresAt: string;
 }

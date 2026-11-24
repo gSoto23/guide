@@ -48,6 +48,15 @@ recommended option under the founder's standing instruction; each can be changed
 - Q: Do copilot drafts and assistant tests use top-ups? → A: Yes. Everything that counts as an AI
   reply under spec 011 FR-006 draws from the month first and then from the top-up balance.
 
+### Session 2026-11-24 (plan)
+
+- Q: Must two replies started at the same moment with one reply left be stopped exactly? → A: No. The
+  monthly limit already works by checking before the model call and counting after it (spec 011): a
+  reply that started while replies were left is answered and counted. Top-ups follow the same rule,
+  and the top-up balance itself never goes below zero (a conditional update takes each reply). At
+  most the replies already in flight finish without a top-up reply, which in practice is 0 to 2.
+  This avoids reserving and releasing replies around every model call ([research R4](research.md)).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Higher monthly allowances (Priority: P1)
@@ -128,8 +137,9 @@ replies, then pauses; the next month starts with the full allowance and the bala
    longer count.
 6. **Given** the 1st of the month (UTC), **When** usage is checked, **Then** the monthly allowance is
    full again and the top-up balance is unchanged.
-7. **Given** two AI replies at the same moment with one reply left, **When** both are checked, **Then**
-   only one is allowed; the balance never goes below zero.
+7. **Given** two AI replies at the same moment with one top-up reply left, **When** both are
+   recorded, **Then** one takes the last top-up reply, the other is counted in the month only, and the
+   balance never goes below zero.
 
 ---
 
@@ -163,7 +173,6 @@ banner and email mention the top-up; when the top-up runs out one email is sent.
 
 - A workspace changes plan mid-month: the new allowance applies to the next reply; the top-up balance
   is unchanged.
-- A custom AI limit of 0: the month allows nothing, but a top-up still allows replies.
 - A Business workspace with 0 active properties: allowance is 1,000 (the minimum).
 - The founder adds a top-up to a demo workspace: allowed; demo workspaces stay out of the pilot report.
 - A top-up with a typo (for example 25,000 instead of 250): the tool asks for confirmation above 5,000
@@ -195,8 +204,9 @@ banner and email mention the top-up; when the top-up runs out one email is sent.
 - **FR-005**: A top-up MUST be a number of AI replies (1 to 100,000) added to one workspace by the
   founder with a note, recorded in the workspace's security log as made by Guidesk.
 - **FR-006**: AI replies MUST draw from the month's allowance first and, once it is used up, from the
-  workspace's unexpired top-ups, oldest first. A reply MUST be allowed only if one of them has a reply
-  left; the check and the count MUST be atomic so no balance goes below zero.
+  workspace's unexpired top-ups, oldest first. A model call MUST start only if one of them has a
+  reply left. Taking a top-up reply MUST be a single conditional update, so no balance goes below
+  zero; a reply already in flight when the last one is taken is answered and counted in the month.
 - **FR-007**: A top-up MUST expire 12 months after it is added; expired replies MUST NOT count and
   MUST NOT be refunded.
 - **FR-008**: The month's allowance MUST reset at 00:00 UTC on the 1st as in spec 011; top-up balances
@@ -239,7 +249,8 @@ banner and email mention the top-up; when the top-up runs out one email is sent.
 
 - **SC-001**: The plan screen shows the right allowance for every plan and property count in tests
   (Free 500; Pro 500 to 300 × properties; Business 1,000 to 300 × properties).
-- **SC-002**: Under 50 concurrent AI replies with one reply left, exactly one is allowed (tests).
+- **SC-002**: Under 50 concurrent recorded replies with one top-up reply left, exactly one takes it
+  and the balance never goes below zero (tests).
 - **SC-003**: The 26th message from a device within 10 minutes never reaches the model (tests).
 - **SC-004**: The usage check adds at most 20 ms at p95 to an AI reply.
 - **SC-005**: In the pilot, the report gives the AI cost per reply for each plan, so OQ-12 (top-up
@@ -260,7 +271,7 @@ banner and email mention the top-up; when the top-up runs out one email is sent.
 
 - Top-ups only from the founder's command-line tool with system privileges; no portal or API route
   (FR-010), as for plans in spec 011 FR-020.
-- Atomic check-and-count per reply (FR-006).
+- Conditional update per top-up reply, so balances never go below zero (FR-006).
 - Security log entry per top-up and correction, with the note.
 - Row-level security on usage and top-ups per workspace.
 - Per-device pace (25 per 10 minutes) and daily budgets per property and workspace stop draining.

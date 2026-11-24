@@ -8,9 +8,12 @@ import {
   loadAssistantSettingsRows,
   property,
   restrictedValue,
+  takeTopUpReply,
+  topUpBalance,
   workspace,
   workspaceLimitInputs,
   type Database,
+  type Transaction,
 } from "@guidesk/db";
 import {
   allPassed,
@@ -217,15 +220,24 @@ export async function loadAppliedSettings(
   return { effective, quiet: quietWindow(now, context.timeZone, effective.quietHours) };
 }
 
+/** What the budget check reads before a model call. */
+export interface UsageNow {
+  property: number;
+  workspace: number;
+  month: number;
+  /** AI replies left in the workspace's unexpired top-ups (feature 019). */
+  topUpLeft: number;
+}
+
 /**
- * Today's (UTC) model replies for the property and the whole workspace (feature 005 R8), and the
- * workspace's replies this UTC month (feature 011 R3).
+ * Today's (UTC) model replies for the property and the whole workspace (feature 005 R8), the
+ * workspace's replies this UTC month (feature 011 R3), and its top-up balance (feature 019).
  */
 export async function usageToday(
   db: Database,
   workspaceId: string,
   propertyId: string,
-): Promise<{ property: number; workspace: number; month: number }> {
+): Promise<UsageNow> {
   const today = sql`(now() AT TIME ZONE 'utc')::date`;
   const [row] = await db
     .select({
@@ -240,27 +252,38 @@ export async function usageToday(
         sql`${chatUsageDaily.day} >= date_trunc('month', now() AT TIME ZONE 'utc')::date`,
       ),
     );
-  return { property: row?.property ?? 0, workspace: row?.workspace ?? 0, month: row?.month ?? 0 };
+  return {
+    property: row?.property ?? 0,
+    workspace: row?.workspace ?? 0,
+    month: row?.month ?? 0,
+    topUpLeft: await topUpBalance(db, workspaceId),
+  };
 }
 
 /**
  * The budget that stops a model call now, if any (feature 011 R4): the month's AI replies first,
- * then the daily budgets of feature 005 (FR-028).
+ * unless a top-up still has replies (feature 019 FR-006), then the daily budgets of feature 005
+ * (FR-028).
  */
 export function budgetStop(
-  usage: { property: number; workspace: number; month: number },
+  usage: Pick<UsageNow, "property" | "workspace" | "month"> & { topUpLeft?: number },
   context: Pick<PropertyContext, "propertyLimit" | "workspaceLimit" | "monthlyLimit">,
 ): "monthly" | "daily" | null {
-  if (usage.month >= context.monthlyLimit) return "monthly";
+  if (usage.month >= context.monthlyLimit && (usage.topUpLeft ?? 0) <= 0) return "monthly";
   if (usage.property >= context.propertyLimit || usage.workspace >= context.workspaceLimit) {
     return "daily";
   }
   return null;
 }
 
-/** Adds one model reply to today's usage; `db` may be a transaction. */
+/**
+ * Adds one model reply to today's usage; `db` may be a transaction. When the month's replies,
+ * this one included, are above the workspace's allowance, the reply is paid from the oldest open
+ * top-up and counted in `top_up_replies` (feature 019 FR-006, research R4). With no top-up reply
+ * left it is counted in the month only (a reply already in flight).
+ */
 export async function recordUsage(
-  db: Pick<Database, "insert">,
+  db: Database | Transaction,
   workspaceId: string,
   propertyId: string,
   usage: AgentUsage,
@@ -281,6 +304,28 @@ export async function recordUsage(
         costUsdMicros: sql`${chatUsageDaily.costUsdMicros} + ${usage.costUsdMicros}`,
       },
     });
+  const inputs = await workspaceLimitInputs(db, workspaceId);
+  if (!inputs) return;
+  const [month] = await db
+    .select({ replies: sql<number>`coalesce(sum(${chatUsageDaily.replies}), 0)::int` })
+    .from(chatUsageDaily)
+    .where(
+      and(
+        eq(chatUsageDaily.workspaceId, workspaceId),
+        sql`${chatUsageDaily.day} >= date_trunc('month', now() AT TIME ZONE 'utc')::date`,
+      ),
+    );
+  if (Number(month?.replies ?? 0) <= limitsFor(inputs).aiReplies.limit) return;
+  if (!(await takeTopUpReply(db, workspaceId))) return;
+  await db
+    .update(chatUsageDaily)
+    .set({ topUpReplies: sql`${chatUsageDaily.topUpReplies} + 1` })
+    .where(
+      and(
+        eq(chatUsageDaily.propertyId, propertyId),
+        sql`${chatUsageDaily.day} = (now() AT TIME ZONE 'utc')::date`,
+      ),
+    );
 }
 
 export async function knowledgeInput(

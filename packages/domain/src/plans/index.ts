@@ -1,6 +1,7 @@
 /**
- * Plans and their limits (feature 011 FR-001 to FR-005, research R1 and R2). The numbers are the
- * business-model hypothesis (OQ-10); the founder changes them here. Unlimited is `null`.
+ * Plans and their limits (feature 011 FR-001 to FR-005, research R1 and R2). The founder changes
+ * the numbers here; the AI reply allowances are the founder's decision of 2026-11-24 (feature 019
+ * FR-001). Unlimited is `null`.
  */
 export const PLANS = ["free", "pro", "business"] as const;
 export type Plan = (typeof PLANS)[number];
@@ -12,26 +13,37 @@ export function isPlan(value: unknown): value is Plan {
 /** AI replies per active property per month on Pro and Business, pooled across the workspace. */
 export const POOLED_AI_REPLIES_PER_PROPERTY = 300;
 
+/** Free's monthly AI replies while the pilot lasts (feature 019); revisited after the pilot. */
+export const FREE_AI_REPLIES_PER_MONTH = 500;
+
 export interface PlanLimits {
   /** Active properties; null is unlimited. */
   properties: number | null;
   /** Members plus pending invitations; null is unlimited. */
   seats: number | null;
-  /** A fixed number of AI replies per month, or a pooled allowance per active property. */
-  aiReplies: { kind: "fixed"; perMonth: number } | { kind: "pooled"; perProperty: number };
+  /**
+   * A fixed number of AI replies per month, or a pooled allowance per active property with a
+   * minimum for the whole workspace.
+   */
+  aiReplies:
+    { kind: "fixed"; perMonth: number } | { kind: "pooled"; perProperty: number; minimum: number };
 }
 
 export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
-  free: { properties: 2, seats: 1, aiReplies: { kind: "fixed", perMonth: 100 } },
+  free: {
+    properties: 2,
+    seats: 1,
+    aiReplies: { kind: "fixed", perMonth: FREE_AI_REPLIES_PER_MONTH },
+  },
   pro: {
     properties: null,
     seats: 3,
-    aiReplies: { kind: "pooled", perProperty: POOLED_AI_REPLIES_PER_PROPERTY },
+    aiReplies: { kind: "pooled", perProperty: POOLED_AI_REPLIES_PER_PROPERTY, minimum: 500 },
   },
   business: {
     properties: null,
     seats: null,
-    aiReplies: { kind: "pooled", perProperty: POOLED_AI_REPLIES_PER_PROPERTY },
+    aiReplies: { kind: "pooled", perProperty: POOLED_AI_REPLIES_PER_PROPERTY, minimum: 1000 },
   },
 };
 
@@ -48,7 +60,13 @@ export type LimitSource = "plan" | "custom";
 export interface EffectiveLimits {
   properties: { limit: number | null; source: LimitSource };
   seats: { limit: number | null; source: LimitSource };
-  aiReplies: { limit: number; source: LimitSource; perProperty: number | null };
+  /** `perProperty` and `minimum` describe a pooled plan allowance; null otherwise. */
+  aiReplies: {
+    limit: number;
+    source: LimitSource;
+    perProperty: number | null;
+    minimum: number | null;
+  };
 }
 
 /** The plan's limits with the custom ones applied (FR-003), for `activeProperties` right now. */
@@ -57,11 +75,9 @@ export function effectiveLimits(
   activeProperties: number,
 ): EffectiveLimits {
   const plan = PLAN_LIMITS[workspace.plan];
-  const pooled = plan.aiReplies.kind === "pooled" ? plan.aiReplies.perProperty : null;
+  const ai = plan.aiReplies;
   const planAi =
-    plan.aiReplies.kind === "fixed"
-      ? plan.aiReplies.perMonth
-      : Math.max(plan.aiReplies.perProperty, plan.aiReplies.perProperty * activeProperties);
+    ai.kind === "fixed" ? ai.perMonth : Math.max(ai.minimum, ai.perProperty * activeProperties);
   return {
     properties:
       workspace.propertyLimit === null
@@ -73,8 +89,18 @@ export function effectiveLimits(
         : { limit: workspace.seatLimit, source: "custom" },
     aiReplies:
       workspace.aiReplyMonthlyLimit === null
-        ? { limit: planAi, source: "plan", perProperty: pooled }
-        : { limit: workspace.aiReplyMonthlyLimit, source: "custom", perProperty: null },
+        ? {
+            limit: planAi,
+            source: "plan",
+            perProperty: ai.kind === "pooled" ? ai.perProperty : null,
+            minimum: ai.kind === "pooled" ? ai.minimum : null,
+          }
+        : {
+            limit: workspace.aiReplyMonthlyLimit,
+            source: "custom",
+            perProperty: null,
+            minimum: null,
+          },
   };
 }
 

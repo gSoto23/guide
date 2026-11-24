@@ -44,7 +44,7 @@ test("the home page explains Guidesk, shows the plans, and starts free (US1)", a
   await expect(plans.getByText("Gratis durante el piloto")).toBeVisible();
   await expect(plans.getByText("USD 0")).toBeVisible();
   await expect(plans.getByText("2 propiedades activas")).toBeVisible();
-  await expect(plans.getByText("100 respuestas de IA al mes")).toBeVisible();
+  await expect(plans.getByText("500 respuestas de IA al mes")).toBeVisible();
   await expect(plans.getByText("1 puesto", { exact: true })).toBeVisible();
   await expect(plans.getByText("Precio por anunciar")).toHaveCount(2);
   await expect(plans.getByText(/Comisión en extras: 10\s?%/)).toBeVisible();

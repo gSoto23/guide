@@ -26,6 +26,20 @@ export interface PilotMetrics {
     perStayUsd: number | null;
     target: string;
   };
+  /**
+   * Feature 019 (FR-015): the cohort's AI replies by the workspace's current plan, split into
+   * replies from the monthly allowances and from top-ups, with the AI cost per reply.
+   */
+  aiRepliesByPlan: AiRepliesByPlan[];
+}
+
+export interface AiRepliesByPlan {
+  plan: string;
+  replies: number;
+  fromAllowance: number;
+  fromTopUps: number;
+  costUsd: number;
+  costPerReplyUsd: number | null;
 }
 
 const share = (numerator: number, denominator: number): Share => ({
@@ -148,6 +162,23 @@ export async function pilotMetrics(
                WHERE guide_opened_at IS NOT NULL AND workspace_id IN (${owned}))::int AS stays`)
   ).rows;
 
+  const byPlan = (
+    await db.execute<{
+      plan: string;
+      replies: number;
+      top_up: number;
+      micros: string | number;
+    }>(sql`
+      SELECT w.plan, coalesce(sum(u.replies), 0)::int AS replies,
+             coalesce(sum(u.top_up_replies), 0)::int AS top_up,
+             coalesce(sum(u.cost_usd_micros), 0)::bigint AS micros
+        FROM chat_usage_daily u
+        JOIN workspace w ON w.id = u.workspace_id
+       WHERE u.workspace_id IN (${owned})
+       GROUP BY w.plan
+       ORDER BY w.plan`)
+  ).rows;
+
   const totalUsd = Number(cost?.micros ?? 0) / 1_000_000;
   const staysServed = cost?.stays ?? 0;
   const median = time?.median;
@@ -180,6 +211,18 @@ export async function pilotMetrics(
       perStayUsd: staysServed === 0 ? null : totalUsd / staysServed,
       target: "measure, then set",
     },
+    aiRepliesByPlan: byPlan.map((row) => {
+      const replies = Number(row.replies);
+      const costUsd = Number(row.micros) / 1_000_000;
+      return {
+        plan: row.plan,
+        replies,
+        fromAllowance: replies - Number(row.top_up),
+        fromTopUps: Number(row.top_up),
+        costUsd,
+        costPerReplyUsd: replies === 0 ? null : costUsd / replies,
+      };
+    }),
   };
 }
 
@@ -214,5 +257,13 @@ export function formatPilotMetrics(metrics: PilotMetrics): string {
     `Pilot metrics for sign-ups ${m.cohort.from} to ${m.cohort.to} (${m.cohort.signUps} sign-ups)`,
     "",
     ...rows.map(([label, value, target]) => `${label.padEnd(width)}  ${value}  (target ${target})`),
+    "",
+    "AI replies by plan (allowance + top-ups; cost per reply):",
+    ...(m.aiRepliesByPlan.length === 0
+      ? ["  —"]
+      : m.aiRepliesByPlan.map(
+          (row) =>
+            `  ${row.plan}: ${row.replies} replies (${row.fromAllowance} + ${row.fromTopUps}); US$${row.costUsd.toFixed(2)}; ${row.costPerReplyUsd === null ? "—" : `US$${row.costPerReplyUsd.toFixed(4)} per reply`}`,
+        )),
   ].join("\n");
 }
