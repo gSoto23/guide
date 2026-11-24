@@ -293,18 +293,20 @@ export class StaysService {
     body: StayGuestBody,
   ): Promise<Stay> {
     const current = await this.loadStay(caller, workspaceId, stayId);
-    if (body.guestName !== null && current.guestNameRemovedAt !== null) {
+    const guestName = body.guestName === undefined ? current.guestName : body.guestName;
+    const guestCount = body.guestCount === undefined ? current.guestCount : body.guestCount;
+    if (body.guestName != null && current.guestNameRemovedAt !== null) {
       throw new ApiProblem(409, "conflict", "This guest's name was removed on request.");
     }
-    const nameChanged = body.guestName !== current.guestName;
-    const countChanged = body.guestCount !== current.guestCount;
+    const nameChanged = guestName !== current.guestName;
+    const countChanged = guestCount !== current.guestCount;
     if (!nameChanged && !countChanged) return this.withOverlap(current);
     const [row] = await this.requestDb
       .current()
       .update(stay)
       .set({
-        guestName: body.guestName,
-        guestCount: body.guestCount,
+        guestName,
+        guestCount,
         guestDetailsSource: "host",
         guestDetailsBy: caller.userId,
         guestDetailsAt: new Date(),

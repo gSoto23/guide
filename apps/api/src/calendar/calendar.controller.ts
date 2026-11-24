@@ -45,11 +45,9 @@ export class CalendarController {
     @Req() request: FastifyRequest,
     @Param("workspaceId") workspaceId: string,
     @Param("stayId") stayId: string,
+    @Query("lang") lang?: string,
   ): Promise<StayOverview> {
-    return this.calendarService.overview(
-      { ...callerOf(request), language: languageOf(request) },
-      workspaceId,
-      stayId,
-    );
+    const language = lang === "en" || lang === "es" ? lang : languageOf(request);
+    return this.calendarService.overview({ ...callerOf(request), language }, workspaceId, stayId);
   }
 }

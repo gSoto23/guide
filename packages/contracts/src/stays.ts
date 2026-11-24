@@ -29,14 +29,18 @@ export type Stay = z.infer<typeof staySchema>;
 
 /**
  * `PUT stays/{stayId}/guest` (feature 018 FR-015): the guest's name (1 to 120 characters after
- * trimming, or null to clear it) and number of guests (0 to 500, or null). Owners and admins.
+ * trimming, or null to clear it) and number of guests (0 to 500, or null); a field left out keeps
+ * its value. Owners and admins.
  */
 export const stayGuestBodySchema = z
   .object({
-    guestName: z.string().trim().min(1).max(120).nullable(),
-    guestCount: z.number().int().min(0).max(500).nullable(),
+    guestName: z.string().trim().min(1).max(120).nullable().optional(),
+    guestCount: z.number().int().min(0).max(500).nullable().optional(),
   })
-  .strict();
+  .strict()
+  .refine((body) => body.guestName !== undefined || body.guestCount !== undefined, {
+    message: "Send guestName, guestCount, or both.",
+  });
 export type StayGuestBody = z.infer<typeof stayGuestBodySchema>;
 
 export const stayListSchema = z.object({ items: z.array(staySchema) });

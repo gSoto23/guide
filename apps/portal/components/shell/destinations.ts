@@ -4,7 +4,7 @@
  * the rest live under More there, and all show in the wide-screen sidebar.
  */
 export type DestinationId =
-  "inbox" | "requests" | "properties" | "analytics" | "shared" | "team" | "settings";
+  "inbox" | "requests" | "properties" | "calendar" | "analytics" | "shared" | "team" | "settings";
 
 export interface Destination {
   id: DestinationId;
@@ -22,6 +22,8 @@ export const DESTINATIONS: readonly Destination[] = [
   { id: "inbox", path: "/inbox", label: "inbox", group: "work", inBar: true },
   { id: "requests", path: "/requests", label: "requests", group: "work", inBar: true },
   { id: "properties", path: "/properties", label: "properties", group: "work", inBar: true },
+  // Feature 018: the stay calendar (under More on phones; the bar keeps four columns).
+  { id: "calendar", path: "/calendar", label: "calendar", group: "work", inBar: false },
   { id: "analytics", path: "/analytics", label: "analytics", group: "work", inBar: false },
   { id: "shared", path: "/shared-content", label: "shared", group: "workspace", inBar: false },
   { id: "team", path: "/settings/members", label: "team", group: "workspace", inBar: false },
@@ -43,6 +45,7 @@ export function currentDestination(pathname: string): DestinationId | null {
   if (under(path, "/inbox")) return "inbox";
   if (/^\/properties\/[^/]+\/conversations(\/|$)/.test(path)) return "inbox";
   if (under(path, "/requests")) return "requests";
+  if (under(path, "/calendar")) return "calendar";
   if (under(path, "/properties")) return "properties";
   if (under(path, "/analytics")) return "analytics";
   if (under(path, "/shared-content")) return "shared";

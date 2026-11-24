@@ -85,6 +85,7 @@ export function ConversationList({ locale, propertyId }: { locale: string; prope
                       })
                     : t("noStay")}
                 </span>
+                {item.stay?.guestName ? <span className="badge">{item.stay.guestName}</span> : null}
               </p>
               {item.reason && (
                 <p className="muted">{t("reason", { reason: t(`reasons.${item.reason}`) })}</p>

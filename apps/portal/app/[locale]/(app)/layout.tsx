@@ -1,5 +1,16 @@
 import type { ReactNode } from "react";
-import { bag, chart, house, Icon, inbox, layers, more, people, sliders } from "@guidesk/ui";
+import {
+  bag,
+  calendar,
+  chart,
+  house,
+  Icon,
+  inbox,
+  layers,
+  more,
+  people,
+  sliders,
+} from "@guidesk/ui";
 import { AppHeader, type ShellIcons } from "@/components/app-header";
 import { PlanUsageBannerLoader } from "@/components/plan/plan-usage-banner-loader";
 import { ImportProgressBanner } from "@/components/properties/import-progress-banner";
@@ -10,6 +21,7 @@ const ICONS: ShellIcons = {
   inbox: <Icon data={inbox} size={22} />,
   requests: <Icon data={bag} size={22} />,
   properties: <Icon data={house} size={22} />,
+  calendar: <Icon data={calendar} size={22} />,
   analytics: <Icon data={chart} size={22} />,
   shared: <Icon data={layers} size={22} />,
   team: <Icon data={people} size={22} />,

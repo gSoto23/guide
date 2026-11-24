@@ -838,7 +838,8 @@
       "requests": "Requests",
       "analytics": "Analytics",
       "more": "More",
-      "account": "My account"
+      "account": "My account",
+      "calendar": "Calendar"
     },
     "loading": "Loading…",
     "none": "No workspace: create one"
@@ -2429,5 +2430,97 @@
       "amount_too_large": "The amount is more than what is left to refund.",
       "not_refundable": "This payment can't be refunded from Guidesk any more."
     }
+  },
+  "calendar": {
+    "title": "Calendar",
+    "intro": "The stays Guidesk knows: from your calendars, your PMS, and the ones you added by hand. To change dates or availability, use your platform.",
+    "loading": "Loading stays…",
+    "error": "We couldn't load the calendar. Try again.",
+    "allProperties": "All properties",
+    "property": "Property",
+    "channel": "Channel",
+    "allChannels": "All channels",
+    "showCancelled": "Show cancelled",
+    "today": "Today",
+    "previous": "Previous month",
+    "next": "Next month",
+    "empty": "No stays this month.",
+    "noProperties": "You have no properties yet.",
+    "guestOf": "{channel} guest",
+    "guests": "{count, plural, one {# guest} other {# guests}}",
+    "mayBeBlock": "May be a block",
+    "cancelled": "Cancelled",
+    "continues": "Continues",
+    "markLink": "Opened the link",
+    "markEscalation": "Open escalation",
+    "markWaiting": "{count, plural, one {# request to answer} other {# requests to answer}}",
+    "markExtras": "{count, plural, one {# confirmed extra} other {# confirmed extras}}",
+    "arrives": "Arrives",
+    "leaves": "Leaves",
+    "staying": "Staying",
+    "open": "View stay",
+    "readOnly": "Read-only: Guidesk never changes dates or availability on your platforms."
+  },
+  "stayView": {
+    "back": "Back to the calendar",
+    "loading": "Loading stay…",
+    "notFound": "We couldn't find that stay.",
+    "dates": "Dates",
+    "checkIn": "Check-in: {date}, {time}",
+    "checkout": "Checkout: {date}, {time}",
+    "source": "Source",
+    "sources": {
+      "ical": "{channel} calendar",
+      "pms": "PMS · {channel}",
+      "manual": "Added by hand · {channel}"
+    },
+    "reference": "Reservation code",
+    "copy": "Copy",
+    "copied": "Copied",
+    "guest": "Guest",
+    "noGuest": "No name yet",
+    "nameRemoved": "The name was deleted at the guest's request.",
+    "detailsBy": "Typed by {name} on {date}",
+    "edit": "Edit guest",
+    "guestName": "Guest's name",
+    "guestCount": "Number of guests",
+    "nameHelp": "You and your team see it. The guest guide never shows names.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saved": "Guest saved.",
+    "link": "Stay link",
+    "linkStatus": {
+      "not_created": "No link yet",
+      "active": "Active",
+      "device_limit": "Device limit reached",
+      "revoked": "Revoked",
+      "ended": "Ended"
+    },
+    "devices": "{count, plural, =0 {Not opened} one {Opened on # device} other {Opened on # devices}}",
+    "valuesShown": "{count, plural, =0 {Codes not viewed} one {Codes viewed # time} other {Codes viewed # times}}",
+    "share": "Copy the link or message on Share",
+    "conversations": "Conversations",
+    "noConversations": "No conversations yet.",
+    "openConversation": "Open conversation",
+    "services": "Services",
+    "noServices": "No add-on requests. Share the stay link so the guest sees your extras.",
+    "totals": "Confirmed total: {confirmed} · Paid through Guidesk: {paid}",
+    "requestStatus": {
+      "waiting": "To answer",
+      "confirmed": "Confirmed",
+      "declined": "Declined",
+      "cancelled": "Cancelled by the guest",
+      "host_cancelled": "Cancelled by you",
+      "expired": "Expired"
+    },
+    "paymentState": "Payment: {state}",
+    "confirm": "Confirm",
+    "decline": "Decline",
+    "openRequests": "Open in Requests"
+  },
+  "conversationGuest": {
+    "save": "Save the guest's name",
+    "label": "Name the guest wrote",
+    "saved": "Name saved on the stay."
   }
 }

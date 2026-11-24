@@ -223,7 +223,11 @@ export function InboxView({
                 <Icon data={item.reason ? reasonIconData(item.reason) : message} size={20} />
               </span>
               <span className="inbox-body">
-                <span className="inbox-title">{item.propertyName}</span>
+                <span className="inbox-title">
+                  {/* Feature 018 FR-019: the guest's name the host saved, next to the property. */}
+                  {item.stay?.guestName ? `${item.stay.guestName} · ` : ""}
+                  {item.propertyName}
+                </span>
                 <span className="inbox-sub">
                   {item.stay
                     ? t("stay", {

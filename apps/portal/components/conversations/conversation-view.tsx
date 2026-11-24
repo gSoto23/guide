@@ -7,6 +7,7 @@ import type { ConversationDetail, MemberChatMessage, MemberTrace } from "@guides
 import { problemOf } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
 import { Avatar } from "@/components/avatar";
+import { GuestForm } from "@/components/calendar/guest-form";
 
 const REFRESH_MS = 10_000;
 const MAX = 2000;
@@ -26,6 +27,7 @@ export function ConversationView({
   conversationId: string;
 }) {
   const t = useTranslations("conversations");
+  const g = useTranslations("conversationGuest");
   const a = useTranslations("conversations.actions");
   const errors = useTranslations("errors");
   const workspace = useWorkspace();
@@ -187,7 +189,23 @@ export function ConversationView({
               })
             : t("noStay")}
         </span>
+        {detail.stay?.guestName ? <span className="badge">{detail.stay.guestName}</span> : null}
       </p>
+      {detail.stay && workspace?.canManage ? (
+        <details className="conversation-guest">
+          <summary>{g("save")}</summary>
+          <GuestForm
+            stayId={detail.stay.id}
+            name={detail.stay.guestName}
+            label={g("label")}
+            submitLabel={g("save")}
+            onSaved={() => {
+              setMessage({ kind: "success", text: g("saved") });
+              void load();
+            }}
+          />
+        </details>
+      ) : null}
       {detail.status === "needs_host" && detail.reason && (
         <p
           className={`alert ${detail.reason === "emergency" ? "alert-error" : "alert-warning"} conversation-banner`}
