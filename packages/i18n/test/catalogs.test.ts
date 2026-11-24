@@ -36,7 +36,8 @@ describe("message catalogs (constitution, Principle IX)", () => {
   });
 
   it("use only the known placeholders in the public catalogs", () => {
-    const allowed = new Set(["company", "email", "date", "year", "count", "percent"]);
+    // `minimum` is the pooled plans' monthly minimum of AI replies (feature 019).
+    const allowed = new Set(["company", "email", "date", "year", "count", "percent", "minimum"]);
     for (const locale of ["public.es", "public.en"]) {
       const text = JSON.stringify(load(locale));
       for (const match of text.matchAll(/\{([a-zA-Z]+)\}/g)) {
