@@ -60,6 +60,16 @@ until then.
   upcoming stays as imported (PMS up to 365 days ahead), and past stays until spec 002's retention
   removes them. Guest names follow the Confidential retention rule.
 
+### Session 2026-11-24 (plan)
+
+- Q: Can copilot drafts greet the guest by name now? → A: Not in this spec. A copilot run has no stay
+  today (the host pastes a booking-platform message), so using the name needs a stay picker on the
+  copilot screen and a prompt change with evals. FR-020 moves to a later spec ([research R5](research.md)).
+- Q: Who may confirm or decline a request from the stay view? → A: The same members as on the
+  Requests screen today (spec 008: members who handle conversations, agents included), so the two
+  screens never disagree ([research R6](research.md)). Only guest details are limited to owners and
+  admins.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - See every stay in a calendar (Priority: P1)
@@ -122,8 +132,9 @@ the paid one, and a link to the conversation.
 2. **Given** a stay with confirmed and paid requests, **When** the stay view is open, **Then** it shows
    the stay's total of confirmed add-ons and, separately, the total paid through Guidesk checkout,
    each in its currency.
-3. **Given** a request waiting for an answer, **When** an owner or admin opens the stay, **Then** they
-   can confirm or decline it from the stay view as on the Requests screen (spec 008).
+3. **Given** a request waiting for an answer, **When** a member who may answer requests (spec 008)
+   opens the stay, **Then** they can confirm or decline it from the stay view as on the Requests
+   screen.
 4. **Given** a stay with a conversation, **When** the host opens the stay, **Then** the conversation is
    listed with its last message time and any open escalation reason, and opens in the inbox.
 5. **Given** an owner or admin, **When** they open a stay, **Then** they see the stay link's state and
@@ -188,12 +199,10 @@ guest guide opened with its stay link and the push notification for a new reques
    conversation with the guest's name, the property, and the dates.
 2. **Given** a named stay, **When** the guest requests an add-on, **Then** the Requests screen shows the
    name; the push notification and email say only the property and the add-on.
-3. **Given** a named stay, **When** the host asks the copilot for a draft, **Then** the draft may greet
-   the guest by name.
-4. **Given** a named stay, **When** an owner or admin copies the stay message (spec 004 FR-039), **Then**
+3. **Given** a named stay, **When** an owner or admin copies the stay message (spec 004 FR-039), **Then**
    it starts with a greeting with the name in the chosen language; without a name it starts with a
    general greeting.
-5. **Given** a named stay, **When** the guest opens the guide with the stay link, **Then** the stay card
+4. **Given** a named stay, **When** the guest opens the guide with the stay link, **Then** the stay card
    still shows no name (spec 004 FR-028), and the assistant's context has no name from the stay.
 
 ---
@@ -259,8 +268,9 @@ guest guide opened with its stay link and the push notification for a new reques
   request state, and payment state when a payment exists (spec 013).
 - **FR-012**: The stay view MUST show the total of confirmed add-ons and the total paid through Guidesk
   checkout, per currency, and MUST NOT add amounts in different currencies together.
-- **FR-013**: Owners and admins MUST be able to confirm or decline a waiting request from the stay
-  view, with the same rules, messages, and records as the Requests screen (spec 008).
+- **FR-013**: Members who may answer requests on the Requests screen (spec 008, agents included) MUST
+  be able to confirm or decline a waiting request from the stay view, with the same rules, messages,
+  and records.
 - **FR-014**: The stay view MUST have a "Services" area holding the add-on requests; it MUST be able to
   hold partner bookings in a later spec without changing the stay view's layout.
 
@@ -283,8 +293,8 @@ guest guide opened with its stay link and the push notification for a new reques
 
 - **FR-019**: When a stay has a name, the inbox list and conversation header, the Requests screen, and
   the stay view MUST show it next to the property and dates.
-- **FR-020**: Copilot drafts for a named stay MAY greet the guest by name. The name MUST be the only
-  guest detail added to the copilot's context for this purpose.
+- **FR-020**: (Later spec.) Copilot drafts for a named stay may greet the guest by name once the
+  copilot can be linked to a stay; not built here (plan clarification).
 - **FR-021**: The stay message (spec 004 FR-039) MUST start with a greeting that uses the stay's name
   when it has one, and a general greeting otherwise, in the chosen language.
 - **FR-022**: The guest guide, the guest assistant's context, push notifications, and emails MUST NOT
@@ -327,7 +337,7 @@ guest guide opened with its stay link and the push notification for a new reques
 ### Threats (STRIDE)
 
 - **S**: A member of another workspace reads stays or names through the calendar endpoint.
-- **T**: An agent edits a guest name or confirms a request they may not confirm.
+- **T**: An agent edits a guest name.
 - **R**: A name change cannot be traced to a member.
 - **I**: A forwarded stay link, a lock-screen notification, or a shared mailbox reveals who is
   staying; a feed's partial phone number is stored; names reach logs.
@@ -337,8 +347,8 @@ guest guide opened with its stay link and the push notification for a new reques
 ### Controls Applied
 
 - Workspace isolation and row-level security on every read, as for the stays list (spec 002).
-- Role checks: name edits and request answers for owners and admins only; stay links and stay messages
-  under spec 004's recent sign-in rule; agents read only.
+- Role checks: guest details for owners and admins only; request answers as on the Requests screen
+  (spec 008); stay links and stay messages under spec 004's recent sign-in rule.
 - Security log entries for name changes and removals, without the name.
 - Names stay off the guest guide, assistant context, push notifications, and emails (FR-022); logs and
   error reports scrub them (Confidential class, security.md).
@@ -348,7 +358,7 @@ guest guide opened with its stay link and the push notification for a new reques
 ### Abuse Cases (Acceptance Criteria)
 
 - A request for another workspace's calendar returns 404.
-- An agent's request to change a name or answer a request returns 403 and changes nothing.
+- An agent's request to change a guest name returns 403 and changes nothing.
 - A feed entry with a phone number in its description stores no digits.
 
 ### Platform Policies
