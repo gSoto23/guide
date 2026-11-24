@@ -1,10 +1,11 @@
 # Design System Foundations
 
-> **Status:** v1.0, brand decided · **Owner:** Founder · **Last updated:** 2026-11-23 ·
+> **Status:** v1.0, brand decided · **Owner:** Founder · **Last updated:** 2026-11-24 ·
 > **Related:** [Brand guide](../brand/README.md) · [UX index](README.md) · [Principles and IA](principles-and-ia.md) · [Screens](screens.md) · [Wireframes](wireframes.html) · [Performance](../architecture/performance.md) · [ADR-0004 stack](../architecture/adr/0004-typescript-monorepo-stack.md)
 
 The visual identity was decided on 2026-11-17: direction "Bienvenida" (terracota, sol, arena,
-carbón), described in the [brand guide](../brand/README.md). This document turns it into
+carbón; on 2026-11-24 the light backgrounds moved from cal and arena to blanco and piedra),
+described in the [brand guide](../brand/README.md). This document turns it into
 tokens, type, spacing, components, and rules that make the product accessible, bilingual, and
 fast. The portal uses Tailwind CSS and shadcn/ui (ADR-0004), so the tokens are CSS custom
 properties that map onto Tailwind's theme. The values live in `apps/portal/app/globals.css`;
@@ -33,26 +34,26 @@ icons need 3:1.
 
 | Token | Value | Use | Contrast | Passes |
 |---|---|---|---|---|
-| `--color-bg` | `#FFFCF8` (cal) | Page background | — | — |
-| `--color-surface` | `#F7F1EA` (arena) | Cards, tiles, sheets | — | — |
-| `--color-text` | `#2B211C` (carbón) | Body text | 15.36:1 on bg · 14.00:1 on surface | AA, AAA |
-| `--color-text-muted` | `#66574D` | Secondary text, captions | 6.76:1 on bg · 6.17:1 on surface | AA |
-| `--color-primary` | `#B4452A` (terracota) | Links, primary buttons, brand accents in text | 5.37:1 on bg · 4.90:1 on surface | AA |
+| `--color-bg` | `#FFFFFF` (blanco; cal until 2026-11-24) | Page background | — | — |
+| `--color-surface` | `#F5F4F2` (piedra; arena until 2026-11-24) | Cards, tiles, sheets | — | — |
+| `--color-text` | `#2B211C` (carbón) | Body text | 15.71:1 on bg · 14.29:1 on surface | AA, AAA |
+| `--color-text-muted` | `#66574D` | Secondary text, captions | 6.92:1 on bg · 6.29:1 on surface | AA |
+| `--color-primary` | `#B4452A` (terracota) | Links, primary buttons, brand accents in text | 5.49:1 on bg · 4.99:1 on surface | AA |
 | `--color-on-primary` | `#FFFFFF` | Text on primary buttons | 5.49:1 on primary | AA |
-| `--color-link` | `#8E3420` | Links, always underlined; visited links keep it | 7.71:1 on bg · 7.03:1 on surface · ≥ 6.61:1 on every banner background | AA (AAA on bg and surface) |
+| `--color-link` | `#8E3420` | Links, always underlined; visited links keep it | 7.89:1 on bg · 7.18:1 on surface · ≥ 6.61:1 on every banner background | AA (AAA on bg and surface) |
 | `--color-primary-strong` | `#8E3420` | Hover and pressed | 7.89:1 with on-primary | AA, AAA |
 | `--color-accent` | `#F5BC4C` (sol) | Decoration only: illustrations, highlights, the logo's door | 1.85:1 on white: **never text or meaningful icons** | — |
-| `--color-border-strong` | `#8C7B70` | Input and control borders | 3.96:1 on bg · 3.61:1 on surface | AA non-text |
+| `--color-border-strong` | `#8C7B70` | Input and control borders | 4.05:1 on bg · 3.69:1 on surface | AA non-text |
 | `--color-border` | `#E6DCD1` | Decorative dividers only | — | Not for controls |
-| `--color-focus` | `#1E5BD6` | Focus ring, 2 px with 2 px offset | 5.83:1 on bg · 5.32:1 on surface | AA non-text |
-| `--color-danger` | `#A0153E` | Errors, destructive actions | 7.69:1 on bg · 7.01:1 on surface · 6.84:1 on danger-bg | AA |
+| `--color-focus` | `#1E5BD6` | Focus ring, 2 px with 2 px offset | 5.96:1 on bg · 5.42:1 on surface | AA non-text |
+| `--color-danger` | `#A0153E` | Errors, destructive actions | 7.86:1 on bg · 7.15:1 on surface · 6.84:1 on danger-bg | AA |
 | `--color-on-danger` | `#FFFFFF` | Text on destructive buttons | 7.86:1 on danger | AA, AAA |
 | `--color-danger-bg` | `#FCEBEF` | Error banners, emergency card | — | — |
 | `--color-warning` | `#7A4D00` | Warning text | 6.61:1 on warning-bg | AA |
 | `--color-warning-bg` | `#FFF3DC` | Warning banners | — | — |
-| `--color-success` | `#1B6E3A` | Success text | 5.59:1 on success-bg · 6.15:1 on bg | AA |
+| `--color-success` | `#1B6E3A` | Success text | 5.59:1 on success-bg · 6.29:1 on bg | AA |
 | `--color-success-bg` | `#E7F5EC` | Success banners, "Paid" | — | — |
-| `--color-info` | `#1F5AA6` | Info text, warning badges | 5.95:1 on info-bg · 6.68:1 on bg | AA |
+| `--color-info` | `#1F5AA6` | Info text, warning badges | 5.95:1 on info-bg · 6.84:1 on bg | AA |
 | `--color-info-bg` | `#E8F0FB` | Info banners, holding replies | — | — |
 | `--color-disclosure` | `#4A3F38` | Disclosure text | 8.55:1 on disclosure-bg | AA, AAA |
 | `--color-disclosure-bg` | `#F1EAE2` | Disclosure pill | — | — |
@@ -190,7 +191,7 @@ desktop reads as a desktop product, not a stretched phone ([UI/UX audit](ui-ux-a
 | Under 600 px | Nothing: buttons span the column, fields stack, one column. |
 | From 600 px | Buttons size to their label (the auth panel keeps full width); filters and tabs share one toolbar row; short fields share a row (city, state, postal code). |
 | From 1024 px | Cards get a 1 px border and 24 px padding; requests, option cards, extras, and guide sections use two columns; settings three; the property page and Share use a main column and a 22rem side column; page titles grow to 28 px. |
-| Guest guide from 768 px | The column becomes a card on the arena backdrop; from 1024 px the home tiles use three columns with the icon above the title. |
+| Guest guide from 768 px | The column becomes a card on the surface (piedra) backdrop; from 1024 px the home tiles use three columns with the icon above the title. |
 
 **Page templates.** *List* (inbox, requests, properties, extras): page header, one toolbar row, then
 rows or a grid. *Detail* (property, Share): header with actions, main column, side column. *Form*
@@ -198,7 +199,7 @@ rows or a grid. *Detail* (property, Share): header with actions, main column, si
 property): a grid of option cards with an icon in a tinted circle, a title, a one-line description,
 and a chevron.
 
-**Components added or reshaped:** segmented control for tabs (arena track, the current item on cal
+**Components added or reshaped:** segmented control for tabs (surface track, the current item on the page background
 with a terracota outline and text); filter toolbar (`.toolbar-field` keeps each label visible);
 status pills by meaning (waiting = warning, confirmed = success, closed = neutral); option cards with
 a chosen state (`:has(input:checked)`: terracota edge and tint) and the brand `accent-color`; quiet
@@ -357,8 +358,8 @@ run `python3 docs/brand/build/tokens.py` to recheck every contrast pair.
 
 ```css
 :root {
-  --color-bg: #fffcf8;
-  --color-surface: #f7f1ea;
+  --color-bg: #ffffff;
+  --color-surface: #f5f4f2;
   --color-text: #2b211c;
   --color-text-muted: #66574d;
   --color-primary: #b4452a;

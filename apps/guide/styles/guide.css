@@ -3,8 +3,9 @@
  * WCAG 2.2 AA contrast in light and dark mode. No web fonts, no images in CSS.
  */
 :root {
-  --cal: #fffcf8;
-  --arena: #f7f1ea;
+  /* Light background and surface: white and piedra (founder decision 2026-11-24). */
+  --cal: #ffffff;
+  --arena: #f5f4f2;
   --carbon: #2b211c;
   --muted: #5e5049;
   --line: #e4d9cd;
@@ -16,7 +17,7 @@
   --notice: #fdf1d8;
   /* Feature 015: icon circles and illustration colors (brand guide §5, §6). */
   --primary-tint: #f6e3db;
-  --il-bg: #fffcf8;
+  --il-bg: #ffffff;
   --il-arena: #efe4d8;
   --il-terra: #b4452a;
   --il-terra-soft: #f3d3c7;

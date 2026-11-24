@@ -1,8 +1,9 @@
 /* Brand tokens (Guidesk "Bienvenida"): docs/ux/design-system.md and docs/brand/README.md.
    Every text pair meets WCAG 2.2 AA; docs/brand/build/tokens.py checks them. */
 :root {
-  --color-bg: #fffcf8;
-  --color-surface: #f7f1ea;
+  /* Light background and surface: white and piedra (founder decision 2026-11-24; were cal and arena). */
+  --color-bg: #ffffff;
+  --color-surface: #f5f4f2;
   --color-text: #2b211c;
   --color-text-muted: #66574d;
   --color-primary: #b4452a;
@@ -44,7 +45,7 @@
   --tap-min: 44px;
   --shadow-sheet: 0 8px 24px rgb(43 33 28 / 0.16);
   /* Feature 015: illustration colors (brand guide §6), light and dark. */
-  --il-bg: #fffcf8;
+  --il-bg: #ffffff;
   --il-arena: #efe4d8;
   --il-terra: #b4452a;
   --il-terra-soft: #f3d3c7;
@@ -882,7 +883,7 @@ input[type="radio"] {
   text-align: center;
   border: 2px solid #2b211c;
   border-radius: 24px;
-  background: #fffcf8;
+  background: #ffffff;
   color: #2b211c;
 }
 

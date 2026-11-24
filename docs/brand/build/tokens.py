@@ -14,14 +14,16 @@ BRAND = {
     "sol": "#F5BC4C",
     "arena": "#F7F1EA",
     "cal": "#FFFCF8",
+    "piedra": "#F5F4F2",
+    "blanco": "#FFFFFF",
     "carbon": "#2B211C",
     "terracota-claro": "#F0906F",
     "noche": "#17120F",
 }
 
 LIGHT = {
-    "bg": "#FFFCF8",
-    "surface": "#F7F1EA",
+    "bg": "#FFFFFF",
+    "surface": "#F5F4F2",
     "text": "#2B211C",
     "text-muted": "#66574D",
     "primary": "#B4452A",
@@ -135,9 +137,9 @@ if __name__ == "__main__":
     bad = check(LIGHT, "Light") + check(DARK, "Dark")
     print("\nLogo (graphic, WCAG 1.4.11 minimum 3:1)")
     for fg, bg, use in (("sol", "terracota", "Sun door on the bubble"),
-                        ("terracota", "cal", "Mark on the light page"),
+                        ("terracota", "blanco", "Mark on the light page"),
                         ("terracota", "noche", "Mark on the dark page"),
-                        ("carbon", "cal", "Wordmark on the light page"),
+                        ("carbon", "blanco", "Wordmark on the light page"),
                         ("cal", "noche", "Wordmark on the dark page")):
         ratio = contrast(BRAND[fg], BRAND[bg])
         bad += ratio < UI

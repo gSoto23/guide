@@ -5,14 +5,14 @@
 export const BRAND = {
   /** Terracota: the mark and buttons (white text on it: 5.49:1). */
   primary: "#B4452A",
-  /** Terracota oscuro: links (7.71:1 on cal). */
+  /** Terracota oscuro: links (7.89:1 on white). */
   link: "#8E3420",
-  /** Carbón: text (15.36:1 on cal). */
+  /** Carbón: text (15.73:1 on white). */
   text: "#2B211C",
   /** Muted text for footnotes. */
   muted: "#66574D",
-  /** Cal: the page background. */
-  background: "#FFFCF8",
+  /** White: the page background (was cal until 2026-11-24). */
+  background: "#FFFFFF",
   /** Line between the message and its footer. */
   line: "#E6DCD1",
 } as const;

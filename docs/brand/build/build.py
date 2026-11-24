@@ -134,7 +134,7 @@ def favicon():
 
 def palette():
     """Swatches of the brand palette, in the order of the table in ../README.md (no text)."""
-    names = ["terracota", "terracota-oscuro", "sol", "cal", "arena", "carbon", "terracota-claro", "noche"]
+    names = ["terracota", "terracota-oscuro", "sol", "blanco", "piedra", "carbon", "terracota-claro", "noche"]
     cells = "".join(
         f'<rect x="{i * 56 + 0.5}" y=".5" width="48" height="48" rx="10" fill="{BRAND[n]}" stroke="#D9CCBE"/>'
         for i, n in enumerate(names))

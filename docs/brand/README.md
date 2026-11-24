@@ -78,7 +78,7 @@ these files by the build (section 9).
 
 | Background | Version |
 |---|---|
-| White, cal (#FFFCF8), arena (#F7F1EA), light photos with a calm area | Full color |
+| White, piedra (#F5F4F2), cal (#FFFCF8), arena (#F7F1EA), light photos with a calm area | Full color |
 | Noche (#17120F) and other dark backgrounds | Full color dark (light wordmark) |
 | Terracota, busy photos, colored backgrounds | One color white |
 | One-ink printing, embossing, fax-like contexts | One color black (carbón) |
@@ -102,7 +102,7 @@ these files by the build (section 9).
 ### 3.1 Brand palette
 
 <p>
-  <img src="palette.svg" alt="Swatches, left to right: terracota, terracota oscuro, sol, cal, arena, carbón, terracota claro, noche" width="440">
+  <img src="palette.svg" alt="Swatches, left to right: terracota, terracota oscuro, sol, blanco, piedra, carbón, terracota claro, noche" width="440">
 </p>
 
 | Name | Hex | Role |
@@ -110,13 +110,13 @@ these files by the build (section 9).
 | **Terracota** | `#B4452A` | Brand color: the bubble, primary buttons, links. White text on it: 5.49:1. |
 | **Terracota oscuro** | `#8E3420` | Hover and pressed states. White text on it: 7.89:1. |
 | **Sol** | `#F5BC4C` | Accent: the door, the dot of the i, small highlights. **Never text**, never the only sign of anything. |
-| **Cal** | `#FFFCF8` | Page background (warm white) |
-| **Arena** | `#F7F1EA` | Cards, sheets, quiet sections |
+| **Blanco** | `#FFFFFF` | Page background (light mode). Replaced cal (`#FFFCF8`) on 2026-11-24; cal stays only in the logo files and the app icon tile. |
+| **Piedra** | `#F5F4F2` | Cards, sheets, quiet sections (light mode). Replaced arena (`#F7F1EA`) on 2026-11-24: partners found the cream and beige dated. |
 | **Carbón** | `#2B211C` | Text and the wordmark: 15.36:1 on cal |
 | **Terracota claro** | `#F0906F` | The primary color in dark mode: 7.90:1 on noche |
 | **Noche** | `#17120F` | Dark mode background |
 
-**Proportions:** mostly cal and arena with carbón text; terracota for actions and brand moments
+**Proportions:** mostly blanco and piedra with carbón text; terracota for actions and brand moments
 (about a tenth of a screen); sol in small touches only. A screen should never feel orange.
 
 ### 3.2 Contrast rules
@@ -126,9 +126,9 @@ these files by the build (section 9).
   and fails if one drops below its minimum.
 - **Sol** reaches only 1.85:1 on white: use it for decoration, never for text, icons that carry
   meaning, or focus. On the terracota bubble it reaches 3.18:1, enough for a graphic.
-- **Terracota** text works on cal (5.37:1) and arena (4.90:1) at any size. Don't put it on
+- **Terracota** text works on blanco (5.49:1) and piedra (4.99:1) at any size. Don't put it on
   darker tints.
-- **Links** use terracota oscuro (`#8E3420`, 7.71:1 on cal) and terracota claro in dark mode,
+- **Links** use terracota oscuro (`#8E3420`, 7.89:1 on blanco) and terracota claro in dark mode,
   always underlined: the underline, not the color, is what tells a link from body text.
 - **Danger is not terracota.** Errors use a crimson (`#A0153E`, rose `#FF9BB5` in dark mode) so
   a destructive button never looks like a primary one; both always carry a text label.
