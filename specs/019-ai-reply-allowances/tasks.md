@@ -58,7 +58,7 @@
 - [X] T025 Pilot report: per plan, replies from allowances and top-ups and AI cost per reply, demo excluded, in packages/db/src/reports/pilot.ts with its test
 - [X] T026 [P] Docs: pilot-readiness (main enforces the new numbers; `aws-task.sh … plan topup`), docs/operations/aws.md (plan action), quickstart check
 - [X] T027 Run `pnpm typecheck`, `pnpm lint`, `pnpm test` (affected packages), the portal bundle check, and prettier; fix findings
-- [ ] T028 Mark tasks done, commit, open the PR, merge when checks pass, and check the staging deploy
+- [X] T028 Mark tasks done, commit, open the PR, merge when checks pass, and check the staging deploy
 
 ## Dependencies
 
