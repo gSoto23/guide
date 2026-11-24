@@ -1613,6 +1613,11 @@ main.public-main {
   display: block;
 }
 
+/* The inline logo of the signed-in shell: the wordmark takes the text color, light and dark. */
+.brand-logo-wordmark {
+  fill: var(--color-text);
+}
+
 /* ------------------------------------------------------------------------------------------
    Feature 015: illustrations, icons, the responsive shell, page headers, empty states, grids,
    and the no-cut-text rules (contracts portal-shell and icons-illustrations).
