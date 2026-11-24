@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import ICAL from "ical.js";
-import { classifyFeedEntry } from "@guidesk/domain";
+import { airbnbReservationCode, classifyFeedEntry } from "@guidesk/domain";
 import type { FeedEntry } from "../protocol.js";
 
 /** At most this many entries leave the function (the protocol's limit). */
@@ -20,8 +20,9 @@ function stableUid(uid: string): string {
 /**
  * Parses an iCal body into entries (research R8, FR-022). Only VEVENTs with a UID, DTSTART, and
  * DTEND are kept, past entries are dropped, and each is classified with the domain's table. The
- * output carries `{uid, start, end, kind}` and nothing else: summaries, descriptions, reservation
- * links, and phone digits never leave the function. Returns null when the body is not iCal.
+ * output carries `{uid, start, end, kind, reference}` and nothing else: the reference is only the
+ * Airbnb reservation code found in the link or description (feature 018); summaries, descriptions,
+ * reservation links, and phone digits never leave the function. Returns null when not iCal.
  */
 export function parseFeed(body: Buffer, today: string): FeedEntry[] | null {
   let calendar: ICAL.Component;
@@ -40,11 +41,17 @@ export function parseFeed(body: Buffer, today: string): FeedEntry[] | null {
     const end = dateOf(event.getFirstPropertyValue("dtend"));
     if (typeof uid !== "string" || !uid || !start || !end || end <= start || end < today) continue;
     const summary = event.getFirstPropertyValue("summary");
+    const url = event.getFirstPropertyValue("url");
+    const description = event.getFirstPropertyValue("description");
     entries.push({
       uid: stableUid(uid),
       start,
       end,
       kind: classifyFeedEntry({ summary: typeof summary === "string" ? summary : null }),
+      reference: airbnbReservationCode(
+        typeof url === "string" ? url : null,
+        typeof description === "string" ? description : null,
+      ),
     });
     if (entries.length >= MAX_ENTRIES) break;
   }

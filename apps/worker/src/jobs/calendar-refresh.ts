@@ -195,6 +195,7 @@ export async function refreshFeed(
       checkoutDate: stay.checkoutDate,
       status: stay.status,
       mayBeBlock: stay.mayBeBlock,
+      bookingReference: stay.bookingReference,
     })
     .from(stay)
     .where(eq(stay.calendarFeedId, feed.id));
@@ -218,6 +219,7 @@ export async function refreshFeed(
           checkoutDate: entry.checkoutDate,
           channel,
           mayBeBlock: entry.mayBeBlock,
+          bookingReference: entry.bookingReference,
           lastSeenAt: now,
         })),
       );
@@ -229,6 +231,7 @@ export async function refreshFeed(
           checkInDate: change.checkInDate,
           checkoutDate: change.checkoutDate,
           mayBeBlock: change.mayBeBlock,
+          bookingReference: change.bookingReference,
           status: "active",
           cancelledAt: null,
           lastSeenAt: now,

@@ -306,7 +306,7 @@ describe("limits (FR-026)", () => {
 });
 
 describe("parsing (FR-022, R8)", () => {
-  it("returns only {uid, start, end, kind}, drops blocks' text and past entries", async () => {
+  it("returns only {uid, start, end, kind, reference}, drops other text and past entries", async () => {
     const send = transport({
       "https://calendar.example.test/feed.ics": {
         text: ICAL,
@@ -321,15 +321,34 @@ describe("parsing (FR-022, R8)", () => {
     const result = await read({ url: "https://calendar.example.test/feed.ics" });
     expect(result).toEqual({
       entries: [
-        { uid: "res-1@example.test", start: "2027-01-20", end: "2027-01-22", kind: "reservation" },
-        { uid: "block-1@example.test", start: "2027-02-01", end: "2027-02-03", kind: "block" },
-        { uid: "open-1@example.test", start: "2027-03-01", end: "2027-03-04", kind: "unlabeled" },
+        {
+          uid: "res-1@example.test",
+          start: "2027-01-20",
+          end: "2027-01-22",
+          kind: "reservation",
+          // Feature 018: the Airbnb code from the reservation link, and nothing else.
+          reference: "HMABCDEFGH",
+        },
+        {
+          uid: "block-1@example.test",
+          start: "2027-02-01",
+          end: "2027-02-03",
+          kind: "block",
+          reference: null,
+        },
+        {
+          uid: "open-1@example.test",
+          start: "2027-03-01",
+          end: "2027-03-04",
+          kind: "unlabeled",
+          reference: null,
+        },
       ],
       etag: '"v1"',
       lastModified: "Sun, 10 Jan 2027 10:00:00 GMT",
     });
     const text = JSON.stringify(result);
-    expect(text).not.toMatch(/HMABCDEFGH|8888|Reservation URL|Not available|CLOSED/);
+    expect(text).not.toMatch(/8888|Reservation URL|example\.test\/r|Not available|CLOSED/);
   });
 
   it("sends the conditional headers and reports a 304 as not modified", async () => {

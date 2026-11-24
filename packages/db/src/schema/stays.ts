@@ -88,6 +88,8 @@ export const calendarFeed = pgTable(
 
 export const STAY_SOURCES = ["ical", "pms", "manual"] as const;
 export const STAY_STATUSES = ["active", "cancelled", "hidden"] as const;
+/** Where a stay's guest name and number of guests came from (feature 018). */
+export const GUEST_DETAILS_SOURCES = ["feed", "pms", "host"] as const;
 
 export const stay = pgTable(
   "stay",
@@ -123,6 +125,13 @@ export const stay = pgTable(
     /** Refreshes never write `guest_name` again while this is set (FR-053). */
     guestNameRemovedAt: timestamp("guest_name_removed_at", { withTimezone: true }),
     bookingReference: text("booking_reference"),
+    /**
+     * Feature 018: who set the guest name and number of guests. `host` values are never
+     * overwritten by feed or PMS refreshes (FR-016).
+     */
+    guestDetailsSource: text("guest_details_source", { enum: GUEST_DETAILS_SOURCES }),
+    guestDetailsBy: text("guest_details_by").references(() => user.id, { onDelete: "set null" }),
+    guestDetailsAt: timestamp("guest_details_at", { withTimezone: true }),
     duplicateOfId: uuid("duplicate_of_id").references((): AnyPgColumn => stay.id, {
       onDelete: "set null",
     }),
@@ -168,10 +177,15 @@ export const stay = pgTable(
         AND (${t.guestCount} IS NULL OR ${t.guestCount} BETWEEN 0 AND 500)
         AND (${t.bookingReference} IS NULL OR char_length(${t.bookingReference}) <= 80)`,
     ),
-    // Feed entries carry no guest data (FR-022).
+    // Feed entries carry no guest data (FR-022); feature 018 keeps the reservation code as the
+    // booking reference and allows a name and number of guests typed by the host.
     check(
-      "stay_ical_no_guest_data",
-      sql`${t.source} <> 'ical' OR (${t.guestName} IS NULL AND ${t.guestCount} IS NULL AND ${t.bookingReference} IS NULL)`,
+      "stay_ical_guest_data",
+      sql`${t.source} <> 'ical' OR ${t.guestDetailsSource} = 'host' OR (${t.guestName} IS NULL AND ${t.guestCount} IS NULL)`,
+    ),
+    check(
+      "stay_guest_details_source_valid",
+      sql`${t.guestDetailsSource} IS NULL OR ${inList(t.guestDetailsSource, GUEST_DETAILS_SOURCES)}`,
     ),
     check(
       "stay_guest_name_removed",

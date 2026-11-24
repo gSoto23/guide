@@ -4,6 +4,7 @@ import type {
   CreateStayBody,
   ListStaysQuery,
   Stay,
+  StayGuestBody,
   StayList,
   UpdateStayBody,
 } from "@guidesk/contracts";
@@ -42,6 +43,7 @@ function toStay(row: StayRow, overlaps: boolean, possiblyOutdated: boolean): Sta
     guestName: row.guestName,
     guestNameRemoved: row.guestNameRemovedAt !== null,
     bookingReference: row.bookingReference,
+    guestDetailsSource: row.guestDetailsSource ?? null,
   };
 }
 
@@ -279,6 +281,49 @@ export class StaysService {
   }
 
   /** Removes a guest name on request; later refreshes never restore it (FR-053). */
+  /**
+   * The guest's name and number of guests typed by an owner or admin on any stay (feature 018
+   * FR-015, FR-016): marked as the host's, so feed and PMS refreshes keep them. A name removed on
+   * request (FR-053) cannot be set again. The log records which fields changed, never the name.
+   */
+  async setGuestDetails(
+    caller: Caller,
+    workspaceId: string,
+    stayId: string,
+    body: StayGuestBody,
+  ): Promise<Stay> {
+    const current = await this.loadStay(caller, workspaceId, stayId);
+    if (body.guestName !== null && current.guestNameRemovedAt !== null) {
+      throw new ApiProblem(409, "conflict", "This guest's name was removed on request.");
+    }
+    const nameChanged = body.guestName !== current.guestName;
+    const countChanged = body.guestCount !== current.guestCount;
+    if (!nameChanged && !countChanged) return this.withOverlap(current);
+    const [row] = await this.requestDb
+      .current()
+      .update(stay)
+      .set({
+        guestName: body.guestName,
+        guestCount: body.guestCount,
+        guestDetailsSource: "host",
+        guestDetailsBy: caller.userId,
+        guestDetailsAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(stay.id, stayId))
+      .returning();
+    await this.securityLog.record({
+      type: "stay.guest_details_changed",
+      outcome: "success",
+      actorUserId: caller.userId,
+      workspaceId,
+      targetType: "stay",
+      targetId: stayId,
+      metadata: { stayId, name: nameChanged, count: countChanged },
+    });
+    return this.withOverlap(row!);
+  }
+
   async removeGuestName(caller: Caller, workspaceId: string, stayId: string): Promise<Stay> {
     const current = await this.loadStay(caller, workspaceId, stayId);
     const [row] = await this.requestDb

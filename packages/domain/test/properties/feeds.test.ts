@@ -72,3 +72,19 @@ describe("the masked hint shown after saving (FR-025)", () => {
     );
   });
 });
+
+describe("Airbnb reservation codes (feature 018 FR-017)", () => {
+  it("finds the code in the link or the description, and nothing else", async () => {
+    const { airbnbReservationCode } = await import("../../src/properties/feeds.js");
+    expect(
+      airbnbReservationCode("https://www.airbnb.com/hosting/reservations/details/HMXYZ12345", null),
+    ).toBe("HMXYZ12345");
+    expect(
+      airbnbReservationCode(null, "Reservation URL: https://x.test/d/HM1234ABCD\nPhone Number (Last 4 Digits): 4321"),
+    ).toBe("HM1234ABCD");
+    expect(airbnbReservationCode(null, "Phone Number (Last 4 Digits): 4321")).toBeNull();
+    expect(airbnbReservationCode("HMSHORT", "123456789012")).toBeNull();
+    expect(airbnbReservationCode(undefined)).toBeNull();
+  });
+});
+

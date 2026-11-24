@@ -10,6 +10,8 @@ export interface FeedEntry {
   start: string;
   end: string;
   kind: FeedEntryKind;
+  /** Feature 018: the Airbnb reservation code, when the entry has one. */
+  reference?: string | null;
 }
 
 /** A stay that came from this feed before. */
@@ -20,15 +22,23 @@ export interface FeedStay {
   checkoutDate: string;
   status: "active" | "cancelled" | "hidden";
   mayBeBlock: boolean;
+  bookingReference?: string | null;
 }
 
 export interface FeedRefreshPlan {
-  create: { externalUid: string; checkInDate: string; checkoutDate: string; mayBeBlock: boolean }[];
+  create: {
+    externalUid: string;
+    checkInDate: string;
+    checkoutDate: string;
+    mayBeBlock: boolean;
+    bookingReference: string | null;
+  }[];
   update: {
     id: string;
     checkInDate: string;
     checkoutDate: string;
     mayBeBlock: boolean;
+    bookingReference: string | null;
     status: "active";
   }[];
   /** IDs of stays that disappeared from the feed (FR-023). */
@@ -52,6 +62,7 @@ export function planFeedRefresh(input: {
     if (entry.kind === "block" || entry.end < input.today || entry.end <= entry.start) continue;
     seen.add(entry.uid);
     const mayBeBlock = entry.kind === "unlabeled";
+    const bookingReference = entry.reference ?? null;
     const current = byUid.get(entry.uid);
     if (!current) {
       plan.create.push({
@@ -59,6 +70,7 @@ export function planFeedRefresh(input: {
         checkInDate: entry.start,
         checkoutDate: entry.end,
         mayBeBlock,
+        bookingReference,
       });
       continue;
     }
@@ -67,13 +79,15 @@ export function planFeedRefresh(input: {
       current.status === "cancelled" ||
       current.checkInDate !== entry.start ||
       current.checkoutDate !== entry.end ||
-      current.mayBeBlock !== mayBeBlock;
+      current.mayBeBlock !== mayBeBlock ||
+      (current.bookingReference ?? null) !== bookingReference;
     if (changed) {
       plan.update.push({
         id: current.id,
         checkInDate: entry.start,
         checkoutDate: entry.end,
         mayBeBlock,
+        bookingReference,
         status: "active",
       });
     }

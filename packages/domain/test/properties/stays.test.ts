@@ -42,14 +42,22 @@ describe("applying a successful feed read (FR-022, FR-023)", () => {
         checkInDate: "2027-01-20",
         checkoutDate: "2027-01-22",
         mayBeBlock: false,
+        bookingReference: null,
       },
-      { externalUid: "d", checkInDate: "2027-03-01", checkoutDate: "2027-03-04", mayBeBlock: true },
+      {
+        externalUid: "d",
+        checkInDate: "2027-03-01",
+        checkoutDate: "2027-03-04",
+        mayBeBlock: true,
+        bookingReference: null,
+      },
       // Checking out today is still upcoming.
       {
         externalUid: "e",
         checkInDate: "2027-01-08",
         checkoutDate: "2027-01-10",
         mayBeBlock: false,
+        bookingReference: null,
       },
     ]);
     expect(plan.update).toEqual([]);
@@ -68,6 +76,7 @@ describe("applying a successful feed read (FR-022, FR-023)", () => {
         checkInDate: "2027-01-21",
         checkoutDate: "2027-01-23",
         mayBeBlock: false,
+        bookingReference: null,
         status: "active",
       },
     ]);
@@ -100,6 +109,7 @@ describe("applying a successful feed read (FR-022, FR-023)", () => {
         checkInDate: "2027-01-20",
         checkoutDate: "2027-01-22",
         mayBeBlock: false,
+        bookingReference: null,
         status: "active",
       },
     ]);
@@ -289,3 +299,39 @@ describe("applying a PMS read (FR-030, FR-034, FR-053)", () => {
     expect(changed.update[0]).not.toHaveProperty("guestName");
   });
 });
+
+describe("feed references (feature 018 FR-017)", () => {
+  it("keeps the entry's reservation code on new stays and updates it when it changes", async () => {
+    const { planFeedRefresh } = await import("../../src/properties/stays.js");
+    const created = planFeedRefresh({
+      today: "2027-01-10",
+      existing: [],
+      entries: [
+        { uid: "a", start: "2027-01-20", end: "2027-01-22", kind: "reservation", reference: "HMAAAA1111" },
+        { uid: "b", start: "2027-02-01", end: "2027-02-03", kind: "reservation" },
+      ],
+    });
+    expect(created.create.map((stay) => stay.bookingReference)).toEqual(["HMAAAA1111", null]);
+    const updated = planFeedRefresh({
+      today: "2027-01-10",
+      existing: [
+        {
+          id: "s1",
+          externalUid: "a",
+          checkInDate: "2027-01-20",
+          checkoutDate: "2027-01-22",
+          status: "active",
+          mayBeBlock: false,
+          bookingReference: null,
+        },
+      ],
+      entries: [
+        { uid: "a", start: "2027-01-20", end: "2027-01-22", kind: "reservation", reference: "HMAAAA1111" },
+      ],
+    });
+    expect(updated.update).toEqual([
+      expect.objectContaining({ id: "s1", bookingReference: "HMAAAA1111" }),
+    ]);
+  });
+});
+
