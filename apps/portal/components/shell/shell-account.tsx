@@ -21,11 +21,11 @@ export function ShellAccountLink({ href, hint }: { href: string; hint: string })
   const me = useMeContext()?.me;
   if (!me) return null;
   return (
-    <Link href={href} className="side-account">
+    <Link href={href} className="side-account" title={me.user.name || me.user.email}>
       <Avatar name={me.user.name} email={me.user.email} />
       <span>
         {/* An email wraps after the "@", never mid-word (spec 015); inline to spare bundle bytes. */}
-        <span className="side-account-name">
+        <span className="side-account-name truncate-name">
           {me.user.name || (
             <>
               {me.user.email.split("@")[0]}@<wbr />

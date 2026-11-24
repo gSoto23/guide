@@ -25,6 +25,9 @@ async function expectNothingCut(page: Page, screen: string) {
     if (root.scrollWidth > root.clientWidth + 1) found.push(`page scrolls sideways (${root.scrollWidth})`);
     for (const element of document.querySelectorAll<HTMLElement>("body *")) {
       if (!element.offsetParent && getComputedStyle(element).position !== "fixed") continue;
+      // Names in compact chrome (switcher, account link) end in an ellipsis by design (founder
+      // decision 2026-11-23); their full text stays in the tooltip and the accessible name.
+      if (element.closest(".truncate-name")) continue;
       const style = getComputedStyle(element);
       const text = element.textContent?.trim().slice(0, 40) ?? "";
       if (!text) continue;

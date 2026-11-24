@@ -50,7 +50,7 @@
   --il-terra-soft: #f3d3c7;
   --il-sol: #f5bc4c;
   --il-line: #8c7b70;
-  --sidebar-width: 15rem;
+  --sidebar-width: 16.5rem;
   --bottom-bar-height: 64px;
   --radius: var(--radius-md);
   --space: var(--space-4);
@@ -3487,4 +3487,44 @@ a.lang-option:hover {
   background: color-mix(in srgb, var(--color-bg) 88%, transparent);
   -webkit-backdrop-filter: saturate(160%) blur(12px);
   backdrop-filter: saturate(160%) blur(12px);
+}
+
+/* Names in compact chrome stay on one line (founder decision 2026-11-23): the workspace switcher,
+   its menu, and the account link end a long name in an ellipsis; the full name stays in the
+   tooltip and the accessible name, and Settings shows it whole. Labels never truncate. -------- */
+
+.truncate-name {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow-wrap: normal;
+}
+
+.switcher-text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.switcher-text .switcher-role {
+  font-size: 0.75rem;
+}
+
+.switcher-option {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  line-height: 1.25;
+}
+
+.switcher-option > .truncate-name {
+  max-width: 100%;
+}
+
+.side-account-name.truncate-name {
+  overflow-wrap: normal;
 }

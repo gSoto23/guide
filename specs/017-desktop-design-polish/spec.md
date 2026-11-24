@@ -35,6 +35,10 @@ the founder can change any of them.
   other code on phones), a pill-shaped sign-in button with an arrow, the "Start free" call to action in
   the header from 600 px, and a sticky translucent header; the guest guide's language switch uses the
   same pill. Each code keeps the language's full name for screen readers.
+- Founder review after the merge (2026-11-23): long names that wrap over several lines in the
+  workspace switcher and the sidebar account link look bad. → A: those names stay on one line and
+  end in an ellipsis, with the role on a small second line; the full name stays in the tooltip, the
+  accessible name, and Settings. The sidebar grows to 16.5rem so every navigation label fits one line.
 - Q: Are the inbox split view and a settings sub-navigation part of this feature? → A: No. Both need
   new client behavior or routes; they are recorded in the audit as later work.
 
