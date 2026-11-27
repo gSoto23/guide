@@ -16,6 +16,7 @@ import {
   docPlainText,
   GUIDE_TOPICS,
   guideTopic,
+  isMediaOnlyTopic,
   JOB_QUEUES,
   mainLanguage,
   redactRestrictedValues,
@@ -214,7 +215,10 @@ export async function runInterviewAnswer(
   const drafted = result.result.items
     .map((item) => ({
       text: redactRestrictedValues(stripUnknownLinks(item.text, answer)).text.trim(),
-      topics: validTopicIds([topic.id, ...item.topics]),
+      // Feature 020 FR-006: text never covers a photo or video topic.
+      topics: validTopicIds([topic.id, ...item.topics]).filter(
+        (id) => !isMediaOnlyTopic(guideTopic(id) ?? { rules: [] }),
+      ),
     }))
     .filter((item) => item.text);
   if (drafted.length === 0) return finishWith("not_understood");

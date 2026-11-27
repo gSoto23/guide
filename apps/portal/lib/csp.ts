@@ -8,9 +8,13 @@ export function contentSecurityPolicy(
   development: boolean,
   https = true,
   mediaOrigin: string | null = null,
+  uploadOrigins: readonly string[] = [],
 ): string {
   // Feature 016 (research R5): signed media URLs live on the media bucket's origin in AWS.
   const media = mediaOrigin ? ` ${mediaOrigin}` : "";
+  // Feature 020 (G-01): browsers post files straight to the uploads bucket in AWS, a different
+  // origin, so `connect-src` must name it or the upload is blocked before it leaves.
+  const uploads = uploadOrigins.length > 0 ? ` ${uploadOrigins.join(" ")}` : "";
   return [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${development ? " 'unsafe-eval'" : ""}`,
@@ -18,7 +22,7 @@ export function contentSecurityPolicy(
     `img-src 'self' data: blob:${media}`,
     `media-src 'self' blob:${media}`,
     "font-src 'self'",
-    "connect-src 'self'",
+    `connect-src 'self'${uploads}`,
     // Feature 006: the push service worker and the web app manifest (research R7).
     "worker-src 'self'",
     "manifest-src 'self'",
@@ -39,4 +43,13 @@ export function mediaOriginOf(value: string | undefined): string | null {
   } catch {
     return null;
   }
+}
+
+/** The uploads bucket's origins from the stage (space-separated), only valid https origins. */
+export function uploadOriginsOf(value: string | undefined): string[] {
+  if (!value) return [];
+  return value
+    .split(/[\s,]+/)
+    .map((entry) => mediaOriginOf(entry))
+    .filter((origin): origin is string => origin !== null);
 }

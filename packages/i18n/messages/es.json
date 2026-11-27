@@ -1242,7 +1242,11 @@
       },
       "hevcNote": "Este video está en HEVC: algunos teléfonos Android quizá no lo reproduzcan.",
       "heicUnsupported": "Este navegador no puede leer fotos HEIC. Usa JPEG o PNG.",
-      "storage": "Almacenamiento: {used} de {limit}"
+      "storage": "Almacenamiento: {used} de {limit}",
+      "uploadNetwork": "No pudimos subir el archivo: revisa tu conexión e intenta de nuevo.",
+      "uploadFailed": "El almacenamiento rechazó el archivo (error {status}). Intenta de nuevo; si sigue pasando, avísanos con este número.",
+      "stillChecking": "Seguimos revisando el archivo por seguridad y tarda más de lo normal. No se agregó: intenta de nuevo en unos minutos.",
+      "uploadUnknown": "No pudimos subir el archivo. Usa una foto JPG, PNG, WebP o HEIC de hasta 10 MB, o un video MP4 o MOV de hasta 90 segundos, e intenta de nuevo."
     },
     "recommendation": {
       "name": "Nombre del lugar",
@@ -1390,13 +1394,24 @@
       "error_transcription_failed": "No pudimos transcribir la nota de voz. Escribe tu respuesta.",
       "error_unsupported_type": "No pudimos leer la nota de voz. Escribe tu respuesta.",
       "error_ai_unavailable": "El asistente no está disponible ahora. Intenta en unos minutos.",
-      "lockedTopic": "Esta respuesta es un código. Guárdalo en un campo protegido, no en el texto.",
+      "lockedTopic": "Esta respuesta es un código: guárdalo aquí como campo protegido. Se guarda cifrado y los huéspedes solo lo ven con su enlace de estadía.",
       "openLocked": "Abrir los campos protegidos",
       "skip": "Saltar",
       "finish": "Terminar",
       "noMore": "¡Listo! No hay más preguntas por ahora.",
       "finished": "Terminaste la entrevista.",
-      "busyElsewhere": "Otra persona tiene una entrevista abierta en esta guía. Puedes continuarla aquí."
+      "busyElsewhere": "Otra persona tiene una entrevista abierta en esta guía. Puedes continuarla aquí.",
+      "codeAgent": "Los códigos los guarda el dueño o un administrador. Puedes saltar esta pregunta.",
+      "codeLabel": "Nombre (opcional)",
+      "codeValue": "Clave",
+      "codeShow": "Mostrar",
+      "codeHide": "Ocultar",
+      "codeHint": "Te pediremos confirmar tu identidad antes de guardarlo.",
+      "codeSave": "Guardar y seguir",
+      "codeSaved": "Guardamos el código como campo protegido.",
+      "stalled": "Está tardando más de lo normal. Puedes seguir con otra pregunta: el texto aparecerá en la guía cuando esté listo.",
+      "attachHint": "Agrega la foto o el video aquí: queda en esta sección de la guía.",
+      "attached": "Agregamos el archivo a {section}."
     },
     "translations": {
       "link": "Traducciones",

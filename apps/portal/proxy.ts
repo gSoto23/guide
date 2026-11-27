@@ -1,6 +1,6 @@
 import createMiddleware from "next-intl/middleware";
 import type { NextRequest } from "next/server";
-import { contentSecurityPolicy, mediaOriginOf } from "./lib/csp";
+import { contentSecurityPolicy, mediaOriginOf, uploadOriginsOf } from "./lib/csp";
 import { routing } from "./i18n/routing";
 
 const handleI18nRouting = createMiddleware(routing);
@@ -15,6 +15,7 @@ export default function proxy(request: NextRequest) {
     process.env.NODE_ENV === "development",
     https,
     mediaOriginOf(process.env.MEDIA_ORIGIN),
+    uploadOriginsOf(process.env.UPLOAD_ORIGINS),
   );
   // next-intl forwards the request headers to rendering, where Next.js picks up the nonce.
   request.headers.set("x-nonce", nonce);

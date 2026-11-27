@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { contentSecurityPolicy, mediaOriginOf } from "../lib/csp";
+import { contentSecurityPolicy, mediaOriginOf, uploadOriginsOf } from "../lib/csp";
 
 /** Feature 016 (research R5): the portal allows photos from the stage's media origin. */
 describe("portal content security policy", () => {
@@ -20,5 +20,23 @@ describe("portal content security policy", () => {
     [undefined, null],
   ])("reads %s as %s", (value, expected) => {
     expect(mediaOriginOf(value)).toBe(expected);
+  });
+});
+
+describe("uploads in the portal CSP (feature 020, G-01)", () => {
+  it("lets the browser post files to the uploads bucket origins, and nothing else", () => {
+    const origins = uploadOriginsOf(
+      "https://up-bucket.s3.amazonaws.com https://up-bucket.s3.us-east-1.amazonaws.com javascript:alert(1) http://insecure.example.com",
+    );
+    expect(origins).toEqual([
+      "https://up-bucket.s3.amazonaws.com",
+      "https://up-bucket.s3.us-east-1.amazonaws.com",
+    ]);
+    const csp = contentSecurityPolicy("n", false, true, null, origins);
+    expect(csp).toContain(
+      "connect-src 'self' https://up-bucket.s3.amazonaws.com https://up-bucket.s3.us-east-1.amazonaws.com;",
+    );
+    expect(contentSecurityPolicy("n", false, true)).toContain("connect-src 'self';");
+    expect(uploadOriginsOf(undefined)).toEqual([]);
   });
 });

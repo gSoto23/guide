@@ -6,7 +6,7 @@
 import { stageConfig } from "./config";
 import { portalUrl, router } from "./router";
 import { api } from "./services";
-import { media } from "./storage";
+import { media, uploads } from "./storage";
 
 export { router };
 
@@ -23,6 +23,9 @@ export const portal = new sst.aws.Nextjs("Portal", {
     PORTAL_URL: portalUrl,
     // Feature 016: signed photo URLs load from the media bucket (portal CSP img-src).
     MEDIA_ORIGIN: $interpolate`https://${media.domain}`,
+    // Feature 020 (G-01): browsers post files straight to the uploads bucket (portal CSP
+    // connect-src); both the global and the regional host, since the SDK may sign either.
+    UPLOAD_ORIGINS: $interpolate`https://${uploads.domain} https://${uploads.name}.s3.us-east-1.amazonaws.com`,
     ...(stageConfig.contactEmail ? { CONTACT_EMAIL: stageConfig.contactEmail } : {}),
     ...(stageConfig.companyName ? { COMPANY_NAME: stageConfig.companyName } : {}),
   },

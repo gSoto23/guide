@@ -66,8 +66,18 @@ export function MediaUploadButton({
       const body = new FormData();
       for (const [name, value] of Object.entries(created.upload.fields)) body.append(name, value);
       body.append("file", blob, file.name || "file");
-      const uploaded = await fetch(created.upload.url, { method: "POST", body });
-      if (!uploaded.ok) throw new Error("upload failed");
+      let uploaded: Response;
+      try {
+        uploaded = await fetch(created.upload.url, { method: "POST", body });
+      } catch {
+        // Feature 020 FR-007: the file never reached storage (connection or browser block).
+        setMessage(t("uploadNetwork"));
+        return;
+      }
+      if (!uploaded.ok) {
+        setMessage(t("uploadFailed", { status: uploaded.status }));
+        return;
+      }
       setStatus("processing");
       let media = await workspace.api.post<MediaView>(
         `/properties/${propertyId}/guide/media/${created.mediaId}/complete`,
@@ -79,6 +89,11 @@ export function MediaUploadButton({
           `/properties/${propertyId}/guide/media/${created.mediaId}`,
         );
       }
+      if (media.status === "processing") {
+        // The safety check has not answered yet: the file was not added (feature 020 FR-007).
+        setMessage(t("stillChecking"));
+        return;
+      }
       if (media.status !== "ready") {
         setMessage(t("rejected", { reason: t(`reasons.${media.rejectReason ?? "unreadable"}`) }));
         return;
@@ -89,7 +104,13 @@ export function MediaUploadButton({
       setMessage(
         code === "storage_limit_reached" || code === "item_limit" || code === "network"
           ? errors(code)
-          : errors("internal_error"),
+          : code === "validation_failed"
+            ? t("rejected", {
+                reason: `${t("reasons.unsupported_type")} / ${t("reasons.too_large")}`,
+              })
+            : code && errors.has(code)
+              ? errors(code)
+              : t("uploadUnknown"),
       );
     } finally {
       setStatus("idle");
