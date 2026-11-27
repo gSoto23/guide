@@ -431,7 +431,16 @@
         ['Lo que la IA redacta sobre un mismo tema queda en un solo bloque, sin párrafos repetidos.', 'What the AI drafts on one topic stays in a single item, with no repeated paragraphs.'],
         ['Botones ordenados (aprobar, mover, y eliminar aparte), «Clave» con mostrar u ocultar al escribir y contenido compartido con nombre editable.', 'Ordered buttons (approve, move, and delete apart), "Code" with show or hide while typing, and shared content with an editable name.'],
         ['Búsqueda de propiedades al teclear y niveles del asistente con nombres claros y un ejemplo cada uno.', 'Property search as you type and assistant levels with clear names and one example each.']
-      ], screens: 'H-04 · H-06 · H-08 · H-30', adr: 'Spec 021' }
+      ], screens: 'H-04 · H-06 · H-08 · H-30', adr: 'Spec 021' },
+    '022': { t: ['Entrevista nueva y arrastrar bloques', 'New interview and drag and drop'],
+      lead: ['Fase 3 del feedback: la entrevista ya no hace esperar y la guía se ordena arrastrando.', 'Phase 3 of the feedback: the interview no longer makes you wait, and the guide is ordered by dragging.'],
+      items: [
+        ['Una pregunta por pantalla, cuántas quedan y un botón fijo «Guardar y seguir» al alcance del pulgar. Solo pregunta lo que le falta a la guía.', 'One question per screen, how many are left, and a fixed "Save and continue" button within thumb reach. It only asks what the guide is missing.'],
+        ['La IA redacta mientras el anfitrión sigue respondiendo; la lista muestra cada respuesta: redactando, en la guía o «Responder de nuevo».', 'The AI drafts while the host keeps answering; the list shows each answer: drafting, in the guide, or "Answer again".'],
+        ['Si una respuesta trae una clave, se ofrece guardarla protegida antes de seguir.', 'If an answer contains a code, it offers to save it protected before moving on.'],
+        ['Los bloques de cada sección se arrastran con el mouse o el dedo, o se mueven con el teclado; se guarda una vez por movimiento.', 'Section items are dragged with a mouse or a finger, or moved with the keyboard; one save per move.'],
+        ['La propiedad muestra los primeros pasos (datos, calendario, guía, publicar) con su estado y el siguiente como botón principal.', 'The property shows the setup steps (details, calendar, guide, publish) with their state and the next one as the main button.']
+      ], screens: 'H-14 · H-06 · H-04', adr: 'Spec 022' }
   };
 
   $$('#featureFilter .chip').forEach(function (chip) {
