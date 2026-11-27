@@ -461,6 +461,8 @@ export interface InterviewQuestion {
 export interface InterviewTurnView {
   id: string;
   topicId: string;
+  /** Feature 022: the topic's section, so a failed answer can be asked again. */
+  sectionKind: (typeof DEFAULT_SECTION_KIND_VALUES)[number] | null;
   answerKind: "text" | "voice";
   status: "queued" | "transcribing" | "drafting" | "done" | "failed";
   /** `not_understood`, `transcription_failed`, `ai_unavailable`, or `unsupported_type`. */
@@ -480,6 +482,8 @@ export interface InterviewView {
   status: "active" | "finished";
   scopeSectionKind: (typeof DEFAULT_SECTION_KIND_VALUES)[number] | null;
   question: InterviewQuestion | null;
+  /** Feature 022 FR-001: questions left in scope, the current one included. */
+  remaining: number;
   turns: InterviewTurnView[];
   /** Voice notes are on (`guide.interviewVoice`). */
   voiceEnabled: boolean;

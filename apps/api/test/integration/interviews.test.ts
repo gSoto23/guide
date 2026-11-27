@@ -269,6 +269,22 @@ describe("the interview (US4)", () => {
     expect(after.question?.topicId).not.toBe(asked.topicId);
   });
 
+  it("counts the questions left and moves past an answer in flight (022 FR-001, FR-003)", async () => {
+    const view = (await start()).json() as InterviewView;
+    expect(view.remaining).toBeGreaterThan(1);
+    const asked = view.question!;
+    await db.query(
+      `INSERT INTO interview_turn (workspace_id, session_id, topic_id, answer_kind, status, created_by)
+       VALUES ($1, $2, $3, 'text', 'drafting', $4)`,
+      [team.workspaceId, sessionId, asked.topicId, team.owner.userId],
+    );
+    const after = (
+      await wsApi(ctx, team.owner, "GET", team.workspaceId, path(`/${sessionId}`))
+    ).json() as InterviewView;
+    expect(after.question?.topicId).not.toBe(asked.topicId);
+    expect(after.remaining).toBe(view.remaining - 1);
+  });
+
   it("marks photo and video questions so the portal offers an attach button (020 FR-006)", async () => {
     let view = (await start(team.owner, { sectionKind: "arrival" })).json() as InterviewView;
     for (let guard = 0; guard < 20 && view.question && !view.question.asksMedia; guard += 1) {
@@ -294,7 +310,7 @@ describe("the interview (US4)", () => {
       path(`/${sessionId}/finish`),
     );
     expect(finished.statusCode).toBe(200);
-    expect(finished.json()).toMatchObject({ status: "finished", question: null });
+    expect(finished.json()).toMatchObject({ status: "finished", question: null, remaining: 0 });
     const late = await wsApi(
       ctx,
       team.owner,

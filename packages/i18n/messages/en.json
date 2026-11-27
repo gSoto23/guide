@@ -722,6 +722,24 @@
       "saved": "Cover photo saved.",
       "removed": "Cover photo removed.",
       "processing": "The photo is still being processed. Try again in a moment."
+    },
+    "steps": {
+      "title": "Getting started",
+      "done": "Done",
+      "pending": "To do",
+      "optional": "Optional",
+      "details": "Property details",
+      "detailsBody": "Name, address, times, and guests.",
+      "detailsAction": "Complete the details",
+      "calendar": "Calendar",
+      "calendarBody": "Connect your calendar to see stays and give stay links.",
+      "calendarAction": "Connect a calendar",
+      "guide": "Build your guide",
+      "guideBody": "{percent}% complete. We only ask what is missing.",
+      "guideAction": "Build my guide",
+      "publish": "Publish the guide",
+      "publishBody": "Guests open it with the link or the QR code.",
+      "publishAction": "Review and publish"
     }
   },
   "security": {
@@ -1236,7 +1254,11 @@
       "caption": "Description for people who cannot see the image",
       "textPlaceholder": "Write for your guests…",
       "edit": "Edit",
-      "insertLocked": "Insert locked field"
+      "insertLocked": "Insert locked field",
+      "dragHandle": "Move: {name}",
+      "dragHelp": "Drag to change the order. With the keyboard, use the up and down arrows, Home, or End.",
+      "movedTo": "Moved to position {position} of {total}.",
+      "moveCancelled": "Order unchanged."
     },
     "media": {
       "uploading": "Uploading…",
@@ -1382,7 +1404,7 @@
       "notApplicable": "Doesn't apply",
       "undoMark": "Remove mark",
       "title": "Interview",
-      "intro": "We ask one question at a time about what guests ask most. We draft the text and you review it.",
+      "intro": "We only ask what your guide is still missing. Answer and keep going: we draft the text while you move on, and you review it in the guide.",
       "reminder": "Don't include codes or passwords in your answers: keep them in a locked field.",
       "section": "For the {section} section",
       "answerLabel": "Your answer",
@@ -1423,7 +1445,20 @@
       "codeSaved": "We saved the code as a protected field.",
       "stalled": "This is taking longer than usual. You can go on with another question: the text will show up in the guide when it's ready.",
       "attachHint": "Add the photo or video here: it goes to this section of the guide.",
-      "attached": "We added the file to {section}."
+      "attached": "We added the file to {section}.",
+      "remaining": "{count, plural, =0 {No questions left} one {# question left} other {# questions left}}",
+      "saveNext": "Save and continue",
+      "answers": "Your answers",
+      "stateWriting": "Drafting…",
+      "stateDone": "In the guide",
+      "retry": "Answer again",
+      "codeFoundTitle": "We found a code in your answer",
+      "continueWithout": "Continue without saving it",
+      "saveCode": "Save the code",
+      "endTitle": "Done! No questions left for now.",
+      "endBody": "{count, plural, =0 {We added no text in this interview.} one {We added # answer to the guide for you to review.} other {We added # answers to the guide for you to review.}}",
+      "stillWriting": "{count, plural, one {We are still drafting # answer.} other {We are still drafting # answers.}}",
+      "reviewGuide": "Review the guide"
     },
     "translations": {
       "link": "Translations",

@@ -1099,12 +1099,29 @@ export class PropertiesService {
       feeds = feedCount?.count ?? 0;
       restrictedValues = valueCount?.count ?? 0;
     }
+    // Feature 022 FR-009: the guide's state, for the property's setup steps.
+    const [guideRow] = await tx
+      .select({
+        status: guide.status,
+        hasUnpublishedChanges: guide.hasUnpublishedChanges,
+        completeness: guide.completeness,
+      })
+      .from(guide)
+      .where(eq(guide.propertyId, row.id))
+      .limit(1);
     return {
       ...toDetail(row, status?.value ?? "none", {
         stays: stays?.count ?? 0,
         feeds,
         restrictedValues,
       }),
+      guide: guideRow
+        ? {
+            status: guideRow.status,
+            hasUnpublishedChanges: guideRow.hasUnpublishedChanges,
+            completeness: guideRow.completeness ?? 0,
+          }
+        : null,
       cover: await this.coverOf(row.coverMediaId, row.coverAlt ?? row.name),
     };
   }
