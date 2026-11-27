@@ -549,7 +549,8 @@ export function isMediaOnlyTopic(topic: Pick<GuideTopic, "rules">): boolean {
 export function topicMediaKinds(topic: Pick<GuideTopic, "rules">): ("image" | "video")[] {
   const kinds = new Set<"image" | "video">();
   for (const rule of topic.rules) {
-    if (rule.kind === "media") for (const kind of rule.mediaKinds) kinds.add(kind as "image" | "video");
+    if (rule.kind === "media")
+      for (const kind of rule.mediaKinds) kinds.add(kind as "image" | "video");
   }
   return [...kinds];
 }
