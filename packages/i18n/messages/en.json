@@ -1242,7 +1242,11 @@
       },
       "hevcNote": "This video is HEVC: some Android phones may not play it.",
       "heicUnsupported": "This browser cannot read HEIC photos. Use JPEG or PNG.",
-      "storage": "Storage: {used} of {limit}"
+      "storage": "Storage: {used} of {limit}",
+      "uploadNetwork": "We couldn't upload the file: check your connection and try again.",
+      "uploadFailed": "Storage refused the file (error {status}). Try again; if it keeps happening, tell us this number.",
+      "stillChecking": "We're still checking the file for safety and it's taking longer than usual. It wasn't added: try again in a few minutes.",
+      "uploadUnknown": "We couldn't upload the file. Use a JPG, PNG, WebP, or HEIC photo up to 10 MB, or an MP4 or MOV video up to 90 seconds, and try again."
     },
     "recommendation": {
       "name": "Place name",
@@ -1390,13 +1394,24 @@
       "error_transcription_failed": "We couldn't transcribe the voice note. Type your answer.",
       "error_unsupported_type": "We couldn't read the voice note. Type your answer.",
       "error_ai_unavailable": "The assistant isn't available right now. Try again in a few minutes.",
-      "lockedTopic": "This answer is a code. Keep it in a locked field, not in the text.",
+      "lockedTopic": "This answer is a code: save it here as a protected field. It is stored encrypted, and guests only see it with their stay link.",
       "openLocked": "Open locked fields",
       "skip": "Skip",
       "finish": "Finish",
       "noMore": "Done! There are no more questions for now.",
       "finished": "You finished the interview.",
-      "busyElsewhere": "Someone else has an interview open on this guide. You can continue it here."
+      "busyElsewhere": "Someone else has an interview open on this guide. You can continue it here.",
+      "codeAgent": "The owner or an admin saves codes. You can skip this question.",
+      "codeLabel": "Name (optional)",
+      "codeValue": "Code",
+      "codeShow": "Show",
+      "codeHide": "Hide",
+      "codeHint": "We'll ask you to confirm your identity before saving it.",
+      "codeSave": "Save and continue",
+      "codeSaved": "We saved the code as a protected field.",
+      "stalled": "This is taking longer than usual. You can go on with another question: the text will show up in the guide when it's ready.",
+      "attachHint": "Add the photo or video here: it goes to this section of the guide.",
+      "attached": "We added the file to {section}."
     },
     "translations": {
       "link": "Translations",

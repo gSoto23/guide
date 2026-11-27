@@ -183,6 +183,18 @@ describe("the interview answer job (T081)", () => {
     });
   });
 
+  it("never marks a photo topic covered with text (feature 020 FR-006)", async () => {
+    const llm = new FakeLlmAdapter();
+    const turnId = await textTurn(
+      "arrival.access_photo",
+      "la caja de llaves está a la derecha de la puerta, junto al medidor",
+    );
+    expect(await runInterviewAnswer(deps(llm), { workspaceId, turnId })).toBe("drafted");
+    const items = await itemsOf(turnId);
+    expect(items.length).toBeGreaterThan(0);
+    for (const item of items) expect(item.topics).not.toContain("arrival.access_photo");
+  });
+
   it("transcribes a voice note, deletes it, and keeps the code out of the model (AC-SEC-004, FR-037)", async () => {
     const llm = new FakeLlmAdapter();
     const speech = new FakeSpeechToText({ defaultText: "La puerta se abre con el código 4821." });

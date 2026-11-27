@@ -452,8 +452,10 @@ export interface InterviewQuestion {
   topicId: string;
   sectionKind: (typeof DEFAULT_SECTION_KIND_VALUES)[number];
   followUp?: string;
-  /** A code topic: the portal opens the locked-field form instead of asking (FR-038). */
+  /** A code topic: the portal shows the protected-field form in the question (FR-038, 020 FR-001). */
   opensLockedField?: (typeof LOCKED_FIELD_KIND_VALUES)[number];
+  /** Feature 020 FR-006: a photo or video question; the portal shows an attach button. */
+  asksMedia?: ("image" | "video")[];
 }
 
 export interface InterviewTurnView {

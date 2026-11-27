@@ -12,6 +12,8 @@ import { guideItem, interviewSession, interviewTurn, upload } from "@guidesk/db"
 import {
   JOB_QUEUES,
   guideTopic,
+  isMediaOnlyTopic,
+  topicMediaKinds,
   redactRestrictedValues,
   type InterviewAnswerJob,
 } from "@guidesk/domain";
@@ -54,7 +56,10 @@ export class InterviewsService {
     return this.config.integrations.flags.guideInterviewVoice;
   }
 
-  /** Starts an interview, or returns the caller's active one (FR-034, FR-035). */
+  /**
+   * Starts an interview, or returns the caller's active one (FR-034, FR-035), scoped to the section
+   * asked for now, or to the whole guide when none (feature 020 FR-005).
+   */
   async start(
     caller: Caller,
     workspaceId: string,
@@ -63,7 +68,7 @@ export class InterviewsService {
   ): Promise<InterviewView> {
     const ctx = await this.views.load(workspaceId, propertyId);
     const existing = await this.activeOf(ctx);
-    if (existing) return this.resume(ctx, caller, existing);
+    if (existing) return this.resume(ctx, caller, existing, body.sectionKind ?? null);
     // Two starts at once (a double tap, two tabs) meet on the one-active-session index.
     const [created] = await this.tx
       .insert(interviewSession)
@@ -78,7 +83,7 @@ export class InterviewsService {
     if (created) return this.viewOf(ctx, created);
     const winner = await this.activeOf(ctx);
     if (!winner) throw new ApiProblem(409, "interview_active");
-    return this.resume(ctx, caller, winner);
+    return this.resume(ctx, caller, winner, body.sectionKind ?? null);
   }
 
   private async activeOf(ctx: GuideContext): Promise<SessionRow | undefined> {
@@ -95,13 +100,20 @@ export class InterviewsService {
     ctx: GuideContext,
     caller: Caller,
     active: SessionRow,
+    scope: SessionRow["scopeSectionKind"],
   ): Promise<InterviewView> {
     if (active.startedBy !== caller.userId) {
       throw new ApiProblem(409, "interview_active", undefined, {
         details: { sessionId: active.id },
       });
     }
-    return this.viewOf(ctx, active);
+    if (active.scopeSectionKind === scope) return this.viewOf(ctx, active);
+    const [rescoped] = await this.tx
+      .update(interviewSession)
+      .set({ scopeSectionKind: scope })
+      .where(eq(interviewSession.id, active.id))
+      .returning();
+    return this.viewOf(ctx, rescoped ?? active);
   }
 
   async get(workspaceId: string, propertyId: string, sessionId: string): Promise<InterviewView> {
@@ -287,6 +299,8 @@ export class InterviewsService {
    * The next question (R11): the heaviest missing topic in scope that was not skipped and has no
    * answer in flight. A topic gets its catalog question first; after one answer, the model's
    * follow-up if it gave one; after that the interview moves on, even if the topic stays missing.
+   * A failed answer counts as answered, so a question never comes back in a loop (feature 020
+   * FR-003). Media-only topics say so, so the portal offers an attach button (FR-006).
    */
   nextQuestion(ctx: GuideContext, session: SessionRow, turns: TurnRow[]): InterviewQuestion | null {
     if (session.status !== "active") return null;
@@ -300,6 +314,7 @@ export class InterviewsService {
       const own = turns.filter((turn) => turn.topicId === topic.id);
       if (own.some((turn) => IN_FLIGHT.has(turn.status))) continue;
       const done = own.filter((turn) => turn.status === "done");
+      const answered = own.filter((turn) => turn.status === "done" || turn.status === "failed");
       if (topic.lockedFieldKind) {
         return {
           topicId: topic.id,
@@ -307,8 +322,9 @@ export class InterviewsService {
           opensLockedField: topic.lockedFieldKind as InterviewQuestion["opensLockedField"],
         };
       }
-      if (done.length === 0) return { topicId: topic.id, sectionKind: topic.section };
-      const followUp = done.length === 1 ? done[0]!.followUp : null;
+      const media = isMediaOnlyTopic(topic) ? { asksMedia: topicMediaKinds(topic) } : {};
+      if (answered.length === 0) return { topicId: topic.id, sectionKind: topic.section, ...media };
+      const followUp = answered.length === 1 && done.length === 1 ? done[0]!.followUp : null;
       if (followUp) return { topicId: topic.id, sectionKind: topic.section, followUp };
     }
     return null;

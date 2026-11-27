@@ -3,21 +3,41 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
-import type { GuideView, InterviewTurnView, InterviewView, ItemView } from "@guidesk/contracts";
+import type {
+  GuideView,
+  InterviewTurnView,
+  InterviewView,
+  ItemView,
+  MediaView,
+} from "@guidesk/contracts";
 import { GuideDocumentView, type RenderableDocument } from "@guidesk/ui";
 import { problemOf, problemString } from "@/lib/properties-api";
 import { useWorkspace } from "@/lib/use-workspace";
+import { InterviewCodeField } from "./interview-code-field";
+import { MediaUploadButton } from "./media-upload";
 import { VoiceRecorder } from "./voice-recorder";
 
 const POLL_MS = 2_000;
 const GIVE_UP_MS = 60_000;
 const IN_FLIGHT = new Set(["queued", "transcribing", "drafting"]);
+/** Every kind a code typed in an answer could be (feature 020 FR-002). */
+const ALL_CODE_KINDS = [
+  "door_code",
+  "gate_code",
+  "lockbox_code",
+  "alarm_code",
+  "wifi_password",
+  "other",
+] as const;
+/** The arrival code question accepts any entry code (feature 020, US1 scenario 2). */
+const ENTRY_CODE_KINDS = ["door_code", "gate_code", "lockbox_code"] as const;
 
 /**
  * The AI interview (screen H-14, feature 003 US4): one catalog question at a time for the topics
  * guests ask about most (FR-034), answered by text or voice note (FR-035, FR-037), drafted into
- * unreviewed items the host reviews; code topics open the locked fields instead (FR-038). The
- * session resumes on any device.
+ * unreviewed items the host reviews. Code topics save a protected field right in the
+ * question, and photo or video topics offer an attach button (feature 020); the interview never
+ * loops on a failed answer or freezes on a slow one. The session resumes on any device.
  */
 export function Interview({
   locale,
@@ -41,6 +61,9 @@ export function Interview({
   const [turnSection, setTurnSection] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
+  /** The wait for a draft ended without a result: the controls unlock (feature 020 FR-004). */
+  const [stalled, setStalled] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const base = `/properties/${propertyId}/guide`;
   const sessionRef = useRef<string | null>(null);
 
@@ -76,6 +99,7 @@ export function Interview({
       if (!workspace || !sessionRef.current) return;
       let current = started;
       setTurn(current);
+      setStalled(false);
       const begin = Date.now();
       while (IN_FLIGHT.has(current.status) && Date.now() - begin < GIVE_UP_MS) {
         await new Promise((resolve) => setTimeout(resolve, POLL_MS));
@@ -84,6 +108,7 @@ export function Interview({
         );
         setTurn(current);
       }
+      if (IN_FLIGHT.has(current.status)) setStalled(true);
       if (current.status === "done" && current.itemIds.length > 0) {
         const guide = await workspace.api.get<GuideView>(base);
         const ids = new Set(current.itemIds);
@@ -102,7 +127,7 @@ export function Interview({
 
   const question = view.question;
   const sectionName = (kind: string) => t(`sections.${kind}`);
-  const inFlight = turn !== null && IN_FLIGHT.has(turn.status);
+  const inFlight = turn !== null && IN_FLIGHT.has(turn.status) && !stalled;
 
   function failure(caught: unknown) {
     const code = problemOf(caught)?.code ?? "internal_error";
@@ -114,6 +139,7 @@ export function Interview({
     if (!workspace || !question || !text.trim()) return;
     setSending(true);
     setError(null);
+    setNotice(null);
     setDrafted([]);
     setTurnSection(question.sectionKind);
     try {
@@ -159,9 +185,38 @@ export function Interview({
     }
   }
 
+  /** A file attached to a photo or video question goes to the end of its section (FR-006). */
+  async function attach(media: MediaView) {
+    if (!workspace || !question) return;
+    const guide = await workspace.api.get<GuideView>(base);
+    const section = guide.sections.find((entry) => entry.kind === question.sectionKind);
+    if (!section) return;
+    await workspace.api.post(
+      `${base}/sections/${section.id}/items`,
+      {
+        revision: section.revision,
+        kind: media.kind,
+        language: guide.mainLanguage,
+        mediaId: media.id,
+      },
+      { idempotent: true },
+    );
+    setTurn(null);
+    setNotice(t("interview.attached", { section: sectionName(question.sectionKind) }));
+    await refresh();
+  }
+
+  /** A protected field saved from the interview: the next question follows (FR-001, FR-002). */
+  async function codeSaved() {
+    setTurn(null);
+    setNotice(t("interview.codeSaved"));
+    await refresh();
+  }
+
   async function skip() {
     if (!workspace || !question) return;
     setError(null);
+    setNotice(null);
     setTurn(null);
     setDrafted([]);
     try {
@@ -203,6 +258,11 @@ export function Interview({
           {error}
         </p>
       )}
+      {notice && (
+        <p className="alert alert-success" role="status">
+          {notice}
+        </p>
+      )}
 
       {turn && (
         <div className="card" aria-live="polite">
@@ -211,12 +271,23 @@ export function Interview({
             <p className="working">{t("interview.transcribing")}</p>
           )}
           {turn.status === "drafting" && <p className="working">{t("interview.drafting")}</p>}
+          {stalled && <p className="alert alert-info">{t("interview.stalled")}</p>}
           {turn.status === "failed" && (
             <p className="alert alert-error">
               {t(`interview.error_${turn.errorCode ?? "not_understood"}`)}
             </p>
           )}
-          {redacted && <p className="alert alert-info">{t("interview.redacted")}</p>}
+          {redacted && (
+            <>
+              <p className="alert alert-info">{t("interview.redacted")}</p>
+              <InterviewCodeField
+                propertyId={propertyId}
+                sectionKind={turnSection || "arrival"}
+                kinds={[...ALL_CODE_KINDS]}
+                onSaved={codeSaved}
+              />
+            </>
+          )}
           {turn.transcript && (
             <>
               <h2>{t("interview.transcript")}</h2>
@@ -257,9 +328,33 @@ export function Interview({
             <>
               <h2>{t(`topics.${question.topicId}.name`)}</h2>
               <p>{t("interview.lockedTopic")}</p>
-              <Link className="button button-primary" href={`/${locale}${base}/locked-fields`}>
-                🔒 {t("interview.openLocked")}
-              </Link>
+              <InterviewCodeField
+                key={question.topicId}
+                propertyId={propertyId}
+                sectionKind={question.sectionKind}
+                kinds={
+                  question.topicId === "arrival.access_code"
+                    ? [...ENTRY_CODE_KINDS]
+                    : [question.opensLockedField]
+                }
+                onSaved={codeSaved}
+              />
+            </>
+          ) : question.asksMedia ? (
+            <>
+              <h2>{t(`topics.${question.topicId}.question`)}</h2>
+              <p className="field-hint">{t("interview.attachHint")}</p>
+              <div className="actions">
+                {question.asksMedia.map((kind) => (
+                  <MediaUploadButton
+                    key={kind}
+                    propertyId={propertyId}
+                    kind={kind}
+                    label={kind === "image" ? t("editor.addPhoto") : t("editor.addVideo")}
+                    onReady={attach}
+                  />
+                ))}
+              </div>
             </>
           ) : (
             <form onSubmit={sendText}>

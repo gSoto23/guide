@@ -243,6 +243,48 @@ describe("the interview (US4)", () => {
     }
   });
 
+  it("follows the section asked for when it resumes, and the whole guide without one (020 FR-005)", async () => {
+    const scoped = (
+      await start(team.owner, { sectionKind: "local_recommendations" })
+    ).json() as InterviewView;
+    expect(scoped.sessionId).toBe(sessionId);
+    expect(scoped.scopeSectionKind).toBe("local_recommendations");
+    if (scoped.question) expect(scoped.question.sectionKind).toBe("local_recommendations");
+    const whole = (await start()).json() as InterviewView;
+    expect(whole.scopeSectionKind).toBeNull();
+  });
+
+  it("moves on after a failed answer instead of asking again (020 FR-003)", async () => {
+    const view = (await start()).json() as InterviewView;
+    const asked = view.question!;
+    expect(asked.opensLockedField).toBeUndefined();
+    await db.query(
+      `INSERT INTO interview_turn (workspace_id, session_id, topic_id, answer_kind, status, error_code, created_by)
+       VALUES ($1, $2, $3, 'text', 'failed', 'not_understood', $4)`,
+      [team.workspaceId, sessionId, asked.topicId, team.owner.userId],
+    );
+    const after = (
+      await wsApi(ctx, team.owner, "GET", team.workspaceId, path(`/${sessionId}`))
+    ).json() as InterviewView;
+    expect(after.question?.topicId).not.toBe(asked.topicId);
+  });
+
+  it("marks photo and video questions so the portal offers an attach button (020 FR-006)", async () => {
+    let view = (await start(team.owner, { sectionKind: "arrival" })).json() as InterviewView;
+    for (let guard = 0; guard < 20 && view.question && !view.question.asksMedia; guard += 1) {
+      view = (
+        await wsApi(ctx, team.owner, "POST", team.workspaceId, path(`/${sessionId}/skip`), {
+          topicId: view.question.topicId,
+        })
+      ).json() as InterviewView;
+    }
+    expect(view.question).toMatchObject({
+      topicId: "arrival.access_photo",
+      asksMedia: ["image", "video"],
+    });
+    await start();
+  });
+
   it("finishes; a finished session asks nothing and accepts no answers", async () => {
     const finished = await wsApi(
       ctx,

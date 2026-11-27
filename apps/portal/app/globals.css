@@ -3799,3 +3799,20 @@ a.lang-option:hover {
   cursor: pointer;
   color: var(--color-link);
 }
+
+/* Feature 020: the protected-field form inside the interview. */
+.interview-code {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 30rem;
+  margin-top: 0.75rem;
+}
+.code-input {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.code-input input {
+  flex: 1 1 auto;
+  min-width: 0;
+}

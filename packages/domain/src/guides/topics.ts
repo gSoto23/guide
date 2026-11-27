@@ -537,6 +537,23 @@ export function isGuideTopicId(id: string): boolean {
   return TOPIC_IDS.has(id);
 }
 
+/**
+ * A topic covered only by photos or videos (feature 020 FR-006): the interview offers an attach
+ * button, and text drafted for it never marks it covered.
+ */
+export function isMediaOnlyTopic(topic: Pick<GuideTopic, "rules">): boolean {
+  return topic.rules.length > 0 && topic.rules.every((rule) => rule.kind === "media");
+}
+
+/** The media kinds a media-only topic accepts. */
+export function topicMediaKinds(topic: Pick<GuideTopic, "rules">): ("image" | "video")[] {
+  const kinds = new Set<"image" | "video">();
+  for (const rule of topic.rules) {
+    if (rule.kind === "media") for (const kind of rule.mediaKinds) kinds.add(kind as "image" | "video");
+  }
+  return [...kinds];
+}
+
 export function guideTopic(id: string): GuideTopic | undefined {
   return GUIDE_TOPICS.find((topic) => topic.id === id);
 }
