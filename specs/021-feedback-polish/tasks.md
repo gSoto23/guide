@@ -1,0 +1,16 @@
+# Tasks: Staging Feedback Polish (Phase 2)
+
+- [X] T001 Texts in Spanish and English: listing intro and example, next-step action, "Synced from {channel}", calendar how-to, "Code" with show/hide, assistant levels, examples and inheritance, search hint, rename; "Amenidades" in Spanish (packages/i18n/messages/es.json, en.json, guest.es.json, packages/i18n/public/es.json)
+- [X] T002 [P] FR-001 example placeholder in the paste box (apps/portal/components/properties/listing-input.tsx)
+- [X] T003 [P] FR-002 prefill the onboarding country for new properties (apps/portal/components/properties/core-facts-form.tsx)
+- [X] T004 [P] FR-004 per-platform calendar link steps (apps/portal/components/properties/calendar-feeds.tsx, apps/portal/app/globals.css)
+- [X] T005 [P] FR-005 feed stays name their channel (apps/portal/components/properties/stays-list.tsx)
+- [X] T006 [P] FR-006 next-step button to the guide (apps/portal/components/properties/property-facts.tsx)
+- [X] T007 Tests first: `mergeDraftPieces` joins same-topic pieces, keeps groups apart, drops repeats, splits past the limit (packages/domain/test/guides/drafting.test.ts)
+- [X] T008 FR-007 `mergeDraftPieces` and its use in both draft jobs; fake answer split by paragraph (packages/domain/src/guides/drafting.ts, apps/worker/src/jobs/guide-draft.ts, apps/worker/src/jobs/interview-answer.ts, packages/integrations/src/llm/fake.adapter.ts)
+- [X] T009 FR-007 worker test: an answer split in two pieces saves one item (apps/worker/test/integration/interview-answer.test.ts)
+- [X] T010 [P] FR-008 grouped item buttons (apps/portal/components/guide/item-card.tsx, apps/portal/app/globals.css)
+- [X] T011 [P] FR-009 code inputs with show/hide (apps/portal/components/guide/locked-fields.tsx)
+- [X] T012 [P] FR-010 rename shared content (apps/portal/components/shared-content/block-editor.tsx)
+- [X] T013 [P] FR-011 filter the property list as the host types (apps/portal/components/properties/property-list.tsx)
+- [X] T014 Typecheck, lint, format, unit and integration tests, bundle check; PR, merge, staging check

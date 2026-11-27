@@ -636,6 +636,34 @@ input[type="radio"] {
   gap: calc(var(--space) / 2);
 }
 
+/* Guide item actions (feature 021 FR-008): approve first, the order arrows together, and delete
+   apart at the end so it is not pressed by mistake. */
+.item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space) / 2);
+  align-items: center;
+}
+.item-actions-order {
+  display: inline-flex;
+  gap: calc(var(--space) / 4);
+}
+.item-actions-delete {
+  margin-inline-start: auto;
+}
+
+/* Where to find a calendar link (feature 021 FR-004). */
+.how-to {
+  margin-block: calc(var(--space) / 2);
+}
+.how-to summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.how-to ul {
+  padding-inline-start: 1.25rem;
+}
+
 /* Calendars and stays (US3). */
 .feed-hint {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;

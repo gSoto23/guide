@@ -2,7 +2,13 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
-import type { AddressCheck, TimeZoneOption, TimeZoneSuggestion } from "@guidesk/contracts";
+import type {
+  AddressCheck,
+  OnboardingResponse,
+  TimeZoneOption,
+  TimeZoneSuggestion,
+} from "@guidesk/contracts";
+import { apiFetch } from "@/lib/api";
 import { countryOptions } from "@/lib/countries";
 import type { WorkspaceApi } from "@/lib/properties-api";
 import { useOnline, useSessionDraft } from "@/lib/use-online";
@@ -120,6 +126,27 @@ export function CoreFactsForm(props: CoreFactsFormProps) {
   useEffect(() => {
     latest.current = value;
   });
+
+  // A new property starts in the country the host gave when signing up (feature 021 FR-002),
+  // unless a draft, an extraction, or the host already chose one.
+  const prefillCountry = !propertyId && !props.initial?.country;
+  useEffect(() => {
+    if (!prefillCountry) return;
+    let cancelled = false;
+    apiFetch<OnboardingResponse>("/api/v1/me/onboarding").then(
+      (onboarding) => {
+        const country = onboarding.country;
+        if (cancelled || !country || latest.current.country) return;
+        if (!countries.some((option) => option.code === country)) return;
+        setValue({ ...latest.current, country, timeZone: "" });
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+    // Asked once per form; the latest values come from the ref.
+  }, [prefillCountry]);
 
   // Time zone: suggested from country and city with Guidesk's own data (FR-002).
   useEffect(() => {

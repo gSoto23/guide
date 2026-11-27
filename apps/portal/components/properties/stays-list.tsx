@@ -121,9 +121,11 @@ export function StaysList(props: StaysListProps) {
     }
   }
 
-  const sourceLabel = (stay: Stay) =>
-    stay.source === "manual" ? t("source.manual") : t(`source.${stay.source}`);
   const channelLabel = (stay: Stay) => (stay.channel === "Direct" ? t("direct") : stay.channel);
+  const sourceLabel = (stay: Stay) =>
+    stay.source === "ical"
+      ? t("source.ical", { channel: channelLabel(stay) })
+      : t(`source.${stay.source}`);
 
   return (
     <section aria-labelledby="stays-title">

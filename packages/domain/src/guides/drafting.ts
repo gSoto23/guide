@@ -131,3 +131,54 @@ export function replaceWithLockedField(
   for (const block of copy.content) visit(block);
   return replaced ? copy : null;
 }
+
+/** The longest merged draft piece; content past it stays in a separate item (feature 021 FR-007). */
+export const MERGED_PIECE_MAX = 4000;
+
+function paragraphsOf(text: string): string[] {
+  return text
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter((paragraph) => paragraph.length > 0);
+}
+
+function sameText(text: string): string {
+  return text.toLocaleLowerCase().replace(/\s+/g, " ").trim();
+}
+
+/**
+ * Joins drafted pieces that share their main topic (and group, such as the section) into one
+ * piece, so one answer or one part of a listing does not become several small items (feature 021
+ * FR-007). Pieces keep the order they first appear in, repeated paragraphs are dropped, pieces
+ * without a topic stay apart, and a join that would pass MERGED_PIECE_MAX starts a new piece.
+ */
+export function mergeDraftPieces<T extends { text: string; topics: readonly string[] }>(
+  pieces: readonly T[],
+  groupOf: (piece: T) => string = () => "",
+): T[] {
+  const merged: T[] = [];
+  const openIndex = new Map<string, number>();
+  for (const piece of pieces) {
+    const topic = piece.topics[0];
+    if (!topic) {
+      merged.push(piece);
+      continue;
+    }
+    const key = `${groupOf(piece)}\u0000${topic}`;
+    const index = openIndex.get(key);
+    const current = index === undefined ? undefined : merged[index];
+    if (index !== undefined && current) {
+      const topics = [...new Set([...current.topics, ...piece.topics])];
+      const known = new Set(paragraphsOf(current.text).map(sameText));
+      const added = paragraphsOf(piece.text).filter((paragraph) => !known.has(sameText(paragraph)));
+      const text = [current.text, ...added].join("\n\n");
+      if (text.length <= MERGED_PIECE_MAX) {
+        merged[index] = { ...current, text, topics };
+        continue;
+      }
+    }
+    openIndex.set(key, merged.length);
+    merged.push(piece);
+  }
+  return merged;
+}

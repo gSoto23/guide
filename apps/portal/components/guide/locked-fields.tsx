@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import type { LockedFieldView, RevealedValue, RevealHistory } from "@guidesk/contracts";
 import { LOCKED_FIELD_KINDS } from "@/lib/guide/values";
@@ -21,6 +21,55 @@ function isManaged(field: LockedFieldView): field is ManagedField {
  * published guide uses the field (FR-024), and the reveal history. Agents see only that fields
  * exist (FR-063).
  */
+/**
+ * A code or password typed hidden, with a button to check what was typed (feature 021 FR-009).
+ * It never reveals a saved value: that still needs the identity check.
+ */
+function SecretInput({
+  id,
+  name,
+  value,
+  onChange,
+  required = false,
+}: {
+  id: string;
+  name?: string;
+  value?: string;
+  onChange?: (value: string) => void;
+  required?: boolean;
+}) {
+  const t = useTranslations("guide.locked");
+  const [visible, setVisible] = useState(false);
+  return (
+    <span className="code-input">
+      <input
+        id={id}
+        name={name}
+        type={visible ? "text" : "password"}
+        autoComplete="off"
+        spellCheck={false}
+        maxLength={200}
+        required={required}
+        {...(onChange
+          ? {
+              value: value ?? "",
+              onChange: (event: ChangeEvent<HTMLInputElement>) => onChange(event.target.value),
+            }
+          : {})}
+      />
+      <button
+        type="button"
+        className="button button-secondary"
+        aria-pressed={visible}
+        aria-controls={id}
+        onClick={() => setVisible(!visible)}
+      >
+        {visible ? t("hide") : t("show")}
+      </button>
+    </span>
+  );
+}
+
 export function LockedFields({ locale, propertyId }: { locale: string; propertyId: string }) {
   const t = useTranslations("guide.locked");
   const guide = useTranslations("guide");
@@ -216,14 +265,7 @@ export function LockedFields({ locale, propertyId }: { locale: string; propertyI
                     }}
                   >
                     <label htmlFor={`value-${field.id}`}>{t("value")}</label>
-                    <input
-                      id={`value-${field.id}`}
-                      name="value"
-                      type="password"
-                      autoComplete="off"
-                      maxLength={200}
-                      required
-                    />
+                    <SecretInput id={`value-${field.id}`} name="value" required />
                     <button type="submit" className="button button-primary">
                       {t("save")}
                     </button>
@@ -295,14 +337,7 @@ export function LockedFields({ locale, propertyId }: { locale: string; propertyI
               onChange={(event) => setLabel(event.target.value)}
             />
             <label htmlFor="locked-value">{t("value")}</label>
-            <input
-              id="locked-value"
-              type="password"
-              autoComplete="off"
-              value={value}
-              maxLength={200}
-              onChange={(event) => setValue(event.target.value)}
-            />
+            <SecretInput id="locked-value" value={value} onChange={setValue} />
             <div className="actions">
               <button type="submit" className="button button-primary">
                 {t("save")}

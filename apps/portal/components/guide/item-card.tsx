@@ -316,7 +316,7 @@ export function ItemCard({
       )}
 
       {editable && (
-        <div className="content-actions">
+        <div className="item-actions">
           {!item.reviewed && (
             <button
               type="button"
@@ -326,27 +326,31 @@ export function ItemCard({
               {t("editor.approve")}
             </button>
           )}
+          <span className="item-actions-order">
+            <button
+              type="button"
+              className="button button-secondary"
+              disabled={first}
+              onClick={() => void actions.move(item, -1)}
+              aria-label={t("editor.moveUp")}
+              title={t("editor.moveUp")}
+            >
+              ↑
+            </button>
+            <button
+              type="button"
+              className="button button-secondary"
+              disabled={last}
+              onClick={() => void actions.move(item, 1)}
+              aria-label={t("editor.moveDown")}
+              title={t("editor.moveDown")}
+            >
+              ↓
+            </button>
+          </span>
           <button
             type="button"
-            className="button button-secondary"
-            disabled={first}
-            onClick={() => void actions.move(item, -1)}
-            aria-label={t("editor.moveUp")}
-          >
-            ↑
-          </button>
-          <button
-            type="button"
-            className="button button-secondary"
-            disabled={last}
-            onClick={() => void actions.move(item, 1)}
-            aria-label={t("editor.moveDown")}
-          >
-            ↓
-          </button>
-          <button
-            type="button"
-            className="button button-danger"
+            className="button button-danger item-actions-delete"
             onClick={() => {
               if (window.confirm(t("editor.deleteConfirm"))) void actions.remove(item);
             }}

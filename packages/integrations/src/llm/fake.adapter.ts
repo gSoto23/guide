@@ -195,17 +195,17 @@ export class FakeLlmAdapter implements LlmPort {
     options: LlmCallOptions = {},
   ): Promise<LlmCallResult<DraftAnswer>> {
     return this.guide("draftAnswer", input, options, () => {
-      const text = input.answer.trim();
+      // One piece per paragraph, as the model sometimes returns (feature 021 FR-007).
+      const paragraphs = input.answer
+        .split(/\n\s*\n/)
+        .map((paragraph) => paragraph.trim())
+        .filter((paragraph) => paragraph.length > 0);
       return {
-        items: text
-          ? [
-              {
-                sectionKind: input.sectionKind,
-                text: text.charAt(0).toUpperCase() + text.slice(1),
-                topics: [input.topicId],
-              },
-            ]
-          : [],
+        items: paragraphs.map((text) => ({
+          sectionKind: input.sectionKind,
+          text: text.charAt(0).toUpperCase() + text.slice(1),
+          topics: [input.topicId],
+        })),
         followUp: null,
       };
     });

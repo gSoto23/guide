@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import type {
   GuideDocument,
@@ -39,6 +39,7 @@ export function BlockEditor({ locale, blockId }: { locale: string; blockId: stri
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [conflict, setConflict] = useState(false);
+  const [renaming, setRenaming] = useState<string | null>(null);
   const base = `/shared-blocks/${blockId}`;
 
   const load = useCallback(async () => {
@@ -104,6 +105,20 @@ export function BlockEditor({ locale, blockId }: { locale: string; blockId: stri
     }
   }
 
+  // Renaming keeps the content and where it is used (feature 021 FR-010).
+  async function rename(event: FormEvent) {
+    event.preventDefault();
+    if (!block || renaming === null || !renaming.trim()) return;
+    const name = renaming.trim();
+    const saved = await run(() =>
+      workspace!.api.patch<SharedBlockView>(base, { revision: block.revision, name }),
+    );
+    if (saved) {
+      setRenaming(null);
+      setNotice(t("renamed"));
+    }
+  }
+
   async function removeBlock() {
     if (!window.confirm(t("deleteConfirm"))) return;
     const removed = await run(() => workspace!.api.delete(base));
@@ -123,6 +138,47 @@ export function BlockEditor({ locale, blockId }: { locale: string; blockId: stri
         </Link>
       </p>
       <h1 id="block-title">{block.name}</h1>
+      {block.canEdit && workspace.canManage ? (
+        renaming === null ? (
+          <p>
+            <button
+              type="button"
+              className="button button-secondary"
+              disabled={busy}
+              onClick={() => setRenaming(block.name)}
+            >
+              {t("rename")}
+            </button>
+          </p>
+        ) : (
+          <form className="card" onSubmit={(event) => void rename(event)}>
+            <label htmlFor="block-name">{t("nameLabel")}</label>
+            <input
+              id="block-name"
+              value={renaming}
+              maxLength={80}
+              required
+              onChange={(event) => setRenaming(event.target.value)}
+            />
+            <div className="actions">
+              <button
+                type="submit"
+                className="button button-primary"
+                disabled={busy || !renaming.trim()}
+              >
+                {t("save")}
+              </button>
+              <button
+                type="button"
+                className="button button-secondary"
+                onClick={() => setRenaming(null)}
+              >
+                {t("cancel")}
+              </button>
+            </div>
+          </form>
+        )
+      ) : null}
       <p className="muted">
         {guide(`sections.${block.sectionKind}`)} ·{" "}
         <span className={block.status === "published" ? "badge badge-ready" : "badge"}>

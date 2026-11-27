@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   docFromList,
   docFromPlainText,
+  MERGED_PIECE_MAX,
+  mergeDraftPieces,
   replaceWithLockedField,
   stripUnknownLinks,
 } from "../../src/guides/drafting.js";
@@ -74,5 +76,58 @@ describe("replaceWithLockedField (FR-023)", () => {
     const doc = docFromPlainText("El código es 4821.");
     expect(replaceWithLockedField(doc, 0, "9999", FIELD)).toBeNull();
     expect(replaceWithLockedField(doc, 3, "4821", FIELD)).toBeNull();
+  });
+});
+
+/** Feature 021 FR-007: one topic in one section becomes one drafted item. */
+describe("mergeDraftPieces", () => {
+  it("joins pieces on the same main topic and keeps their order", () => {
+    const merged = mergeDraftPieces([
+      { text: "Check-in desde las 15:00.", topics: ["arrival.check_in_time"] },
+      { text: "Wi-Fi: CasaBrisa_5G.", topics: ["stay.wifi"] },
+      {
+        text: "Llega por la calle principal.",
+        topics: ["arrival.check_in_time", "arrival.directions"],
+      },
+    ]);
+    expect(merged).toEqual([
+      {
+        text: "Check-in desde las 15:00.\n\nLlega por la calle principal.",
+        topics: ["arrival.check_in_time", "arrival.directions"],
+      },
+      { text: "Wi-Fi: CasaBrisa_5G.", topics: ["stay.wifi"] },
+    ]);
+  });
+
+  it("keeps groups apart, drops repeated paragraphs, and leaves untagged pieces alone", () => {
+    const merged = mergeDraftPieces(
+      [
+        { section: "arrival", text: "Portón azul.", topics: ["arrival.directions"] },
+        { section: "arrival", text: "portón   AZUL.", topics: ["arrival.directions"] },
+        { section: "area", text: "Portón azul.", topics: ["arrival.directions"] },
+        { section: "area", text: "Sin tema.", topics: [] },
+        { section: "area", text: "Otro sin tema.", topics: [] },
+      ],
+      (piece) => piece.section,
+    );
+    expect(merged.map((piece) => [piece.section, piece.text])).toEqual([
+      ["arrival", "Portón azul."],
+      ["area", "Portón azul."],
+      ["area", "Sin tema."],
+      ["area", "Otro sin tema."],
+    ]);
+  });
+
+  it("starts a new piece when the join would be too long", () => {
+    const long = "a".repeat(MERGED_PIECE_MAX - 10);
+    const merged = mergeDraftPieces([
+      { text: long, topics: ["stay.rules"] },
+      { text: "Silencio después de las 22:00.", topics: ["stay.rules"] },
+      { text: "No fumar.", topics: ["stay.rules"] },
+    ]);
+    expect(merged.map((piece) => piece.text)).toEqual([
+      long,
+      "Silencio después de las 22:00.\n\nNo fumar.",
+    ]);
   });
 });

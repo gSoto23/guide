@@ -183,6 +183,19 @@ describe("the interview answer job (T081)", () => {
     });
   });
 
+  it("drafts one item when the model splits an answer on one topic (feature 021 FR-007)", async () => {
+    const llm = new FakeLlmAdapter();
+    const turnId = await textTurn(
+      "appliances.ac_heating",
+      "el control está en la mesa de noche\n\nel modo frío es el copo de nieve",
+    );
+    expect(await runInterviewAnswer(deps(llm), { workspaceId, turnId })).toBe("drafted");
+    const items = await itemsOf(turnId);
+    expect(items).toHaveLength(1);
+    expect(items[0]!.text).toContain("El control está en la mesa de noche");
+    expect(items[0]!.text).toContain("El modo frío es el copo de nieve");
+  });
+
   it("never marks a photo topic covered with text (feature 020 FR-006)", async () => {
     const llm = new FakeLlmAdapter();
     const turnId = await textTurn(

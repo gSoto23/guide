@@ -222,7 +222,8 @@
         "published": "Published guide · {score}%",
         "published_changes": "Published guide · unpublished changes",
         "unpublished": "Unpublished guide"
-      }
+      },
+      "searchHint": "Type to filter by name."
     },
     "limits": {
       "usage": "{used} of {limit} properties",
@@ -299,12 +300,13 @@
       "confirm": "Confirm details",
       "confirmed": "Details confirmed.",
       "stillMissing": "Some details are still missing.",
-      "duplicate": "Duplicate"
+      "duplicate": "Duplicate",
+      "nextStepAction": "Build my guide"
     },
     "listing": {
       "title": "Paste your listing",
-      "intro": "Paste the text of your Airbnb, Booking.com, or Vrbo listing, or add screenshots of it. AI sorts it into a title, description, house rules, and amenities for you to review.",
-      "introTextOnly": "Paste the text of your Airbnb, Booking.com, or Vrbo listing. AI sorts it into a title, description, house rules, and amenities for you to review.",
+      "intro": "Copy and paste everything from your listing or your current guide here: description, rules, check-in, Wi-Fi name, and amenities. You can also add screenshots. Guidesk sorts it into the right sections for you to review.",
+      "introTextOnly": "Copy and paste everything from your listing or your current guide here: description, rules, check-in, Wi-Fi name, and amenities. Guidesk sorts it into the right sections for you to review.",
       "noCodes": "Don't include door codes, Wi-Fi passwords, or other codes. You'll add them to the guide's locked fields, which only guests with a booking can open.",
       "noCodesShort": "Hide codes and passwords before you take them.",
       "textLabel": "Listing text",
@@ -371,7 +373,8 @@
       "edit": "Edit",
       "approve": "Approve",
       "save": "Save",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "placeholder": "Example:\nCasa Brisa · Beachfront house in Sámara for 6 guests.\nCheck-in from 3 pm, checkout at 11 am. Follow the main road and come in through the blue gate.\nWi-Fi: CasaBrisa_5G (the password goes separately, in a protected field).\nRules: no smoking, small pets allowed, quiet after 10 pm.\nAmenities: pool, air conditioning, grill, parking for 2 cars."
     },
     "calendars": {
       "title": "Calendars",
@@ -424,7 +427,15 @@
       "remove": "Remove calendar",
       "removeConfirm": "Remove the {channel} calendar? Its stays stop updating. Stays you added by hand stay.",
       "removeYes": "Remove",
-      "removed": "{channel} calendar removed."
+      "removed": "{channel} calendar removed.",
+      "howTo": {
+        "title": "Where do I find the calendar link?",
+        "airbnb": "Airbnb: in the app or website, Calendar → pick the listing → Availability → Connect calendars → Export calendar. Copy the link that ends in .ics.",
+        "booking": "Booking.com: in the extranet, Rates & availability → Sync calendars → Export calendar. Copy the link.",
+        "vrbo": "Vrbo: in your account, Calendar → Import and export → Export calendar. Copy the link.",
+        "other": "Other platforms or your PMS: look for \"export calendar\" or \"iCal\" in the calendar settings. The link starts with https and usually ends in .ics.",
+        "sync": "Guidesk reads your calendars every 3 hours. Use \"Refresh now\" if you just got a booking."
+      }
     },
     "stays": {
       "title": "Upcoming stays",
@@ -436,7 +447,7 @@
       "times": "Check-in {checkIn} · Checkout {checkout}",
       "guests": "{count, plural, one {# guest} other {# guests}}",
       "source": {
-        "ical": "From a calendar",
+        "ical": "Synced from {channel}",
         "pms": "From your PMS",
         "manual": "Added by hand"
       },
@@ -1283,7 +1294,7 @@
       "add": "Add a locked field",
       "kind": "Kind",
       "label": "Name",
-      "value": "Value",
+      "value": "Code",
       "save": "Save",
       "set": "Set on {date}",
       "notSet": "No value",
@@ -1306,7 +1317,8 @@
       "move": "Move to a locked field",
       "fromPms": "From {provider}",
       "historyGuest": "A guest saw “{label}” with their stay link on {date}",
-      "historyExport": "{name} copied a stay message with the codes on {date}"
+      "historyExport": "{name} copied a stay message with the codes on {date}",
+      "show": "Show"
     },
     "publish": {
       "open": "Publish",
@@ -1526,7 +1538,10 @@
     "none": "None",
     "changed": "The block changed. Reload to see the latest.",
     "reload": "Reload",
-    "textPlaceholder": "Write the shared content…"
+    "textPlaceholder": "Write the shared content…",
+    "rename": "Rename",
+    "nameLabel": "Content name",
+    "renamed": "Name saved."
   },
   "share": {
     "link": "Share",
@@ -1760,7 +1775,7 @@
     "title": "Chat assistant",
     "workspaceBody": "These settings apply to every property in the workspace, except those with their own.",
     "propertyTitle": "This property's assistant",
-    "propertyBody": "Each group can use the workspace settings or have its own for this property.",
+    "propertyBody": "This property uses the whole workspace's settings. To change a group here only, untick \"Use the workspace settings\" in that group. Only the owner and admins can change them.",
     "follow": "Use the workspace settings",
     "autonomy": {
       "title": "When it answers on its own",
@@ -1778,14 +1793,14 @@
         "other": "Other questions"
       },
       "levels": {
-        "draft": "I review each reply",
-        "auto": "Answer when it's in the guide",
-        "full_auto": "Answer and ask on its own"
+        "draft": "Suggests the reply",
+        "auto": "Answers if it's in the guide",
+        "full_auto": "Answers and asks follow-up questions"
       },
       "help": {
-        "draft": "Your team approves every reply before it reaches the guest.",
-        "auto": "Sends only replies that cite the guide and pass the checks; the rest arrives as a draft.",
-        "full_auto": "It can also ask one clarifying question and give general information about the destination, always with the checks."
+        "draft": "The assistant writes the reply and your team approves it before it reaches the guest. Example: \"Is there a dryer?\" lands in your inbox with a draft ready.",
+        "auto": "Answers on its own only when the answer is in your guide and passes the checks; anything else arrives as a draft. Example: \"What time is checkout?\" gets your guide's time automatically.",
+        "full_auto": "It can also ask for a detail to clarify or share general information about the area, always with the checks. Example: for \"where do I park?\" it may ask \"are you arriving by car or motorbike?\"."
       },
       "locked": "Always go to your team",
       "lockedItems": {
