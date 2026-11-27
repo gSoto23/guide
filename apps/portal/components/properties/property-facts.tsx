@@ -10,6 +10,7 @@ import { useWorkspace } from "@/lib/use-workspace";
 import type { CoreFactsBody } from "./core-facts-form";
 import { bookmark, chat, Icon, qr } from "@guidesk/ui";
 import { PropertyCoverCard } from "./property-cover";
+import { SetupSteps } from "./setup-steps";
 
 // Loaded after the facts, so the page stays inside its JavaScript budget (plan, Performance).
 // Shown only while editing, so it isn't part of the page's first download (Performance Budget).
@@ -272,7 +273,10 @@ export function PropertyFacts({
               {message.text}
             </p>
           ) : null}
-          <h2>{t("detail.facts")}</h2>
+          {workspace.canManage && !removed ? (
+            <SetupSteps locale={locale} property={property} />
+          ) : null}
+          <h2 id="property-facts">{t("detail.facts")}</h2>
           {editing ? (
             <>
               <CoreFactsForm
@@ -366,20 +370,6 @@ export function PropertyFacts({
             timeZone={property.timeZone}
             version={staysVersion}
           />
-          <div className="card">
-            <strong>{t("detail.nextStep")}</strong>
-            <p className="muted">{t("detail.nextStepSoon")}</p>
-            {!removed ? (
-              <p>
-                <Link
-                  className="button button-primary"
-                  href={`/${locale}/properties/${propertyId}/guide`}
-                >
-                  {t("detail.nextStepAction")}
-                </Link>
-              </p>
-            ) : null}
-          </div>
           {workspace.canManage && !removed ? (
             removing ? (
               <RemovePropertyDialog

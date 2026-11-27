@@ -644,12 +644,165 @@ input[type="radio"] {
   gap: calc(var(--space) / 2);
   align-items: center;
 }
-.item-actions-order {
-  display: inline-flex;
-  gap: calc(var(--space) / 4);
+/* Drag handle (feature 022 FR-007): drag with a mouse or a finger, or focus it and use the
+   arrow keys. The page does not scroll while a finger drags it. */
+.content-item-head:has(.drag-handle) {
+  justify-content: flex-start;
+}
+.content-item-head:has(.drag-handle) > .muted {
+  margin-inline-start: auto;
+}
+.content-item-head .drag-handle {
+  display: inline-grid;
+  flex: 0 0 44px;
+  place-items: center;
+  width: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: grab;
+  touch-action: none;
+}
+.drag-handle[aria-pressed="true"] {
+  cursor: grabbing;
+}
+.drag-handle:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.content-item.is-dragging {
+  position: relative;
+  z-index: 3;
+  outline: 2px solid var(--color-focus);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.16);
 }
 .item-actions-delete {
   margin-inline-start: auto;
+}
+
+/* Interview v2 (feature 022 FR-001, FR-002): one question per screen, the main button fixed at
+   the bottom within thumb reach, above the phone's bottom bar. */
+.interview-question {
+  display: grid;
+  gap: var(--space-3);
+}
+.interview-progress {
+  display: grid;
+  gap: var(--space-1);
+}
+.interview-progress progress {
+  width: 100%;
+  height: 6px;
+  accent-color: var(--color-primary);
+}
+.interview-question textarea {
+  width: 100%;
+}
+.interview-progress-head {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0;
+}
+.interview-bar {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin-inline: calc(var(--space) * -1);
+  padding: var(--space-3) var(--space);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+/* Fixed only when it holds the main button (text answers); code and photo questions keep their
+   own save or attach button in the flow, so nothing hides behind the bar. */
+.interview-bar.is-fixed {
+  position: sticky;
+  bottom: calc(var(--bottom-bar-height) + env(safe-area-inset-bottom));
+  z-index: 2;
+}
+/* One row within thumb reach: the main button takes the room, the others their label. */
+.interview-bar .button {
+  flex: 0 0 auto;
+  width: auto;
+}
+.interview-bar .button-primary {
+  flex: 1 1 auto;
+}
+.interview-answers ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.interview-answer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  align-items: baseline;
+  padding-block: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+.interview-answer > span:first-child {
+  font-weight: 600;
+}
+.interview-answer-failed > span.muted {
+  color: var(--color-danger);
+}
+@media (min-width: 1024px) {
+  .interview-bar.is-fixed {
+    bottom: 0;
+  }
+}
+
+/* Setup steps (feature 022 FR-008): numbered cards, done ones checked, the next one marked. */
+.setup-step-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+.setup-step {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+}
+.setup-step.is-next {
+  border-color: var(--color-primary);
+}
+.setup-step-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--color-surface);
+  font-weight: 700;
+}
+.setup-step.is-done .setup-step-mark {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+.setup-step-body > p {
+  margin: 0 0 var(--space-1);
+}
+@media (min-width: 1024px) {
+  .setup-step-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* Where to find a calendar link (feature 021 FR-004). */

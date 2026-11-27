@@ -283,6 +283,7 @@ export class InterviewsService {
     return {
       id: row.id,
       topicId: row.topicId,
+      sectionKind: guideTopic(row.topicId)?.section ?? null,
       answerKind: row.answerKind,
       status: row.status,
       errorCode: row.errorCode,
@@ -300,12 +301,14 @@ export class InterviewsService {
    * answer in flight. A topic gets its catalog question first; after one answer, the model's
    * follow-up if it gave one; after that the interview moves on, even if the topic stays missing.
    * A failed answer counts as answered, so a question never comes back in a loop (feature 020
-   * FR-003). Media-only topics say so, so the portal offers an attach button (FR-006).
+   * FR-003). Media-only topics say so, so the portal offers an attach button (FR-006). All the
+   * questions still to ask come back in order, for the count of questions left (feature 022).
    */
-  nextQuestion(ctx: GuideContext, session: SessionRow, turns: TurnRow[]): InterviewQuestion | null {
-    if (session.status !== "active") return null;
+  pendingQuestions(ctx: GuideContext, session: SessionRow, turns: TurnRow[]): InterviewQuestion[] {
+    if (session.status !== "active") return [];
     const missing = this.views.completeness(ctx).missing;
     const skipped = new Set(session.skippedTopics);
+    const questions: InterviewQuestion[] = [];
     for (const entry of missing) {
       if (session.scopeSectionKind && entry.sectionKind !== session.scopeSectionKind) continue;
       if (skipped.has(entry.topicId)) continue;
@@ -316,18 +319,22 @@ export class InterviewsService {
       const done = own.filter((turn) => turn.status === "done");
       const answered = own.filter((turn) => turn.status === "done" || turn.status === "failed");
       if (topic.lockedFieldKind) {
-        return {
+        questions.push({
           topicId: topic.id,
           sectionKind: topic.section,
           opensLockedField: topic.lockedFieldKind as InterviewQuestion["opensLockedField"],
-        };
+        });
+        continue;
       }
       const media = isMediaOnlyTopic(topic) ? { asksMedia: topicMediaKinds(topic) } : {};
-      if (answered.length === 0) return { topicId: topic.id, sectionKind: topic.section, ...media };
+      if (answered.length === 0) {
+        questions.push({ topicId: topic.id, sectionKind: topic.section, ...media });
+        continue;
+      }
       const followUp = answered.length === 1 && done.length === 1 ? done[0]!.followUp : null;
-      if (followUp) return { topicId: topic.id, sectionKind: topic.section, followUp };
+      if (followUp) questions.push({ topicId: topic.id, sectionKind: topic.section, followUp });
     }
-    return null;
+    return questions;
   }
 
   private async viewOf(ctx: GuideContext, session: SessionRow): Promise<InterviewView> {
@@ -337,11 +344,13 @@ export class InterviewsService {
       .where(eq(interviewTurn.sessionId, session.id))
       .orderBy(asc(interviewTurn.createdAt));
     const items = await this.itemIdsOf(turns.map((turn) => turn.id));
+    const questions = this.pendingQuestions(ctx, session, turns);
     return {
       sessionId: session.id,
       status: session.status,
       scopeSectionKind: session.scopeSectionKind,
-      question: this.nextQuestion(ctx, session, turns),
+      question: questions[0] ?? null,
+      remaining: questions.length,
       turns: turns.map((turn) => this.turnView(turn, items.get(turn.id) ?? [])),
       voiceEnabled: this.voiceEnabled,
     };

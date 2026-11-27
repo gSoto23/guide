@@ -64,6 +64,20 @@ describe("blank property (US1, FR-001 to FR-006)", () => {
     });
   });
 
+  it("includes the guide's status and completeness in the detail (022 FR-009)", async () => {
+    const created = (
+      await wsApi(ctx, team.owner, "POST", team.workspaceId, "/properties", {
+        ...READY_FACTS,
+        name: "Casa Colibrí",
+      })
+    ).json() as PropertyDetail;
+    const detail = (
+      await wsApi(ctx, team.owner, "GET", team.workspaceId, `/properties/${created.id}`)
+    ).json() as PropertyDetail;
+    expect(detail.guide).toMatchObject({ status: "draft", hasUnpublishedChanges: false });
+    expect(detail.guide?.completeness).toBeGreaterThanOrEqual(0);
+  });
+
   it("refuses a missing fact with field errors and creates nothing", async () => {
     const { timeZone: _omitted, ...withoutZone } = READY_FACTS;
     const response = await wsApi(ctx, team.owner, "POST", team.workspaceId, "/properties", {

@@ -18,6 +18,7 @@ import { sectionTitle } from "@/lib/guide/labels";
 import { problemOf } from "@/lib/properties-api";
 import { useOnline } from "@/lib/use-online";
 import { useStepUp } from "@/lib/use-step-up";
+import { inOrder, useSortable } from "@/lib/use-sortable";
 import { useWorkspace } from "@/lib/use-workspace";
 import { ItemCard, type ItemActions } from "./item-card";
 
@@ -166,25 +167,42 @@ export function SectionEditor({
           workspace!.api.delete<SectionWriteResult>(`${base}/items/${item.id}`, { revision }),
         );
       },
-      move: async (item, direction) => {
-        await write((revision) => {
-          const own = (section?.items ?? [])
-            .filter((candidate) => candidate.sharedBlockId === null)
-            .map((candidate) => candidate.id);
-          const index = own.indexOf(item.id);
-          const target = index + direction;
-          if (index < 0 || target < 0 || target >= own.length)
-            return Promise.reject(new Error("out of range"));
-          [own[index], own[target]] = [own[target]!, own[index]!];
-          return workspace!.api.put<SectionWriteResult>(
-            `${base}/sections/${sectionId}/items/order`,
-            { revision, itemIds: own },
-          );
-        });
-      },
     }),
-    [write, workspace, base, language, section, sectionId, withStepUp, load],
+    [write, workspace, base, language, withStepUp, load],
   );
+
+  // Feature 022 FR-007: the section's own items are ordered by dragging or with the keyboard;
+  // shared content keeps its places. One write per drop.
+  const ownIds = useMemo(
+    () =>
+      (section?.items ?? [])
+        .filter((candidate) => candidate.sharedBlockId === null)
+        .map((candidate) => candidate.id),
+    [section],
+  );
+  const reorder = useCallback(
+    (itemIds: string[]) =>
+      write((revision) =>
+        workspace!.api.put<SectionWriteResult>(`${base}/sections/${sectionId}/items/order`, {
+          revision,
+          itemIds,
+        }),
+      ),
+    [write, workspace, base, sectionId],
+  );
+  const sortMessages = useMemo(
+    () => ({
+      movedTo: (position: number, total: number) => t("editor.movedTo", { position, total }),
+      cancelled: t("editor.moveCancelled"),
+    }),
+    [t],
+  );
+  const sortable = useSortable({
+    ids: ownIds,
+    disabled: !view?.canEdit || !online,
+    onMove: reorder,
+    messages: sortMessages,
+  });
 
   if (!workspace) return null;
   if (failed) return <p className="alert alert-error">{errors("internal_error")}</p>;
@@ -274,22 +292,39 @@ export function SectionEditor({
       {section.items.length === 0 ? (
         <p>{t("editor.empty")}</p>
       ) : (
-        <ul className="content-list" aria-label={title}>
-          {section.items.map((item: ItemView) => (
-            <ItemCard
-              key={item.id}
-              item={item}
-              view={view}
-              language={language}
-              canEdit={canEdit}
-              first={own[0]?.id === item.id}
-              last={own.at(-1)?.id === item.id}
-              locale={locale}
-              propertyId={propertyId}
-              actions={actions}
-            />
-          ))}
-        </ul>
+        <>
+          {canEdit && own.length > 1 && (
+            <p id="drag-help" className="visually-hidden">
+              {t("editor.dragHelp")}
+            </p>
+          )}
+          <p className="visually-hidden" aria-live="polite">
+            {sortable.announcement}
+          </p>
+          <ul className="content-list" aria-label={title}>
+            {inOrder(section.items, (item) => item.sharedBlockId === null, sortable.order).map(
+              (item: ItemView) => (
+                <ItemCard
+                  key={item.id}
+                  item={item}
+                  view={view}
+                  language={language}
+                  canEdit={canEdit}
+                  locale={locale}
+                  propertyId={propertyId}
+                  actions={actions}
+                  {...(own.length > 1 && item.sharedBlockId === null
+                    ? {
+                        handle: sortable.handleProps(item.id),
+                        itemRef: sortable.itemRef(item.id),
+                        dragging: sortable.draggingId === item.id,
+                      }
+                    : {})}
+                />
+              ),
+            )}
+          </ul>
+        </>
       )}
 
       {canEdit &&

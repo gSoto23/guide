@@ -20,6 +20,7 @@ import {
 } from "@/lib/guide/autosave";
 import { sourceLabel } from "@/lib/guide/labels";
 import { useOnline } from "@/lib/use-online";
+import type { SortableHandleProps } from "@/lib/use-sortable";
 import type { TextItemEditorProps } from "./text-item-editor";
 
 // Opened only when adding or editing a recommendation (Performance Budget, 150 KB per route).
@@ -43,7 +44,6 @@ export interface ItemActions {
   /** Moves a block that looks like a code into a new locked field (FR-019, US2). */
   moveToLocked: (item: ItemView, warning: CodeWarning) => Promise<boolean>;
   remove: (item: ItemView) => Promise<void>;
-  move: (item: ItemView, direction: -1 | 1) => Promise<void>;
 }
 
 function docOf(text: string): GuideDocument {
@@ -73,21 +73,24 @@ export function ItemCard({
   view,
   language,
   canEdit,
-  first,
-  last,
   locale,
   propertyId,
   actions,
+  handle,
+  itemRef,
+  dragging = false,
 }: {
   item: ItemView;
   view: GuideView;
   language: "es" | "en";
   canEdit: boolean;
-  first: boolean;
-  last: boolean;
   locale: string;
   propertyId: string;
   actions: ItemActions;
+  /** Feature 022 FR-007: the drag handle's behavior, for items the host can move. */
+  handle?: SortableHandleProps;
+  itemRef?: (element: HTMLLIElement | null) => void;
+  dragging?: boolean;
 }) {
   const t = useTranslations("guide");
   const online = useOnline();
@@ -153,9 +156,23 @@ export function ItemCard({
       }[item.factKey]
     : null;
 
+  const handleName = plainOf(text?.doc).trim().slice(0, 40) || label || item.kind;
+
   return (
-    <li className="content-item">
+    <li className={dragging ? "content-item is-dragging" : "content-item"} ref={itemRef}>
       <div className="content-item-head">
+        {editable && handle && (
+          <button
+            type="button"
+            className="drag-handle"
+            aria-label={t("editor.dragHandle", { name: handleName })}
+            aria-describedby="drag-help"
+            title={t("editor.dragHelp")}
+            {...handle}
+          >
+            <span aria-hidden="true">⠿</span>
+          </button>
+        )}
         {label && (
           <span className={item.reviewed ? "badge badge-ready" : "badge badge-warning"}>
             {item.reviewed ? label : `${label} · ${t("editor.needsReview")}`}
@@ -326,28 +343,6 @@ export function ItemCard({
               {t("editor.approve")}
             </button>
           )}
-          <span className="item-actions-order">
-            <button
-              type="button"
-              className="button button-secondary"
-              disabled={first}
-              onClick={() => void actions.move(item, -1)}
-              aria-label={t("editor.moveUp")}
-              title={t("editor.moveUp")}
-            >
-              ↑
-            </button>
-            <button
-              type="button"
-              className="button button-secondary"
-              disabled={last}
-              onClick={() => void actions.move(item, 1)}
-              aria-label={t("editor.moveDown")}
-              title={t("editor.moveDown")}
-            >
-              ↓
-            </button>
-          </span>
           <button
             type="button"
             className="button button-danger item-actions-delete"
