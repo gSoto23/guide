@@ -414,7 +414,24 @@
         ['Recargas de respuestas (no de tokens), válidas 12 meses, usadas después de las del mes. Sin recarga, la IA se pausa hasta el día 1; el servicio nunca se suspende.', 'Reply top-ups (not tokens), valid 12 months, used after the month\'s replies. Without one, the AI pauses until the 1st; the service is never suspended.'],
         ['En el piloto el fundador da las recargas sin costo, con su herramienta (también en AWS); la compra en el portal llega con el cobro a anfitriones.', 'In the pilot the founder grants top-ups at no charge with the founder tool (also on AWS); buying them in the portal comes with host billing.'],
         ['El reporte del piloto separa las respuestas del mes y de recargas, con el costo de IA por respuesta, para fijar el precio de las recargas.', 'The pilot report splits replies from the month and from top-ups, with the AI cost per reply, to set the top-up price.']
-      ], screens: 'H-32', adr: 'Spec 011' }
+      ], screens: 'H-32', adr: 'Spec 011' },
+    '020': { t: ['Entrevista y fotos sin trabas', 'Interview and photos without snags'],
+      lead: ['La primera ronda de feedback de socios en staging, fase 1: lo que bloqueaba armar la guía.', 'The first round of partner feedback on staging, phase 1: what blocked building the guide.'],
+      items: [
+        ['La causa de las fotos que no subían: la política de seguridad del portal bloqueaba el envío directo al almacenamiento. Corregida y verificada en staging.', 'Why photos did not upload: the portal security policy blocked the direct send to storage. Fixed and checked on staging.'],
+        ['Las preguntas de claves (puerta, portón, caja, alarma, Wi-Fi) guardan la clave cifrada ahí mismo, con la verificación de identidad.', 'Code questions (door, gate, lockbox, alarm, Wi-Fi) save the code encrypted right there, with the identity check.'],
+        ['Las preguntas de fotos y videos tienen botón para adjuntar; un texto ya no las da por respondidas.', 'Photo and video questions have an attach button; text no longer counts as their answer.'],
+        ['Sin ciclos ni bloqueos: una respuesta fallida avanza, los controles se liberan a los 60 segundos y la entrevista sigue la sección pedida.', 'No loops or freezes: a failed answer moves on, the controls free up after 60 seconds, and the interview follows the requested section.']
+      ], screens: 'H-07 · entrevista/interview', adr: 'Spec 020' },
+    '021': { t: ['Pulido con el feedback', 'Feedback polish'],
+      lead: ['Fase 2 del feedback: detalles que confundían al empezar, en el editor y en el asistente.', 'Phase 2 of the feedback: details that confused people when starting, in the editor, and in the assistant.'],
+      items: [
+        ['«Pega tu anuncio» pide todo lo que tiene el anuncio y muestra un ejemplo; la propiedad nueva empieza con el país del registro; «Amenidades».', '"Paste your listing" asks for everything the listing has and shows an example; a new property starts with the sign-up country; "Amenities".'],
+        ['Pasos para copiar el enlace del calendario en Airbnb, Booking.com y Vrbo; las estadías dicen «Sincronizado desde Airbnb»; botón «Armar mi guía».', 'Steps to copy the calendar link on Airbnb, Booking.com, and Vrbo; stays say "Synced from Airbnb"; a "Build my guide" button.'],
+        ['Lo que la IA redacta sobre un mismo tema queda en un solo bloque, sin párrafos repetidos.', 'What the AI drafts on one topic stays in a single item, with no repeated paragraphs.'],
+        ['Botones ordenados (aprobar, mover, y eliminar aparte), «Clave» con mostrar u ocultar al escribir y contenido compartido con nombre editable.', 'Ordered buttons (approve, move, and delete apart), "Code" with show or hide while typing, and shared content with an editable name.'],
+        ['Búsqueda de propiedades al teclear y niveles del asistente con nombres claros y un ejemplo cada uno.', 'Property search as you type and assistant levels with clear names and one example each.']
+      ], screens: 'H-04 · H-06 · H-08 · H-30', adr: 'Spec 021' }
   };
 
   $$('#featureFilter .chip').forEach(function (chip) {
