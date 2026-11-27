@@ -11,6 +11,7 @@ import {
 import {
   docFromList,
   docFromPlainText,
+  mergeDraftPieces,
   docPlainText,
   GUIDE_TOPICS,
   JOB_QUEUES,
@@ -258,13 +259,19 @@ export async function runGuideDraft(
     DefaultSectionKind,
     { doc: SegDocument; topics: string[]; itemLanguage: "es" | "en" }[]
   >();
-  for (const item of result.result.items) {
-    if (target && item.sectionKind !== target.kind) continue;
+  const pieces = result.result.items
+    .filter((item) => !target || item.sectionKind === target.kind)
     // A second line of defense: the detector runs on the output too (research R5).
-    const text = redactRestrictedValues(stripUnknownLinks(item.text, redacted)).text.trim();
-    if (!text) continue;
+    .map((item) => ({
+      sectionKind: item.sectionKind,
+      topics: item.topics,
+      text: redactRestrictedValues(stripUnknownLinks(item.text, redacted)).text.trim(),
+    }))
+    .filter((item) => item.text);
+  // Feature 021 FR-007: pieces on the same topic of a section become one item.
+  for (const item of mergeDraftPieces(pieces, (piece) => piece.sectionKind)) {
     const list = grouped.get(item.sectionKind) ?? [];
-    list.push({ doc: docFromPlainText(text), topics: item.topics, itemLanguage: language });
+    list.push({ doc: docFromPlainText(item.text), topics: item.topics, itemLanguage: language });
     grouped.set(item.sectionKind, list);
   }
   for (const [kind, docs] of grouped) await addItems(kind, docs, descriptionSource);

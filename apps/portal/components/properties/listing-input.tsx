@@ -93,6 +93,7 @@ export function ListingInput(props: ListingInputProps) {
         id={ids.text}
         rows={10}
         maxLength={MAX_TEXT}
+        placeholder={t("placeholder")}
         value={props.text}
         aria-describedby={`${ids.warning} ${ids.counter}`}
         onChange={(event) => props.onTextChange(event.target.value)}

@@ -338,6 +338,16 @@ function AddFeedForm({
       <span className="field-hint" id={ids.help}>
         {t("urlHelp")}
       </span>
+      <details className="how-to">
+        <summary>{t("howTo.title")}</summary>
+        <ul>
+          <li>{t("howTo.airbnb")}</li>
+          <li>{t("howTo.booking")}</li>
+          <li>{t("howTo.vrbo")}</li>
+          <li>{t("howTo.other")}</li>
+        </ul>
+        <p className="muted">{t("howTo.sync")}</p>
+      </details>
       <label htmlFor={ids.channel}>{t("channel")}</label>
       <select
         id={ids.channel}

@@ -222,7 +222,8 @@
         "published": "Guía publicada · {score} %",
         "published_changes": "Guía publicada · cambios sin publicar",
         "unpublished": "Guía no publicada"
-      }
+      },
+      "searchHint": "Escribe para filtrar por nombre."
     },
     "limits": {
       "usage": "{used} de {limit} propiedades",
@@ -299,12 +300,13 @@
       "confirm": "Confirmar datos",
       "confirmed": "Datos confirmados.",
       "stillMissing": "Todavía faltan algunos datos.",
-      "duplicate": "Duplicar"
+      "duplicate": "Duplicar",
+      "nextStepAction": "Armar mi guía"
     },
     "listing": {
       "title": "Pegar tu anuncio",
-      "intro": "Pega el texto de tu anuncio de Airbnb, Booking.com o Vrbo, o agrega capturas. La IA lo ordena en título, descripción, reglas de la casa y comodidades para que lo revises.",
-      "introTextOnly": "Pega el texto de tu anuncio de Airbnb, Booking.com o Vrbo. La IA lo ordena en título, descripción, reglas de la casa y comodidades para que lo revises.",
+      "intro": "Copia y pega aquí toda la información de tu anuncio o de tu guía actual: descripción, reglas, check-in, nombre del Wi-Fi y amenidades. También puedes agregar capturas. Guidesk la ordena en las secciones correctas para que la revises.",
+      "introTextOnly": "Copia y pega aquí toda la información de tu anuncio o de tu guía actual: descripción, reglas, check-in, nombre del Wi-Fi y amenidades. Guidesk la ordena en las secciones correctas para que la revises.",
       "noCodes": "No incluyas códigos de puerta, contraseñas de Wi-Fi ni otros códigos. Los agregarás en los campos protegidos de la guía, que solo abren los huéspedes con reserva.",
       "noCodesShort": "Oculta códigos y contraseñas antes de tomarlas.",
       "textLabel": "Texto del anuncio",
@@ -351,7 +353,7 @@
         "title": "Título",
         "description": "Descripción",
         "house_rules": "Reglas de la casa",
-        "amenities": "Comodidades"
+        "amenities": "Amenidades"
       },
       "amenitiesHint": "Una por línea.",
       "fromListing": "De tu anuncio",
@@ -371,7 +373,8 @@
       "edit": "Editar",
       "approve": "Aprobar",
       "save": "Guardar",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "placeholder": "Ejemplo:\nCasa Brisa · Casa frente al mar en Sámara para 6 personas.\nCheck-in desde las 15:00, salida a las 11:00. Llegas por la calle principal y entras por el portón azul.\nWi-Fi: CasaBrisa_5G (la contraseña va aparte, en un campo protegido).\nNormas: no fumar, mascotas pequeñas permitidas, silencio después de las 22:00.\nAmenidades: piscina, aire acondicionado, parrilla, parqueo para 2 carros."
     },
     "calendars": {
       "title": "Calendarios",
@@ -424,7 +427,15 @@
       "remove": "Quitar calendario",
       "removeConfirm": "¿Quitar el calendario de {channel}? Sus estadías dejan de actualizarse. Las estadías que agregaste a mano se quedan.",
       "removeYes": "Quitar",
-      "removed": "Calendario de {channel} quitado."
+      "removed": "Calendario de {channel} quitado.",
+      "howTo": {
+        "title": "¿Dónde encuentro el enlace del calendario?",
+        "airbnb": "Airbnb: en la app o la web, Calendario → elige el anuncio → Disponibilidad → Conectar calendarios → Exportar calendario. Copia el enlace que termina en .ics.",
+        "booking": "Booking.com: en la extranet, Tarifas y disponibilidad → Sincronizar calendarios → Exportar calendario. Copia el enlace.",
+        "vrbo": "Vrbo: en tu cuenta, Calendario → Importar y exportar → Exportar calendario. Copia el enlace.",
+        "other": "Otras plataformas o tu PMS: busca \"exportar calendario\" o \"iCal\" en la configuración del calendario. El enlace empieza con https y suele terminar en .ics.",
+        "sync": "Guidesk lee tus calendarios cada 3 horas. Usa \"Actualizar ahora\" si acabas de recibir una reserva."
+      }
     },
     "stays": {
       "title": "Próximas estadías",
@@ -436,7 +447,7 @@
       "times": "Entrada {checkIn} · Salida {checkout}",
       "guests": "{count, plural, one {# huésped} other {# huéspedes}}",
       "source": {
-        "ical": "De un calendario",
+        "ical": "Sincronizado desde {channel}",
         "pms": "De tu PMS",
         "manual": "Agregada a mano"
       },
@@ -970,7 +981,7 @@
       "wifi": "Wi-Fi",
       "house_rules": "Normas de la casa",
       "appliances": "Electrodomésticos y cómo usarlos",
-      "amenities": "Comodidades",
+      "amenities": "Amenidades",
       "parking": "Parqueo y transporte",
       "local_recommendations": "Recomendaciones locales",
       "emergency": "Emergencias y contactos",
@@ -1097,8 +1108,8 @@
         "question": "¿Puedes agregar una foto o un video corto de cómo usar un aparato?"
       },
       "amenities.list": {
-        "name": "Lista de comodidades",
-        "question": "¿Qué comodidades tiene la propiedad?"
+        "name": "Lista de amenidades",
+        "question": "¿Qué amenidades tiene la propiedad?"
       },
       "amenities.pool_beach": {
         "name": "Piscina y playa",
@@ -1283,7 +1294,7 @@
       "add": "Agregar campo protegido",
       "kind": "Tipo",
       "label": "Nombre",
-      "value": "Valor",
+      "value": "Clave",
       "save": "Guardar",
       "set": "Configurado el {date}",
       "notSet": "Sin valor",
@@ -1306,7 +1317,8 @@
       "move": "Mover a un campo protegido",
       "fromPms": "De {provider}",
       "historyGuest": "Un huésped vio «{label}» con su enlace de estadía el {date}",
-      "historyExport": "{name} copió un mensaje de estadía con los códigos el {date}"
+      "historyExport": "{name} copió un mensaje de estadía con los códigos el {date}",
+      "show": "Mostrar"
     },
     "publish": {
       "open": "Publicar",
@@ -1526,7 +1538,10 @@
     "none": "Ninguna",
     "changed": "El bloque cambió. Recarga para ver lo último.",
     "reload": "Recargar",
-    "textPlaceholder": "Escribe el contenido compartido…"
+    "textPlaceholder": "Escribe el contenido compartido…",
+    "rename": "Cambiar nombre",
+    "nameLabel": "Nombre del contenido",
+    "renamed": "Nombre guardado."
   },
   "share": {
     "link": "Compartir",
@@ -1760,7 +1775,7 @@
     "title": "Asistente del chat",
     "workspaceBody": "Estos ajustes se aplican a todas las propiedades del espacio, salvo a las que tengan los suyos.",
     "propertyTitle": "Asistente de esta propiedad",
-    "propertyBody": "Cada grupo puede usar los ajustes del espacio o tener los suyos en esta propiedad.",
+    "propertyBody": "Esta propiedad usa los ajustes de todo el espacio. Para cambiar un grupo solo aquí, desmarca \"Usar los ajustes del espacio\" en ese grupo. Solo el dueño y los administradores pueden cambiarlos.",
     "follow": "Usar los ajustes del espacio",
     "autonomy": {
       "title": "Cuándo responde solo",
@@ -1770,7 +1785,7 @@
         "wifi": "Wi-Fi",
         "house_rules": "Normas de la casa",
         "appliances": "Electrodomésticos",
-        "amenities": "Comodidades",
+        "amenities": "Amenidades",
         "parking": "Parqueo",
         "local_recommendations": "Recomendaciones locales",
         "emergency": "Información de seguridad",
@@ -1778,14 +1793,14 @@
         "other": "Otras preguntas"
       },
       "levels": {
-        "draft": "Reviso cada respuesta",
+        "draft": "Te sugiere la respuesta",
         "auto": "Responde si está en la guía",
-        "full_auto": "Responde y pregunta solo"
+        "full_auto": "Responde y hace preguntas de seguimiento"
       },
       "help": {
-        "draft": "Tu equipo aprueba cada respuesta antes de que llegue al huésped.",
-        "auto": "Envía solo respuestas que citan la guía y pasan las revisiones; lo demás llega como borrador.",
-        "full_auto": "Además puede hacer una pregunta para aclarar y dar información general del destino, siempre con las revisiones."
+        "draft": "El asistente escribe la respuesta y tu equipo la aprueba antes de que llegue al huésped. Ejemplo: \"¿Hay secadora?\" llega a tu bandeja con un borrador listo.",
+        "auto": "Responde solo cuando la respuesta está en tu guía y pasa las revisiones; lo demás llega como borrador. Ejemplo: \"¿A qué hora es la salida?\" se responde sola con la hora de tu guía.",
+        "full_auto": "Además puede pedir un dato para aclarar o dar información general del destino, siempre con las revisiones. Ejemplo: ante \"¿dónde parqueo?\" puede preguntar \"¿llegas en carro o en moto?\"."
       },
       "locked": "Siempre pasan a tu equipo",
       "lockedItems": {
@@ -2282,7 +2297,7 @@
       "wifi": "Wi-Fi",
       "house_rules": "Reglas de la casa",
       "appliances": "Electrodomésticos",
-      "amenities": "Comodidades",
+      "amenities": "Amenidades",
       "parking": "Parqueo",
       "local_recommendations": "Recomendaciones locales",
       "emergency": "Emergencias",

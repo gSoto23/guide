@@ -53,6 +53,14 @@ export function PropertyListView({ locale }: { locale: string }) {
     return () => controller.abort();
   }, [workspace, search, version]);
 
+  // The list filters as the host types (feature 021 FR-011), a moment after the last key.
+  useEffect(() => {
+    const next = query.trim();
+    if (next === search) return;
+    const timer = setTimeout(() => setSearch(next), 300);
+    return () => clearTimeout(timer);
+  }, [query, search]);
+
   async function loadMore() {
     if (!workspace || !cursor) return;
     const params = new URLSearchParams({ cursor, ...(search ? { query: search } : {}) });
@@ -147,8 +155,16 @@ export function PropertyListView({ locale }: { locale: string }) {
       <form role="search" className="list-search" onSubmit={submit}>
         <label>
           {t("list.searchLabel")}
-          <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} />
+          <input
+            type="search"
+            value={query}
+            aria-describedby="property-search-hint"
+            onChange={(event) => setQuery(event.target.value)}
+          />
         </label>
+        <span className="field-hint" id="property-search-hint">
+          {t("list.searchHint")}
+        </span>
       </form>
       {items.length === 0 ? (
         <p className="muted">{t("list.noMatches", { query: search })}</p>

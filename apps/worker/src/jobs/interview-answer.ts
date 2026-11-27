@@ -13,6 +13,7 @@ import {
 } from "@guidesk/db";
 import {
   docFromPlainText,
+  mergeDraftPieces,
   docPlainText,
   GUIDE_TOPICS,
   guideTopic,
@@ -212,7 +213,7 @@ export async function runInterviewAnswer(
   if (result.outcome !== "ok" || !result.result) return finishWith("not_understood");
 
   // A second line of defense: the detector runs on the output too (research R5).
-  const drafted = result.result.items
+  const pieces = result.result.items
     .map((item) => ({
       text: redactRestrictedValues(stripUnknownLinks(item.text, answer)).text.trim(),
       // Feature 020 FR-006: text never covers a photo or video topic.
@@ -221,6 +222,8 @@ export async function runInterviewAnswer(
       ),
     }))
     .filter((item) => item.text);
+  // Feature 021 FR-007: one answer on one topic becomes one item, not several small ones.
+  const drafted = mergeDraftPieces(pieces);
   if (drafted.length === 0) return finishWith("not_understood");
   const followUp = result.result.followUp
     ? redactRestrictedValues(result.result.followUp).text.trim().slice(0, 300) || null

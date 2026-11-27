@@ -369,6 +369,16 @@ export function PropertyFacts({
           <div className="card">
             <strong>{t("detail.nextStep")}</strong>
             <p className="muted">{t("detail.nextStepSoon")}</p>
+            {!removed ? (
+              <p>
+                <Link
+                  className="button button-primary"
+                  href={`/${locale}/properties/${propertyId}/guide`}
+                >
+                  {t("detail.nextStepAction")}
+                </Link>
+              </p>
+            ) : null}
           </div>
           {workspace.canManage && !removed ? (
             removing ? (

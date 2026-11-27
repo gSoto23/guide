@@ -17,7 +17,7 @@
     "wifi": "Wi-Fi",
     "house_rules": "Normas de la casa",
     "appliances": "Electrodomésticos",
-    "amenities": "Comodidades",
+    "amenities": "Amenidades",
     "parking": "Parqueo y transporte",
     "local_recommendations": "Recomendaciones",
     "emergency": "Emergencias",
@@ -128,7 +128,7 @@
       "parking": "¿Dónde puedo parquear?",
       "appliances": "¿Cómo funcionan los electrodomésticos?",
       "local_recommendations": "¿Dónde podemos comer cerca?",
-      "amenities": "¿Qué comodidades tiene?"
+      "amenities": "¿Qué amenidades tiene?"
     },
     "label": "Tu mensaje",
     "placeholder": "Escribe tu pregunta",
